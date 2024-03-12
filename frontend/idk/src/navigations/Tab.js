@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import { Text, View } from 'react-native';
 import MainStack from './MainStack'
@@ -20,3 +21,4 @@ export default function App() {
       </Tab.Navigator>
   );
 }
+
