@@ -25,6 +25,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "fonts": {
+      "PretendardVariable": "./assets/fonts/PretendardVariable.ttf"
     }
   }
 }
