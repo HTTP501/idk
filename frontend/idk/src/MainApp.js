@@ -16,8 +16,8 @@ const SIGNUP_KEY = '@signup'
 export default function MainApp() {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [authData, setAuthData] = useState({});
-  const [signupData, setSignupData] = useState();
+  const [authData, setAuthData] = useState({'df':'df'});
+  const [signupData, setSignupData] = useState({});
   
   // 앱이 처음 시작될 때 대기 화면 표시 + 폰트 로딩 될 때까지 대기 화면 표시
   useEffect(() => {

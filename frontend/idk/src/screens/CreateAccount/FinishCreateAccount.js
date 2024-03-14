@@ -45,5 +45,6 @@ const styles = StyleSheet.create({
     position: 'absolute', // 위치를 절대로 설정
     bottom: 20, // 화면 하단과의 간격
     alignSelf: 'center',
+    borderRadius: 10
   },
 });

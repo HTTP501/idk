@@ -48,7 +48,10 @@ const EnterPINCheck = ({ navigation }) => {
           />
         ))}
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('FinishEnterPIN')}>
+      <TouchableOpacity
+        disabled={!pin.every(value => value !== '')}
+        style={[styles.button, { opacity: pin.every(value => value !== '') ? 1 : 0.5 }]}
+        onPress={() => navigation.navigate('FinishEnterPIN')}>
         <Text className='text-white text-lg'>다음</Text>
       </TouchableOpacity>
     </View>
@@ -82,5 +85,6 @@ const styles = StyleSheet.create({
     position: 'absolute', // 위치를 절대로 설정
     bottom: 20, // 화면 하단과의 간격
     alignSelf: 'center',
+    borderRadius: 10
   },
 });

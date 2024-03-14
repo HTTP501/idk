@@ -7,12 +7,19 @@ const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 const EnterBirthId = ({ navigation }) => {
   const secondTextInputRef = useRef(null);
   const [firstInputValue, setFirstInputValue] = useState('');
+  const [secondInputValue, setSecondInputValue] = useState('');
 
   const handleFirstTextInputChange = (text) => {
-    setFirstInputValue(text);
+    const formattedText = text.replace(/[^\d]/g, '');
+    setFirstInputValue(formattedText);
     if (text.length === 6) { // 입력 길이가 6일 때 포커스 이동
       secondTextInputRef.current.focus();
     }
+  };
+
+  const handleSecondTextInputChange = (text) => {
+    const formattedText = text.replace(/[^\d]/g, '');
+    setSecondInputValue(formattedText);
   };
 
   return (
@@ -40,9 +47,14 @@ const EnterBirthId = ({ navigation }) => {
           maxLength={7}
           keyboardType='numeric'
           secureTextEntry={true}
+          value={secondInputValue}
+          onChangeText={handleSecondTextInputChange} // 입력이 변경될 때마다 포커스 이동
         ></TextInput>
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EnterPhoneNumber')}>
+      <TouchableOpacity 
+        style={[styles.button, { opacity: (firstInputValue.length === 6 && secondInputValue.length === 7) ? 1 : 0.5 }]}
+        disabled={!(firstInputValue.length === 6 && secondInputValue.length === 7)}
+        onPress={() => navigation.navigate('EnterPhoneNumber')}>
         <Text className='text-white text-lg'>다음</Text>
       </TouchableOpacity>
     </View>
@@ -75,5 +87,6 @@ const styles = StyleSheet.create({
     position: 'absolute', // 위치를 절대로 설정
     bottom: 20, // 화면 하단과의 간격
     alignSelf: 'center',
+    borderRadius: 10
   },
 });
