@@ -9,8 +9,8 @@ const Stack = createNativeStackNavigator();
 function AuthStack() {
   return (
       <Stack.Navigator>
-        <Stack.Screen name="AuthLocal" component={AuthLocal} options={{ headerShown: false }} />
         <Stack.Screen name="AuthPIN" component={AuthPIN} options={{ headerShown: false }} />
+        <Stack.Screen name="AuthLocal" component={AuthLocal} options={{ headerShown: false }} />
       </Stack.Navigator>
   );
 }

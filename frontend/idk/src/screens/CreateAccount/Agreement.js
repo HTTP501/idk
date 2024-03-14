@@ -66,14 +66,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    width: SCREEN_WIDTH*(9/10),
+    width: 350,
     height: 80,
     justifyContent: 'space-between',
   },
   notbox: {
     flexDirection: 'row',
     padding: 10,
-    width: SCREEN_WIDTH*(9/10),
+    width: 350,
     height: 90,
   },
   checkbox: {
