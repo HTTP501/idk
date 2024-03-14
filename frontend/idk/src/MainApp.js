@@ -16,17 +16,22 @@ const SIGNUP_KEY = '@signup'
 export default function MainApp() {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [authData, setAuthData] = useState({"asd":"asda"});
+  const [authData, setAuthData] = useState({});
   const [signupData, setSignupData] = useState({});
   
   // 앱이 처음 시작될 때 대기 화면 표시 + 폰트 로딩 될 때까지 대기 화면 표시
   useEffect(() => {
     SplashScreen.preventAutoHideAsync();
     const loadFonts = async () => {
-      await Font.loadAsync({
-        'PretendardVariable': require('../assets/fonts/PretendardVariable.ttf')
-      });
-      setFontsLoaded(true);
+      try {
+        await Font.loadAsync({
+          'MaplestoryBold': require('../assets/fonts/MaplestoryBold.ttf')
+        });
+        setFontsLoaded(true);
+      } catch (error) {
+        console.error("Error loading fonts:", error);
+        // 폰트 로딩에 실패한 경우 에러 처리 추가
+      }
     };
     
     const load = async () => {
@@ -67,7 +72,7 @@ export default function MainApp() {
       <View className="flex-1 items-center justify-center bg-white">
         <Image source={require('../assets/bank.png')} style={{ width: 200, height: 200, marginTop: SCREEN_HEIGHT * (1/10) }} />
         <View>
-          <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center'}}>매달 고정 지출 관리가 어렵다면?</Text>
+          <Text style={{ fontFamily: 'MaplestoryBold', fontSize: 20, fontWeight: 'bold', textAlign: 'center'}}>매달 고정 지출 관리가 어렵다면?</Text>
         </View>
         <ScrollView
           pagingEnabled
@@ -86,7 +91,7 @@ export default function MainApp() {
               title='회원가입'
               onPress={() => {
                 // 회원가입 페이지로 이동
-                navigation.navigate('Agreement');
+                navigation.navigate('SignupStack');
               }}
             />
           </View>
