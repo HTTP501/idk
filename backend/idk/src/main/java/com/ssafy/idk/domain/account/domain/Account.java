@@ -4,6 +4,8 @@ import com.ssafy.idk.domain.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder(toBuilder = true)
+@DynamicInsert
 @Table(name="account")
 public class Account {
 
@@ -20,12 +23,12 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
 
-    @OneToOne
-    @JoinColumn(name="member_id")
+    @NotNull
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @Column(name = "number")
-    @ColumnDefault("'1234567891010'")
     private String number;
 
     @Column(name = "name")
@@ -36,11 +39,11 @@ public class Account {
     private String password;
 
     @Column(name = "balance")
-    @ColumnDefault("0L")
+    @ColumnDefault("0")
     private Long balance;
 
     @Column(name = "min_amount")
-    @ColumnDefault("0L")
+    @ColumnDefault("0")
     private Long minAmount;
 
     @Column(name = "pay_date")
@@ -56,4 +59,23 @@ public class Account {
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     List<Transaction> transactionList;
 
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updatePayDate(int day) {
+        this.payDate = day;
+    }
+
+    public void updateMinAmount(Long amount) {
+        this.minAmount = amount;
+    }
+
+    public void updateTime() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
