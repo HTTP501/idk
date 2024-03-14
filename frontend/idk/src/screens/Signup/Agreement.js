@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'black',
     padding: 10,
-    width: 330,
+    width: 350,
     height: 80,
     marginBottom: 30,
   },
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    width: 330,
+    width: 350,
     height: 70,
   },
   checkbox: {

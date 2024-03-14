@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     width: SCREEN_WIDTH * (6 / 10),
     height: 50,
-    letterSpacing: 2,
+    letterSpacing: 1,
     marginRight: 20
   },
   certificationButton: {
