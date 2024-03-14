@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native';
 import theme from '../../style';
 import { useNavigation } from '@react-navigation/native';
 
@@ -10,6 +10,8 @@ const EnterPhoneNumber = ({ navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showVerificationInput, setShowVerificationInput] = useState(false); // 인증번호 입력창을 보여줄지 여부
   const [verificationRequested, setVerificationRequested] = useState(false); // 인증 요청 여부
+  const [verificationCode, setVerificationCode] = useState(''); // 인증 번호
+  const [completeVerificationCode, setCompleteVerificationCode] = useState(false); // 인증 완료 여부
 
 
   const handlePhoneNumberChange = (text) => {
@@ -44,14 +46,19 @@ const EnterPhoneNumber = ({ navigation }) => {
     }
     setVerificationRequested(true); // 인증 요청 상태 변경
   };
+  
+  const handleVerificationCodeChange = (text) => {
+    setVerificationCode(text); // 인증 번호 업데이트
+  };
 
   const handleNext = () => {
-    if (showVerificationInput) {
-      // 인증 번호를 입력했을 때 다음 화면으로 이동하는 로직
-      navigation.navigate('EnterBirthId');
+    if (verificationCode === '123456') {
+      // 올바른 인증 번호를 입력했을 때
+      setCompleteVerificationCode(true)
+      Alert.alert('인증이 완료되었습니다.','',[{text:'확인'}])
     } else {
-      // 인증 요청 버튼을 눌렀을 때 인증 번호를 입력할 수 있는 창으로 전환
-      handleVerificationRequest();
+      // 인증 코드가 일치하지 않을 때 사용자에게 메시지 표시 등의 처리
+      Alert.alert('올바른 인증 코드를 입력하세요.','',[{text:'확인'}])
     }
   };
 
@@ -89,15 +96,24 @@ const EnterPhoneNumber = ({ navigation }) => {
             placeholder='인증 번호 6자리 입력'
             keyboardType='numeric'
             maxLength={6}
+            value={verificationCode}
+            onChangeText={handleVerificationCodeChange}
+            editable={!completeVerificationCode} // 인증 완료 후에는 편집 불가능하도록 설정
           />
           <TouchableOpacity 
-            style={{...styles.certificationButton, marginTop: 5}}
+            style={{...styles.certificationButton, marginTop: 5, opacity: completeVerificationCode ? 0.5 : 1}}
+            onPress={handleNext}
+            disabled={completeVerificationCode}
           >
             <Text className='text-white text-sm'>인증 확인</Text>
           </TouchableOpacity>
         </View>
       )}
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EnterPIN')}>
+      <TouchableOpacity
+        style={[styles.button, { opacity: !completeVerificationCode ? 0.5 : 1 }]}
+        disabled={!completeVerificationCode}
+        onPress={() => navigation.navigate('EnterPIN')}
+      >
         <Text className='text-white text-lg'>다음</Text>
       </TouchableOpacity>
     </View>
@@ -132,7 +148,8 @@ const styles = StyleSheet.create({
     backgroundColor: theme['sky-basic'],
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10
+    marginTop: 10,
+    borderRadius: 10
   },
   button: {
     width: SCREEN_WIDTH * (9 / 10),
@@ -143,6 +160,7 @@ const styles = StyleSheet.create({
     position: 'absolute', // 위치를 절대로 설정
     bottom: 20, // 화면 하단과의 간격
     alignSelf: 'center',
+    borderRadius: 10
   },
   disabled: {
     opacity: 0.6

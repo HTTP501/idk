@@ -1,3 +1,6 @@
+import { Dimensions } from 'react-native';
+const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window')
+
 const theme = {
   "sky-basic": "#3FB7FF",
   "sky-bright-1": "#7ECEFF",
@@ -16,5 +19,16 @@ const theme = {
   'black': "#1B1B1B",
   'red': "#FF0000",
   'success': "#22BB33",
+
+  'bottomButton': {
+    width: SCREEN_WIDTH*(9/10),
+    height:50,
+    backgroundColor: '#3FB7FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute', // 위치를 절대로 설정
+    bottom: 20, // 화면 하단과의 간격
+    borderRadius: 10
+  },
 };
 export default theme;

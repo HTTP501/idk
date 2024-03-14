@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Text, View, Dimensions, TouchableOpacity, StyleSheet, Image, Modal } from 'react-native';
+import { Text, View, Dimensions, TouchableOpacity, StyleSheet, Image, Modal, Alert } from 'react-native';
 import theme from '../../style';
 import * as LocalAuthentication from 'expo-local-authentication';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -30,6 +30,7 @@ const FinishEnterPIN = ({ navigation }) => {
     if (result.success) {
       // 인증 성공
       console.log('Authentication successful');
+      Alert.alert('지문 등록이 완료되었습니다.','',[{text:'확인'}])
     } else {
       // 인증 실패 또는 취소
       console.log('Authentication failed or canceled');
@@ -101,6 +102,7 @@ const styles = StyleSheet.create({
     position: 'absolute', // 위치를 절대로 설정
     bottom: 20, // 화면 하단과의 간격
     alignSelf: 'center',
+    borderRadius: 10
   },
   modalContainer: {
     flex: 1,
@@ -123,8 +125,11 @@ const styles = StyleSheet.create({
   modalButton1: {
     width: 170,
     height: 50,
+    borderColor: theme['sky-basic'],
+    borderWidth: 0.5,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 10
   },
   modalButton2: {
     width: 170,
@@ -132,5 +137,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme['sky-basic'],
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 10
   },
 });

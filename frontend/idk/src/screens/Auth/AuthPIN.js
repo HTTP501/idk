@@ -1,16 +1,16 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, Modal } from 'react-native';
+import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, Modal, Alert } from 'react-native';
 import theme from '../../style';
 import * as LocalAuthentication from 'expo-local-authentication';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const AuthPIN = ({ navigation }) => {
   const [showModal, setShowModal] = useState(false);
+  const [pin, setPin] = useState('');
 
   // 들어오자마자 지문 인식 가능한 기기인지 판단
   useEffect(() => {
     checkBiometricAvailability();
-
   }, []);
 
   const checkBiometricAvailability = async () => {
@@ -29,10 +29,43 @@ const AuthPIN = ({ navigation }) => {
 
     if (result.success) {
       // 인증 성공
-      console.log('Authentication successful');
+      Alert.alert('지문 인증이 완료되었습니다.','',[{text:'확인'}])
+      navigation.navigate('Tab');
     } else {
       // 인증 실패 또는 취소
-      console.log('Authentication failed or canceled');
+      Alert.alert('지문 인증이 실패했습니다.','',[{text:'확인'}])
+    }
+  };
+
+  
+  // 숫자 입력 시 호출되는 함수
+  const handlePinChange = (text) => {
+    // 입력값이 숫자가 아니면 무시
+    if (!/^\d*$/.test(text)) return;
+    // 숫자만 입력받도록 필터링
+    const numericText = text.replace(/[^\d]/g, '');
+    // 입력된 숫자가 6자리인지 확인
+    if (numericText.length === 6) {
+      // 6자리인 경우 자동으로 확인
+      verifyPIN(numericText);
+    } else {
+      // 6자리가 아닌 경우 현재 입력된 값을 상태에 업데이트
+      setPin(numericText);
+    }
+  };
+
+  // 확인 함수
+  const verifyPIN = (enteredPin) => {
+    // 여기서는 가짜 비밀번호 "123456"으로 대체하였습니다. 실제로는 사용자가 설정한 비밀번호를 확인해야 합니다.
+    if (enteredPin === '123456') {
+      // 비밀번호가 맞을 경우 MainStack으로 이동
+      Alert.alert('간편 인증이 완료되었습니다.','',[{text:'확인'}])
+      navigation.navigate('Tab');
+    } else {
+      // 비밀번호가 틀릴 경우 경고 메시지 출력
+      Alert.alert('비밀번호가 올바르지 않습니다.','',[{text:'확인'}])
+      // 입력된 비밀번호 초기화
+      setPin('');
     }
   };
 
@@ -56,10 +89,9 @@ const AuthPIN = ({ navigation }) => {
         maxLength={6}
         keyboardType='numeric'
         secureTextEntry={true} // 입력된 번호를 *로 대체하여 보여줌
+        value={pin}
+        onChangeText={handlePinChange} // 입력 시 핸들러 호출
       />
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Tab')}>
-        <Text className='text-white text-lg'>로그인</Text>
-      </TouchableOpacity>
 
       <Modal visible={showModal} transparent animationType="slide">
         <View style={styles.modalContainer}>
@@ -105,6 +137,7 @@ const styles = StyleSheet.create({
     position: 'absolute', // 위치를 절대로 설정
     bottom: 20, // 화면 하단과의 간격
     alignSelf: 'center',
+    borderRadius: 10
   },
   modalContainer: {
     flex: 1,
@@ -130,5 +163,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme['sky-basic'],
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 10
   },
 });
