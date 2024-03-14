@@ -26,8 +26,13 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "fonts": {
-      "PretendardVariable": "./assets/fonts/PretendardVariable.ttf"
-    }
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "MaplestoryBold": ["./assets/fonts/MaplestoryBold.ttf"]
+        }
+      ]
+    ]
   }
 }

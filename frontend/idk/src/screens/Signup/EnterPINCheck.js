@@ -4,7 +4,7 @@ import theme from '../../style';
 import { useNavigation } from '@react-navigation/native';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const EnterPIN = ({ navigation }) => {
+const EnterPINCheck = ({ navigation }) => {
   const [pin, setPin] = useState(['', '', '', '', '', '']); // 비밀번호를 배열로 저장
   const pinInputs = Array.from({ length: 6 }, () => useRef(null)); // TextInput에 대한 ref를 배열로 저장
 
@@ -30,7 +30,7 @@ const EnterPIN = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View className='mb-16'>
-        <Text className='text-3xl font-bold '>간편 비밀번호 등록</Text>
+        <Text className='text-3xl font-bold '>간편 비밀번호 등록 확인</Text>
       </View>
       <View className='flex-row self-center'>
         {pin.map((value, index) => (
@@ -48,14 +48,14 @@ const EnterPIN = ({ navigation }) => {
           />
         ))}
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EnterPINCheck')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('FinishEnterPIN')}>
         <Text className='text-white text-lg'>다음</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-export default EnterPIN;
+export default EnterPINCheck;
 
 const styles = StyleSheet.create({
   container : {
