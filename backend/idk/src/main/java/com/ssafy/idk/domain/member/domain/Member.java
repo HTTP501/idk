@@ -45,8 +45,4 @@ public class Member {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
-
 }

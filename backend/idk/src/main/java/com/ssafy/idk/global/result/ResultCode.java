@@ -17,7 +17,13 @@ public enum ResultCode {
     
     // ACCOUNT
     ACCOUNT_CREATE_SUCCESS(201, "A001", "계좌를 생성했습니다"),
-    ACCOUNT_GET_SUCCESS(200, "A002", "계좌를 조회했습니다");
+    ACCOUNT_GET_SUCCESS(200, "A002", "계좌를 조회했습니다"),
+    ACCOUNT_DELETE_SUCCESS(200, "A003", "계좌를 해지했습니다"),
+    ACCOUNT_UPDATE_NAME_SUCCESS(201, "A004", "계좌 이름을 변경했습니다"),
+    ACCOUNT_VERITY_SUCCESS(200, "A005", "계좌 비밀번호 검증에 성공했습니다"),
+    ACCOUNT_UPDATE_PWD_SUCCESS(201, "A006", "계좌 비밀번호를 변경했습니다"),
+    ACCOUNT_UPDATE_INCOME_DAY_SUCCESS(201, "A007", "월급일을 변경했습니다"),
+    ACCOUNT_UPDATE_MIN_AMOUNT_SUCCESS(201, "A008", "계좌의 최소보유금액을 변경했습니다");
     
 
     private final int status;
