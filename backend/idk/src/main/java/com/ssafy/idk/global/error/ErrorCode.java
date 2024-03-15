@@ -15,9 +15,19 @@ public enum ErrorCode {
     ACCOUNT_NOT_FOUND(404, "A401", "계좌가 존재하지 않습니다"),
     ACCOUNT_FAIL_DELETE(400, "A402", "계좌 해지를 실패했습니다"),
     ACCOUNT_FAIL_SAVE(400, "A403", "계좌 저장을 실패했습니다"),
-    ACCOUNT_PWD_NOT_SAME(400, "A404", "계좌 비밀번호와 다릅니다");
+    ACCOUNT_PWD_NOT_SAME(400, "A404", "계좌 비밀번호와 다릅니다"),
 
     // TRANSACTION
+
+    // MEMBER
+    MEMBER_PHONE_ALREADY_VERIFIED(409, "M409", "이미 인증된 휴대폰 번호입니다."),
+    MEMBER_NOT_FOUND(404, "M404", "존재하지 않는 회원입니다."),
+    MEMBER_INVALID_PIN(400, "M009", "비밀번호가 일치하지 않습니다."),
+    MEMBER_SMS_SEND_FAILED(400, "M400", "문자 전송 요청에 실패했습니다."),
+    MEMBER_SMS_INVALID_CODE(400, "M400", "유효하지 않는 인증 코드입니다."),
+    MEMBER_TOKEN_EXPIRED(401, "M401", "토큰이 만료되었습니다."),
+    MEMBER_TOKEN_INVALID(400, "M400", "유효하지 않은 토큰입니다."),
+    MEMBER_UNAUTHORIZED(401, "M401", "권한이 없습니다.");
 
     private final int status;
     private final String code;
