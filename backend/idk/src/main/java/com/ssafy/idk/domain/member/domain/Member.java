@@ -3,7 +3,6 @@ package com.ssafy.idk.domain.member.domain;
 import com.ssafy.idk.domain.account.domain.Account;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,8 +23,8 @@ public class Member {
     @Column(name = "birth")
     private String birth;
 
-    @Column(name = "password")
-    private String password;
+    @Column(name = "pin")
+    private String pin;
 
     @Column(name = "phone_number")
     private String phoneNumber;
@@ -45,4 +44,7 @@ public class Member {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
 }

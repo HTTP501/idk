@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -15,17 +16,35 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class SecurityConfig {
 
+
+    // 패스워드 암호화를 위한 등록
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+
+        return new BCryptPasswordEncoder();
+    }
+
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
+        return http
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .anyRequest().permitAll()
-                );
-        return http.build();
+                                .requestMatchers(
+                                        "/api/member/signup",
+                                        "/api/member/phone",
+                                        "/api/member/phone/code",
+                                        "/swagger-ui/**",
+                                        "/v3/**",
+                                        "/api/member/login/pin",
+                                        "/api/member/login/bio",
+                                        "/api/member/reissue").permitAll()
+                                .anyRequest().permitAll())
+                .build();
     }
 
     @Bean

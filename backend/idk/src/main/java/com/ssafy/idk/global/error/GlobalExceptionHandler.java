@@ -2,12 +2,12 @@ package com.ssafy.idk.global.error;
 
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.item.exception.ItemException;
+import com.ssafy.idk.domain.member.exception.MemberException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import java.nio.file.AccessDeniedException;
 
 @Slf4j
@@ -24,6 +24,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccountException.class)
     protected ResponseEntity<ErrorResponse> handleItemNotFoundException(AccountException ex) {
         log.error("handleAccountException", ex);
+        final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(MemberException.class)
+    protected ResponseEntity<ErrorResponse> handleMemberException(MemberException ex) {
+        log.error("handleMemberException", ex);
         final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }
