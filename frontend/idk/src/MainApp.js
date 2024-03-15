@@ -16,7 +16,8 @@ const SIGNUP_KEY = '@signup'
 export default function MainApp() {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [authData, setAuthData] = useState({'df':'df'});
+  const [authData, setAuthData] = useState({'sadas':'asdasd'});
+
   const [signupData, setSignupData] = useState({});
   
   // 앱이 처음 시작될 때 대기 화면 표시 + 폰트 로딩 될 때까지 대기 화면 표시
@@ -24,10 +25,11 @@ export default function MainApp() {
     SplashScreen.preventAutoHideAsync();
     const loadFonts = async () => {
       try {
-        await Font.loadAsync({
-          'MaplestoryBold': require('../assets/fonts/MaplestoryBold.ttf')
-        });
+        // await Font.loadAsync({
+        //   'MaplestoryBold': require('../assets/fonts/MaplestoryBold.ttf')
+        // });
         setFontsLoaded(true);
+        console.log('폰트 설치')
       } catch (error) {
         console.error("Error loading fonts:", error);
         // 폰트 로딩에 실패한 경우 에러 처리 추가
@@ -39,7 +41,6 @@ export default function MainApp() {
       await loadStorages();
       SplashScreen.hideAsync();
     };
-    
     load();
   }, []);
   
