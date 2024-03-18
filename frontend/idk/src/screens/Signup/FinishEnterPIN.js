@@ -133,6 +133,8 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: theme['sky-basic'],
     padding: 20,
     borderRadius: 10,
     alignItems: 'center',

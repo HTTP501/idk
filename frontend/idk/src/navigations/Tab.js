@@ -16,8 +16,8 @@ export default function App() {
       <Tab.Navigator>
         <Tab.Screen name="MainStack" component={MainStack} options={{ headerShown: false }} />
         <Tab.Screen name="ChartStack" component={ChartStack} options={{ headerShown: false }} />
-        <Tab.Screen name="SettingStack" component={SettingStack} options={{ headerShown: false }} />
         <Tab.Screen name="PaymentStack" component={PaymentStack} options={{ headerShown: false }} />
+        <Tab.Screen name="SettingStack" component={SettingStack} options={{ headerShown: false }} />
       </Tab.Navigator>
   );
 }
