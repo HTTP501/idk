@@ -14,7 +14,7 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+
 // 컴포넌트들
 import formattedNumber from "../../components/moneyFormatter";
 import theme from "../../style";
@@ -114,7 +114,7 @@ const Main = ({ navigation }) => {
             />
             <PlusButton
               title={"자동이체 등록하기"}
-              destination={"RegistAutoSend"}
+              destination={"RegistAutoSendAgree"}
               navigation={navigation}
             />
             <PlusButton
