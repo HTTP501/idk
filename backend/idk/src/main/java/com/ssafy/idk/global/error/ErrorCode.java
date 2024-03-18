@@ -29,7 +29,10 @@ public enum ErrorCode {
     MEMBER_TOKEN_INVALID(400, "M407", "유효하지 않은 토큰입니다."),
     MEMBER_UNAUTHORIZED(401, "M408", "권한이 없습니다."),
     MEMBER_HEADER_NOT_FOUND(400, "M406", "Authorization 헤더가 없습니다."),
-    MEMBER_INVALID_HEADER_FORMAT(400, "M407", "Authorization 헤더는 Bearer 토큰 형식이어야 합니다.");
+    MEMBER_INVALID_HEADER_FORMAT(400, "M407", "Authorization 헤더는 Bearer 토큰 형식이어야 합니다."),
+
+    // RSAKEY
+    RSAKEY_NOT_FOUND(404, "R404", "RSAKEY가 존재하지 않습니다.");
 
     private final int status;
     private final String code;

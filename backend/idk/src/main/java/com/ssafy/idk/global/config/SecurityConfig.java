@@ -29,26 +29,16 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberRepository memberRepository;
-    private final TokenService tokenService;
 
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository, TokenService tokenService) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtTokenProvider = jwtTokenProvider;
-        this.memberRepository = memberRepository;
-        this.tokenService = tokenService;
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
 
-        System.out.println("authenticationConfiguration = " + authenticationConfiguration);
         return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(MemberRepository memberRepository) {
-        return new CustomUserDetailsService(memberRepository);
     }
 
     // 패스워드 암호화를 위한 등록

@@ -1,8 +1,6 @@
 package com.ssafy.idk.domain.member.controller;
 
 import com.ssafy.idk.domain.member.dto.request.*;
-import com.ssafy.idk.domain.member.jwt.JwtTokenProvider;
-import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.domain.member.service.MemberService;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;
@@ -27,8 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
-    private JwtTokenProvider jwtTokenProvider;
 
     @Operation(summary = "회원가입")
     @PostMapping("/signup")
@@ -86,7 +82,6 @@ public class MemberController {
     }
 
     @Operation(summary = "자동이체 알림 설정 변경")
-    @SecurityRequirement(name = "Bearer Token")
     @PostMapping("/push/auto-transfer")
     public ResponseEntity<ResultResponse> autoTransferPush(@Valid @RequestBody AutoTransferPushRequestDto requestDto) {
 
@@ -94,7 +89,6 @@ public class MemberController {
     }
 
     @Operation(summary = "자동이체 알림 설정 변경")
-    @SecurityRequirement(name = "Bearer Token")
     @PostMapping("/push/transaction")
     public ResponseEntity<ResultResponse> transactionPush(@Valid @RequestBody TransactionPushRequestDto requestDto) {
 

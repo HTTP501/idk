@@ -66,12 +66,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private boolean isSignupRelatedPath(String requestURI) {
         return requestURI.startsWith("/api/member/signup") ||
+                requestURI.startsWith("/api/member/login/pin") ||
+                requestURI.startsWith("/api/member/login/bio") ||
                 requestURI.startsWith("/api/member/phone") ||
                 requestURI.startsWith("/api/member/phone/code") ||
                 requestURI.startsWith("/swagger-ui") ||
                 requestURI.startsWith("/v3") ||
-                requestURI.startsWith("/api/member/login/pin") ||
-                requestURI.startsWith("/api/member/login/bio") ||
                 requestURI.startsWith("/api/member/reissue");
     }
 }
