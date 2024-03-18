@@ -39,7 +39,7 @@ const FinishSendMoney = ({ navigation, route }) => {
         style={{backgroundColor:theme["light-grey"], height:50, justifyContent:'center'}}
           className="flex-1 items-center"
           onPress={() => {
-            console.log("송금 페이지 이동");
+            // 송금 페이지 이동
             navigation.navigate("EnterAccount");
           }}
         >
@@ -49,7 +49,7 @@ const FinishSendMoney = ({ navigation, route }) => {
         style={{backgroundColor:theme["sky-basic"], height:50, justifyContent:'center'}}
           className="flex-1 items-center "
           onPress={() => {
-            console.log("메인 페이지 이동");
+            // 메인 페이지 이동
             navigation.navigate("Main");
           }}
         >

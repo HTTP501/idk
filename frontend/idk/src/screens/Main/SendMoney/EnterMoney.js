@@ -71,7 +71,7 @@ const EnterMoney = ({ navigation,route }) => {
           style={styles.button}
           className="bg-blue-400"
           onPress={() => {
-            console.log("확인 페이지 이동");
+            // 확인 페이지 이동
             navigation.navigate("CheckSendMoneyInfo",{otherAccount,money, myAccount});
           }}
         >

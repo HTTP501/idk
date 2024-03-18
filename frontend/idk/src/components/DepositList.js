@@ -2,16 +2,11 @@ import { Dimensions } from "react-native";
 
 import { View, Text, StyleSheet } from "react-native";
 import theme from "../style";
+import formattedNumber from "./moneyFormatter";
 
-
-// 숫자 -> 돈 쉼표 찍는 함수
-const formattedNumber = function (number) {
-  return number.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
-};
 
 const DepositList = function ({ deposit }) {
   // 1. 날짜별 맵 생성
-  console.log(deposit[0])
   const dateMap = new Map();
   for (const item of deposit) {
     const date = item.transactionCreatedAt.split(" ")[0]; // 날짜 추출

@@ -12,7 +12,7 @@ const ToggleFilter = function () {
   const [isFocus, setIsFocus] = useState(false);
   return (
     <View style={styles.container}>
-      <Text>토글</Text>
+      <Text>토글아직구현안함</Text>
       {/* <Dropdown
         style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
         iconStyle={styles.iconStyle}
@@ -42,7 +42,7 @@ const ToggleFilter = function () {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
-    padding: 16,
+    // padding: 16,
   },
   dropdown: {
     borderColor: "gray",
