@@ -1,107 +1,92 @@
 import axios from "axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BASE_URL = "";
+// 내가 적은것
+export default function localAxios() {
+  const instance = axios.create({
+    baseURL: "https://i10a501.p.ssafy.io/api",
+    headers: {
+      "tmp": "application/json"
+    }
+  })
 
-// 헤더 로컬 스토리지에서 가져오는 부분 추후 구현
-const header = {
-  accessToken: null,
-  refreshToken: null,
-};
+  // 요청을 보낼때의 인터셉터
+  // axios 요청의 설정값인 config를 가져옴
+  instance.interceptors.request.use(
+    (config) => {
+      const accessToken = async () => {
+        const a = await AsyncStorage.getItem("@auth")
+        return JSON.parse(a).accessToken
+      }
 
-// 기본 axios 양식
-const localAxios = function (method, url = "", data = null) {
-  // restAPI 메서드, 보내는 주소, 데이터 매개변수로 받아오기
-  return axios({
-    method: method,
-    url: `${BASE_URL}${url}`,
-    header: header,
-    data: data,
-  });
-};
+      // config의 헤더의 Authorization 부분에 Bearer를 포함하여 accessToken 보냄
+      config.headers.Authorization = `Bearer ${accessToken}`
 
-// 요청 인터셉터
-axios.interceptors.request.use(
-  function (config) {
-    // 요청이 전달되기 전에 작업 수행
-    return config;
-  },
-  function (error) {
-    // 요청 오류가 있는 작업 수행
-    return Promise.reject(error);
-  }
-);
+      // 헤더를 붙인 config를 반환
+      return config;
+    },
+    // 정상적이지 않은 요청으로 error 가 발생하면 에러를 반환
+    (error) => {
+      return Promise.reject(error)
+    }
+  )
+  // 요청에 대한 응답을 인터셉트 한다.
+  // 요청에 대한 응답인 response를 가져온다.
+  instance.interceptors.response.use(
+    // 요청을 보내서 응답이 왔다면 access 토큰에 문제가 없으므로 응답을 return
+    async (response) => {
+      return response;
+    },
+    // 만약 요청을 보내서 에러가 왔다면,
+    async (error) => {
+      // console.log(error);
+      // console.log(error.message);
+      // console.log(error.name);
+      // console.log(error.code);
+      // console.log(error.config);
+      // console.log(error.request);
+      // console.log(Object.keys(error));
+      // 해당 에러의 코드를 가져온다.
+      const status = error.response.data.status;
 
-export default localAxios;
-
-// 영준오빠 참고 코드
-// instance.interceptors.response.use(
-//     async (response) => {
-//         // 응답 후 로직 추가 가능
-//         // pinia 스토어 불러오기
-//         const authStore = useauthControllerStore();
-//         const accessToken = authStore.myAccessToken;
-
-//         if (accessToken) {
-//           // Check if 'headers' property exists in 'response', if not, create it
-//           if (!response.headers) {
-//             response.headers = {};
-//           }
-//           // Add 'accessToken' property to 'headers'
-//           response.headers.accessToken = accessToken;
-//         }
-
-//         return response;
-//       },
-//       async (error) => {
-//         // 오류 응답에서 상태 코드를 가져옴
-//         console.log(error);
-//         const status = error.response.data.status;
-
-//         // 상태 코드가 400이면서 메시지가 "Unauthorized"일 경우 access Token이 만료됨
-//         if (
-//           status === 400 &&
-//           error.response.data.message === "토큰의 유효 기간이 만료되었습니다."
-//         ) {
-//           try {
-//             const newStore = useauthControllerStore();
-
-//             // access Token을 재발급 받는 요청
-//             const { data } = await instance.post(
-//               "/auth/refresh",
-//               {
-//                 memberId: newStore.myName,
-//                 grantType: newStore.myGrantType,
-//                 accessToken: newStore.myAccessToken,
-//                 refreshToken: newStore.myRefreshToken,
-//               },
-//               function (response) {
-//                 console.log(response);
-//               },
-//               function (error) {
-//                 console.log(error);
-//               }
-//             );
-//             // Store에 새로운 access Token 저장
-//             newStore.myAccessToken = data.data.accessToken;
-
-//             // 새로 받은 access Token으로 이전 요청 다시 보내기
-//             const config = error.config;
-//             //   console.log(config);
-//             config.headers.Authorization = `Bearer ${newStore.myAccessToken}`;
-//             return axios.request(config);
-//           } catch (refreshError) {
-//             // refresh token이 만료되었거나 다른 문제로 실패한 경우 로그인 페이지로 이동
-//             console.error("Failed to refresh access token");
-//             console.log(error);
-//             alert("로그인 정보가 만료되어 다시 로그인이 필요합니다.");
-//             router.push("/auth");
-//           }
-//         }
-
-//         // access Token 만료 오류가 아닌 다른 오류의 경우 오류 처리
-//         return Promise.reject(error);
-//       }
-//     );
-
-//     return instance;
-//   }
+      // 만약 에러의 이유가 토큰의 유효기간이 만료된 것이라면?
+      if (status == 401 && 
+        error.response.data.message === "토큰이 만료되었습니다."
+        ) {
+          // try catch를 이용한다
+          // 왜요?? refresh 토큰도 만료될 수 있기 때문이다.
+          // 만약 요청을 보냈을 때 refresh 토큰도 만료되어 에러가 나온다면
+          // 정해진 기믹을 수행하게 해주면 된다. ex) 재로그인 시켜서 refresh 토큰 재발급 받기
+          try {
+            // data라는 변수에 요청을 보내 받은 응답값을 저장하고자 한다.
+            // instance는 상단에서 설정한 axios 함수이다.
+            const p = await AsyncStorage.getItem("@signup")
+            const phoneNumber = JSON.parse(p).phoneNumber
+            const { data } = await instance.post(
+              // url(API주소)
+              "/member/reissue",
+              // API에 필요한 인자
+              {
+                "phoneNumber" : phoneNumber,
+              },
+            )
+            // 받은 요청에서 accessToken을 꺼내서 저장하자!
+            // 저번 회의의 결과로 refreshToken도 같이 갱신해주기로 했다면 이쪽에서 갱신해주면 된다!
+            await AsyncStorage.setItem("@auth", data.data.accessToken)
+            const newAccessToken = data.data.accessToken
+            // 에러났던 요청 설정을 가져온다!
+            const config = error.config
+            // 에러났던 요청에서 헤더의 accessToken만 갈아끼워서
+            config.headers.Authorization = `Bearer ${newAccessToken}`
+            // 재요청을 보낸다.
+            return axios.request(config);
+          } catch (refreshError) {
+            // refresh token이 만료되었거나 다른 문제로 실패한 경우
+            alert("로그인 정보가 만료되어 다시 로그인이 필요합니다.")
+            // 여기 네비게이터를 추가해주세요~!
+          }
+      }
+    }
+  )
+  return instance;
+}

@@ -1,12 +1,14 @@
 import React, { useRef, useState } from 'react';
-import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native';
 import theme from '../../style';
 import { useNavigation } from '@react-navigation/native';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const EnterPINCheck = ({ navigation }) => {
+const EnterPINCheck = ({ route, navigation }) => {
   const [pin, setPin] = useState(['', '', '', '', '', '']); // 비밀번호를 배열로 저장
   const pinInputs = Array.from({ length: 6 }, () => useRef(null)); // TextInput에 대한 ref를 배열로 저장
+
+  const receiveData = route.params
 
   const handlePinChange = (index, value) => {
     // 입력값이 숫자가 아니면 무시
@@ -51,7 +53,17 @@ const EnterPINCheck = ({ navigation }) => {
       <TouchableOpacity
         disabled={!pin.every(value => value !== '')}
         style={[styles.button, { opacity: pin.every(value => value !== '') ? 1 : 0.5 }]}
-        onPress={() => navigation.navigate('FinishEnterPIN')}>
+        onPress={() => {
+          if (receiveData.pin !== pin.join('')) {
+            // receiveData.pin과 pin이 다를 때 경고 띄우기
+            Alert.alert('간편 비밀번호가 일치하지 않습니다.','',[{text:'확인'}]);
+          } else {
+            // receiveData.pin과 pin이 일치할 때 다음 화면으로 이동
+            Alert.alert('간편 비밀번호가 일치합니다.','',[{text:'확인'}]);
+            navigation.navigate('FinishEnterPIN', receiveData);
+          }
+        }}
+      >
         <Text className='text-white text-lg'>다음</Text>
       </TouchableOpacity>
     </View>

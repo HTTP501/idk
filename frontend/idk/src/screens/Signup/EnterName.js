@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native';
 import theme from '../../style';
 import { useNavigation } from '@react-navigation/native';
 
@@ -10,9 +10,15 @@ const EnterName = ({ navigation }) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   const handleNameChange = (text) => {
+    if (!/^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣\s]*$/.test(text)) {
+      Alert.alert('한글 또는 영어만 이름에 입력할 수 있습니다.','',[{text:'확인'}])
+      return
+    }
     setName(text);
     setIsButtonDisabled(text.length === 0 || !/^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣\s]*$/.test(text));
   };
+
+  const sendData = {name: name}
 
   return (
     <View style={styles.container}>
@@ -30,7 +36,7 @@ const EnterName = ({ navigation }) => {
       <TouchableOpacity
         style={[styles.button, { opacity: isButtonDisabled ? 0.5 : 1 }]}
         disabled={isButtonDisabled}
-        onPress={() => navigation.navigate('EnterBirthId')}>
+        onPress={() => navigation.navigate('EnterBirthId', sendData)}>
         <Text className="text-white text-lg">다음</Text>
       </TouchableOpacity>
     </View>

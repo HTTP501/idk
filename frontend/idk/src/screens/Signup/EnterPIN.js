@@ -4,9 +4,15 @@ import theme from '../../style';
 import { useNavigation } from '@react-navigation/native';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const EnterPIN = ({ navigation }) => {
+const EnterPIN = ({ route, navigation }) => {
   const [pin, setPin] = useState(['', '', '', '', '', '']); // 비밀번호를 배열로 저장
   const pinInputs = Array.from({ length: 6 }, () => useRef(null)); // TextInput에 대한 ref를 배열로 저장
+
+  const receiveData = route.params
+  const sendData = {
+    ...receiveData,
+    pin: pin.join('')
+  }
 
   const handlePinChange = (index, value) => {
     // 입력값이 숫자가 아니면 무시
@@ -51,7 +57,7 @@ const EnterPIN = ({ navigation }) => {
       <TouchableOpacity
         disabled={!pin.every(value => value !== '')}
         style={[styles.button, { opacity: pin.every(value => value !== '') ? 1 : 0.5 }]}
-        onPress={() => navigation.navigate('EnterPINCheck')}>
+        onPress={() => navigation.navigate('EnterPINCheck', sendData)}>
         <Text className='text-white text-lg'>다음</Text>
       </TouchableOpacity>
     </View>

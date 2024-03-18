@@ -4,10 +4,16 @@ import theme from '../../style';
 import { useNavigation } from '@react-navigation/native';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const EnterBirthId = ({ navigation }) => {
+const EnterBirthId = ({ route, navigation }) => {
   const secondTextInputRef = useRef(null);
   const [firstInputValue, setFirstInputValue] = useState('');
   const [secondInputValue, setSecondInputValue] = useState('');
+
+  const receiveData = route.params
+  const sendData = {
+    ...receiveData,
+    birth: firstInputValue + '-' + secondInputValue
+  }
 
   const handleFirstTextInputChange = (text) => {
     const formattedText = text.replace(/[^\d]/g, '');
@@ -54,7 +60,7 @@ const EnterBirthId = ({ navigation }) => {
       <TouchableOpacity 
         style={[styles.button, { opacity: (firstInputValue.length === 6 && secondInputValue.length === 7) ? 1 : 0.5 }]}
         disabled={!(firstInputValue.length === 6 && secondInputValue.length === 7)}
-        onPress={() => navigation.navigate('EnterPhoneNumber')}>
+        onPress={() => navigation.navigate('EnterPhoneNumber', sendData)}>
         <Text className='text-white text-lg'>다음</Text>
       </TouchableOpacity>
     </View>

@@ -2,8 +2,6 @@ import { Text, View, Dimensions, TouchableOpacity, StyleSheet } from 'react-nati
 import Checkbox from 'expo-checkbox';
 import { useState } from 'react';
 import theme from '../../style'
-import { useNavigation } from '@react-navigation/native';
-
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window')
 
