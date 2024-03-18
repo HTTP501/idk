@@ -31,7 +31,9 @@ public enum ResultCode {
     MEMBER_LOGIN_PIN_SUCCESS(200, "M003", "PIN 로그인에 성공했습니다."),
     MEMBER_LOGIN_BIO_SUCCESS(200, "M004", "생체 인증 로그인 성공했습니다."),
     MEMBER_PHONE_VERIFICATION_REQUEST_SUCCESS(200, "M005", "휴대폰 본인 인증 요청 성공했습니다."),
-    MEMBER_PHONE_CODE_VERIFICATION_SUCCESS(200, "M006", "휴대폰 인증 코드 검증에 성공했습니다.");
+    MEMBER_PHONE_CODE_VERIFICATION_SUCCESS(200, "M006", "휴대폰 인증 코드 검증에 성공했습니다."),
+    MEMBER_AUTO_TRANSFER_PUSH_SUCCESS(200, "M007", "자동이체 알림 설정을 변경했습니다."),
+    MEMBER_TRANSACTION_PUSH_SUCCESS(200, "M008", "입출금 알림 설정을 변경했습니다.");
 
     private final int status;
     private final String code;

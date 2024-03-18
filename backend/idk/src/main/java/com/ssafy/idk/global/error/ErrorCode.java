@@ -20,14 +20,16 @@ public enum ErrorCode {
     // TRANSACTION
 
     // MEMBER
-    MEMBER_PHONE_ALREADY_VERIFIED(409, "M409", "이미 인증된 휴대폰 번호입니다."),
-    MEMBER_NOT_FOUND(404, "M404", "존재하지 않는 회원입니다."),
-    MEMBER_INVALID_PIN(400, "M009", "비밀번호가 일치하지 않습니다."),
-    MEMBER_SMS_SEND_FAILED(400, "M400", "문자 전송 요청에 실패했습니다."),
-    MEMBER_SMS_INVALID_CODE(400, "M400", "유효하지 않는 인증 코드입니다."),
-    MEMBER_TOKEN_EXPIRED(401, "M401", "토큰이 만료되었습니다."),
-    MEMBER_TOKEN_INVALID(400, "M400", "유효하지 않은 토큰입니다."),
-    MEMBER_UNAUTHORIZED(401, "M401", "권한이 없습니다.");
+    MEMBER_PHONE_ALREADY_VERIFIED(409, "M401", "이미 인증된 휴대폰 번호입니다."),
+    MEMBER_NOT_FOUND(404, "M402", "존재하지 않는 회원입니다."),
+    MEMBER_INVALID_PIN(400, "M403", "비밀번호가 일치하지 않습니다."),
+    MEMBER_SMS_SEND_FAILED(400, "M404", "문자 전송 요청에 실패했습니다."),
+    MEMBER_SMS_INVALID_CODE(400, "M405", "유효하지 않는 인증 코드입니다."),
+    MEMBER_TOKEN_EXPIRED(401, "M406", "토큰이 만료되었습니다."),
+    MEMBER_TOKEN_INVALID(400, "M407", "유효하지 않은 토큰입니다."),
+    MEMBER_UNAUTHORIZED(401, "M408", "권한이 없습니다."),
+    MEMBER_HEADER_NOT_FOUND(400, "M406", "Authorization 헤더가 없습니다."),
+    MEMBER_INVALID_HEADER_FORMAT(400, "M407", "Authorization 헤더는 Bearer 토큰 형식이어야 합니다.");
 
     private final int status;
     private final String code;

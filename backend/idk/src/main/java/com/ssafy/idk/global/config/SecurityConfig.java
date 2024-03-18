@@ -1,13 +1,24 @@
 package com.ssafy.idk.global.config;
 
+import com.ssafy.idk.domain.member.jwt.JwtFilter;
+import com.ssafy.idk.domain.member.jwt.JwtTokenProvider;
+import com.ssafy.idk.domain.member.repository.MemberRepository;
+import com.ssafy.idk.domain.member.security.CustomUserDetailsService;
+import com.ssafy.idk.domain.member.security.LoginFilter;
+import com.ssafy.idk.domain.member.service.TokenService;
+import jakarta.servlet.Filter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -16,6 +27,29 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class SecurityConfig {
 
+    private final AuthenticationConfiguration authenticationConfiguration;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final MemberRepository memberRepository;
+    private final TokenService tokenService;
+
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository, TokenService tokenService) {
+        this.authenticationConfiguration = authenticationConfiguration;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.memberRepository = memberRepository;
+        this.tokenService = tokenService;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+
+        System.out.println("authenticationConfiguration = " + authenticationConfiguration);
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(MemberRepository memberRepository) {
+        return new CustomUserDetailsService(memberRepository);
+    }
 
     // 패스워드 암호화를 위한 등록
     @Bean
@@ -26,7 +60,7 @@ public class SecurityConfig {
 
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
+         http
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -36,15 +70,19 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers(
                                         "/api/member/signup",
-                                        "/api/member/phone",
-                                        "/api/member/phone/code",
-                                        "/swagger-ui/**",
-                                        "/v3/**",
                                         "/api/member/login/pin",
                                         "/api/member/login/bio",
-                                        "/api/member/reissue").permitAll()
-                                .anyRequest().permitAll())
-                .build();
+                                        "/api/member/phone",
+                                        "/api/member/phone/code",
+                                        "/api/member/reissue",
+                                        "/swagger-ui/**",
+                                        "/v3/**").permitAll()
+                                .anyRequest().authenticated());
+
+        http
+                .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
 
     @Bean

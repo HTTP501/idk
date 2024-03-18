@@ -14,15 +14,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    @Autowired
     private JwtTokenProvider jwtTokenProvider;
     private LoginByPinRequestDto loginByPinRequestDto;
 
-    @Autowired
     private MemberRepository memberRepository;
+
+    public JwtFilter(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -34,10 +35,16 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         String authorizationHeader = request.getHeader("Authorization");
+        System.out.println(authorizationHeader);
 
-        // Authorization 헤더 검증
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new MemberException(ErrorCode.MEMBER_UNAUTHORIZED);
+        // 토큰이 없으면
+        if (authorizationHeader == null) {
+            throw new MemberException(ErrorCode.MEMBER_HEADER_NOT_FOUND);
+        }
+
+        // 헤더 형식이 맞지 않는 경우
+        if (!authorizationHeader.startsWith("Bearer ")) {
+            throw new MemberException(ErrorCode.MEMBER_INVALID_HEADER_FORMAT);
         }
 
         // 토큰 검증

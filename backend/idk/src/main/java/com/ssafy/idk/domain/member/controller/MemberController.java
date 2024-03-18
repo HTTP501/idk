@@ -1,16 +1,13 @@
 package com.ssafy.idk.domain.member.controller;
 
 import com.ssafy.idk.domain.member.dto.request.*;
-import com.ssafy.idk.domain.member.dto.response.LoginByBioResponseDto;
-import com.ssafy.idk.domain.member.dto.response.ReissueTokenResponseDto;
-import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.member.jwt.JwtTokenProvider;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.domain.member.service.MemberService;
-import com.ssafy.idk.global.error.ErrorCode;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,8 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -88,5 +83,21 @@ public class MemberController {
         }
 
         return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMEBER_RENEW_TOKEN_SUCCESS, memberService.reissueToken(refreshToken, requestDto.getPhoneNumber(), response)));
+    }
+
+    @Operation(summary = "자동이체 알림 설정 변경")
+    @SecurityRequirement(name = "Bearer Token")
+    @PostMapping("/push/auto-transfer")
+    public ResponseEntity<ResultResponse> autoTransferPush(@Valid @RequestBody AutoTransferPushRequestDto requestDto) {
+
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_AUTO_TRANSFER_PUSH_SUCCESS, memberService.autoTransferPush(requestDto.getAutoTransferPushEnabled())));
+    }
+
+    @Operation(summary = "자동이체 알림 설정 변경")
+    @SecurityRequirement(name = "Bearer Token")
+    @PostMapping("/push/transaction")
+    public ResponseEntity<ResultResponse> transactionPush(@Valid @RequestBody TransactionPushRequestDto requestDto) {
+
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_TRANSACTION_PUSH_SUCCESS, memberService.transactionPush(requestDto.getTransactionPushEnabled())));
     }
 }

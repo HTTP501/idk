@@ -6,7 +6,10 @@ import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
         info = @Info(title = "IDK 은행 서비스 API 명세서",
-                version = "v1"))
+                version = "v1")
+)
+
 @Configuration
 public class SwaggerConfig {
+
 }

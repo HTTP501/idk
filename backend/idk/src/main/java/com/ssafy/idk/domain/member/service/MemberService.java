@@ -2,18 +2,13 @@ package com.ssafy.idk.domain.member.service;
 
 import com.ssafy.idk.domain.member.domain.Member;
 import com.ssafy.idk.domain.member.dto.request.*;
-import com.ssafy.idk.domain.member.dto.response.LoginByBioResponseDto;
-import com.ssafy.idk.domain.member.dto.response.LoginByPinResponseDto;
-import com.ssafy.idk.domain.member.dto.response.ReissueTokenResponseDto;
-import com.ssafy.idk.domain.member.dto.response.SignupResponseDto;
+import com.ssafy.idk.domain.member.dto.response.*;
 import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.member.jwt.JwtTokenProvider;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.global.error.ErrorCode;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +24,7 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisService redisService;
+    private final TokenService tokenService;
 
 
     // 회원가입
@@ -51,17 +47,7 @@ public class MemberService {
             throw new MemberException(ErrorCode.MEMBER_PHONE_ALREADY_VERIFIED);
         }
 
-        String accessToken = jwtTokenProvider.createToken("access", requestDto.getPhoneNumber());
-        String refreshToken = jwtTokenProvider.createToken("refresh", requestDto.getPhoneNumber());
-
-        // 리프래시 쿠키에 저장
-        addRefreshTokenCookieToResponse(response, refreshToken);
-
-        // 리프래시 토큰 저장
-        redisService.saveRefreshTokenToRedis(member.getPhoneNumber(), refreshToken);
-
-        // 토큰 조회해서 출력해보기
-        System.out.println(redisService.getRefreshTokenFromRedis(member.getPhoneNumber()));
+        String accessToken = tokenService.issueToken(response, member);
 
         memberRepository.save(member);
         return SignupResponseDto.of(accessToken);
@@ -80,13 +66,10 @@ public class MemberService {
         }
 
         // 검증 통과하면 토큰 발급
-        String accessToken = jwtTokenProvider.createToken("access", requestDto.getPhoneNumber());
-        String refreshToken = jwtTokenProvider.createToken("refresh", requestDto.getPhoneNumber());
+        String accessToken = tokenService.issueToken(response, member);
 
-        addRefreshTokenCookieToResponse(response, refreshToken);
 
-        redisService.saveRefreshTokenToRedis(member.getPhoneNumber(), refreshToken);
-
+        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         return LoginByPinResponseDto.of(accessToken);
     }
 
@@ -97,13 +80,7 @@ public class MemberService {
         Member member = memberRepository.findByPhoneNumber(requestDto.getPhoneNumber())
                 .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
 
-        // 토큰 발급
-        String accessToken = jwtTokenProvider.createToken("access", requestDto.getPhoneNumber());
-        String refreshToken = jwtTokenProvider.createToken("refresh", requestDto.getPhoneNumber());
-
-        addRefreshTokenCookieToResponse(response, refreshToken);
-
-        redisService.saveRefreshTokenToRedis(member.getPhoneNumber(), refreshToken);
+        String accessToken = tokenService.issueToken(response, member);
 
         return LoginByBioResponseDto.of(accessToken);
     }
@@ -111,19 +88,14 @@ public class MemberService {
     // 폰 본인인증 요청
     public void verifyByPhone(PhoneVerificationRequestDto requestDto) {
 
-        // 폰 번호 추출
         String phoneNumber = requestDto.getPhoneNumber();
-
-        // 인증 코드 생성
         String verificationCode = generateVerificationCode();
 
-        // 인증 코드 임시 저장
         redisService.saveVerificationCodeToRedis(phoneNumber, verificationCode);
 
         // 문자 전송
         try {
             smsService.sendSMS(phoneNumber, "[IDK] 본인인증 코드: " + verificationCode);
-            return;
         } catch (Exception e) {
             throw new MemberException(ErrorCode.MEMBER_SMS_SEND_FAILED);
         }
@@ -183,22 +155,21 @@ public class MemberService {
             throw new MemberException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
-        // 토큰 발급
-        String accessToken = jwtTokenProvider.createToken("access", phoneNumber);
-        String newRefreshToken = jwtTokenProvider.createToken("refresh", phoneNumber);
-
-        // 리프래시 토큰은 쿠키로 보내기
-        addRefreshTokenCookieToResponse(response, newRefreshToken);
+        Member member = memberRepository.findByPhoneNumber(phoneNumber).get();
+        String accessToken = tokenService.issueToken(response, member);
 
         return ReissueTokenResponseDto.of(accessToken);
     }
 
-    // 리프레시 토큰을 쿠키로 추가하는 메서드
-    private void addRefreshTokenCookieToResponse(HttpServletResponse response, String refreshToken) {
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setMaxAge((int) jwtTokenProvider.calculateRemainingTime(refreshToken) / 1000);
-        refreshTokenCookie.setPath("/");
-        response.addCookie(refreshTokenCookie);
+    // 자동이체 알림 설정 변경
+    public AutoTransferPushResponseDto autoTransferPush(Boolean autoTransferPushEnabled) {
+
+        return AutoTransferPushResponseDto.of(!autoTransferPushEnabled);
+    }
+
+    // 입출금 알림 설정 변경
+    public TransactionPushResponseDto transactionPush(Boolean transactionPushEnabled) {
+
+        return TransactionPushResponseDto.of(!transactionPushEnabled);
     }
 }
