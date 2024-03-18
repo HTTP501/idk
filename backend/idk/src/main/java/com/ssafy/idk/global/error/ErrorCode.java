@@ -27,7 +27,10 @@ public enum ErrorCode {
     MEMBER_SMS_INVALID_CODE(400, "M400", "유효하지 않는 인증 코드입니다."),
     MEMBER_TOKEN_EXPIRED(401, "M401", "토큰이 만료되었습니다."),
     MEMBER_TOKEN_INVALID(400, "M400", "유효하지 않은 토큰입니다."),
-    MEMBER_UNAUTHORIZED(401, "M401", "권한이 없습니다.");
+    MEMBER_UNAUTHORIZED(401, "M401", "권한이 없습니다."),
+
+    // RSAKEY
+    RSAKEY_NOT_FOUND(404, "R404", "RSAKEY가 존재하지 않습니다.");
 
     private final int status;
     private final String code;

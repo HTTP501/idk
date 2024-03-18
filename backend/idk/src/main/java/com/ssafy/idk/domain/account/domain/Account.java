@@ -25,7 +25,7 @@ public class Account {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(name = "number")
+    @Column(name = "number", columnDefinition = "LONGTEXT")
     private String number;
 
     @Column(name = "name")
@@ -75,8 +75,8 @@ public class Account {
     @PrePersist
     public void prePresist() {
         this.name = "IDK 우리나라 국민우대통장";
-        this.balance = 0L;
         this.minAmount = 0L;
+        this.balance = 0L;
         this.payDate = 1;
     }
 }
