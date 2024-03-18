@@ -23,11 +23,15 @@ const ShoppingMall = ({ navigation }) => {
   const [choicePrice, setChoicePrice] = useState(null);
   const [choiceCommaPrice, setChoiceCommaPrice] = useState(null);
   const [choiceShop, setChoiceShop] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSelectAdd, setIsSelectAdd] = useState(false);
+  const [isSelectProduct, setIsSelectProduct] = useState(false);
+  const [isPushBtn, setIsPushBtn] = useState(false);
 
   // 화면 사이즈 찾기
   const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
   const menuWidth = windowWidth * 0.4;
-  const menuHeight = windowHeight * 0.3;
+  const menuHeight = windowHeight * 0.4;
   const imgSize = menuWidth * 0.8;
   const modalHeight = windowHeight * 0.35;
 
@@ -86,7 +90,7 @@ const ShoppingMall = ({ navigation }) => {
     },
     menuText: {
       fontWeight: "bold",
-      fontFamily: "PretendardVariable",
+      // fontFamily: "PretendardVariable",
     },
     modalContainer: {
       backgroundColor: "white",
@@ -201,12 +205,27 @@ const ShoppingMall = ({ navigation }) => {
   };
 
   // 메뉴 선택 시, 해당 메뉴의 정보를 상태로 가져줄 함수
-  const choiceMenu = (item) => {
+  const choiceMenu = async (item) => {
     const newNum = formattedNumber(item.price);
     setChoiceName(item.name);
     setChoicePrice(item.price);
     setChoiceShop(item.shop);
     setChoiceCommaPrice(newNum);
+
+    setIsSelectProduct(true);
+  };
+
+  const selectAdd = (item) => {
+    setIsLoading(true);
+    setChoiceName(item.name);
+    setChoicePrice("없음");
+    setChoiceShop("없음");
+    setChoiceCommaPrice("없음");
+
+    setIsSelectAdd(true);
+    setIsLoading(false);
+
+    // navigation.navigate("FinishPayment", { sendData });
   };
 
   // FlatList에서 각각의 값에 들어갈 컴포넌트 선언
@@ -215,7 +234,11 @@ const ShoppingMall = ({ navigation }) => {
     if (item.name === "추가") {
       return (
         <View style={(style = ShoppingMallStyles.eachMenu)}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              selectAdd(item);
+            }}
+          >
             <Image
               source={menuImage[item.name]}
               style={{ width: 50, height: 50 }}
@@ -260,14 +283,23 @@ const ShoppingMall = ({ navigation }) => {
     setProducts(choice);
   };
 
-  const Stack = createNativeStackNavigator;
-
   const sendData = {
     name: choiceName,
     price: choicePrice,
     shop: choiceShop,
+    category: products,
   };
 
+  useEffect(() => {
+    if (isSelectAdd) {
+      setIsSelectAdd(false);
+      navigation.navigate("FinishPayment", { sendData });
+    } else if (isSelectProduct && isPushBtn) {
+      setIsSelectProduct(false);
+      setIsPushBtn(false);
+      navigation.navigate("FinishPayment", { sendData });
+    }
+  });
   // 코드 시작
   return (
     <View style={ShoppingMallStyles.container}>
@@ -334,7 +366,9 @@ const ShoppingMall = ({ navigation }) => {
                 borderColor: theme["sky-bright-1"],
               }}
               onPress={() => {
-                navigation.navigate("FinishPayment", { sendData });
+                setModalVisiable(false);
+                setIsPushBtn(true);
+                // navigation.navigate("FinishPayment", { sendData });
               }}
             >
               <Text style={ShoppingMallStyles.modalFont}>결제하기</Text>
