@@ -1,9 +1,6 @@
 package com.ssafy.idk.domain.account.controller;
 
-import com.ssafy.idk.domain.account.dto.request.AccountCreateRequestDto;
-import com.ssafy.idk.domain.account.dto.request.AccountAmountRequestDto;
-import com.ssafy.idk.domain.account.dto.request.AccountNameRequestDto;
-import com.ssafy.idk.domain.account.dto.request.AccountPwdRequestDto;
+import com.ssafy.idk.domain.account.dto.request.*;
 import com.ssafy.idk.domain.account.service.AccountService;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;
@@ -78,7 +75,7 @@ public class AccountController {
 
     @Operation(summary = "송금(이체)")
     @PostMapping("/transfer/{memberId}")
-    public ResponseEntity<ResultResponse> transfer(@PathVariable("memberId") Long memberId){
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.SUCCESS));
+    public ResponseEntity<ResultResponse> transfer(@RequestBody TransferRequestDto requestDto, @PathVariable("memberId") Long memberId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.ACCOUNT_TRANSFER_SUCCESS, accountService.transfer(requestDto, memberId)));
     }
 }

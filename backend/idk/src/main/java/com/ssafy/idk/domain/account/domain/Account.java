@@ -72,6 +72,13 @@ public class Account {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void deposit(Long amount) { // 입금
+        this.balance += amount;
+    }
+    public void withdraw(Long amount) { // 출금
+        this.balance -= amount;
+    }
+
     @PrePersist
     public void prePresist() {
         this.name = "IDK 우리나라 국민우대통장";
