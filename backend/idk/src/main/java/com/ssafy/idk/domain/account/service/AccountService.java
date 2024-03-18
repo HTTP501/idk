@@ -12,6 +12,7 @@ import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.member.domain.Member;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.global.error.ErrorCode;
+import com.ssafy.idk.global.util.PasswordEncryptUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,13 +27,15 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final MemberRepository memberRepository;
+    private final PasswordEncryptUtil passwordEncryptUtil;
 
     @Transactional
     public AccountCreateResponseDto createAccount(AccountCreateRequestDto requestDto, Long memberId) {
         Member member = memberRepository.findById(memberId).get();
+
         Account account = Account.builder()
                 .number("1234567891010")
-                .password(requestDto.getAccountPassword())
+                .password(passwordEncryptUtil.encrypt(requestDto.getAccountPassword()))
                 .name(requestDto.getAccountName())
                 .payDate(requestDto.getAccountPayDate())
                 .createdAt(LocalDateTime.now())
@@ -79,7 +82,7 @@ public class AccountService {
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        if(!account.getPassword().equals(requestDto.getPassword())) {
+        if(!account.getPassword().equals(passwordEncryptUtil.encrypt(requestDto.getPassword()))) {
             throw new AccountException(ErrorCode.ACCOUNT_PWD_NOT_SAME);
         }
     }
@@ -90,7 +93,7 @@ public class AccountService {
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        account.updatePassword(requestDto.getPassword());
+        account.updatePassword(passwordEncryptUtil.encrypt(requestDto.getPassword()));
 
         updateAccount(memberId);
     }
