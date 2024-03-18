@@ -41,7 +41,7 @@ public class AccountService {
         String publicKey = keyPair.get("publicKey");
         String privateKey = keyPair.get("privateKey");
 
-        rsaKeyService.saveRSAKey(member.getMemberId(), publicKey, privateKey);
+        rsaKeyService.saveRSAKey(member.getMemberId(), privateKey);
 
         Account account = Account.builder()
                 .number(RSAUtil.encode(publicKey,"1234567891010"))
@@ -63,7 +63,9 @@ public class AccountService {
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
+        System.out.println("111111");
         String privateKey = rsaKeyService.findPrivateKey(memberId);
+        System.out.println("22222");
         // amountAvailableAmount 추후 수정(balance-돈포켓)
         return AccountResponseDto.of(account.getAccountId(), RSAUtil.decode(privateKey, account.getNumber()), account.getName(), account.getBalance(), account.getMinAmount(), account.getBalance(), account.getPayDate());
     }
