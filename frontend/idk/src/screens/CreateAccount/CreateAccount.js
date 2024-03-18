@@ -12,6 +12,7 @@ const CreateAccount = ({ navigation }) => {
   const [accountPasswordCheck, setaccountPasswordCheck] = useState('');
   const [accountName, setaccountName] = useState('');
   const [accountPayDate, setaccountPayDate] = useState('');
+  const [passwordMatch, setPasswordMatch] = useState(true)
 
   const handleFirstTextInputChange = (text) => {
     setaccountPassword(text);
@@ -24,8 +25,12 @@ const CreateAccount = ({ navigation }) => {
   const handleSecondTextInputChange = (text) => {
     setaccountPasswordCheck(text);
     if (text.length === 4) {
-      // 4글자 입력 시 세 번째 TextInput으로 포커스 이동
-      thirdTextInputRef.current.focus();
+      if (accountPassword === text) {
+        // 4글자 입력 시 세 번째 TextInput으로 포커스 이동
+        thirdTextInputRef.current.focus();
+      } else {
+        setPasswordMatch(false)
+      }
     }
   };
 
@@ -74,6 +79,7 @@ const CreateAccount = ({ navigation }) => {
             onChangeText={handleSecondTextInputChange}
             secureTextEntry={true} // 입력된 번호를 *로 대체하여 보여줌
           ></TextInput>
+          {!passwordMatch && <Text style={styles.errorText}>비밀번호가 다릅니다.</Text>}
         </View>
         <View style={styles.box}>
           <Text className='text-base font-bold'>[선택] 계좌 별명 설정</Text>
@@ -141,4 +147,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 10
   },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 5,
+  }
+
 });
