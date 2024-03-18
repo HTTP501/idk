@@ -2,9 +2,14 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Text, View, Dimensions, TouchableOpacity, StyleSheet, Image, Modal, Alert } from 'react-native';
 import theme from '../../style';
 import * as LocalAuthentication from 'expo-local-authentication';
+import { signupAxios, loginPINAxios } from '../../API/Member'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const AUTH_KEY = '@auth'
+const SIGNUP_KEY = '@signup'
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const FinishEnterPIN = ({ navigation }) => {
+const FinishEnterPIN = ({ route, navigation }) => {
   const [showModal, setShowModal] = useState(false);
 
   // 들어오자마자 지문 인식 가능한 기기인지 판단
@@ -12,6 +17,8 @@ const FinishEnterPIN = ({ navigation }) => {
     checkBiometricAvailability();
 
   }, []);
+
+  const receiveData = route.params
 
   const checkBiometricAvailability = async () => {
     const available = await LocalAuthentication.hasHardwareAsync();
@@ -31,6 +38,13 @@ const FinishEnterPIN = ({ navigation }) => {
       // 인증 성공
       console.log('Authentication successful');
       Alert.alert('지문 등록이 완료되었습니다.','',[{text:'확인'}])
+      // 지문 O로 회원가입 요청
+      await signupAxios({...receiveData, hasBiometric: true})
+      .then(res => console.log(res))
+      .catch(err => console.log(err))
+      // AsyncStorage에 회원가입 완료했으므로 SIGNUP_KEY로 번호 저장
+      const s = JSON.stringify({phoneNumber:receiveData.phoneNumber})
+      await AsyncStorage.setItem(SIGNUP_KEY, s)
     } else {
       // 인증 실패 또는 취소
       console.log('Authentication failed or canceled');
@@ -42,8 +56,15 @@ const FinishEnterPIN = ({ navigation }) => {
     authenticate();
   };
 
-  const handleNo = () => {
+  const handleNo = async () => {
     setShowModal(false);
+    // 지문 X로 회원가입 요청
+    await signupAxios({...receiveData, hasBiometric: false})
+    .then(res => console.log(res))
+    .catch(err => console.log(err))
+    // AsyncStorage에 회원가입 완료했으므로 SIGNUP_KEY로 번호 저장
+    const s = JSON.stringify({phoneNumber:receiveData.phoneNumber})
+    await AsyncStorage.setItem(SIGNUP_KEY, s)
   };
   
   

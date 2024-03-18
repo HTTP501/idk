@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native';
 import theme from '../../style';
-import { useNavigation } from '@react-navigation/native';
+import { phoneAxios, phoneCodeAxios } from '../../API/Member'
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const EnterPhoneNumber = ({ navigation }) => {
+const EnterPhoneNumber = ({ route, navigation }) => {
   const textInputRef = useRef(null);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showVerificationInput, setShowVerificationInput] = useState(false); // 인증번호 입력창을 보여줄지 여부
@@ -13,6 +13,11 @@ const EnterPhoneNumber = ({ navigation }) => {
   const [verificationCode, setVerificationCode] = useState(''); // 인증 번호
   const [completeVerificationCode, setCompleteVerificationCode] = useState(false); // 인증 완료 여부
 
+  const receiveData = route.params
+  const sendData = {
+    ...receiveData,
+    phoneNumber: phoneNumber
+  }
 
   const handlePhoneNumberChange = (text) => {
     // 입력된 값에서 숫자만 남기기
@@ -38,6 +43,8 @@ const EnterPhoneNumber = ({ navigation }) => {
   };
 
   const handleVerificationRequest = async () => {
+    // 인증 번호 Axios 요청
+    await phoneAxios({phoneNumber: phoneNumber.replace(/[^\d]/g, '')})
     // 인증 요청 로직 수행 후
     await setShowVerificationInput(true); // 인증 번호 입력창 보이도록 설정
     // 아래 인증 번호 입력란으로 포커스 이동
@@ -112,7 +119,7 @@ const EnterPhoneNumber = ({ navigation }) => {
       <TouchableOpacity
         style={[styles.button, { opacity: !completeVerificationCode ? 0.5 : 1 }]}
         disabled={!completeVerificationCode}
-        onPress={() => navigation.navigate('EnterPIN')}
+        onPress={() => navigation.navigate('EnterPIN', sendData)}
       >
         <Text className='text-white text-lg'>다음</Text>
       </TouchableOpacity>
