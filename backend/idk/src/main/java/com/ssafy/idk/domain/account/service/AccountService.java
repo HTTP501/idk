@@ -13,12 +13,14 @@ import com.ssafy.idk.domain.member.domain.Member;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.global.error.ErrorCode;
 import com.ssafy.idk.global.util.PasswordEncryptUtil;
+import com.ssafy.idk.global.util.RSAUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -28,13 +30,21 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final MemberRepository memberRepository;
     private final PasswordEncryptUtil passwordEncryptUtil;
+    private final RSAKeyService rsaKeyService;
 
     @Transactional
     public AccountCreateResponseDto createAccount(AccountCreateRequestDto requestDto, Long memberId) {
         Member member = memberRepository.findById(memberId).get();
 
+        // RSAKey 생성
+        HashMap<String, String> keyPair = RSAUtil.generateKeyPair();
+        String publicKey = keyPair.get("publicKey");
+        String privateKey = keyPair.get("privateKey");
+
+        rsaKeyService.saveRSAKey(member.getMemberId(), publicKey, privateKey);
+
         Account account = Account.builder()
-                .number("1234567891010")
+                .number(RSAUtil.encode(publicKey,"1234567891010"))
                 .password(passwordEncryptUtil.encrypt(requestDto.getAccountPassword()))
                 .name(requestDto.getAccountName())
                 .payDate(requestDto.getAccountPayDate())
@@ -45,7 +55,7 @@ public class AccountService {
 
         Account savedAccount = accountRepository.save(account);
         updateAccount(memberId);
-        return AccountCreateResponseDto.of(savedAccount.getNumber(), savedAccount.getCreatedAt());
+        return AccountCreateResponseDto.of(RSAUtil.decode(privateKey, savedAccount.getNumber()), savedAccount.getCreatedAt());
     }
 
     public AccountResponseDto getAccount(Long memberId) {
@@ -53,8 +63,9 @@ public class AccountService {
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
+        String privateKey = rsaKeyService.findPrivateKey(memberId);
         // amountAvailableAmount 추후 수정(balance-돈포켓)
-        return AccountResponseDto.of(account.getAccountId(), account.getNumber(), account.getName(), account.getBalance(), account.getMinAmount(), account.getBalance(), account.getPayDate());
+        return AccountResponseDto.of(account.getAccountId(), RSAUtil.decode(privateKey, account.getNumber()), account.getName(), account.getBalance(), account.getMinAmount(), account.getBalance(), account.getPayDate());
     }
 
     @Transactional
