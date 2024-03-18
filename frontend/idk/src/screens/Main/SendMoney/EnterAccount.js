@@ -58,7 +58,7 @@ const EnterAccount = ({ navigation }) => {
         style={theme.bottomButton}
         className="self-center"
         onPress={() => {
-          console.log("돈 입력 페이지 이동");
+          // 돈 입력 페이지 이동
           navigation.navigate("EnterMoney",{otherAccount});
         }}
       >

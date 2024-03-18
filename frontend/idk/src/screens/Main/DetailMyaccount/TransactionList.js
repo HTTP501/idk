@@ -2,9 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { useState, useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
-import ToggleFilter from "./Toggle";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   ScrollView,
   Text,
@@ -14,19 +12,19 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation } from '@react-navigation/native';
 // 컴포넌트들
-import formattedNumber from "../../components/moneyFormatter";
-import theme from "../../style";
-import Account from "../../components/MyAccount";
-import DepositList from "../../components/DepositList";
-import DonPocketList from "../../components/DonPocketList";
+import theme from "../../../style";
+import Account from "../../../components/MyAccount";
+import DepositList from "../../../components/DepositList";
+import formattedNumber from "../../../components/moneyFormatter";
 // 화면 크기
 import { Dimensions } from "react-native";
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
-const Main = ({ navigation }) => {
+
+const TransactionList = ({navigation}) => {
   // 계좌 데이터 - 더미
   let [account, setAccount] = useState({
     accountId: 1234,
@@ -77,88 +75,52 @@ const Main = ({ navigation }) => {
       transactionCreatedAt: "2024-03-03 12:00:01",
     },
   ]);
-  // + 버튼 눌렸는지 판단
-  let [isButtenOpen, setisButtenOpen] = useState(false);
   useEffect(() => {
-    console.log("계좌, 돈포켓 API 호출 위치");
+    console.log("계좌, 이체 API 호출 위치");
   }, []);
 
   return (
-    <View className="bg-white" style={styles.scrollViewContent}>
+    <ScrollView className="bg-white" style={styles.scrollViewContent}>
       {/* 배경 */}
       <View style={styles.back}></View>
       {/* 로고 알람 */}
       <View className="px-10 mt-10 mb-2">
-        <Header />
+        <Header navigation={navigation}/>
       </View>
 
       {/* 계좌 */}
       <View className="justify-center items-center">
-        <Account account={account} navigation={navigation} />
+        <Account account={account} navigation={navigation} 
+        />
       </View>
 
       {/* 옵션 표기 */}
       <Option account={account} />
 
-      {/* 돈포켓 */}
-      <DonPocketList />
+      {/* 이체내역 */}
+      <DepositList deposit={deposit}/>
 
-      {/* 버튼들 */}
-      <View style={styles.buttonlist}>
-        {isButtenOpen ? (
-          <View>
-            <PlusButton
-              title={"목표 저축 추가하기"}
-              destination={"RegistGoalSaving"}
-              navigation={navigation}
-            />
-            <PlusButton
-              title={"자동이체 등록하기"}
-              destination={"RegistAutoSend"}
-              navigation={navigation}
-            />
-            <PlusButton
-              title={"구독 서비스 등록하기"}
-              destination={"RegistSubscribe"}
-              navigation={navigation}
-            />
-            <PlusButton
-              title={"저금통 가입하기"}
-              destination={"RegistSavingBox"}
-              navigation={navigation}
-            />
-            <TouchableOpacity style={[styles.button,styles.shadow]}
-              onPress={()=>{setisButtenOpen(!isButtenOpen)}}
-              >
-            <Text>닫기</Text>
-          </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity style={[styles.button,styles.shadow]}
-          onPress={()=>{setisButtenOpen(!isButtenOpen)}}
-          >
-            <Text>+</Text>
-          </TouchableOpacity>
-        )}
-      </View>
       <StatusBar style="auto" />
-    </View>
+    </ScrollView>
   );
 };
 // 헤더
-const Header = () => {
-  const logo = require("../../../assets/logo/white_idk_bank_logo.png");
+const Header = ({navigation}) => {
+  const logo = require('../../../../assets/logo/white_idk_bank_logo.png')
   return (
     <View className="flex-row justify-between items-center">
-      <View>
-        <Image source={logo} style={{ width: 90, resizeMode: "contain" }} />
-      </View>
       <TouchableOpacity
-        onPress={() => {
-          console.log("알람페이지로 가기");
-        }}
+      onPress={()=>{
+        navigation.navigate("Main")
+      }}
       >
-        <MaterialCommunityIcons name="bell" size={24} color="white" />
+      <Image
+        source={logo}
+        style={{ width: 90, resizeMode: "contain" }}
+      />
+      </TouchableOpacity>
+      <TouchableOpacity>
+      <MaterialCommunityIcons name="bell" size={24} color="white" />
       </TouchableOpacity>
     </View>
   );
@@ -181,30 +143,8 @@ const Option = ({ account }) => {
           <Text className="font-bold">{account.accountPayDate}일</Text>
         </View>
       </View>
-      {/* 돈포켓 총액, 필터 */}
-      <View className="flex-row justify-between">
-        <View className="flex-row gap-1">
-          <Text>돈포켓 </Text>
-          <Text className="font-bold">******원</Text>
-        </View>
-        <View className="mr-3">
-          <ToggleFilter />
-        </View>
-      </View>
+      
     </View>
-  );
-};
-
-const PlusButton = function ({ title, destination, navigation }) {
-  return (
-    <TouchableOpacity
-      onPress={() => {
-        navigation.navigate(destination);
-      }}
-      style={[styles.button, styles.shadow]}
-    >
-      <Text>{title}</Text>
-    </TouchableOpacity>
   );
 };
 
@@ -221,22 +161,6 @@ const styles = StyleSheet.create({
     height: windowHeight * (1 / 4), // 화면 높이의 1/3
     backgroundColor: theme["sky-basic"],
   },
-  buttonlist: {
-    // height: windowHeight * (1 / 8) * 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  button: {
-    // height: windowHeight * (1 / 8),
-    width: windowWidth * (6 / 7),
-    backgroundColor: "white",
-    borderRadius: 10,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom:10
-  },
   shadow: {
     shadowColor: "black",
     shadowOffset: { width: 0, height: 0 },
@@ -250,4 +174,4 @@ const styles = StyleSheet.create({
     color: "red",
   },
 });
-export default Main;
+export default TransactionList;

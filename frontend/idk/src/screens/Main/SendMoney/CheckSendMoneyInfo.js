@@ -95,7 +95,7 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
         style={theme.bottomButton}
         className="self-center"
         onPress={() => {
-          console.log("송금 완료 페이지로 이동");
+          // 송금 완료 페이지로 이동
           navigation.navigate("FinishSendMoney", {
             money,
             myAccount,

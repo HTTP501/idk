@@ -2,38 +2,52 @@ import { Dimensions } from "react-native";
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 import theme from "../style";
-import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, Image, StyleSheet,Pressable } from "react-native";
 import { useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
-// 숫자 -> 돈 쉼표 찍는 함수
-const formattedNumber = function (number) {
-  return number.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
-};
+import { AntDesign } from '@expo/vector-icons';
+// 컴포넌트들
+import formattedNumber from "./moneyFormatter";
+
 
 // 계좌
 const Account = ({ account,navigation }) => {
   const copyIcon = require("../../assets/icons/copy.png");
   
   return (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      onPress={()=>{
-      console.log('입출금 내역 보러가기')
-    }}
-    className="p-4" style={[styles.myaccount, styles.shadow]}>
+    <Pressable
+        onPress={() => {
+          console.log('입출금 내역 보러가기')
+          navigation.navigate("TransactionList")
+        }}
+        style={({pressed}) => [
+          {
+            backgroundColor: pressed ? theme["light-grey"] : "white",
+          },
+          styles.myaccount, styles.shadow
+        ]}>
+    
       <View className="gap-1">
         <View className="flex-row justify-between">
           <Text className="font-bold">{account.accountName}</Text>
           {/* 설정 아이콘 */}
-          <TouchableOpacity>
-            <Text>설정</Text>
+          <TouchableOpacity
+          onPress={()=>{
+            console.log('설정페이지 가기')
+          }}
+          >
+          <AntDesign name="setting" size={24} color={theme["sky-basic"]} />
           </TouchableOpacity>
         </View>
 
         {/* 계좌 번호 + copy 아이콘 */}
         <View className="flex-row items-center">
           <Text className="mr-1">{account.accountNumber}</Text>
-          <TouchableOpacity>
+          <TouchableOpacity
+          onPress={()=>{
+            console.log('클립보드에 복사하기')
+          }}
+          >
             <Image source={copyIcon} />
           </TouchableOpacity>
         </View>
@@ -64,16 +78,18 @@ const Account = ({ account,navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-    </TouchableOpacity>
+
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   myaccount: {
     // height: windowHeight * (1 / 5),
-    width: windowWidth * (9 / 10),
+    width:windowWidth*(9/10),
+    padding:15,
     borderRadius: 10,
-    backgroundColor: "white",
+    // backgroundColor: "white",
   },
   shadow: {
     shadowColor: "black",
