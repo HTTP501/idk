@@ -1,36 +1,37 @@
 package com.ssafy.idk.domain.member.domain;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
-public class MemberDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
-    private final String phoneNumber;
-    private final String pin;
-    private final String authority;
+    private final Member member;
 
-
-    public MemberDetails(String phoneNumber, String pin, String authority) {
-        this.phoneNumber = phoneNumber;
-        this.pin = pin;
-        this.authority = authority;
+    public CustomUserDetails(Member member) {
+        this.member = member;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+        return authorities;
     }
 
     @Override
     public String getPassword() {
-        return null;
+        return member.getPin();
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return member.getPhoneNumber();
     }
 
     @Override

@@ -43,4 +43,16 @@ public class Member {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public void updateAutoTransferPushEnabled() {
+        this.autoTransferPushEnabled = !this.autoTransferPushEnabled;
+    }
+
+    public void updateTransactionPushEnabled() {
+        this.transactionPushEnabled = !this.transactionPushEnabled;
+    }
+
+    public Long getId() {
+        return this.memberId;
+    }
 }

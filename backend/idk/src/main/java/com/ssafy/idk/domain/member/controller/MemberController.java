@@ -13,10 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -82,16 +79,16 @@ public class MemberController {
     }
 
     @Operation(summary = "자동이체 알림 설정 변경")
-    @PostMapping("/push/auto-transfer")
-    public ResponseEntity<ResultResponse> autoTransferPush(@Valid @RequestBody AutoTransferPushRequestDto requestDto) {
-
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_AUTO_TRANSFER_PUSH_SUCCESS, memberService.autoTransferPush(requestDto.getAutoTransferPushEnabled())));
+    @PostMapping("/push/auto-transfer/{memberId}")
+    public ResponseEntity<ResultResponse> autoTransferPush(@PathVariable("memberId") Long memberId) {
+        memberService.autoTransferPush(memberId);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_AUTO_TRANSFER_PUSH_SUCCESS));
     }
 
-    @Operation(summary = "자동이체 알림 설정 변경")
-    @PostMapping("/push/transaction")
-    public ResponseEntity<ResultResponse> transactionPush(@Valid @RequestBody TransactionPushRequestDto requestDto) {
-
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_TRANSACTION_PUSH_SUCCESS, memberService.transactionPush(requestDto.getTransactionPushEnabled())));
+    @Operation(summary = "입출금 알림 설정 변경")
+    @PostMapping("/push/transaction/{memberId}")
+    public ResponseEntity<ResultResponse> transactionPush(@PathVariable("memberId") Long memberId) {
+        memberService.transactionPush(memberId);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_TRANSACTION_PUSH_SUCCESS));
     }
 }

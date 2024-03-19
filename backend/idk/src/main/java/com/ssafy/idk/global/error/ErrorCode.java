@@ -22,14 +22,15 @@ public enum ErrorCode {
     // MEMBER
     MEMBER_PHONE_ALREADY_VERIFIED(409, "M401", "이미 인증된 휴대폰 번호입니다."),
     MEMBER_NOT_FOUND(404, "M402", "존재하지 않는 회원입니다."),
-    MEMBER_INVALID_PIN(400, "M403", "비밀번호가 일치하지 않습니다."),
+    MEMBER_INVALID_PIN(400, "M403", "유효하지 않은 비밀번호입니다."),
     MEMBER_SMS_SEND_FAILED(400, "M404", "문자 전송 요청에 실패했습니다."),
     MEMBER_SMS_INVALID_CODE(400, "M405", "유효하지 않는 인증 코드입니다."),
     MEMBER_TOKEN_EXPIRED(401, "M406", "토큰이 만료되었습니다."),
     MEMBER_TOKEN_INVALID(400, "M407", "유효하지 않은 토큰입니다."),
     MEMBER_UNAUTHORIZED(401, "M408", "권한이 없습니다."),
-    MEMBER_HEADER_NOT_FOUND(400, "M406", "Authorization 헤더가 없습니다."),
-    MEMBER_INVALID_HEADER_FORMAT(400, "M407", "Authorization 헤더는 Bearer 토큰 형식이어야 합니다."),
+    MEMBER_HEADER_NOT_FOUND(400, "M409", "Authorization 헤더가 없습니다."),
+    MEMBER_INVALID_HEADER_FORMAT(400, "M410", "Authorization 헤더는 Bearer 토큰 형식이어야 합니다."),
+    MEMBER_UNKNOWN_ERROR(400, "M411", "알 수 없는 에러가 발생했습니다."),
 
     // RSAKEY
     RSAKEY_NOT_FOUND(404, "R404", "RSAKEY가 존재하지 않습니다.");

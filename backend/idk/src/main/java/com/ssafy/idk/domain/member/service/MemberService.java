@@ -9,6 +9,7 @@ import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.global.error.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisService redisService;
     private final TokenService tokenService;
+    private final AuthenticationManager authenticationManager;
 
 
     // 회원가입
@@ -36,21 +38,23 @@ public class MemberService {
                 .pin(bCryptPasswordEncoder.encode(requestDto.getPin()))
                 .phoneNumber(requestDto.getPhoneNumber())
                 .hasBiometric(requestDto.getHasBiometric())
-                .transactionPushEnabled(requestDto.getTransactionPushEnabled())
-                .autoTransferPushEnabled(requestDto.getAutoTransferPushEnabled())
+                .transactionPushEnabled(false)
+                .autoTransferPushEnabled(false)
                 .build();
 
         // 중복 회원 검증
         Optional<Member> existingMember = memberRepository.findByPhoneNumber(member.getPhoneNumber());
-
         if (existingMember.isPresent()) {
             throw new MemberException(ErrorCode.MEMBER_PHONE_ALREADY_VERIFIED);
         }
 
         String accessToken = tokenService.issueToken(response, member);
+        Member savedMember = memberRepository.save(member);
+        Long memberId = savedMember.getMemberId();
 
-        memberRepository.save(member);
-        return SignupResponseDto.of(accessToken);
+        authSuccessHandler(requestDto.getPhoneNumber(), requestDto.getPin());
+
+        return SignupResponseDto.of(memberId, accessToken);
     }
 
     // PIN 로그인
@@ -67,10 +71,11 @@ public class MemberService {
 
         // 검증 통과하면 토큰 발급
         String accessToken = tokenService.issueToken(response, member);
+        Long memberId = member.getMemberId();
 
+        authSuccessHandler(requestDto.getPhoneNumber(), requestDto.getPin());
 
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        return LoginByPinResponseDto.of(accessToken);
+        return LoginByPinResponseDto.of(memberId, accessToken);
     }
 
     // 생체 인증 로그인
@@ -80,17 +85,23 @@ public class MemberService {
         Member member = memberRepository.findByPhoneNumber(requestDto.getPhoneNumber())
                 .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
 
+        Long memberId = member.getMemberId();
         String accessToken = tokenService.issueToken(response, member);
 
-        return LoginByBioResponseDto.of(accessToken);
+        authSuccessHandler(requestDto.getPhoneNumber(), null);
+
+        return LoginByBioResponseDto.of(memberId, accessToken);
     }
 
     // 폰 본인인증 요청
     public void verifyByPhone(PhoneVerificationRequestDto requestDto) {
 
         String phoneNumber = requestDto.getPhoneNumber();
+
+        // 인증 코드 생성
         String verificationCode = generateVerificationCode();
 
+        // 인증 코드 저장
         redisService.saveVerificationCodeToRedis(phoneNumber, verificationCode);
 
         // 문자 전송
@@ -145,31 +156,41 @@ public class MemberService {
             throw new MemberException(ErrorCode.MEMBER_TOKEN_EXPIRED);
         }
 
+        // 리프래시 토큰이 맞는지 체크
         String category = jwtTokenProvider.getCategory(refreshToken);
         if (!category.equals("refresh")) {
             throw new MemberException(ErrorCode.MEMBER_TOKEN_INVALID);
         }
 
+        // 휴대폰 번호 체크
         String storedPhoneNumber = jwtTokenProvider.getPhoneNumber(refreshToken);
         if (!storedPhoneNumber.equals(phoneNumber)) {
             throw new MemberException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
         Member member = memberRepository.findByPhoneNumber(phoneNumber).get();
+        Long memberId = member.getMemberId();
         String accessToken = tokenService.issueToken(response, member);
 
-        return ReissueTokenResponseDto.of(accessToken);
+        return ReissueTokenResponseDto.of(memberId, accessToken);
     }
 
     // 자동이체 알림 설정 변경
-    public AutoTransferPushResponseDto autoTransferPush(Boolean autoTransferPushEnabled) {
-
-        return AutoTransferPushResponseDto.of(!autoTransferPushEnabled);
+    public void autoTransferPush(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_UNAUTHORIZED));
+        member.updateAutoTransferPushEnabled();
     }
 
     // 입출금 알림 설정 변경
-    public TransactionPushResponseDto transactionPush(Boolean transactionPushEnabled) {
+    public void transactionPush(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_UNAUTHORIZED));
+        member.updateTransactionPushEnabled();
+    }
 
-        return TransactionPushResponseDto.of(!transactionPushEnabled);
+    // 회원가입, 로그인 성공 핸들러
+    public void authSuccessHandler(String phoneNumber, String pin) {
+
     }
 }
