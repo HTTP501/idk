@@ -4,6 +4,12 @@ import { useState, useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import ToggleFilter from "./Toggle";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  gestureHandlerRootHOC,
+} from "react-native-gesture-handler";
+import {
+  NestableScrollContainer,
+} from "react-native-draggable-flatlist";
 
 import {
   ScrollView,
@@ -23,9 +29,10 @@ import DepositList from "../../components/DepositList";
 import DonPocketList from "../../components/DonPocketList";
 // 화면 크기
 import { Dimensions } from "react-native";
+
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
-const Main = ({ navigation }) => {
+const Main = gestureHandlerRootHOC(({ navigation }) => {
   // 계좌 데이터 - 더미
   let [account, setAccount] = useState({
     accountId: 1234,
@@ -84,66 +91,77 @@ const Main = ({ navigation }) => {
 
   return (
     <View className="bg-white" style={styles.scrollViewContent}>
-      {/* 배경 */}
-      <View style={styles.back}></View>
-      {/* 로고 알람 */}
-      <View className="px-10 mt-10 mb-2">
-        <Header />
-      </View>
+      <NestableScrollContainer>
+        {/* 배경 */}
+        <View style={styles.back}></View>
+        {/* 로고 알람 */}
+        <View className="px-10 mt-10 mb-2">
+          <Header />
+        </View>
 
-      {/* 계좌 */}
-      <View className="justify-center items-center">
-        <Account account={account} navigation={navigation} />
-      </View>
+        {/* 계좌 */}
+        <View className="justify-center items-center">
+          <Account account={account} navigation={navigation} />
+        </View>
 
-      {/* 옵션 표기 */}
-      <Option account={account} />
+        {/* 옵션 표기 */}
+        <Option account={account} />
 
-      {/* 돈포켓 */}
-      <DonPocketList />
+        {/* 돈포켓 */}
+        <DonPocketList />
+        
+        {/* 마이데이터 연결 */}
+        <TouchableOpacity
+          style={[styles.goMydata, styles.shadow]}
+          onPress={() => navigation.navigate('CheckMyData')}
+        >
+          <Text className='text-lg font-bold'>다른 은행 자동이체 확인하기</Text>
+          <AntDesign name="right" size={20} color="black" />
+        </TouchableOpacity>
 
-      {/* 버튼들 */}
-      <View style={styles.buttonlist}>
-        {isButtenOpen ? (
-          <View>
-            <PlusButton
-              title={"목표 저축 추가하기"}
-              destination={"RegistGoalSaving"}
-              navigation={navigation}
-            />
-            <PlusButton
-              title={"자동이체 등록하기"}
-              destination={"RegistAutoSendAgree"}
-              navigation={navigation}
-            />
-            <PlusButton
-              title={"구독 서비스 등록하기"}
-              destination={"RegistSubscribe"}
-              navigation={navigation}
-            />
-            <PlusButton
-              title={"저금통 가입하기"}
-              destination={"RegistSavingBox"}
-              navigation={navigation}
-            />
+        {/* 버튼들 */}
+        <View style={styles.buttonlist}>
+          {isButtenOpen ? (
+            <View>
+              <PlusButton
+                title={"목표 저축 추가하기"}
+                destination={"RegistGoalSaving"}
+                navigation={navigation}
+              />
+              <PlusButton
+                title={"자동이체 등록하기"}
+                destination={"RegistAutoSendAgree"}
+                navigation={navigation}
+              />
+              <PlusButton
+                title={"구독 서비스 등록하기"}
+                destination={"RegistSubscribe"}
+                navigation={navigation}
+              />
+              <PlusButton
+                title={"저금통 가입하기"}
+                destination={"RegistSavingBox"}
+                navigation={navigation}
+              />
+              <TouchableOpacity style={[styles.button,styles.shadow]}
+                onPress={()=>{setisButtenOpen(!isButtenOpen)}}
+                >
+              <Text>닫기</Text>
+            </TouchableOpacity>
+            </View>
+          ) : (
             <TouchableOpacity style={[styles.button,styles.shadow]}
-              onPress={()=>{setisButtenOpen(!isButtenOpen)}}
-              >
-            <Text>닫기</Text>
-          </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity style={[styles.button,styles.shadow]}
-          onPress={()=>{setisButtenOpen(!isButtenOpen)}}
-          >
-            <Text>+</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-      <StatusBar style="auto" />
+            onPress={()=>{setisButtenOpen(!isButtenOpen)}}
+            >
+              <Text>+</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <StatusBar style="auto" />
+      </NestableScrollContainer>
     </View>
   );
-};
+});
 // 헤더
 const Header = () => {
   const logo = require("../../../assets/logo/white_idk_bank_logo.png");
@@ -234,11 +252,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   button: {
+    height: 90,
     // height: SCREEN_HEIGHT * (1 / 8),
     width: SCREEN_WIDTH * (6 / 7),
     backgroundColor: "white",
     borderRadius: 10,
-    height: 50,
     justifyContent: "center",
     alignItems: "center",
     marginBottom:10
@@ -250,7 +268,18 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-
+  goMydata : {
+    height: 90,
+    width: SCREEN_WIDTH * (6 / 7),
+    backgroundColor: "white",
+    marginBottom:10,
+    borderRadius: 10,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+  },
   text: {
     fontSize: 28,
     color: "red",

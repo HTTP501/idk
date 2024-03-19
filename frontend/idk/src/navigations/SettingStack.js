@@ -35,7 +35,7 @@ function SettingStack({ navigation }) {
         <Stack.Screen name="ChangeAccountPW" component={ChangeAccountPW} options={{ headerLeft: () => renderBackButton(), title: '설정' }} />
         <Stack.Screen name="ChangeLeastHoldMoney" component={ChangeLeastHoldMoney} options={{ headerLeft: () => renderBackButton(), title: '설정' }} />
         <Stack.Screen name="ChangeSalaryDay" component={ChangeSalaryDay} options={{ headerLeft: () => renderBackButton(), title: '설정' }} />
-        <Stack.Screen name="RegistSavingBox" component={RegistSavingBox} options={{ title: '' }} />
+        <Stack.Screen name="RegistSavingBox" component={RegistSavingBox} options={{ headerShown: false }} />
       </Stack.Navigator>
   );
 }

@@ -7,6 +7,7 @@ import DraggableFlatList, {
   ShadowDecorator,
   OpacityDecorator,
   useOnCellActiveAnimation,
+  NestableDraggableFlatList 
 } from "react-native-draggable-flatlist";
 
 import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
@@ -79,10 +80,10 @@ const DonPocketList = function () {
       </ScaleDecorator>
     );
   };
-  const Pocket = gestureHandlerRootHOC(() => {
+  const Pocket = (() => {
     return (
       <GestureHandlerRootView>
-        <DraggableFlatList
+        <NestableDraggableFlatList
           ref={ref}
           data={data}
           keyExtractor={(item) => item.key}
@@ -91,6 +92,7 @@ const DonPocketList = function () {
             console.log('드래그로 바꿈!')
           }}
           renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
         />
       </GestureHandlerRootView>
     );
@@ -154,7 +156,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   donpocket: {
-    // height: windowHeight * (1 / 8),
+    height: 90,
     width: windowWidth * (6 / 7),
     backgroundColor: "white",
     borderRadius: 10,

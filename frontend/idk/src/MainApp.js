@@ -16,7 +16,7 @@ const SIGNUP_KEY = '@signup'
 export default function MainApp() {
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [authData, setAuthData] = useState({'sadas':'asdasd'});
+  const [authData, setAuthData] = useState({'df':'df'});
 
   const [signupData, setSignupData] = useState({});
   // AsyncStorage.clear()
