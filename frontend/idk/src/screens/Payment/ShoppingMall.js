@@ -348,8 +348,8 @@ const ShoppingMall = ({ navigation }) => {
             <TouchableOpacity
               style={{
                 ...ShoppingMallStyles.moveBtn,
-                backgroundColor: theme["sky-bright-5"],
-                borderColor: theme["sky-bright-5"],
+                backgroundColor: theme["sky-bright-6"],
+                borderColor: theme["sky-bright-6"],
               }}
             >
               <Text style={ShoppingMallStyles.modalFont}>
@@ -362,8 +362,8 @@ const ShoppingMall = ({ navigation }) => {
             <TouchableOpacity
               style={{
                 ...ShoppingMallStyles.moveBtn,
-                backgroundColor: theme["sky-bright-1"],
-                borderColor: theme["sky-bright-1"],
+                backgroundColor: theme["sky-bright-2"],
+                borderColor: theme["sky-bright-2"],
               }}
               onPress={() => {
                 setModalVisiable(false);
@@ -378,7 +378,11 @@ const ShoppingMall = ({ navigation }) => {
       </Modal>
       {/* 상단 부분 (뒤로가기, 카테고리 텍스트) */}
       <View style={ShoppingMallStyles.backBtn}>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
           <MaterialIcons name="arrow-back-ios-new" size={36} color="black" />
         </TouchableOpacity>
         <Text style={ShoppingMallStyles.pageTitle}>카테고리</Text>
