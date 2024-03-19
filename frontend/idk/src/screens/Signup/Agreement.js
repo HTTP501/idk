@@ -37,27 +37,27 @@ const Agreement = ({navigation}) => {
     <View style={styles.container}>
       <Text className='text-4xl font-bold my-16'>이용 약관 동의</Text>
       <View style={styles.box}>
-        <Checkbox style={styles.checkbox} value={isCheckedAll} onValueChange={handleCheckAll} />
+        <Checkbox color={theme['sky-basic']} style={styles.checkbox} value={isCheckedAll} onValueChange={handleCheckAll} />
         <Text className='text-xl font-bold'>약관에 모두 동의</Text>
       </View>
       <View style={styles.notbox}>
-        <Checkbox style={styles.checkbox} value={isCheckedPersonalInfo} onValueChange={setCheckedPersonalInfo} />
+        <Checkbox color={theme['sky-basic']} style={styles.checkbox} value={isCheckedPersonalInfo} onValueChange={setCheckedPersonalInfo} />
         <Text className='text-lg'>개인 정보 수집 및 이용 동의</Text>
       </View>
       <View style={styles.notbox}>
-        <Checkbox style={styles.checkbox} value={isCheckedServiceTerms} onValueChange={setCheckedServiceTerms} />
+        <Checkbox color={theme['sky-basic']} style={styles.checkbox} value={isCheckedServiceTerms} onValueChange={setCheckedServiceTerms} />
         <Text className='text-lg'>서비스 이용약관 동의</Text>
       </View>
       <View style={styles.notbox}>
-        <Checkbox style={styles.checkbox} value={isCheckedEssentialInfo} onValueChange={setCheckedEssentialInfo} />
+        <Checkbox color={theme['sky-basic']} style={styles.checkbox} value={isCheckedEssentialInfo} onValueChange={setCheckedEssentialInfo} />
         <Text className='text-lg'>서비스 제공을 위한 필수 정보 동의</Text>
       </View>
       <View style={styles.notbox}>
-        <Checkbox style={styles.checkbox} value={isCheckedRights} onValueChange={setCheckedRights} />
+        <Checkbox color={theme['sky-basic']} style={styles.checkbox} value={isCheckedRights} onValueChange={setCheckedRights} />
         <Text className='text-lg'>이용자 권리 및 의무에 대한 안내 동의</Text>
       </View>
       <View style={{...styles.notbox, marginBottom: 100}}>
-        <Checkbox style={styles.checkbox} value={isCheckedElectronicDocument} onValueChange={setCheckedElectronicDocument} />
+        <Checkbox color={theme['sky-basic']} style={styles.checkbox} value={isCheckedElectronicDocument} onValueChange={setCheckedElectronicDocument} />
         <Text className='text-lg'>전자문서 및 전자금융거래 이용 동의</Text>
       </View>
       <TouchableOpacity

@@ -33,7 +33,7 @@ const Account = ({ account,navigation }) => {
           {/* 설정 아이콘 */}
           <TouchableOpacity
           onPress={()=>{
-            console.log('설정페이지 가기')
+            navigation.navigate('Settings')
           }}
           >
           <AntDesign name="setting" size={24} color={theme["sky-basic"]} />

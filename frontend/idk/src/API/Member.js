@@ -2,7 +2,6 @@ import LocalAxios from "./LocalAxios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from "react";
 
-const BASE_URL = "https://j10a501.p.ssafy.io/api/member";
 const local = LocalAxios()
 
 // 휴대폰 인증 요청

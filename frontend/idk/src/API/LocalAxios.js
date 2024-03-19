@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // 내가 적은것
 export default function localAxios() {
   const instance = axios.create({
-    baseURL: "https://i10a501.p.ssafy.io/api",
+    baseURL: "http://j10a501.p.ssafy.io:8082/api",
     headers: {
       "tmp": "application/json"
     }
@@ -39,13 +39,6 @@ export default function localAxios() {
     },
     // 만약 요청을 보내서 에러가 왔다면,
     async (error) => {
-      // console.log(error);
-      // console.log(error.message);
-      // console.log(error.name);
-      // console.log(error.code);
-      // console.log(error.config);
-      // console.log(error.request);
-      // console.log(Object.keys(error));
       // 해당 에러의 코드를 가져온다.
       const status = error.response.data.status;
 
