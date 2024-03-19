@@ -19,15 +19,18 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import CheckBox from "expo-checkbox";
 
-const FinishPayment = ({ route }) => {
+const FinishPayment = ({ route, navigation }) => {
   const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
   const orderSize = windowWidth * 0.5;
   const orderPriceSize = windowWidth * 0.45;
 
+  // 각종 상태들 선언
   const [isChecked, setChecking] = useState(false);
   const [myProducts, setProducts] = useState("");
   const [myPrice, setMyPrice] = useState("");
   const [myPlz, setMyPlz] = useState("");
+  // 네비게이터에 껴서 보낼 계좌 정보 상태로 저장
+  // const [myAccount,setMyAccount] = useState("");
 
   const FinishPaymentStyle = StyleSheet.create({
     container: {
@@ -308,6 +311,7 @@ const FinishPayment = ({ route }) => {
 
   // 어떤 것을 누르고 들어왔는지에 따라 상태 설정하기
   useEffect(() => {
+    setChecking(false);
     if (route.params.sendData.name === "추가") {
       setProducts(null);
       setMyPrice(null);
@@ -317,12 +321,23 @@ const FinishPayment = ({ route }) => {
     }
   }, []);
 
+  // 네비게이터에 같이 보낼 데이터
+  const sendData = {
+    price: myPrice,
+    // 추후에 계좌 정보 껴줘야 함!
+    // account: myAccount,
+  };
+
   // 화면 출력 부분! //
   return (
     <ScrollView style={FinishPaymentStyle.container}>
       {/* 주소 및 받는 이 정보 부분 */}
       <View style={FinishPaymentStyle.backBtn}>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
           <MaterialIcons name="arrow-back-ios-new" size={36} color="black" />
         </TouchableOpacity>
         <Text style={{ marginTop: 20 }}>
@@ -425,6 +440,7 @@ const FinishPayment = ({ route }) => {
             if (isChecked == true) {
               // 결제 완료 API 보내기
               // 그리고 결제완료 페이지로 ㄱㄱ?
+              navigation.replace("PayPassword", { sendData });
             } else {
               // 동의 체크하라고 alert 보내기!
               plzCheckAlert();
