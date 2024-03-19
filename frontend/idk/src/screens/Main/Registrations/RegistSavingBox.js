@@ -7,43 +7,58 @@ import {
   StyleSheet,
   TextInput,
   Image,
-  ScrollView,
 } from "react-native";
 import theme from "../../../style";
+import formattedNumber from "../../../components/moneyFormatter";
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
+//
 const RegistSavingBox = ({ navigation }) => {
   const pigIcon = require("../../../../assets/icons/pig.png");
-  let [startSavingBoxMoney, setStartSavingBoxMoney] = useState("");
+  let [deposit, setDeposit] = useState(0);
+  //  입력값 숫자로 변경
+  const changeMoney = (text) => {
+    if (text.length === 0) {
+      setDeposit(0);
+    } else {
+      const number = Number(text.replace(/[^0-9]/g, ""));
+      setDeposit(number);
+    }
+  };
+  //   저금통 가입하기 버튼
+  const registFinish = async () => {
+    // await 
+    console.log(deposit, "원으로 시작, 저금통 등록")
+    navigation.navigate("Main");
+  };
+  //   화면
   return (
     <View style={styles.container}>
+      {/* 상단의 제목과 아이콘 */}
       <View style={styles.box} className="mb-16 flex-row items-center">
         <Image source={pigIcon} />
         <Text className="text-3xl font-bold pl-3">저금통</Text>
       </View>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1 }}
-      >
+      <View style={{ flex: 1 }}>
         {/* 설명 */}
         <Explain />
-        {/* 입력란 */}
+        {/* 입금액 입력란 */}
         <Text className="text-2xl font-bold mt-10 mb-3">넣고 시작하기</Text>
         <View style={styles.input} className="flex-row gap-3 justify-end">
           <TextInput
             className="text-xl"
-            placeholder="100,000"
-            value={String(startSavingBoxMoney)}
+            // placeholder="100,000"
+            value={formattedNumber(deposit)}
             keyboardType="numeric"
-            onChangeText={(text) => setStartSavingBoxMoney(text)}
+            onChangeText={(text) => changeMoney(text)}
           />
           <Text className="text-2xl font-bold">원</Text>
         </View>
-      </ScrollView>
+      </View>
+      {/* 저금통 등록 버튼 */}
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-            console.log('저금통 등록')
-          navigation.navigate("Main");
+          registFinish();
         }}
       >
         <Text className="text-white text-lg font-bold">만들기</Text>
@@ -52,6 +67,7 @@ const RegistSavingBox = ({ navigation }) => {
   );
 };
 
+// 설명 글귀
 const Explain = () => {
   return (
     <View className="gap-2">
@@ -79,8 +95,6 @@ const Explain = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // alignItems: "center",
-    // justifyContent: "center",
     backgroundColor: "white",
     paddingTop: 120,
     paddingHorizontal: 30,

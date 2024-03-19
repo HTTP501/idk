@@ -16,8 +16,16 @@ const RegistSubscribe = ({ navigation }) => {
   // 서비스 명과, 이체 주기, 가격 변수
   let [serviceName, setServiceName] = useState("");
   let [period, setPeriod] = useState(15);
-  let [price, setPrice] = useState("3750");
-
+  let [price, setPrice] = useState(3750);
+  // 돈 입력
+  const changeMoney = (text)=>{
+    if (text.length === 0){
+      setPrice(0)
+    } else {
+        const number = Number(text.replace(/[^0-9]/g, ""))
+        setPrice(number)
+    } 
+  }
   // 최종 등록
   const registSubscribtion = () => {
     if (period < 1 || period > 28) {
@@ -68,7 +76,7 @@ const RegistSubscribe = ({ navigation }) => {
       <View style={styles.box}>
         <Text className="text-base font-bold">이체 주기, 날짜</Text>
         <View style={styles.input} className="flex-row items-center gap-1">
-          <Text>매월</Text>
+          <Text style={{marginBottom:2}}>매월</Text>
           <TextInput
             style={[]}
             value={String(period)}
@@ -78,18 +86,19 @@ const RegistSubscribe = ({ navigation }) => {
               setPeriod(text);
             }}
           />
-          <Text>일</Text>
+          <Text style={{marginBottom:2}}>일</Text>
         </View>
       </View>
+      {/* 구독 비용 */}
       <View style={styles.box}>
         <Text className="text-base font-bold">구독료</Text>
         <View style={styles.input} className="flex-row items-center gap-2">
           <TextInput
             keyboardType="numeric"
-            value={String(price)}
+            value={formattedNumber(price)}
             placeholder="3,750"
             onChangeText={(text) => {
-              setPrice(text);
+              changeMoney(text);
             }}
           />
           <Text>원</Text>
