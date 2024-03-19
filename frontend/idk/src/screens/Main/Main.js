@@ -195,10 +195,17 @@ const Option = ({ account }) => {
 };
 
 const PlusButton = function ({ title, destination, navigation }) {
+  // 목표 물건 params로 보낼때 오류나지말라고 넣어주는 params
+  const item = {}
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate(destination);
+        if(destination=== "RegistGoalSaving"){
+          navigation.navigate(destination,{item});
+        } else{
+
+          navigation.navigate(destination);
+        }
       }}
       style={[styles.button, styles.shadow]}
     >
