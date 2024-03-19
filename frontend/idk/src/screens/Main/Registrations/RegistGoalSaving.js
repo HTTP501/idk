@@ -74,14 +74,15 @@ const styles = StyleSheet.create({
     paddingTop: 120,
   },
   box: {
-    width: SCREEN_WIDTH * (9 / 10),
+    width: SCREEN_WIDTH * (8 / 10),
     marginBottom: 30,
   },
   input: {
     borderBottomWidth: 1,
-    width: SCREEN_WIDTH * (9 / 10),
+    width: "100%",
     height: 40,
     alignSelf: "center",
+    borderColor:theme.grey
   },
   button: {
     width: SCREEN_WIDTH * (9 / 10),
