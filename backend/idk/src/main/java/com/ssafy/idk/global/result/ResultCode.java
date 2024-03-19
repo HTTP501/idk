@@ -14,6 +14,7 @@ public enum ResultCode {
     // ITEM
     ITEM_SUCCESS(200, "I001", "상품에 대한 상세조회했습니다"),
     ITEM_CATEGORY_SUCCESS(200, "I002", "카테고리에 따른 상품을 조회했습니다"),
+    ITEM_BUY_SUCCESS(200, "I003", "상품을 결제했습니다"),
 
     // ACCOUNT
     ACCOUNT_CREATE_SUCCESS(201, "A001", "계좌를 생성했습니다"),
@@ -24,6 +25,7 @@ public enum ResultCode {
     ACCOUNT_UPDATE_PWD_SUCCESS(201, "A006", "계좌 비밀번호를 변경했습니다"),
     ACCOUNT_UPDATE_INCOME_DAY_SUCCESS(201, "A007", "월급일을 변경했습니다"),
     ACCOUNT_UPDATE_MIN_AMOUNT_SUCCESS(201, "A008", "계좌의 최소보유금액을 변경했습니다"),
+    ACCOUNT_TRANSFER_SUCCESS(201, "A009", "해당 계좌로 송금했습니다"),
 
     // MEMBER
     MEMBER_SIGNUP_SUCCESS(201, "M001", "회원가입에 성공했습니다."),
