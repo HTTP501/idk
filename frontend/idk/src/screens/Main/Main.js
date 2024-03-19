@@ -23,8 +23,7 @@ import DepositList from "../../components/DepositList";
 import DonPocketList from "../../components/DonPocketList";
 // 화면 크기
 import { Dimensions } from "react-native";
-const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
+const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const Main = ({ navigation }) => {
   // 계좌 데이터 - 더미
@@ -218,18 +217,18 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: windowHeight * (1 / 4), // 화면 높이의 1/3
+    height: SCREEN_HEIGHT * (1 / 4), // 화면 높이의 1/3
     backgroundColor: theme["sky-basic"],
   },
   buttonlist: {
-    // height: windowHeight * (1 / 8) * 10,
+    // height: SCREEN_HEIGHT * (1 / 8) * 10,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 5,
   },
   button: {
-    // height: windowHeight * (1 / 8),
-    width: windowWidth * (6 / 7),
+    // height: SCREEN_HEIGHT * (1 / 8),
+    width: SCREEN_WIDTH * (6 / 7),
     backgroundColor: "white",
     borderRadius: 10,
     height: 50,
