@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, ScrollView } from 'react-native';
 import theme from '../../style';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createAccountAxios } from '../../API/Account'
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const CreateAccount = ({ navigation }) => {
@@ -10,8 +11,8 @@ const CreateAccount = ({ navigation }) => {
   const thirdTextInputRef = useRef(null)
   const [accountPassword, setaccountPassword] = useState('');
   const [accountPasswordCheck, setaccountPasswordCheck] = useState('');
-  const [accountName, setaccountName] = useState('');
-  const [accountPayDate, setaccountPayDate] = useState('');
+  const [accountName, setaccountName] = useState('IDK우리나라국민우대통장');
+  const [accountPayDate, setaccountPayDate] = useState(15);
   const [passwordMatch, setPasswordMatch] = useState(true)
 
   const handleFirstTextInputChange = (text) => {
@@ -41,8 +42,18 @@ const CreateAccount = ({ navigation }) => {
   const handleAccountPayDateChange = (text) => {
     // 입력값이 숫자가 아니면 무시
     if (!/^\d*$/.test(text)) return;
-    setaccountPayDate(text);
+    setaccountPayDate(Number(text));
   };
+
+  const createAccount = async () => {
+    await createAccountAxios (
+      {
+        accountPassword: accountPassword,
+        accountName: accountName,
+        accountPayDate: accountPayDate
+      }
+    )
+  }
 
   // '다음' 버튼 활성화 여부
   const isNextButtonEnabled = accountPassword.length === 4 && accountPasswordCheck.length === 4;
@@ -57,6 +68,7 @@ const CreateAccount = ({ navigation }) => {
         <View style={styles.box}>
           <Text className='text-base font-bold'>[필수] 비밀번호 설정</Text>
           <TextInput 
+            autoFocus={true}
             ref={firstTextInputRef}
             style={styles.input}
             returnKeyType='next'

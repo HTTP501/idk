@@ -1,8 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, Modal, Alert } from 'react-native';
 import theme from '../../style';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { loginPINAxios } from '../../API/Member'
 import * as LocalAuthentication from 'expo-local-authentication';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
+
+const AUTH_KEY = '@auth'
+const SIGNUP_KEY = '@signup'
 
 const AuthPIN = ({ navigation }) => {
   const [showModal, setShowModal] = useState(false);
@@ -23,16 +28,35 @@ const AuthPIN = ({ navigation }) => {
   };
 
   const authenticate = async () => {
+    const p = await AsyncStorage.getItem(SIGNUP_KEY)
+    const phoneNumber = JSON.parse(p).phoneNumber
     const result = await LocalAuthentication.authenticateAsync({
       promptMessage: '지문을 인식하여 로그인하세요', // 지문 인식 프롬프트 메시지
     });
 
     if (result.success) {
       // 인증 성공
-      Alert.alert('지문 인증이 완료되었습니다.','',[{text:'확인'}])
-      navigation.navigate('Tab');
+      setShowModal(false)
+      loginPINAxios(
+        {
+          phoneNumber: phoneNumber
+        },
+        async res => {
+          Alert.alert('지문 인증이 완료되었습니다.','',[{text:'확인'}])
+          navigation.navigate('Tab');
+          // 로그인도 처리해야 하므로 AUTH_KEY로 memberId, accessToken 저장
+          const a = JSON.stringify({accessToken:res.data.data.accessToken})
+          await AsyncStorage.setItem(AUTH_KEY, a)
+        },
+        err => {
+          if (err.response.data.code === 'M402') {
+            Alert.alert('존재하지 않는 회원입니다.','',[{text:'확인'}])
+          }
+        }
+      )
     } else {
       // 인증 실패 또는 취소
+      setShowModal(false)
       Alert.alert('지문 인증이 실패했습니다.','',[{text:'확인'}])
     }
   };
@@ -55,18 +79,34 @@ const AuthPIN = ({ navigation }) => {
   };
 
   // 확인 함수
-  const verifyPIN = (enteredPin) => {
-    // 여기서는 가짜 비밀번호 "123456"으로 대체하였습니다. 실제로는 사용자가 설정한 비밀번호를 확인해야 합니다.
-    if (enteredPin === '123456') {
-      // 비밀번호가 맞을 경우 MainStack으로 이동
-      Alert.alert('간편 인증이 완료되었습니다.','',[{text:'확인'}])
-      navigation.navigate('Tab');
-    } else {
-      // 비밀번호가 틀릴 경우 경고 메시지 출력
-      Alert.alert('비밀번호가 올바르지 않습니다.','',[{text:'확인'}])
-      // 입력된 비밀번호 초기화
-      setPin('');
-    }
+  const verifyPIN = async (numericText) => {
+    const p = await AsyncStorage.getItem(SIGNUP_KEY)
+    const phoneNumber = JSON.parse(p).phoneNumber
+    loginPINAxios(
+      {
+        pin: numericText,
+        phoneNumber: phoneNumber
+      },
+      async (res) => {
+        setShowModal(false)
+        Alert.alert('간편 인증이 완료되었습니다.','',[{text:'확인'}])
+        navigation.navigate('Tab');
+        // 로그인도 처리해야 하므로 AUTH_KEY로 memberId, accessToken 저장
+        const a = JSON.stringify({accessToken:res.data.data.accessToken})
+        await AsyncStorage.setItem(AUTH_KEY, a)
+        // 입력된 비밀번호 초기화
+        setPin('');
+      },
+      err => {
+        if (err.response.data.code === 'M402') {
+          Alert.alert('존재하지 않는 회원입니다.','',[{text:'확인'}])
+        } else if (err.response.data.code === 'M403') {
+          Alert.alert('유효하지 않은 비밀번호입니다.','',[{text:'확인'}])
+        }
+        // 입력된 비밀번호 초기화
+        setPin('');
+      }
+    )
   };
 
   const handleYes = () => {
@@ -83,6 +123,7 @@ const AuthPIN = ({ navigation }) => {
       <Text className='text-3xl font-bold mb-4'>간편 비밀번호 인증</Text>
       <Text className='text-lg mb-24'>숫자 6자리를 입력해주세요</Text>
       <TextInput
+        autoFocus={true}
         style={styles.input}
         returnKeyType='next'
         placeholder='******'

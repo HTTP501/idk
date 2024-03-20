@@ -5,38 +5,31 @@ import React, { useState } from "react";
 const local = LocalAxios()
 
 // 휴대폰 인증 요청
-export const phoneAxios = async function (data) {
-  local.post('/member/phone', data)
-  .then(res => console.log(res))
-  .catch(err => console.log(err))
+export const phoneAxios = async function (data, success, fail) {
+  await local.post('/member/phone', data)
+        .then(success)
+        .catch(fail)
 };
 
-// 이 아래는 옛날 것들
 
 // 휴대폰 인증 확인 요청
-export const phoneCodeAxios = async function (data = null) {
-  return LocalAxios({
-    method: 'post',
-    url: `${BASE_URL}/phone/code`,
-    data: data,
-  });
+export const phoneCodeAxios = async function (data, success, fail) {
+  await local.post('/member/phone/code', data)
+        .then(success)
+        .catch(fail)
 };
 
 // 핀 로그인
-export const loginPINAxios = async function (data = null) {
-  return LocalAxios({
-    method: 'post',
-    url: `${BASE_URL}/login/pin`,
-    data: data,
-  });
+export const loginPINAxios = async function (data, success, fail) {
+  await local.post('/member/login/pin', data)
+        .then(success)
+        .catch(fail)
 }
 
 // 회원가입
-export const signupAxios = async function (data = null) {
-  return LocalAxios({
-    method: 'post',
-    url: `${BASE_URL}/login/pin`,
-    data: data,
-  });
+export const signupAxios = async function (data, success, fail) {
+  await local.post('/member/signup', data)
+        .then(success)
+        .catch(fail)
 }
 

@@ -26,7 +26,7 @@ function MainStack({ navigation }) {
     <TouchableOpacity onPress={() => navigation.navigate('AgreeMyData')}>
       <Text className='text-base'>추가</Text>
     </TouchableOpacity>
-    ) 
+    )
   }
 
   return (

@@ -16,7 +16,7 @@ const EnterPhoneNumber = ({ route, navigation }) => {
   const receiveData = route.params
   const sendData = {
     ...receiveData,
-    phoneNumber: phoneNumber
+    phoneNumber: phoneNumber.replace(/[^\d]/g, '')
   }
 
   const handlePhoneNumberChange = (text) => {
@@ -44,9 +44,18 @@ const EnterPhoneNumber = ({ route, navigation }) => {
 
   const handleVerificationRequest = async () => {
     // 인증 번호 Axios 요청
-    await phoneAxios({phoneNumber: phoneNumber.replace(/[^\d]/g, '')})
+    await phoneAxios(
+      {phoneNumber: phoneNumber.replace(/[^\d]/g, '')}, 
+      res => {},
+      err => {
+        if (err.response.data.code === 'M404') {
+          // 문자 전송 요청 실패
+          Alert.alert('문자 전송 요청에 실패했습니다.','',[{text:'확인'}])
+        } 
+      }
+      )
     // 인증 요청 로직 수행 후
-    await setShowVerificationInput(true); // 인증 번호 입력창 보이도록 설정
+    setShowVerificationInput(true); // 인증 번호 입력창 보이도록 설정
     // 아래 인증 번호 입력란으로 포커스 이동
     if (textInputRef.current) {
       textInputRef.current.focus();
@@ -58,15 +67,31 @@ const EnterPhoneNumber = ({ route, navigation }) => {
     setVerificationCode(text); // 인증 번호 업데이트
   };
 
-  const handleNext = () => {
-    if (verificationCode === '123456') {
-      // 올바른 인증 번호를 입력했을 때
-      setCompleteVerificationCode(true)
-      Alert.alert('인증이 완료되었습니다.','',[{text:'확인'}])
-    } else {
-      // 인증 코드가 일치하지 않을 때 사용자에게 메시지 표시 등의 처리
-      Alert.alert('올바른 인증 코드를 입력하세요.','',[{text:'확인'}])
-    }
+  const handleNext = async () => {
+    // 인증 번호 확인 Axios 요청
+    await phoneCodeAxios(
+      {phoneNumber: phoneNumber.replace(/[^\d]/g, ''), verificationCode: verificationCode},
+      res => {
+        console.log(res.data);
+        // 올바른 인증 번호를 입력했을 때
+        setCompleteVerificationCode(true)
+        Alert.alert('인증이 완료되었습니다.','',[{text:'확인'}])
+      },
+      async err => {
+        if (err.response.data.code === 'M405') {
+          // 인증 코드가 일치하지 않을 때 사용자에게 메시지 표시 등의 처리
+          Alert.alert('올바른 인증 코드를 입력하세요.','',[{text:'확인'}])
+        } else if (err.response.data.code === 'M401') {
+          // 이미 회원가입한 사람이므로
+          Alert.alert('회원 정보가 있습니다.','로그인 페이지로 이동합니다.',[{text:'확인'}])
+          // AsyncStorage에 회원가입 완료했으므로 SIGNUP_KEY로 번호 저장
+          const s = JSON.stringify({phoneNumber:phoneNumber.replace(/[^\d]/g, '')})
+          await AsyncStorage.setItem(SIGNUP_KEY, s)
+          navigation.navigate('AuthStack')
+        }
+
+      }
+    )
   };
 
 
@@ -78,6 +103,7 @@ const EnterPhoneNumber = ({ route, navigation }) => {
       </View>
       <View style={styles.number}>
         <TextInput
+          autoFocus={true}
           style={{ ...styles.input, marginLeft: SCREEN_WIDTH * (1 / 10) }}
           returnKeyType='done'
           placeholder='010-1234-5678'
@@ -104,7 +130,7 @@ const EnterPhoneNumber = ({ route, navigation }) => {
             keyboardType='numeric'
             maxLength={6}
             value={verificationCode}
-            onChangeText={handleVerificationCodeChange}
+            onChangeText={text => handleVerificationCodeChange(text)}
             editable={!completeVerificationCode} // 인증 완료 후에는 편집 불가능하도록 설정
           />
           <TouchableOpacity 
