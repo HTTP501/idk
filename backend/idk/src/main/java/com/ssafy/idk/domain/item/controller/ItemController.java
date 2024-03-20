@@ -1,16 +1,15 @@
 package com.ssafy.idk.domain.item.controller;
 
+import com.ssafy.idk.domain.item.exception.ItemException;
 import com.ssafy.idk.domain.item.service.ItemService;
+import com.ssafy.idk.global.error.ErrorCode;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController()
@@ -30,5 +29,14 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public ResponseEntity<ResultResponse> getItem(@PathVariable("itemId") Long itemId){
         return ResponseEntity.ok(ResultResponse.of(ResultCode.ITEM_SUCCESS, itemService.getItem(itemId)));
+    }
+
+    @Operation(summary = "상품 결제")
+    @PostMapping("/buy/{itemId}//{accountType}/{memberId}")
+    public ResponseEntity<ResultResponse> buyItem(@PathVariable("itemId") Long itemId, @PathVariable("accountType") Long accountType,
+                                                  @PathVariable("memberId") Long memberId) {
+        if(itemService.buyItem(itemId, memberId, accountType))
+            return ResponseEntity.ok(ResultResponse.of(ResultCode.ITEM_BUY_SUCCESS));
+        else throw new ItemException(ErrorCode.ITEM_BUY_FAIL);
     }
 }

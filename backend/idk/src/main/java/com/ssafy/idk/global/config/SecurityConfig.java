@@ -70,7 +70,7 @@ public class SecurityConfig {
                  .addFilterBefore(new JwtFilter(jwtTokenProvider, memberRepository), UsernamePasswordAuthenticationFilter.class);
 
          http
-                 .exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));	// 추가
+                 .exceptionHandling(handler -> handler.authenticationEntryPoint(entryPoint));
 
         return http.build();
     }

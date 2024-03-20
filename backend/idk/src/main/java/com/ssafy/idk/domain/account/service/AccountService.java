@@ -1,14 +1,15 @@
 package com.ssafy.idk.domain.account.service;
 
 import com.ssafy.idk.domain.account.domain.Account;
-import com.ssafy.idk.domain.account.dto.request.AccountCreateRequestDto;
-import com.ssafy.idk.domain.account.dto.request.AccountAmountRequestDto;
-import com.ssafy.idk.domain.account.dto.request.AccountNameRequestDto;
-import com.ssafy.idk.domain.account.dto.request.AccountPwdRequestDto;
+import com.ssafy.idk.domain.account.domain.Category;
+import com.ssafy.idk.domain.account.domain.Transaction;
+import com.ssafy.idk.domain.account.dto.request.*;
 import com.ssafy.idk.domain.account.dto.response.AccountCreateResponseDto;
 import com.ssafy.idk.domain.account.dto.response.AccountResponseDto;
+import com.ssafy.idk.domain.account.dto.response.TransferResponseDto;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
+import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.member.domain.Member;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.global.error.ErrorCode;
@@ -31,6 +32,7 @@ public class AccountService {
     private final MemberRepository memberRepository;
     private final PasswordEncryptUtil passwordEncryptUtil;
     private final RSAKeyService rsaKeyService;
+    private final TransactionRepository transactionRepository;
 
     @Transactional
     public AccountCreateResponseDto createAccount(AccountCreateRequestDto requestDto, Long memberId) {
@@ -140,5 +142,50 @@ public class AccountService {
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         account.updateTime();
+    }
+
+    @Transactional
+    public TransferResponseDto transfer(TransferRequestDto requestDto, Long memberId) {
+        Member member = memberRepository.findById(memberId).get();
+
+        if (requestDto.getTransferBank().equals("IDK은행")) { // 받는사람 입금
+            
+        }
+
+        Account account = withdraw(memberId, requestDto.getTransferAmount());
+        Transaction transaction = Transaction.builder()
+                .category(Category.송금)
+                .content(requestDto.getMyPaymentContent())
+                .amount(requestDto.getTransferAmount())
+                .balance(account.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(account)
+                .build();
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        return TransferResponseDto.of(savedTransaction.getAmount(), savedTransaction.getBalance());
+    }
+
+    @Transactional
+    public Account withdraw(Long memberId, Long amount) { // 출금
+        Member member = memberRepository.findById(memberId).get();
+        Account account = accountRepository.findByMember(member)
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        if(account.getBalance()-amount < 0) throw new AccountException(ErrorCode.ACCOUNT_BALANCE_LACK);
+
+        account.withdraw(amount);
+        return account;
+    }
+
+
+    @Transactional
+    public Account deposit(Long memberId, Long amount) { // 입금
+        Member member = memberRepository.findById(memberId).get();
+        Account account = accountRepository.findByMember(member)
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        account.deposit(amount);
+        return account;
     }
 }

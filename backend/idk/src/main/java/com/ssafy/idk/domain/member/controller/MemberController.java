@@ -79,16 +79,16 @@ public class MemberController {
     }
 
     @Operation(summary = "자동이체 알림 설정 변경")
-    @PostMapping("/push/auto-transfer/{memberId}")
-    public ResponseEntity<ResultResponse> autoTransferPush(@PathVariable("memberId") Long memberId) {
-        memberService.autoTransferPush(memberId);
+    @PostMapping("/push/auto-transfer")
+    public ResponseEntity<ResultResponse> autoTransferPush() {
+        memberService.autoTransferPush();
         return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_AUTO_TRANSFER_PUSH_SUCCESS));
     }
 
     @Operation(summary = "입출금 알림 설정 변경")
-    @PostMapping("/push/transaction/{memberId}")
-    public ResponseEntity<ResultResponse> transactionPush(@PathVariable("memberId") Long memberId) {
-        memberService.transactionPush(memberId);
+    @PostMapping("/push/transaction")
+    public ResponseEntity<ResultResponse> transactionPush() {
+        memberService.transactionPush();
         return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_TRANSACTION_PUSH_SUCCESS));
     }
 }

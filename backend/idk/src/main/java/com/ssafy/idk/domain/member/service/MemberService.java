@@ -9,7 +9,6 @@ import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.global.error.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +25,7 @@ public class MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisService redisService;
     private final TokenService tokenService;
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationService authenticationService;
 
 
     // 회원가입
@@ -168,7 +167,7 @@ public class MemberService {
             throw new MemberException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
-        Member member = memberRepository.findByPhoneNumber(phoneNumber).get();
+        Member member = authenticationService.getMemberByAuthentication();
         Long memberId = member.getMemberId();
         String accessToken = tokenService.issueToken(response, member);
 
@@ -176,16 +175,14 @@ public class MemberService {
     }
 
     // 자동이체 알림 설정 변경
-    public void autoTransferPush(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_UNAUTHORIZED));
+    public void autoTransferPush() {
+        Member member = authenticationService.getMemberByAuthentication();
         member.updateAutoTransferPushEnabled();
     }
 
     // 입출금 알림 설정 변경
-    public void transactionPush(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_UNAUTHORIZED));
+    public void transactionPush() {
+        Member member = authenticationService.getMemberByAuthentication();
         member.updateTransactionPushEnabled();
     }
 

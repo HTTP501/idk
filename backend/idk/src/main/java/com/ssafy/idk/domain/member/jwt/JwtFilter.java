@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -67,9 +66,11 @@ public class JwtFilter extends OncePerRequestFilter {
             Member member = memberRepository.findByPhoneNumber(phoneNumber)
                     .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
 
+            // 권한 생성
             CustomUserDetails customUserDetails = new CustomUserDetails(member);
             Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authToken);
+
         } catch (Exception e) {
             request.setAttribute("exception", e);
         }

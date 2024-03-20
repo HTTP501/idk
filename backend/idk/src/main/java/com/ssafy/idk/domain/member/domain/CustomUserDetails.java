@@ -24,14 +24,18 @@ public class CustomUserDetails implements UserDetails {
         return authorities;
     }
 
+    public Long getId() {
+        return this.member.getId();
+    }
+
     @Override
     public String getPassword() {
-        return member.getPin();
+        return this.member.getPin();
     }
 
     @Override
     public String getUsername() {
-        return member.getPhoneNumber();
+        return this.member.getPhoneNumber();
     }
 
     @Override
