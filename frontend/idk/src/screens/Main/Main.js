@@ -43,44 +43,64 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     accountPayDate: 15,
     accountAvailableAmount: 390000,
   });
-
-  // 이체 데이터
-  let [deposit, setDeposit] = useState([
+  // 돈포켓 데이터
+  let [pocketData, setPocketData] = useState([
     {
-      transactionId: 1,
-      transactionContent: "SSAFY",
-      transactionAmount: 1000000,
-      transactionBalance: 1283600,
-      type: "입금",
-      depositType: "월급",
-      transactionCreatedAt: "2024-03-03 12:00:01",
+      pocketId: "1",
+      pocketType: "saving",
+      totalPaymentCnt: 1,
+      savingId: 2198211,
+      pocketName: "돈포켓이름1",
+      balance: 60200,
+      paymentDate: "15",
+      isDeposited: true,
+      isPaid: false,
+      order: 1,
     },
     {
-      transactionId: 2,
-      transactionContent: "조용훈",
-      transactionAmount: 50000,
-      transactionBalance: 333600,
-      type: "출금",
-      depositType: "계좌이체",
-      transactionCreatedAt: "2024-03-01 12:00:01",
+      pocketId: "2",
+      pocketType: "autoTransfer",
+      autoTransferId: 1241,
+      pocketName: "돈포켓이름2",
+      balance: 12567000,
+      paymentDate: "15",
+      isDeposited: false,
+      isPaid: false,
+      order: 2,
     },
     {
-      transactionId: 3,
-      transactionContent: "윤예빈",
-      transactionAmount: 50000,
-      transactionBalance: 383600,
-      type: "출금",
-      depositType: "계좌이체",
-      transactionCreatedAt: "2024-02-29 12:00:01",
+      pocketId: "3",
+      pocketType: "autoDebit",
+      autoDebitId: 12451,
+      pocketName: "돈포켓이름3",
+      balance: 12000,
+      paymentDate: "23",
+      isDeposited: false,
+      isPaid: true,
+      order: 3,
     },
     {
-      transactionId: 4,
-      transactionContent: "최현기",
-      transactionAmount: 10000,
-      transactionBalance: 393600,
-      type: "출금",
-      depositType: "계좌이체",
-      transactionCreatedAt: "2024-03-03 12:00:01",
+      pocketId: "4",
+      pocketType: "saving",
+      totalPaymentCnt: 10,
+      savingId: 12513,
+      pocketName: "돈포켓이름4",
+      balance: 920200,
+      paymentDate: "14",
+      isDeposited: false,
+      isPaid: false,
+      order: 4,
+    },
+    {
+      pocketId: "5",
+      pocketType: "piggyBank",
+      piggyBankId: 12531,
+      pocketName: "돈포켓이름5",
+      balance: 28300,
+      paymentDate: "3",
+      isDeposited: false,
+      isPaid: false,
+      order: 5,
     },
   ]);
   // + 버튼 눌렸는지 판단
@@ -108,7 +128,9 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
         <Option account={account} />
 
         {/* 돈포켓 */}
-        <DonPocketList />
+        <DonPocketList navigation={navigation} pocketData={pocketData}
+        changePocketOrder={(data)=>setPocketData(data)}
+        />
         
         {/* 마이데이터 연결 */}
         <TouchableOpacity
@@ -146,14 +168,14 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
               <TouchableOpacity style={[styles.button,styles.shadow]}
                 onPress={()=>{setisButtenOpen(!isButtenOpen)}}
                 >
-              <Text>닫기</Text>
+              <Text className="text-lg font-bold">닫기</Text>
             </TouchableOpacity>
             </View>
           ) : (
             <TouchableOpacity style={[styles.button,styles.shadow]}
             onPress={()=>{setisButtenOpen(!isButtenOpen)}}
             >
-              <Text>+</Text>
+              <Text className="text-3xl font-bold">+</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -221,13 +243,12 @@ const PlusButton = function ({ title, destination, navigation }) {
         if(destination=== "RegistGoalSaving"){
           navigation.navigate(destination,{item});
         } else{
-
           navigation.navigate(destination);
         }
       }}
       style={[styles.button, styles.shadow]}
     >
-      <Text>{title}</Text>
+      <Text className="text-lg font-bold">{title}</Text>
     </TouchableOpacity>
   );
 };

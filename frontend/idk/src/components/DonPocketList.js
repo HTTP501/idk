@@ -7,7 +7,7 @@ import DraggableFlatList, {
   ShadowDecorator,
   OpacityDecorator,
   useOnCellActiveAnimation,
-  NestableDraggableFlatList 
+  NestableDraggableFlatList,
 } from "react-native-draggable-flatlist";
 
 import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
@@ -22,118 +22,96 @@ const formattedNumber = function (number) {
 import theme from "../style";
 
 // 돈포켓 리스트
-const DonPocketList = function () {
+const DonPocketList = function ({ navigation, pocketData, changePocketOrder }) {
   const ref = useRef();
-
-  let [data, setdata] = useState([
-    {
-      key: "1",
-      donPocketTitle: "돈포켓이름1",
-      donPocketAmount: 60200,
-      payDay: "15",
-      donPocketState: "open",
-    },
-    {
-      key: "2",
-      donPocketTitle: "돈포켓이름2",
-      donPocketAmount: 12567000,
-      payDay: "15",
-      donPocketState: "check",
-    },
-    {
-      key: "3",
-      donPocketTitle: "돈포켓이름3",
-      donPocketAmount: 12000,
-      payDay: "23",
-      donPocketState: "close",
-    },
-    {
-      key: "4",
-      donPocketTitle: "돈포켓이름4",
-      donPocketAmount: 920200,
-      payDay: "14",
-      donPocketState: "open",
-    },
-    {
-      key: "5",
-      donPocketTitle: "돈포켓이름5",
-      donPocketAmount: 28300,
-      payDay: "3",
-      donPocketState: "check",
-    },
-  ]);
+  const data = pocketData;
   const renderItem = ({ item, drag }) => {
+    // 상세 페이지로 넘길때 id만 넘긴다
+    const pocketId = item.pocketId;
     const { isActive } = useOnCellActiveAnimation();
     return (
       <ScaleDecorator>
-        <OpacityDecorator activeOpacity={0.5}>
+        <OpacityDecorator activeOpacity={0.1}>
           <ShadowDecorator>
             <TouchableOpacity
               onLongPress={drag}
+              onPress={() => {
+                console.log("상세 페이지 이동");
+                if(item.pocketType==="piggyBank"){
+                  navigation.navigate("DetailSavingBox", { pocketId });
+                }else{
+                  navigation.navigate("DetailPocket", { pocketId });
+                }
+              }}
               activeOpacity={1}
-              style={styles.donpocketlist}
+              style={[styles.donpocketlist]}
             >
-              <DonPocket item={item} />
+              <DonPocket item={item} isActive={isActive} />
             </TouchableOpacity>
           </ShadowDecorator>
         </OpacityDecorator>
       </ScaleDecorator>
     );
   };
-  const Pocket = (() => {
+  const Pocket = () => {
     return (
       <GestureHandlerRootView>
         <NestableDraggableFlatList
           ref={ref}
           data={data}
-          keyExtractor={(item) => item.key}
+          keyExtractor={(item) => item.pocketId}
           onDragEnd={({ data }) => {
-            setdata(data)
-            console.log('드래그로 바꿈!')
+            // 부모에게 바뀐 데이터 올려주기
+            changePocketOrder(data);
+            console.log("드래그로 바꿈!");
           }}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
         />
       </GestureHandlerRootView>
     );
-  });
+  };
   return <Pocket />;
 };
 
 // 돈포켓
-const DonPocket = (item) => {
+const DonPocket = ({ item, isActive }) => {
   let today = new Date();
-  const donPocket = item.item;
+  const donPocket = item;
   const menuIcon = require("../../assets/icons/menu.png");
   const checkIcon = require("../../assets/icons/check.png");
   const closeIcon = require("../../assets/icons/close.png");
   const openIcon = require("../../assets/icons/open.png");
+  const pigIcon = require("../../assets/icons/pig.png");
+  // 꾹 누르면 그림자 없에기
+  const shadow = isActive ? null : styles.shadow;
+
   return (
     <View
       className="flex-row items-center p-5"
-      style={[styles.donpocket, styles.shadow]}
+      style={[styles.donpocket, shadow]}
     >
       {/* 돈포켓 상태 */}
-      {donPocket.donPocketState === "check" ? (
+      {donPocket.pocketType === "piggyBank" ? (
+        <Image source={pigIcon} />
+      ) : donPocket.isPaid === true ? (
         <Image source={checkIcon} />
-      ) : null}
-      {donPocket.donPocketState === "close" ? (
+      ) : donPocket.isDeposited === true ? (
         <Image source={closeIcon} />
-      ) : null}
-      {donPocket.donPocketState === "open" ? <Image source={openIcon} /> : null}
+      ) : (
+        <Image source={openIcon} />
+      )}
 
       {/* 돈포켓 내용 */}
       <View className="flex-grow items-start ml-3">
         <View className="flex-row items-center">
-          <Text className="font-bold text-lg mr-3">
-            {donPocket.donPocketTitle}
-          </Text>
+          <Text className="font-bold text-lg mr-3">{donPocket.pocketName}</Text>
           <Text className="">
-            {today.getMonth()}월 {donPocket.payDay}일
+            {today.getMonth()}월 {donPocket.paymentDate}일
           </Text>
         </View>
 
-        <Text className="">{formattedNumber(donPocket.donPocketAmount)}원</Text>
+        <Text className="">{formattedNumber(donPocket.balance)}원</Text>
       </View>
       {/* 돈포켓 순서 정렬 */}
       <Image source={menuIcon} />
