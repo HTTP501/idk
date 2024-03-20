@@ -7,9 +7,9 @@
     "icon": "./assets/logo/app_icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/logo/color_idk_bank_logo.png",
+      "image": "./assets/logo/SplashImg.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#3FB7FF"
     },
     "assetBundlePatterns": [
       "**/*"

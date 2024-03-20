@@ -36,6 +36,7 @@ const EnterBirthId = ({ route, navigation }) => {
       </View>
       <View className='flex-row self-center'>
         <TextInput
+          autoFocus={true}
           style={styles.input}
           returnKeyType='next'
           placeholder='000000'

@@ -1,10 +1,11 @@
 import axios from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from "@react-navigation/native";
 
 // 내가 적은것
 export default function localAxios() {
   const instance = axios.create({
-    baseURL: "http://j10a501.p.ssafy.io:8082/api",
+    baseURL: "http://j10a501.p.ssafy.io:8081/api",
     headers: {
       "tmp": "application/json"
     }
@@ -65,7 +66,8 @@ export default function localAxios() {
             )
             // 받은 요청에서 accessToken을 꺼내서 저장하자!
             // 저번 회의의 결과로 refreshToken도 같이 갱신해주기로 했다면 이쪽에서 갱신해주면 된다!
-            await AsyncStorage.setItem("@auth", data.data.accessToken)
+            const a = JSON.stringify({accessToken:res.data.data.accessToken})
+            await AsyncStorage.setItem("@auth", a)
             const newAccessToken = data.data.accessToken
             // 에러났던 요청 설정을 가져온다!
             const config = error.config
@@ -76,9 +78,14 @@ export default function localAxios() {
           } catch (refreshError) {
             // refresh token이 만료되었거나 다른 문제로 실패한 경우
             alert("로그인 정보가 만료되어 다시 로그인이 필요합니다.")
+            const navigaion = useNavigation()
             // 여기 네비게이터를 추가해주세요~!
+            const a = JSON.stringify({})
+            await AsyncStorage.setItem("@auth", a)
+            navigaion.navigate('AuthStack')
           }
       }
+      return Promise.reject(error)
     }
   )
   return instance;

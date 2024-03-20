@@ -19,6 +19,7 @@ const FinishEnterPIN = ({ route, navigation }) => {
   }, []);
 
   const receiveData = route.params
+  console.log(receiveData);
 
   const checkBiometricAvailability = async () => {
     const available = await LocalAuthentication.hasHardwareAsync();
@@ -37,17 +38,30 @@ const FinishEnterPIN = ({ route, navigation }) => {
     if (result.success) {
       // 인증 성공
       console.log('Authentication successful');
-      Alert.alert('지문 등록이 완료되었습니다.','',[{text:'확인'}])
+      setShowModal(false)
       // 지문 O로 회원가입 요청
-      await signupAxios({...receiveData, hasBiometric: true})
-      .then(res => console.log(res))
-      .catch(err => console.log(err))
-      // AsyncStorage에 회원가입 완료했으므로 SIGNUP_KEY로 번호 저장
-      const s = JSON.stringify({phoneNumber:receiveData.phoneNumber})
-      await AsyncStorage.setItem(SIGNUP_KEY, s)
+      await signupAxios(
+        {...receiveData, hasBiometric: true},
+        async (res) => {
+          console.log(res);
+          // AsyncStorage에 회원가입 완료했으므로 SIGNUP_KEY로 번호 저장
+          const s = JSON.stringify({phoneNumber:receiveData.phoneNumber})
+          await AsyncStorage.setItem(SIGNUP_KEY, s)
+          // 로그인도 처리해야 하므로 AUTH_KEY로 memberId, accessToken 저장
+          const a = JSON.stringify({accessToken:res.data.data.accessToken})
+          await AsyncStorage.setItem(AUTH_KEY, a)
+          Alert.alert('회원가입에 성공했습니다.','',[{text:'확인'}])
+        },
+        err => {
+          if (err.response.data.code === 'M401') {
+            Alert.alert('회원 정보가 있습니다.','로그인 페이지로 이동합니다.',[{text:'확인', onPress: () => navigation.navigate('AuthStack')}])
+          }
+        }
+      )
     } else {
       // 인증 실패 또는 취소
       console.log('Authentication failed or canceled');
+      setShowModal(false)
     }
   };
 
@@ -59,12 +73,26 @@ const FinishEnterPIN = ({ route, navigation }) => {
   const handleNo = async () => {
     setShowModal(false);
     // 지문 X로 회원가입 요청
-    await signupAxios({...receiveData, hasBiometric: false})
-    .then(res => console.log(res))
-    .catch(err => console.log(err))
-    // AsyncStorage에 회원가입 완료했으므로 SIGNUP_KEY로 번호 저장
-    const s = JSON.stringify({phoneNumber:receiveData.phoneNumber})
-    await AsyncStorage.setItem(SIGNUP_KEY, s)
+      await signupAxios(
+        {...receiveData, hasBiometric: false},
+        async res =>  {
+          console.log(res.data);
+          // AsyncStorage에 회원가입 완료했으므로 SIGNUP_KEY로 번호 저장
+          const s = JSON.stringify({phoneNumber:receiveData.phoneNumber})
+          await AsyncStorage.setItem(SIGNUP_KEY, s)
+          // 로그인도 처리해야 하므로 AUTH_KEY로 accessToken 저장
+          const a = JSON.stringify({accessToken:res.data.data.accessToken})
+          await AsyncStorage.setItem(AUTH_KEY, a)
+          Alert.alert('회원가입에 성공했습니다.','',[{text:'확인'}])
+        },
+        async err => {
+          console.log(err);
+          console.log(err.response);
+          if (err.response.data.code === 'M401') {
+            Alert.alert('회원 정보가 있습니다.','로그인 페이지로 이동합니다.',[{text:'확인', onPress: () => navigation.navigate('AuthStack')}])
+          }
+        }
+      )
   };
   
   

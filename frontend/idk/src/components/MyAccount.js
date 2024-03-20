@@ -11,7 +11,7 @@ import formattedNumber from "./moneyFormatter";
 
 
 // 계좌
-const Account = ({ account,navigation }) => {
+const Account = ({ account, navigation }) => {
   const copyIcon = require("../../assets/icons/copy.png");
   
   return (
@@ -33,7 +33,7 @@ const Account = ({ account,navigation }) => {
           {/* 설정 아이콘 */}
           <TouchableOpacity
           onPress={()=>{
-            navigation.navigate('Settings')
+            navigation.navigate('SettingStack')
           }}
           >
           <AntDesign name="setting" size={24} color={theme["sky-basic"]} />

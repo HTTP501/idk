@@ -26,6 +26,7 @@ const EnterName = ({ navigation }) => {
         <Text className="text-3xl">을 입력해 주세요.</Text>
       </View>
       <TextInput
+        autoFocus={true}
         style={styles.input}
         returnKeyType="done"
         placeholder="홍길동"

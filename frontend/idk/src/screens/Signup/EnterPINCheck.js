@@ -37,6 +37,7 @@ const EnterPINCheck = ({ route, navigation }) => {
       <View className='flex-row self-center'>
         {pin.map((value, index) => (
           <TextInput
+            autoFocus={index===0 ? true : false}
             key={index}
             ref={pinInputs[index]}
             style={styles.input}
