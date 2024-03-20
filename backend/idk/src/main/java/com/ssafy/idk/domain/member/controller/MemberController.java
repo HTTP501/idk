@@ -1,16 +1,11 @@
 package com.ssafy.idk.domain.member.controller;
 
 import com.ssafy.idk.domain.member.dto.request.*;
-import com.ssafy.idk.domain.member.dto.response.LoginByBioResponseDto;
-import com.ssafy.idk.domain.member.dto.response.ReissueTokenResponseDto;
-import com.ssafy.idk.domain.member.exception.MemberException;
-import com.ssafy.idk.domain.member.jwt.JwtTokenProvider;
-import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.domain.member.service.MemberService;
-import com.ssafy.idk.global.error.ErrorCode;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,12 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -32,8 +22,6 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
-    private JwtTokenProvider jwtTokenProvider;
 
     @Operation(summary = "회원가입")
     @PostMapping("/signup")
@@ -88,5 +76,19 @@ public class MemberController {
         }
 
         return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMEBER_RENEW_TOKEN_SUCCESS, memberService.reissueToken(refreshToken, requestDto.getPhoneNumber(), response)));
+    }
+
+    @Operation(summary = "자동이체 알림 설정 변경")
+    @PostMapping("/push/auto-transfer")
+    public ResponseEntity<ResultResponse> autoTransferPush() {
+        memberService.autoTransferPush();
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_AUTO_TRANSFER_PUSH_SUCCESS));
+    }
+
+    @Operation(summary = "입출금 알림 설정 변경")
+    @PostMapping("/push/transaction")
+    public ResponseEntity<ResultResponse> transactionPush() {
+        memberService.transactionPush();
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_TRANSACTION_PUSH_SUCCESS));
     }
 }

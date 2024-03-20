@@ -9,12 +9,15 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LoginByBioResponseDto {
 
+    private Long memberId;
     private String accessToken;
 
     public static LoginByBioResponseDto of(
+            Long memberId,
             String accessToken
     ) {
         return LoginByBioResponseDto.builder()
+                .memberId(memberId)
                 .accessToken(accessToken)
                 .build();
     }

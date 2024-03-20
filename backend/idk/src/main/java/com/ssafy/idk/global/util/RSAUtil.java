@@ -25,7 +25,6 @@ public class RSAUtil {
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
-
         return pairKey;
     }
 

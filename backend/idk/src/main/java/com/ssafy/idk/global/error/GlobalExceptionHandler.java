@@ -49,9 +49,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
     }
 
-    @ExceptionHandler({ Exception.class })
+    @ExceptionHandler( Exception.class )
     public ResponseEntity<Object> handleAll(final Exception ex) {
         log.error("handleAll", ex);
+        System.out.println("모든 예외 처리");
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
