@@ -4,9 +4,20 @@ import theme from '../../../../style';
 import { useNavigation } from '@react-navigation/native';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const RegistAutoSendFinish = ({ navigation }) => {
-  
-  
+const RegistAutoSendFinish = ({ navigation,route }) => {
+  const bankName = route.params.bankName
+  const accountId = route.params.accountId
+  const date = route.params.date
+  const amount = route.params.amount
+  const startYear = route.params.startYear
+  const startMonth = route.params.startMonth
+  const endYear = route.params.endYear
+  const endMonth = route.params.endMonth
+  const showMyAccountName = route.params.showMyAccountName
+  const showOtherAccountName = route.params.showOtherAccountName
+  const payload = {
+    bankName,accountId,date,amount,startYear,startMonth,endYear,endMonth,showMyAccountName,showOtherAccountName
+  }
 
   return (
     <View style={styles.container}>
@@ -16,24 +27,26 @@ const RegistAutoSendFinish = ({ navigation }) => {
 
       <View style={styles.box}>
         <Text>자동이체 계좌 </Text>
-        <Text>IDK은행 123121312313</Text>
+        <Text>{bankName} {accountId}</Text>
       </View>
       <View style={styles.box}>
         <Text>이체 금액 </Text>
-        <Text>100,000원</Text>
+        <Text>{amount}원</Text>
       </View>
       <View style={styles.box}>
         <Text>자동이체 주기</Text>
-        <Text>매월 30일</Text>
+        <Text>매월 {date}일</Text>
       </View>
       <View style={styles.box}>
         <Text>자동이체 기간</Text>
-        <Text>2024.03 ~ 2025.03</Text>
+        <Text>{startYear}.{startMonth} ~ {endYear}.{endMonth}</Text>
       </View>
       </View>
       
       <TouchableOpacity style={theme.bottomButton} 
-      onPress={() => navigation.navigate('Main')}>
+      onPress={() => {
+        console.log(payload)
+        navigation.navigate('Main')}}>
         <Text className='text-white text-lg'>확인</Text>
       </TouchableOpacity>
     </View>

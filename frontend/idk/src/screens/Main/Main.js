@@ -1,65 +1,78 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { useState, useEffect } from "react";
+import { useIsFocused } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import ToggleFilter from "./Toggle";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import {
-  gestureHandlerRootHOC,
-} from "react-native-gesture-handler";
-import {
-  NestableScrollContainer,
-} from "react-native-draggable-flatlist";
+import { gestureHandlerRootHOC } from "react-native-gesture-handler";
+import { NestableScrollContainer } from "react-native-draggable-flatlist";
 
 import {
   ScrollView,
+  Dimensions,
   Text,
   View,
   StyleSheet,
   Image,
   TouchableOpacity,
   FlatList,
-  Alert
+  Alert,
 } from "react-native";
-
+const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
+import { useNavigation } from "@react-navigation/native";
 // 컴포넌트들
 import formattedNumber from "../../components/moneyFormatter";
 import theme from "../../style";
 import Account from "../../components/MyAccount";
 import DepositList from "../../components/DepositList";
 import DonPocketList from "../../components/DonPocketList";
-// 화면 크기
-import { Dimensions } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
-const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
-const ACCOUNT_KEY = '@account'
-
+import * as SplashScreen from "expo-splash-screen";
+import { getAccountAxios } from "../../API/Account";
+import { getPocketAxios } from "../../API/DonPocket";
+import FilteredDonPocketList from "../../components/FilteredDonPocketList";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Loading from "../../components/Loading";
+// 메인 페이지
 const Main = gestureHandlerRootHOC(({ navigation }) => {
-
+  const ACCOUNT_KEY = "@account";
   // 계좌 번호가 있는지 판단해서 없으면 계좌 생성
   useEffect(() => {
-      const getAccount = async () => {
-        const a = await AsyncStorage.getItem(ACCOUNT_KEY);
-        console.log(a)
-        if (a===null) {
-          Alert.alert('계좌번호가 없습니다.','계좌 생성 페이지로 이동합니다.',[{text:'확인', onPress: () => navigation.navigate('AccountStack')}])
-        }
+    const getAccount = async () => {
+      const a = await AsyncStorage.getItem(ACCOUNT_KEY);
+      console.log(a);
+      if (a === null) {
+        Alert.alert("계좌번호가 없습니다.", "계좌 생성 페이지로 이동합니다.", [
+          { text: "확인", onPress: () => navigation.navigate("AccountStack") },
+        ]);
       }
-      getAccount()
+    };
+    getAccount();
   }, []);
+  // 다른페이지에 갔다가 돌아왔을때 hook 걸어줌
+  const isFocused = useIsFocused();
+  let [loading, setLoading] = useState(false);
+  useEffect(() => {
+    // 계좌 데이터 받아오기
+    console.log("계좌, 돈포켓 API 호출 위치");
+
+    getAccountAxios(
+      (res) => {
+        console.log(res.data.data)
+        setAccount(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+    setTimeout(() => {
+      setLoading(true);
+    }, 1000);
+    // getPocketAxios(res=>{console.log(res)}, err=>{console.log(err)})
+  }, [isFocused]);
 
   // 계좌 데이터 - 더미
-  let [account, setAccount] = useState({
-    accountId: 1234,
-    accountNumber: "123456-78910",
-    accountName: "전재산 통장",
-    accountBalance: 10202200,
-    accountMinAmount: 300000,
-    accountPayDate: 15,
-    accountAvailableAmount: 390000,
-  });
+  let [account, setAccount] = useState({"accountAvailableAmount": 0, "accountBalance": 0, "accountId": 8, "accountMinAmount": 0, "accountName": "IDK 우리나라 국민우대통장", "accountNumber": "1234567891010", "accountPayDate": 1});
   // 돈포켓 데이터
   let [pocketData, setPocketData] = useState([
     {
@@ -108,6 +121,9 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
       isPaid: false,
       order: 4,
     },
+  ]);
+  // 돈포켓
+  let [piggyBank, setPiggyBank] = useState([
     {
       pocketId: "5",
       pocketType: "piggyBank",
@@ -115,89 +131,148 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
       pocketName: "돈포켓이름5",
       balance: 28300,
       paymentDate: "3",
-      isDeposited: false,
-      isPaid: false,
-      order: 5,
     },
   ]);
+
+  let [pocketType, setPocketType] = useState("total");
+
+  // 필터링 된 데이터
+  let [savingPocketData, setSavingPocketData] = useState(
+    pocketData.filter((item) => item.pocketType === "saving")
+  );
+  let [autoTransferPocketData, setAutoTransferPocketData] = useState(
+    pocketData.filter((item) => item.pocketType === "autoTransfer")
+  );
+  let [autoDebitPocketData, setAutoDebitPocketData] = useState(
+    pocketData.filter((item) => item.pocketType === "autoDebit")
+  );
+
+  // 돈포켓 총 금액
+  const totalPocket = pocketData.reduce((acc, curr) => acc + curr.balance, 0);
   // + 버튼 눌렸는지 판단
   let [isButtenOpen, setisButtenOpen] = useState(false);
-  useEffect(() => {
-    console.log("계좌, 돈포켓 API 호출 위치");
-  }, []);
 
   return (
-    <View className="bg-white" style={styles.scrollViewContent}>
-      <NestableScrollContainer>
-        {/* 배경 */}
-        <View style={styles.back}></View>
-        {/* 로고 알람 */}
-        <View className="px-10 mt-10 mb-2">
-          <Header />
-        </View>
-
-        {/* 계좌 */}
-        <View className="justify-center items-center">
-          <Account account={account} navigation={navigation} />
-        </View>
-
-        {/* 옵션 표기 */}
-        <Option account={account} />
-
-        {/* 돈포켓 */}
-        <DonPocketList navigation={navigation} pocketData={pocketData}
-        changePocketOrder={(data)=>setPocketData(data)}
-        />
-        
-        {/* 마이데이터 연결 */}
-        <TouchableOpacity
-          style={[styles.goMydata, styles.shadow]}
-          onPress={() => navigation.navigate('CheckMyData')}
-        >
-          <Text className='text-lg font-bold'>다른 은행 자동이체 확인하기</Text>
-          <AntDesign name="right" size={20} color="black" />
-        </TouchableOpacity>
-
-        {/* 버튼들 */}
-        <View style={styles.buttonlist}>
-          {isButtenOpen ? (
-            <View>
-              <PlusButton
-                title={"목표 저축 추가하기"}
-                destination={"RegistGoalSaving"}
-                navigation={navigation}
-              />
-              <PlusButton
-                title={"자동이체 등록하기"}
-                destination={"RegistAutoSendAgree"}
-                navigation={navigation}
-              />
-              <PlusButton
-                title={"구독 서비스 등록하기"}
-                destination={"RegistSubscribe"}
-                navigation={navigation}
-              />
-              <PlusButton
-                title={"저금통 가입하기"}
-                destination={"RegistSavingBox"}
-                navigation={navigation}
-              />
-              <TouchableOpacity style={[styles.button,styles.shadow]}
-                onPress={()=>{setisButtenOpen(!isButtenOpen)}}
-                >
-              <Text className="text-lg font-bold">닫기</Text>
-            </TouchableOpacity>
+    <View className="flex-1">
+      {/* 로딩이 끝나야 보여줌 */}
+      {loading ? (
+        <View className="bg-white" style={styles.scrollViewContent}>
+          <NestableScrollContainer>
+            {/* 배경 */}
+            <View style={styles.back}></View>
+            {/* 로고 알람 */}
+            <View className="px-10 mt-10 mb-2">
+              <Header />
             </View>
-          ) : (
-            <TouchableOpacity style={[styles.button,styles.shadow]}
-            onPress={()=>{setisButtenOpen(!isButtenOpen)}}
+
+            {/* 계좌 */}
+            <View className="justify-center items-center">
+              <Account account={account} navigation={navigation} />
+            </View>
+
+            {/* 옵션 표기 */}
+            <Option
+              account={account}
+              totalPocket={totalPocket}
+              changePocketType={(type) => setPocketType(type)}
+            />
+            {/* 필터된 돈포켓 */}
+            {pocketType === "total" ? (
+              // 전체 돈포켓과 저금통 돈포켓
+              <View>
+                <DonPocketList
+                  navigation={navigation}
+                  pocketData={pocketData}
+                  changePocketOrder={(data) => setPocketData(data)}
+                />
+                <FilteredDonPocketList
+                  navigation={navigation}
+                  filteredPocketData={piggyBank}
+                />
+              </View>
+            ) : pocketType === "saving" ? (
+              // 저축 돈포켓
+              <FilteredDonPocketList
+                navigation={navigation}
+                filteredPocketData={savingPocketData}
+              />
+            ) : pocketType === "autoTransfer" ? (
+              // 자동이체 돈포켓
+              <FilteredDonPocketList
+                navigation={navigation}
+                filteredPocketData={autoTransferPocketData}
+              />
+            ) : (
+              // 자동 결제 돈포켓
+              <FilteredDonPocketList
+                navigation={navigation}
+                filteredPocketData={autoDebitPocketData}
+              />
+            )}
+
+            {/* 마이데이터 연결 */}
+            <TouchableOpacity
+              style={[styles.goMydata, styles.shadow]}
+              onPress={() => {
+                navigation.navigate("CheckMyData");
+              }}
             >
-              <Text className="text-3xl font-bold">+</Text>
+              <Text className="text-lg font-bold">
+                다른 은행 자동이체 확인하기
+              </Text>
+              <AntDesign name="right" size={20} color="black" />
             </TouchableOpacity>
-          )}
+
+            {/* 버튼들 */}
+            <View style={styles.buttonlist}>
+              {isButtenOpen ? (
+                <View>
+                  <PlusButton
+                    title={"목표 저축 추가하기"}
+                    destination={"RegistGoalSaving"}
+                    navigation={navigation}
+                  />
+                  <PlusButton
+                    title={"자동이체 등록하기"}
+                    destination={"RegistAutoSendAgree"}
+                    navigation={navigation}
+                  />
+                  <PlusButton
+                    title={"구독 서비스 등록하기"}
+                    destination={"RegistSubscribe"}
+                    navigation={navigation}
+                  />
+                  <PlusButton
+                    title={"저금통 가입하기"}
+                    destination={"RegistSavingBox"}
+                    navigation={navigation}
+                  />
+                  <TouchableOpacity
+                    style={[styles.button, styles.shadow]}
+                    onPress={() => {
+                      setisButtenOpen(!isButtenOpen);
+                    }}
+                  >
+                    <Text className="text-lg font-bold">닫기</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.button, styles.shadow]}
+                  onPress={() => {
+                    setisButtenOpen(!isButtenOpen);
+                  }}
+                >
+                  <Text className="text-3xl font-bold">+</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+            <StatusBar style="auto" />
+          </NestableScrollContainer>
         </View>
-        <StatusBar style="auto" />
-      </NestableScrollContainer>
+      ) : (
+        <Loading />
+      )}
     </View>
   );
 });
@@ -221,7 +296,7 @@ const Header = () => {
 };
 
 // 옵션
-const Option = ({ account }) => {
+const Option = ({ account, totalPocket, changePocketType }) => {
   return (
     <View className="px-7 py-3 gap-3">
       {/* 최소 보유 금액 + 월급일 */}
@@ -238,13 +313,17 @@ const Option = ({ account }) => {
         </View>
       </View>
       {/* 돈포켓 총액, 필터 */}
-      <View className="flex-row justify-between">
+      <View className="flex-row justify-between items-center">
         <View className="flex-row gap-1">
           <Text>돈포켓 </Text>
-          <Text className="font-bold">******원</Text>
+          <Text className="font-bold">{formattedNumber(totalPocket)}원</Text>
         </View>
-        <View className="mr-3">
-          <ToggleFilter />
+        <View>
+          <ToggleFilter
+            changePocketType={(type) => {
+              changePocketType(type);
+            }}
+          />
         </View>
       </View>
     </View>
@@ -253,13 +332,13 @@ const Option = ({ account }) => {
 
 const PlusButton = function ({ title, destination, navigation }) {
   // 목표 물건 params로 보낼때 오류나지말라고 넣어주는 params
-  const item = {}
+  const item = {};
   return (
     <TouchableOpacity
       onPress={() => {
-        if(destination=== "RegistGoalSaving"){
-          navigation.navigate(destination,{item});
-        } else{
+        if (destination === "RegistGoalSaving") {
+          navigation.navigate(destination, { item });
+        } else {
           navigation.navigate(destination);
         }
       }}
@@ -297,7 +376,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom:10
+    marginBottom: 5,
   },
   shadow: {
     shadowColor: "black",
@@ -306,16 +385,16 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  goMydata : {
+  goMydata: {
     height: 90,
     width: SCREEN_WIDTH * (6 / 7),
     backgroundColor: "white",
-    marginBottom:10,
+    marginBottom: 10,
     borderRadius: 10,
-    alignSelf: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    alignSelf: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 12,
   },
   text: {

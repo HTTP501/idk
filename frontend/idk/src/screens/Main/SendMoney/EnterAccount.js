@@ -13,9 +13,10 @@ import { useNavigation } from "@react-navigation/native";
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 import { AntDesign } from "@expo/vector-icons";
 import { useState } from "react";
-
+import BankToggle from "../../../components/BankToggle";
 const EnterAccount = ({ navigation }) => {
-  const [otherAccount, setOtherAccount] = useState("");
+  const [accountId, setaccountId] = useState("");
+  const [bankName,setBankName] = useState("IDK은행")
   return (
     <View style={styles.container}>
 
@@ -33,9 +34,9 @@ const EnterAccount = ({ navigation }) => {
             className="flex-row justify-between items-end pb-3"
             style={styles.input}>
             <TextInput
-              autoFocus={true}
-              onChangeText={(text) => setOtherAccount(text)}
-              value={otherAccount}
+              // autoFocus={true}
+              onChangeText={(text) => setaccountId(text)}
+              value={accountId}
               className="text-2xl"
               keyboardType="number-pad"
               returnKeyType="next"
@@ -49,7 +50,7 @@ const EnterAccount = ({ navigation }) => {
         {/* 은행 선택 */}
         <View >
           <Text className="text-s mb-3">은행 선택</Text>
-          <Text className="text-2xl">은행 토글</Text>
+          <BankToggle changeBank={(bankName)=>setBankName(bankName)}/>
         </View> 
       </View>
 
@@ -59,7 +60,7 @@ const EnterAccount = ({ navigation }) => {
         className="self-center"
         onPress={() => {
           // 돈 입력 페이지 이동
-          navigation.navigate("EnterMoney",{otherAccount});
+          navigation.navigate("EnterMoney",otherAccount={"accountId":accountId,"bankName":bankName});
         }}
       >
         <Text className="text-xl font-bold text-white">다음</Text>

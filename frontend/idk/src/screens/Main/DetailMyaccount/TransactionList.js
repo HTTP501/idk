@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { useState, useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   ScrollView,
   Text,
@@ -10,9 +10,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  FlatList,
 } from "react-native";
-import { useNavigation } from '@react-navigation/native';
 // 컴포넌트들
 import theme from "../../../style";
 import Account from "../../../components/MyAccount";
@@ -20,21 +18,31 @@ import DepositList from "../../../components/DepositList";
 import formattedNumber from "../../../components/moneyFormatter";
 // 화면 크기
 import { Dimensions } from "react-native";
-const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_HEIGHT = Dimensions.get("window").height;
+import { useIsFocused } from "@react-navigation/native";
+import { getAccountAxios } from "../../../API/Account";
+import Loading from "../../../components/Loading";
 
-
-const TransactionList = ({navigation}) => {
+const TransactionList = ({ navigation }) => {
   // 계좌 데이터 - 더미
-  let [account, setAccount] = useState({
-    accountId: 1234,
-    accountNumber: "123456-78910",
-    accountName: "전재산 통장",
-    accountBalance: 10202200,
-    accountMinAmount: 300000,
-    accountPayDate: 15,
-    accountAvailableAmount: 390000,
-  });
+  let [account, setAccount] = useState({"accountAvailableAmount": 0, "accountBalance": 0, "accountId": 8, "accountMinAmount": 0, "accountName": "IDK 우리나라 국민우대통장", "accountNumber": "1234567891010", "accountPayDate": 1});
+  const isFocused = useIsFocused();
+  let [loading, setLoading] = useState(false);
+  useEffect(() => {
+    console.log("계좌, 돈포켓 API 호출 위치");
+    getAccountAxios(
+      (res) => {
+        setAccount(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    )
+    setTimeout(() => {
+      setLoading(true);
+    }, 1000);
+  }, [isFocused]);
 
   // 이체 데이터
   let [deposit, setDeposit] = useState([
@@ -80,47 +88,46 @@ const TransactionList = ({navigation}) => {
   }, []);
 
   return (
-    <ScrollView className="bg-white" style={styles.scrollViewContent}>
-      {/* 배경 */}
-      <View style={styles.back}></View>
-      {/* 로고 알람 */}
-      <View className="px-10 mt-10 mb-2">
-        <Header navigation={navigation}/>
-      </View>
+    <View className="flex-1">
+      {loading ? (
+        <ScrollView className="bg-white" style={styles.scrollViewContent}>
+          {/* 배경 */}
+          <View style={styles.back}></View>
+          {/* 로고 알람 */}
+          <View className="px-10 mt-10 mb-2">
+            <Header navigation={navigation} />
+          </View>
 
-      {/* 계좌 */}
-      <View className="justify-center items-center">
-        <Account account={account} navigation={navigation} 
-        />
-      </View>
+          {/* 계좌 */}
+          <View className="justify-center items-center">
+            <Account account={account} navigation={navigation} />
+          </View>
 
-      {/* 옵션 표기 */}
-      <Option account={account} />
+          {/* 옵션 표기 */}
+          <Option account={account} />
 
-      {/* 이체내역 */}
-      <DepositList deposit={deposit}/>
-
-      <StatusBar style="auto" />
-    </ScrollView>
+          {/* 이체내역 */}
+          <DepositList deposit={deposit} />
+          <StatusBar style="auto" />
+        </ScrollView>
+      ) : <Loading/>}
+    </View>
   );
 };
 // 헤더
-const Header = ({navigation}) => {
-  const logo = require('../../../../assets/logo/white_idk_bank_logo.png')
+const Header = ({ navigation }) => {
+  const logo = require("../../../../assets/logo/white_idk_bank_logo.png");
   return (
     <View className="flex-row justify-between items-center">
       <TouchableOpacity
-      onPress={()=>{
-        navigation.navigate("Main")
-      }}
+        onPress={() => {
+          navigation.navigate("Main");
+        }}
       >
-      <Image
-        source={logo}
-        style={{ width: 90, resizeMode: "contain" }}
-      />
+        <Image source={logo} style={{ width: 90, resizeMode: "contain" }} />
       </TouchableOpacity>
       <TouchableOpacity>
-      <MaterialCommunityIcons name="bell" size={24} color="white" />
+        <MaterialCommunityIcons name="bell" size={24} color="white" />
       </TouchableOpacity>
     </View>
   );
@@ -143,7 +150,6 @@ const Option = ({ account }) => {
           <Text className="font-bold">{account.accountPayDate}일</Text>
         </View>
       </View>
-      
     </View>
   );
 };
@@ -158,7 +164,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: windowHeight * (1 / 4), // 화면 높이의 1/3
+    height: SCREEN_HEIGHT * (1 / 4), // 화면 높이의 1/3
     backgroundColor: theme["sky-basic"],
   },
   shadow: {
