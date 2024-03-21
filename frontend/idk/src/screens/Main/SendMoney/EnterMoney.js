@@ -13,11 +13,10 @@ import formattedNumber from "../../../components/moneyFormatter";
 
 // 입금액 수정 페이지
 const EnterMoney = ({ navigation,route }) => {
-
   let [money, setMoney] = useState(0);
   const originAccount = 1000000;
   let [myAccount, setMyAccount] = useState(originAccount);
-  const otherAccount = { name:'김영준', bankName: "KB 국민", accountId: route.params.otherAccount };
+  const otherAccount = { name:'김영준', bankName: route.params.bankName, accountId: route.params.accountId };
   
   // 입금액 변경 함수
   const changeMoney = function (number) {

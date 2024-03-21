@@ -16,78 +16,61 @@ import { useRef, useState } from "react";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
-const formattedNumber = function (number) {
-  return number.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
-};
+import formattedNumber from "./moneyFormatter";
 import theme from "../style";
 
 // 돈포켓 리스트
-const DonPocketList = function ({ navigation, pocketData, changePocketOrder }) {
-
-  const ref = useRef();
-  const data = pocketData;
-  const renderItem = ({ item, drag }) => {
+const FilteredDonPocketList = function ({ navigation, filteredPocketData }) {
+  // 필터된 돈포켓 데이터
+  const data = filteredPocketData;
+  const RenderItem = ({ data }) => {
     // 상세 페이지로 넘길때 id만 넘긴다
-    const pocketId = item.pocketId;
-    const { isActive } = useOnCellActiveAnimation();
+    const pocketId = data.pocketId;
     return (
-      <ScaleDecorator>
-        <OpacityDecorator activeOpacity={0.1}>
-          <ShadowDecorator>
-            <TouchableOpacity
-              onLongPress={drag}
-              onPress={() => {
-                // 상세 페이지 이동
-                navigation.navigate("DetailPocket", { pocketId });
-                
-              }}
-              activeOpacity={1}
-              style={[styles.donpocketlist]}
-            >
-              <DonPocket item={item} isActive={isActive} />
-            </TouchableOpacity>
-          </ShadowDecorator>
-        </OpacityDecorator>
-      </ScaleDecorator>
+      <TouchableOpacity
+        onPress={() => {
+          console.log("상세 페이지 이동");
+          // 저금통은 저금통 페이지로 ㄱㄱ
+          if (data.pocketType === "piggyBank") {
+            navigation.navigate("DetailSavingBox", { pocketId });
+          } else {
+            navigation.navigate("DetailPocket", { pocketId });
+          }
+        }}
+        activeOpacity={1}
+        style={[styles.donpocketlist]}
+      >
+        <DonPocket data={data} />
+      </TouchableOpacity>
     );
   };
+  // 반복해서 render 시켜주기
   const Pocket = () => {
     return (
-      <GestureHandlerRootView>
-        <NestableDraggableFlatList
-          ref={ref}
-          data={data}
-          keyExtractor={(item) => item.pocketId}
-          onDragEnd={({ data }) => {
-            // 부모에게 바뀐 데이터 올려주기
-            changePocketOrder(data);
-            console.log("드래그로 바꿈!");
-          }}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-        />
-      </GestureHandlerRootView>
+      <View>
+      {data.map((item =>  <RenderItem data={item} keyExtractor={(item) => item.pocketId} />)
+      )}
+      </View>
     );
   };
   return <Pocket />;
 };
 
 // 돈포켓
-const DonPocket = ({ item, isActive }) => {
+const DonPocket = ({ data }) => {
   let today = new Date();
-  const donPocket = item;
+  
+  const donPocket = data;
   const menuIcon = require("../../assets/icons/menu.png");
   const checkIcon = require("../../assets/icons/check.png");
   const closeIcon = require("../../assets/icons/close.png");
   const openIcon = require("../../assets/icons/open.png");
   const pigIcon = require("../../assets/icons/pig.png");
-  // 꾹 누르면 그림자 없에기
-  const shadow = isActive ? null : styles.shadow;
 
   return (
     <View
       className="flex-row items-center p-5"
-      style={[styles.donpocket, shadow]}
+      style={[styles.donpocket, styles.shadow]}
     >
       {/* 돈포켓 상태 */}
       {donPocket.pocketType === "piggyBank" ? (
@@ -143,4 +126,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DonPocketList;
+export default FilteredDonPocketList;

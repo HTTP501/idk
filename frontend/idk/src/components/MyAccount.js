@@ -1,42 +1,56 @@
 import { Dimensions } from "react-native";
-const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_HEIGHT = Dimensions.get("window").height;
 import theme from "../style";
-import { View, Text, TouchableOpacity, Image, StyleSheet,Pressable } from "react-native";
-import { useEffect } from "react";
-import { useNavigation } from '@react-navigation/native';
-import { AntDesign } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Pressable,
+} from "react-native";
+import { useEffect, useState } from "react";
+import { useNavigation, useScrollToTop } from "@react-navigation/native";
+import { AntDesign } from "@expo/vector-icons";
 // 컴포넌트들
 import formattedNumber from "./moneyFormatter";
-
+import * as Clipboard from "expo-clipboard";
 
 // 계좌
 const Account = ({ account, navigation }) => {
   const copyIcon = require("../../assets/icons/copy.png");
-  
+  // 복사
+  const copyToClipboard = async (number) => {
+    await Clipboard.setStringAsync(number);
+    console.log("복사되었습니다.");
+  };
+
+
   return (
     <Pressable
-        onPress={() => {
-          console.log('입출금 내역 보러가기')
-          navigation.navigate("TransactionList")
-        }}
-        style={({pressed}) => [
-          {
-            backgroundColor: pressed ? theme["light-grey"] : "white",
-          },
-          styles.myaccount, styles.shadow
-        ]}>
-    
+      onPress={() => {
+        console.log("입출금 내역 보러가기");
+        navigation.navigate("TransactionList");
+      }}
+      style={({ pressed }) => [
+        {
+          backgroundColor: pressed ? theme["light-grey"] : "white",
+        },
+        styles.myaccount,
+        styles.shadow,
+      ]}
+    >
       <View className="gap-1">
         <View className="flex-row justify-between">
           <Text className="font-bold">{account.accountName}</Text>
           {/* 설정 아이콘 */}
           <TouchableOpacity
-          onPress={()=>{
-            navigation.navigate('SettingStack')
-          }}
+            onPress={() => {
+              navigation.navigate("SettingStack");
+            }}
           >
-          <AntDesign name="setting" size={24} color={theme["sky-basic"]} />
+            <AntDesign name="setting" size={24} color={theme["sky-basic"]} />
           </TouchableOpacity>
         </View>
 
@@ -44,9 +58,10 @@ const Account = ({ account, navigation }) => {
         <View className="flex-row items-center">
           <Text className="mr-1">{account.accountNumber}</Text>
           <TouchableOpacity
-          onPress={()=>{
-            console.log('클립보드에 복사하기')
-          }}
+            // 클립보드 복사
+            onPress={() => {
+              copyToClipboard(account.accountNumber);
+            }}
           >
             <Image source={copyIcon} />
           </TouchableOpacity>
@@ -64,10 +79,10 @@ const Account = ({ account, navigation }) => {
           <Text>계좌 총액 {formattedNumber(account.accountBalance)}원</Text>
           {/* 송금 버튼 */}
           <TouchableOpacity
-          onPress={()=>{
-            console.log('송금페이지 이동')
-            navigation.navigate('EnterAccount')
-          }}
+            onPress={() => {
+              console.log("송금페이지 이동");
+              navigation.navigate("EnterAccount");
+            }}
           >
             <Text
               style={{ backgroundColor: theme["sky-basic"], color: "white" }}
@@ -78,16 +93,15 @@ const Account = ({ account, navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   myaccount: {
-    // height: windowHeight * (1 / 5),
-    width:windowWidth*(9/10),
-    padding:15,
+    // height: SCREEN_WIDTH * (1 / 5),
+    width: SCREEN_WIDTH * (9 / 10),
+    padding: 15,
     borderRadius: 10,
     // backgroundColor: "white",
   },
