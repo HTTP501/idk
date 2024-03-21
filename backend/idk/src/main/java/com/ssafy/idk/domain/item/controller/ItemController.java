@@ -32,10 +32,9 @@ public class ItemController {
     }
 
     @Operation(summary = "상품 결제")
-    @PostMapping("/buy/{itemId}//{accountType}/{memberId}")
-    public ResponseEntity<ResultResponse> buyItem(@PathVariable("itemId") Long itemId, @PathVariable("accountType") Long accountType,
-                                                  @PathVariable("memberId") Long memberId) {
-        if(itemService.buyItem(itemId, memberId, accountType))
+    @PostMapping("/buy/{itemId}/{accountType}")
+    public ResponseEntity<ResultResponse> buyItem(@PathVariable("itemId") Long itemId, @PathVariable("accountType") Long accountType) {
+        if(itemService.buyItem(itemId, accountType))
             return ResponseEntity.ok(ResultResponse.of(ResultCode.ITEM_BUY_SUCCESS));
         else throw new ItemException(ErrorCode.ITEM_BUY_FAIL);
     }
