@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
-import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, ScrollView, Alert} from 'react-native';
 import theme from '../../style';
+import { CheckAccountPasswordAxios, ChangeAccountPasswordAxios } from '../../API/Account'
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ChangeAccountPW = ({ navigation }) => {
@@ -10,8 +11,9 @@ const ChangeAccountPW = ({ navigation }) => {
   const [accountBeforePassword, setAccountBeforePassword] = useState('');
   const [accountPassword, setaccountPassword] = useState('');
   const [accountPasswordCheck, setaccountPasswordCheck] = useState('');
+  const [passwordCheck, setPasswordCheck] = useState('')
   const [passwordSame, setPasswordSame] = useState(false)
-  const [passwordMatch, setPasswordMatch] = useState(true)
+  const [passwordMatch, setPasswordMatch] = useState('')
 
   const handleFirstTextInputChange = (text) => {
     // 입력값이 숫자가 아니면 무시
@@ -19,8 +21,19 @@ const ChangeAccountPW = ({ navigation }) => {
     setAccountBeforePassword(text);
     if (text.length === 4) {
       // 비밀번호가 맞으면
-      // 4글자 입력 시 두 번째 TextInput으로 포커스 이동
-      secondTextInputRef.current.focus();
+      CheckAccountPasswordAxios(
+        {password:text},
+        res => {
+          setPasswordCheck('check')
+          // 4글자 입력 시 두 번째 TextInput으로 포커스 이동
+          secondTextInputRef.current.focus();
+        },
+        err => {
+          setPasswordCheck('notCheck')
+        }
+      )
+    } else {
+      setPasswordCheck('')
     }
   };
 
@@ -46,22 +59,36 @@ const ChangeAccountPW = ({ navigation }) => {
     setaccountPasswordCheck(text);
     if (text.length === 4) {
       if (text === accountPassword) {
-        setPasswordMatch(true)
+        setPasswordMatch('match')
       } else {
-        setPasswordMatch(false)
+        setPasswordMatch('notMatch')
       }
-
+    } else {
+      setPasswordMatch('')
     }
   };
 
+  const handleChangePassword = () => {
+    ChangeAccountPasswordAxios(
+      {password:accountPassword},
+      res => {
+        Alert.alert('계좌 비밀번호 변경이 완료되었습니다.','',[{text:'확인'}])
+        navigation.navigate('Settings')
+      },
+      err => {
+      }
+    )
+  }
+
   // '다음' 버튼 활성화 여부
-  const isNextButtonEnabled = accountBeforePassword.length === 4 && accountPassword.length === 4 && accountPasswordCheck.length === 4 && passwordSame === false && passwordMatch === true;
+  const isNextButtonEnabled = passwordCheck === 'check' && accountBeforePassword.length === 4 && accountPassword.length === 4 && accountPasswordCheck.length === 4 && passwordSame === false && passwordMatch === 'match';
 
   return (
     <View style={styles.container}>
       <ScrollView 
         contentContainerStyle={{ flexGrow:1, alignItems:'center', justifyContent:'center'}}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         <View className='mb-16'>
           <Text className='text-3xl font-bold '>계좌 비밀번호 변경</Text>
@@ -84,6 +111,8 @@ const ChangeAccountPW = ({ navigation }) => {
             onChangeText={handleFirstTextInputChange}
             secureTextEntry={true} // 입력된 번호를 *로 대체하여 보여줌
           ></TextInput>
+          {passwordCheck === 'notCheck' && <Text style={styles.errorText}>현재 비밀번호가 다릅니다.</Text>}
+          {passwordCheck === 'check' && <Text style={styles.rightText}>현재 비밀번호와 일치합니다.</Text>}
           </View>
         <View style={styles.box}>
           <Text className='text-base font-bold'>새로운 계좌 비밀번호</Text>
@@ -111,11 +140,12 @@ const ChangeAccountPW = ({ navigation }) => {
             onChangeText={handleThirdTextInputChange}
             secureTextEntry={true} // 입력된 번호를 *로 대체하여 보여줌
           ></TextInput>
-          {!passwordMatch && <Text style={styles.errorText}>변경할 비밀번호가 다릅니다.</Text>}
+          {passwordMatch === 'notMatch' && <Text style={styles.errorText}>변경할 비밀번호가 다릅니다.</Text>}
+          {passwordMatch === 'match' && <Text style={styles.rightText}>비밀번호 확인이 완료되었습니다.</Text>}
         </View>
         <TouchableOpacity
           style={[styles.button, { opacity: isNextButtonEnabled ? 1 : 0.5 }]}
-          onPress={() => navigation.navigate('Settings')}
+          onPress={handleChangePassword}
           disabled={!isNextButtonEnabled}
         >
           <Text className='text-white text-lg'>변경</Text>
@@ -157,8 +187,13 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   errorText: {
-    color: 'red',
+    color: theme.red,
     fontSize: 12,
     marginTop: 5,
-  }
+  },
+  rightText: {
+    color: theme['sky-basic'],
+    fontSize: 12,
+    marginTop: 5,
+  },
 });

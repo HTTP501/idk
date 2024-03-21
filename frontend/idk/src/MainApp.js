@@ -16,27 +16,13 @@ const SIGNUP_KEY = '@signup'
 export default function MainApp() {
   // AsyncStorage.clear()
   const navigation = useNavigation();
-  const [fontsLoaded, setFontsLoaded] = useState(false);
   const [authData, setAuthData] = useState({});
   const [signupData, setSignupData] = useState({});
-  // 앱이 처음 시작될 때 대기 화면 표시 + 폰트 로딩 될 때까지 대기 화면 표시
+  // 앱이 처음 시작될 때 대기 화면 표시 스토리지 로딩 될 때까지 대기 화면 표시
   useEffect(() => {
     SplashScreen.preventAutoHideAsync();
-    const loadFonts = async () => {
-      try {
-        // await Font.loadAsync({
-        //   'MaplestoryBold': require('../assets/fonts/MaplestoryBold.ttf')
-        // });
-        setFontsLoaded(true);
-        console.log('폰트 설치')
-      } catch (error) {
-        console.error("Error loading fonts:", error);
-        // 폰트 로딩에 실패한 경우 에러 처리 추가
-      }
-    };
     
     const load = async () => {
-      await loadFonts();
       await loadStorages();
       SplashScreen.hideAsync();
     };
@@ -55,10 +41,6 @@ export default function MainApp() {
     }
   }
 
-  // 폰트 로드 안되면 null
-  if (!fontsLoaded) {
-    return null;
-  }
 
   if (Object.keys(authData).length > 0) {
     // authData도 있으면 MainStack 실행
@@ -72,7 +54,7 @@ export default function MainApp() {
       <View className="flex-1 items-center justify-center bg-white" style={{backgroundColor:'#3FB7FF'}}>
         <Image source={require('../assets/logo/white_idk_logo_big.png')} style={{ width:120, height: 120, marginVertical: SCREEN_HEIGHT * (1/10) }} />
         <View>
-          <Text style={{ fontFamily: 'MaplestoryBold', fontSize: 20, fontWeight: 'bold', textAlign: 'center', color: 'white', marginBottom: 20 }}>매달 고정 지출 관리가 어렵다면?</Text>
+          <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', color: 'white', marginBottom: 20 }}>매달 고정 지출 관리가 어렵다면?</Text>
         </View>
         <ScrollView
           pagingEnabled

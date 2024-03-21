@@ -1,7 +1,9 @@
 import React, { useRef, useState } from 'react';
-import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, ScrollView, Modal, Switch } from 'react-native';
+import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, ScrollView, Modal, Switch, Alert } from 'react-native';
 import theme from '../../style';
 import { AntDesign } from '@expo/vector-icons'; // Import Ionicons from Expo
+import { autoTransferAxios, transactionAxios } from '../../API/Member'
+import { ChangeAccountNameAxios } from '../../API/Account'
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -15,10 +17,47 @@ const Settings = ({ navigation }) => {
     setIsModalVisible(!isModalVisible);
   };
   
+  // 계좌 별명 변경 Axios
   const handleNicknameChange = () => {
     setIsModalVisible(false);
-    // Perform logic to change nickname
+    ChangeAccountNameAxios(
+      {accountName: accountName},
+      res => {
+        console.log(res);
+        Alert.alert('계좌 별명 변경이 완료되었습니다.','',[{text:'확인'}])
+      },
+      err => {
+        console.log(err);
+        console.log(err.response);
+      }
+    )
   };
+
+  // 자동이체 알림 설정 Axios
+  const HandleAutoTransfer = () => {
+    setIsAutoTransferNotificationEnabled(previousState => !previousState)
+    autoTransferAxios(
+      res => {
+        console.log(res.data);
+      },
+      err => {
+        console.log(err.response);
+      }
+    )
+  }
+
+  // 입출금 알림 설정 Axios
+  const HandleTransactionAxios = () => {
+    setIsDepositNotificationEnabled(previousState => !previousState)
+    transactionAxios(
+      res => {
+        console.log(res.data);
+      },
+      err => {
+        console.log(err.response);
+      }
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -52,7 +91,7 @@ const Settings = ({ navigation }) => {
             trackColor={{ false: "#767577", true: "#81b0ff" }}
             thumbColor={isDepositNotificationEnabled ? "#f4f3f4" : "#f4f3f4"}
             ios_backgroundColor="#3e3e3e"
-            onValueChange={() => setIsDepositNotificationEnabled(previousState => !previousState)}
+            onValueChange={HandleTransactionAxios}
             value={isDepositNotificationEnabled}
           />
         </View>
@@ -62,7 +101,7 @@ const Settings = ({ navigation }) => {
             trackColor={{ false: "#767577", true: "#81b0ff" }}
             thumbColor={isAutoTransferNotificationEnabled ? "#f4f3f4" : "#f4f3f4"}
             ios_backgroundColor="#3e3e3e"
-            onValueChange={() => setIsAutoTransferNotificationEnabled(previousState => !previousState)}
+            onValueChange={HandleAutoTransfer}
             value={isAutoTransferNotificationEnabled}
           />
         </View>
