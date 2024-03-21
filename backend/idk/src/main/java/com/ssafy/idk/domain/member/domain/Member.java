@@ -1,9 +1,11 @@
 package com.ssafy.idk.domain.member.domain;
 
+import com.ssafy.idk.domain.Analyst.domain.Analyst;
 import com.ssafy.idk.domain.account.domain.Account;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -50,9 +52,5 @@ public class Member {
 
     public void updateTransactionPushEnabled() {
         this.transactionPushEnabled = !this.transactionPushEnabled;
-    }
-
-    public Long getId() {
-        return this.memberId;
     }
 }

@@ -24,8 +24,8 @@ public class CustomUserDetails implements UserDetails {
         return authorities;
     }
 
-    public Long getId() {
-        return this.member.getId();
+    public Long getMemberId() {
+        return this.member.getMemberId();
     }
 
     @Override
