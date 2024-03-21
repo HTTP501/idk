@@ -32,7 +32,15 @@ public enum ErrorCode {
     MEMBER_UNAUTHORIZED(401, "M401", "권한이 없습니다."),
 
     // RSAKEY
-    RSAKEY_NOT_FOUND(404, "R404", "RSAKEY가 존재하지 않습니다.");
+    RSAKEY_NOT_FOUND(404, "R404", "RSAKEY가 존재하지 않습니다."),
+
+    // PIGGY_BANK
+    PIGGY_BANK_ALREADY_CREATED(409, "P401", "이미 저금통을 가입한 계좌입니다."),
+    PIGGY_BANK_INSUFFICIENT_ACCOUNT_BALANCE(409, "P402", "계좌 잔액이 부족합니다."),
+    PIGGY_BANK_NOT_FOUND(404, "P403", "저금통이 존재하지 않습니다."),
+    PIGGY_BANK_INSUFFICIENT_BALANCE(409, "P404", "저금통 잔액이 부족합니다."),
+
+    ;
 
     private final int status;
     private final String code;

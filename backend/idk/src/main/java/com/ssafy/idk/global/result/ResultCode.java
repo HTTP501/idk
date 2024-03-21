@@ -33,7 +33,16 @@ public enum ResultCode {
     MEMBER_LOGIN_PIN_SUCCESS(200, "M003", "PIN 로그인에 성공했습니다."),
     MEMBER_LOGIN_BIO_SUCCESS(200, "M004", "생체 인증 로그인 성공했습니다."),
     MEMBER_PHONE_VERIFICATION_REQUEST_SUCCESS(200, "M005", "휴대폰 본인 인증 요청 성공했습니다."),
-    MEMBER_PHONE_CODE_VERIFICATION_SUCCESS(200, "M006", "휴대폰 인증 코드 검증에 성공했습니다.");
+    MEMBER_PHONE_CODE_VERIFICATION_SUCCESS(200, "M006", "휴대폰 인증 코드 검증에 성공했습니다."),
+
+    // PIGGY_BANK
+    PIGGY_BANK_CREATE_SUCCESS(201, "P201", "저금통 가입에 성공했습니다."),
+    PIGGY_BANK_DELETE_SUCCESS(204, "P202", "저금통 해지에 성공했습니다."),
+    PIGGY_BANK_GET_SUCCESS(200, "P203", "저금통을 조회했습니다."),
+    PIGGY_BANK_TRANSACTION_GET_SUCCESS(200, "P204", "저금통 입출금내역을 조회했습니다."),
+    PIGGY_BANK_DEPOSIT_SUCCESS(201, "P205", "저금통에 입금을 완료했습니다."),
+    PIGGY_BANK_WITHDRAW_SUCCESS(201, "P206", "저금통에서 출금을 완료했습니다."),
+    ;
 
     private final int status;
     private final String code;
