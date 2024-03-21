@@ -9,15 +9,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public class SignupResponseDto {
 
-    private Long memberId;
     private String accessToken;
 
     public static SignupResponseDto of(
-            Long memberId,
             String accessToken
     ) {
         return SignupResponseDto.builder()
-                .memberId(memberId)
                 .accessToken(accessToken)
                 .build();
     }

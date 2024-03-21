@@ -1,5 +1,6 @@
 package com.ssafy.idk.domain.member.service;
 
+import com.ssafy.idk.domain.account.service.RSAKeyService;
 import com.ssafy.idk.domain.member.domain.Member;
 import com.ssafy.idk.domain.member.dto.request.*;
 import com.ssafy.idk.domain.member.dto.response.*;
@@ -7,12 +8,14 @@ import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.member.jwt.JwtTokenProvider;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.global.error.ErrorCode;
+import com.ssafy.idk.global.util.RSAUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.Optional;
 
 @Service
@@ -26,14 +29,20 @@ public class MemberService {
     private final RedisService redisService;
     private final TokenService tokenService;
     private final AuthenticationService authenticationService;
-
+    private final RSAKeyService rsaKeyService;
 
     // 회원가입
     public SignupResponseDto signup(SignupRequestDto requestDto, HttpServletResponse response) {
 
+        // RSAKey 생성
+//        HashMap<String, String> keyPair = RSAUtil.generateKeyPair();
+//        String publicKey = keyPair.get("publicKey");
+//        String privateKey = keyPair.get("privateKey");
+
         Member member = Member.builder()
                 .name(requestDto.getName())
                 .birth(requestDto.getBirth())
+//                .birth(RSAUtil.encode(publicKey, requestDto.getBirth()))
                 .pin(bCryptPasswordEncoder.encode(requestDto.getPin()))
                 .phoneNumber(requestDto.getPhoneNumber())
                 .hasBiometric(requestDto.getHasBiometric())
@@ -47,13 +56,12 @@ public class MemberService {
             throw new MemberException(ErrorCode.MEMBER_PHONE_ALREADY_VERIFIED);
         }
 
-        String accessToken = tokenService.issueToken(response, member);
         Member savedMember = memberRepository.save(member);
-        Long memberId = savedMember.getMemberId();
+//        rsaKeyService.saveRSAKey(savedMember.getMemberId(), privateKey);
 
-        authSuccessHandler(requestDto.getPhoneNumber(), requestDto.getPin());
+        String accessToken = tokenService.issueToken(response, member);
 
-        return SignupResponseDto.of(memberId, accessToken);
+        return SignupResponseDto.of(accessToken);
     }
 
     // PIN 로그인
@@ -68,13 +76,9 @@ public class MemberService {
             throw new MemberException(ErrorCode.MEMBER_INVALID_PIN);
         }
 
-        // 검증 통과하면 토큰 발급
         String accessToken = tokenService.issueToken(response, member);
-        Long memberId = member.getMemberId();
 
-        authSuccessHandler(requestDto.getPhoneNumber(), requestDto.getPin());
-
-        return LoginByPinResponseDto.of(memberId, accessToken);
+        return LoginByPinResponseDto.of(accessToken);
     }
 
     // 생체 인증 로그인
@@ -84,23 +88,17 @@ public class MemberService {
         Member member = memberRepository.findByPhoneNumber(requestDto.getPhoneNumber())
                 .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
 
-        Long memberId = member.getMemberId();
         String accessToken = tokenService.issueToken(response, member);
 
-        authSuccessHandler(requestDto.getPhoneNumber(), null);
-
-        return LoginByBioResponseDto.of(memberId, accessToken);
+        return LoginByBioResponseDto.of(accessToken);
     }
 
     // 폰 본인인증 요청
     public void verifyByPhone(PhoneVerificationRequestDto requestDto) {
 
         String phoneNumber = requestDto.getPhoneNumber();
-
-        // 인증 코드 생성
         String verificationCode = generateVerificationCode();
 
-        // 인증 코드 저장
         redisService.saveVerificationCodeToRedis(phoneNumber, verificationCode);
 
         // 문자 전송
@@ -168,10 +166,9 @@ public class MemberService {
         }
 
         Member member = authenticationService.getMemberByAuthentication();
-        Long memberId = member.getMemberId();
         String accessToken = tokenService.issueToken(response, member);
 
-        return ReissueTokenResponseDto.of(memberId, accessToken);
+        return ReissueTokenResponseDto.of(accessToken);
     }
 
     // 자동이체 알림 설정 변경
@@ -184,10 +181,5 @@ public class MemberService {
     public void transactionPush() {
         Member member = authenticationService.getMemberByAuthentication();
         member.updateTransactionPushEnabled();
-    }
-
-    // 회원가입, 로그인 성공 핸들러
-    public void authSuccessHandler(String phoneNumber, String pin) {
-
     }
 }

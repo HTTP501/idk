@@ -34,6 +34,10 @@ public enum ErrorCode {
     MEMBER_INVALID_HEADER_FORMAT(400, "M410", "Authorization 헤더는 Bearer 토큰 형식이어야 합니다."),
     MEMBER_UNKNOWN_ERROR(400, "M411", "알 수 없는 에러가 발생했습니다."),
 
+    // ANALYST
+    ANALYST_NOT_MATCHED_TYPE(400, "AN400", "해당 지출 유형이 없습니다."),
+    ANALYST_NOT_FOUND(404, "AN404", "해당 연월 지출내역이 없습니다."),
+
     // RSAKEY
     RSAKEY_NOT_FOUND(404, "R404", "RSAKEY가 존재하지 않습니다.");
 
