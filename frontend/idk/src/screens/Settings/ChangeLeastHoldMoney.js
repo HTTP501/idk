@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, Alert, ScrollView } from 'react-native';
 import theme from '../../style';
+import { settingMinumumAxios } from '../../API/Account'
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ChangeLeastHoldMoney = ({ navigation }) => {
-  const [money, setMoney] = useState()
-  const [numMoney, setNumMoney] = useState()
-
+  const [money, setMoney] = useState(null)
+  const [numMoney, setNumMoney] = useState(100000)
+  
   const formattedNumber = function (text) {
     // 입력된 값에서 숫자만 남기기
     const formattedText = text.replace(/[^\d]/g, '');
@@ -16,11 +17,27 @@ const ChangeLeastHoldMoney = ({ navigation }) => {
     setNumMoney(number)
   };
 
+  // 최소보유금액 등록
+  const handleSettingMinimum = () => {
+    settingMinumumAxios(
+      {amount:numMoney},
+      res => {
+        console.log(res.data);
+        Alert.alert('최소보유금액 설정이 완료되었습니다.', `${money} 원`,[{text:'확인'}])
+        navigation.navigate('Settings')
+      },
+      err => {
+        console.log(err.response);
+      }
+    )
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView 
         contentContainerStyle={{ flexGrow:1, alignItems:'center', justifyContent:'center'}}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
       <View className="mb-16" style={{ marginLeft: SCREEN_WIDTH * (1 / 10) }}>
           <Text className="text-3xl font-bold mb-5">최소보유금액 설정</Text>
@@ -32,7 +49,7 @@ const ChangeLeastHoldMoney = ({ navigation }) => {
           <TextInput
             style={{ fontSize: 20, textAlign: 'right'}}
             returnKeyType="done"
-            placeholder="100000"
+            placeholder="100,000"
             keyboardType='numeric'
             onChangeText={(text) => formattedNumber(text)}
             value={money}
@@ -40,9 +57,10 @@ const ChangeLeastHoldMoney = ({ navigation }) => {
           <Text className='text-lg font-bold'> 원</Text>
         </View>
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Settings')}>
-          <Text className="text-white text-lg">다음</Text>
+          style={[styles.button, {opacity: money===null ? 0.5 : 1}]}
+          disabled={money===null}
+          onPress={handleSettingMinimum}>
+          <Text className="text-white text-lg">설정</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

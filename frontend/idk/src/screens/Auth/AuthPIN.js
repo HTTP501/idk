@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, Modal, Alert } from 'react-native';
 import theme from '../../style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { loginPINAxios } from '../../API/Member'
+import { loginPINAxios, loginBioAxios } from '../../API/Member'
 import * as LocalAuthentication from 'expo-local-authentication';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -37,11 +37,12 @@ const AuthPIN = ({ navigation }) => {
     if (result.success) {
       // 인증 성공
       setShowModal(false)
-      loginPINAxios(
+      loginBioAxios(
         {
           phoneNumber: phoneNumber
         },
         async res => {
+          console.log(res.data);
           Alert.alert('지문 인증이 완료되었습니다.','',[{text:'확인'}])
           navigation.navigate('Tab');
           // 로그인도 처리해야 하므로 AUTH_KEY로 memberId, accessToken 저장
@@ -49,6 +50,7 @@ const AuthPIN = ({ navigation }) => {
           await AsyncStorage.setItem(AUTH_KEY, a)
         },
         err => {
+          console.log(err.response);
           if (err.response.data.code === 'M402') {
             Alert.alert('존재하지 않는 회원입니다.','',[{text:'확인'}])
           }
@@ -120,10 +122,11 @@ const AuthPIN = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text className='text-3xl font-bold mb-4'>간편 비밀번호 인증</Text>
-      <Text className='text-lg mb-24'>숫자 6자리를 입력해주세요</Text>
+      <Text className='text-3xl font-bold mb-4 text-white'>간편 비밀번호 인증</Text>
+      <Text className='text-lg mb-24 text-white'>숫자 6자리를 입력해주세요</Text>
       <TextInput
         autoFocus={true}
+        placeholderTextColor={'white'}
         style={styles.input}
         returnKeyType='next'
         placeholder='******'
@@ -160,7 +163,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
+    backgroundColor: theme['sky-basic'],
   },
   input: {
     fontSize: 50,
@@ -168,6 +171,7 @@ const styles = StyleSheet.create({
     width: 350,
     marginBottom: 100,
     letterSpacing: 10,
+    color: 'white'
   },
   button: {
     width: SCREEN_WIDTH * (9 / 10),

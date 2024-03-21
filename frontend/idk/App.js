@@ -1,7 +1,8 @@
 import MainApp from './src/MainApp'
 import * as React from 'react';
 import SignupStack from './src/navigations/SignupStack'
-import AuthStack, { navigationRef } from './src/navigations/AuthStack'
+import AuthStack from './src/navigations/AuthStack'
+import { navigationRef } from './src/navigations/AppNavigation'
 import AccountStack from './src/navigations/AccountStack'
 import Tab from './src/navigations/Tab'
 import LocalAxios from './src/API/LocalAxios'

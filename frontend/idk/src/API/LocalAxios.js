@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Alert } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { navigate } from '../navigations/AuthStack'
+import { navigate } from '../navigations/AppNavigation'
 
 // 내가 적은것
 export default function localAxios() {
@@ -18,7 +18,6 @@ export default function localAxios() {
     async (config) => {
       try {
         const accessToken = await AsyncStorage.getItem("@auth")
-        console.log(accessToken);
         config.headers["Content-Type"] = 'application/json'
         config.headers.Authorization = `Bearer ${JSON.parse(accessToken).accessToken}`
       } catch (error) {

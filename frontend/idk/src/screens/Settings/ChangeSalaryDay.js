@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, Alert, ScrollView } from 'react-native';
 import theme from '../../style';
+import { settingIncomeDayAxios } from '../../API/Account'
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ChangeSalaryDay = ({ navigation }) => {
-  const [day, setDay] = useState('');
+  const [day, setDay] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
 
   const formattedNumber = function (text) {
@@ -20,11 +21,29 @@ const ChangeSalaryDay = ({ navigation }) => {
     }
   };
 
+  // 월급일 등록 Axios
+  const handleSettingIncomeDay = () => {
+    settingIncomeDayAxios(
+      Number(day),
+      res => {
+        Alert.alert('월급일 설정이 완료되었습니다.', `${day} 일`,[{text:'확인'}])
+        navigation.navigate('Settings')
+      }, 
+      err => {
+        if (err.response.data.code === 400) {
+          Alert.alert('변경 요청한 월급일이 등록한 월급일과 같습니다.', `${day} 일`,[{text:'확인'}])
+        }
+      }
+    )
+
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView 
         contentContainerStyle={{ flexGrow:1, alignItems:'center', justifyContent:'center'}}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         <View className="mb-16" style={{ marginLeft: SCREEN_WIDTH * (1 / 10) }}>
           <Text className="text-3xl font-bold mb-5">월급일 설정</Text>
@@ -50,11 +69,11 @@ const ChangeSalaryDay = ({ navigation }) => {
           {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
         </View>
         <TouchableOpacity
-          style={[styles.button, { opacity: errorMessage ? 0.5 : 1 }]}
-          onPress={() => navigation.navigate('Settings')}
-          disabled={errorMessage !== ''}
+          style={[styles.button, { opacity: errorMessage || day === null ? 0.5 : 1 }]}
+          onPress={handleSettingIncomeDay}
+          disabled={errorMessage || day === null}
         >
-          <Text className="text-white text-lg">다음</Text>
+          <Text className="text-white text-lg">설정</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

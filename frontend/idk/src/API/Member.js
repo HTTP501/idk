@@ -26,9 +26,30 @@ export const loginPINAxios = async function (data, success, fail) {
         .catch(fail)
 }
 
+// 생체인증 로그인
+export const loginBioAxios = async function (data, success, fail) {
+  await local.post('/member/login/bio', data)
+        .then(success)
+        .catch(fail)
+}
+
 // 회원가입
 export const signupAxios = async function (data, success, fail) {
   await local.post('/member/signup', data)
+        .then(success)
+        .catch(fail)
+}
+
+// 자동이체 알림 설정
+export const autoTransferAxios = async function (success, fail) {
+  await local.put('/member/push/auto-transfer')
+        .then(success)
+        .catch(fail)
+}
+
+// 입출금 알림 설정
+export const transactionAxios = async function (success, fail) {
+  await local.put('/member/push/transaction')
         .then(success)
         .catch(fail)
 }
