@@ -18,6 +18,7 @@ public enum ErrorCode {
     ACCOUNT_FAIL_SAVE(400, "A403", "계좌 저장을 실패했습니다"),
     ACCOUNT_PWD_NOT_SAME(400, "A404", "계좌 비밀번호와 다릅니다"),
     ACCOUNT_BALANCE_LACK(400, "A405", "계좌의 잔액이 부족합니다"),
+    ACCOUNT_EXISTS(404, "A406", "계좌가 존재합니다"),
 
     // TRANSACTION
 
