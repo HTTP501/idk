@@ -1,6 +1,7 @@
 import axios from "axios";
+import { Alert } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from "@react-navigation/native";
+import { navigate } from '../navigations/AuthStack'
 
 // 내가 적은것
 export default function localAxios() {
@@ -14,19 +15,17 @@ export default function localAxios() {
   // 요청을 보낼때의 인터셉터
   // axios 요청의 설정값인 config를 가져옴
   instance.interceptors.request.use(
-    (config) => {
-      const accessToken = async () => {
-        const a = await AsyncStorage.getItem("@auth")
-        return JSON.parse(a).accessToken
+    async (config) => {
+      try {
+        const accessToken = await AsyncStorage.getItem("@auth")
+        console.log(accessToken);
+        config.headers["Content-Type"] = 'application/json'
+        config.headers.Authorization = `Bearer ${JSON.parse(accessToken).accessToken}`
+      } catch (error) {
+        console.error("Error while setting authorization header:", error)
       }
-
-      // config의 헤더의 Authorization 부분에 Bearer를 포함하여 accessToken 보냄
-      config.headers.Authorization = `Bearer ${accessToken}`
-
-      // 헤더를 붙인 config를 반환
       return config;
     },
-    // 정상적이지 않은 요청으로 error 가 발생하면 에러를 반환
     (error) => {
       return Promise.reject(error)
     }
@@ -77,12 +76,11 @@ export default function localAxios() {
             return axios.request(config);
           } catch (refreshError) {
             // refresh token이 만료되었거나 다른 문제로 실패한 경우
-            alert("로그인 정보가 만료되어 다시 로그인이 필요합니다.")
-            const navigaion = useNavigation()
             // 여기 네비게이터를 추가해주세요~!
             const a = JSON.stringify({})
             await AsyncStorage.setItem("@auth", a)
-            navigaion.navigate('AuthStack')
+            Alert.alert('로그인 시간이 만료되었습니다.','로그인 페이지로 이동합니다.',[{text:'확인', onPress: () => {navigate('AuthStack')}}])
+            // navigation.navigate('AuthStack')
           }
       }
       return Promise.reject(error)

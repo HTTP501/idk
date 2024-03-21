@@ -19,6 +19,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  Alert
 } from "react-native";
 
 // 컴포넌트들
@@ -29,10 +30,26 @@ import DepositList from "../../components/DepositList";
 import DonPocketList from "../../components/DonPocketList";
 // 화면 크기
 import { Dimensions } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
+const ACCOUNT_KEY = '@account'
 
 const Main = gestureHandlerRootHOC(({ navigation }) => {
+
+  // 계좌 번호가 있는지 판단해서 없으면 계좌 생성
+  useEffect(() => {
+      const getAccount = async () => {
+        const a = await AsyncStorage.getItem(ACCOUNT_KEY);
+        console.log(a)
+        if (a===null) {
+          Alert.alert('계좌번호가 없습니다.','계좌 생성 페이지로 이동합니다.',[{text:'확인', onPress: () => navigation.navigate('AccountStack')}])
+        }
+      }
+      getAccount()
+  }, []);
+
   // 계좌 데이터 - 더미
   let [account, setAccount] = useState({
     accountId: 1234,

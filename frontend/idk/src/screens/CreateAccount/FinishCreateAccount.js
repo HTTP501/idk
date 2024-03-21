@@ -1,24 +1,35 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Text, View, Dimensions, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import theme from '../../style';
-import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
+const ACCOUNT_KEY = '@account'
 
 const FinishCreateAccount = ({ navigation }) => {
-  
-  
+  const [accountNumber, setAccountNumber] = useState('')
+  const [accountCreatedAt, setAccountCreatedAt] = useState(null)
+
+  useEffect(() => {
+    const getAccount = async () => {
+      const a = await AsyncStorage.getItem(ACCOUNT_KEY)
+      setAccountNumber(JSON.parse(a).accountNumber)
+      setAccountCreatedAt(JSON.parse(a).accountCreatedAt)
+    }
+    getAccount()
+  })
 
   return (
     <View style={styles.container}>
       <Image source={require('../../../assets/check.png')} />
       <Text className='text-3xl font-bold mb-10 mt-10'>계좌 생성 완료</Text>
-      <View className='flex-row'>
-        <Text className='text-base font-bold mb-8'>계좌번호 </Text>
-        <Text>IDK은행 123121312313</Text>
+      <View className='flex-row items-center mb-8' style={{ width: 200 }}>
+        <Text className='text-lg font-bold mr-5'>계좌번호 </Text>
+        <Text className='text-base'>{ accountNumber }</Text>
       </View>
-      <View className='flex-row'>
-        <Text className='text-base font-bold mb-60'>개설일자 </Text>
-        <Text>IDK은행 123121312313</Text>
+      <View className='flex-row items-center mb-60' style={{ width: 200 }}>
+        <Text className='text-lg font-bold mr-5'>개설일자 </Text>
+        <Text className='text-base'>{ accountCreatedAt.substr(0,10) }</Text>
       </View>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Tab')}>
         <Text className='text-white text-lg'>확인</Text>
