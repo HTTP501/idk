@@ -2,8 +2,10 @@ import React, { useRef, useState } from 'react';
 import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native';
 import theme from '../../style';
 import { phoneAxios, phoneCodeAxios } from '../../API/Member'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
+const SIGNUP_KEY = '@signup'
 
 const EnterPhoneNumber = ({ route, navigation }) => {
   const textInputRef = useRef(null);
@@ -83,11 +85,10 @@ const EnterPhoneNumber = ({ route, navigation }) => {
           Alert.alert('올바른 인증 코드를 입력하세요.','',[{text:'확인'}])
         } else if (err.response.data.code === 'M401') {
           // 이미 회원가입한 사람이므로
-          Alert.alert('회원 정보가 있습니다.','로그인 페이지로 이동합니다.',[{text:'확인'}])
           // AsyncStorage에 회원가입 완료했으므로 SIGNUP_KEY로 번호 저장
           const s = JSON.stringify({phoneNumber:phoneNumber.replace(/[^\d]/g, '')})
           await AsyncStorage.setItem(SIGNUP_KEY, s)
-          navigation.navigate('AuthStack')
+          Alert.alert('회원 정보가 있습니다.','로그인 페이지로 이동합니다.',[{text:'확인', onPress: () => navigation.navigate('AuthStack')}])
         }
 
       }

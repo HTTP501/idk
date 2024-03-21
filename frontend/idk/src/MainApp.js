@@ -14,7 +14,7 @@ const AUTH_KEY = '@auth'
 const SIGNUP_KEY = '@signup'
 
 export default function MainApp() {
-  AsyncStorage.clear()
+  // AsyncStorage.clear()
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [authData, setAuthData] = useState({});
@@ -80,14 +80,14 @@ export default function MainApp() {
           showsHorizontalScrollIndicator={false}
           centerContent={true}
           endFillColor='red'
-          style={{ width: SCREEN_WIDTH*(3/5), height: SCREEN_HEIGHT*(2/5) }}
+          style={{ width: 275, height: 427 }}
         >
-          <Image source={require('../assets/logo/explain1.png')}  style={{ width: SCREEN_WIDTH*(3/5), height: SCREEN_HEIGHT*(2/5), borderRadius: 20 }}/>
-          <Image source={require('../assets/logo/explain2.png')}  style={{ width: SCREEN_WIDTH*(3/5), height: SCREEN_HEIGHT*(2/5), borderRadius: 20 }}/>
-          <Image source={require('../assets/logo/explain3.png')}  style={{ width: SCREEN_WIDTH*(3/5), height: SCREEN_HEIGHT*(2/5), borderRadius: 20 }}/>
-          <Image source={require('../assets/logo/explain4.png')}  style={{ width: SCREEN_WIDTH*(3/5), height: SCREEN_HEIGHT*(2/5), borderRadius: 20 }}/>
+          <Image source={require('../assets/logo/explain1.png')}  style={{ width: 275, height: 427, borderRadius: 20 }}/>
+          <Image source={require('../assets/logo/explain2.png')}  style={{ width: 275, height: 427, borderRadius: 20 }}/>
+          <Image source={require('../assets/logo/explain3.png')}  style={{ width: 275, height: 427, borderRadius: 20 }}/>
+          <Image source={require('../assets/logo/explain4.png')}  style={{ width: 275, height: 427, borderRadius: 20 }}/>
           <View
-            style={{ width: SCREEN_WIDTH*(3/5), height: SCREEN_HEIGHT*(2/5), justifyContent: 'center' }}
+            style={{ width: 275, height: 427, justifyContent: 'center' }}
           >
             <TouchableOpacity
               style={{

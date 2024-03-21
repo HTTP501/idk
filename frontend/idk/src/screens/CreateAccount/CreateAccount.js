@@ -1,9 +1,11 @@
-import React, { useRef, useState } from 'react';
-import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, ScrollView } from 'react-native';
+import React, { useRef, useState, useEffect } from 'react';
+import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, ScrollView, Alert } from 'react-native';
 import theme from '../../style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAccountAxios } from '../../API/Account'
+
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
+const ACCOUNT_KEY = '@account'
 
 const CreateAccount = ({ navigation }) => {
   const firstTextInputRef = useRef(null);
@@ -12,8 +14,10 @@ const CreateAccount = ({ navigation }) => {
   const [accountPassword, setaccountPassword] = useState('');
   const [accountPasswordCheck, setaccountPasswordCheck] = useState('');
   const [accountName, setaccountName] = useState('IDK우리나라국민우대통장');
-  const [accountPayDate, setaccountPayDate] = useState(15);
+  const [accountPayDate, setaccountPayDate] = useState('15');
   const [passwordMatch, setPasswordMatch] = useState(true)
+  const [accountNumber, setAccountNumber] = useState('')
+  const [accountCreatedAt, setAccountCreatedAt] = useState(null)
 
   const handleFirstTextInputChange = (text) => {
     setaccountPassword(text);
@@ -42,15 +46,35 @@ const CreateAccount = ({ navigation }) => {
   const handleAccountPayDateChange = (text) => {
     // 입력값이 숫자가 아니면 무시
     if (!/^\d*$/.test(text)) return;
-    setaccountPayDate(Number(text));
+    setaccountPayDate(text);
   };
 
+  useEffect(() => {
+    // accountNumber와 accountCreatedAt이 업데이트될 때마다 AsyncStorage에 저장
+    const saveAccountData = async () => {
+      const data = JSON.stringify({ accountNumber, accountCreatedAt });
+      await AsyncStorage.setItem(ACCOUNT_KEY, data);
+    };
+
+    if (accountNumber !== '' && accountCreatedAt !== null) {
+      saveAccountData();
+    }
+  }, [accountNumber, accountCreatedAt]);
+
+  // 계좌 생성 Axios
   const createAccount = async () => {
     await createAccountAxios (
       {
         accountPassword: accountPassword,
         accountName: accountName,
-        accountPayDate: accountPayDate
+        accountPayDate: Number(accountPayDate)
+      },
+      async res => {
+        setAccountNumber(res.data.data.accountNumber)
+        setAccountCreatedAt(res.data.data.accountCreatedAt)
+        Alert.alert('계좌 생성이 완료되었습니다.','',[{text:'확인', onPress: () => navigation.navigate('FinishCreateAccount')}])
+      },
+      err => {
       }
     )
   }
@@ -120,7 +144,7 @@ const CreateAccount = ({ navigation }) => {
       </ScrollView>
       <TouchableOpacity
         style={[styles.button, { opacity: isNextButtonEnabled ? 1 : 0.5 }]}
-        onPress={() => navigation.navigate('FinishCreateAccount')}
+        onPress={createAccount}
         disabled={!isNextButtonEnabled}
       >
         <Text className='text-white text-lg'>다음</Text>
@@ -137,6 +161,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
+    paddingTop: 80,
   },
   box : {
     width: SCREEN_WIDTH * (9/10),
