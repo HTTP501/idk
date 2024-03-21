@@ -12,6 +12,7 @@ import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.member.domain.Member;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
+import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.global.error.ErrorCode;
 import com.ssafy.idk.global.util.PasswordEncryptUtil;
 import com.ssafy.idk.global.util.RSAUtil;
@@ -33,10 +34,11 @@ public class AccountService {
     private final PasswordEncryptUtil passwordEncryptUtil;
     private final RSAKeyService rsaKeyService;
     private final TransactionRepository transactionRepository;
+    private final AuthenticationService authenticationService;
 
     @Transactional
-    public AccountCreateResponseDto createAccount(AccountCreateRequestDto requestDto, Long memberId) {
-        Member member = memberRepository.findById(memberId).get();
+    public AccountCreateResponseDto createAccount(AccountCreateRequestDto requestDto) {
+        Member member = authenticationService.getMemberByAuthentication();
 
         // RSAKey 생성
         HashMap<String, String> keyPair = RSAUtil.generateKeyPair();
@@ -56,25 +58,24 @@ public class AccountService {
                 .build();
 
         Account savedAccount = accountRepository.save(account);
-        updateAccount(memberId);
+        updateAccount(member.getMemberId());
         return AccountCreateResponseDto.of(RSAUtil.decode(privateKey, savedAccount.getNumber()), savedAccount.getCreatedAt());
     }
 
-    public AccountResponseDto getAccount(Long memberId) {
-        Member member = memberRepository.findById(memberId).get();
+    public AccountResponseDto getAccount() {
+        Member member = authenticationService.getMemberByAuthentication();
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        System.out.println("111111");
-        String privateKey = rsaKeyService.findPrivateKey(memberId);
-        System.out.println("22222");
+        String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
+
         // amountAvailableAmount 추후 수정(balance-돈포켓)
         return AccountResponseDto.of(account.getAccountId(), RSAUtil.decode(privateKey, account.getNumber()), account.getName(), account.getBalance(), account.getMinAmount(), account.getBalance(), account.getPayDate());
     }
 
     @Transactional
-    public void deleteAccount(Long memberId) {
-        Member member = memberRepository.findById(memberId).get();
+    public void deleteAccount() {
+        Member member = authenticationService.getMemberByAuthentication();
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
@@ -82,18 +83,18 @@ public class AccountService {
     }
 
     @Transactional
-    public void updateName(AccountNameRequestDto requestDto, Long memberId) {
-        Member member = memberRepository.findById(memberId).get();
+    public void updateName(AccountNameRequestDto requestDto) {
+        Member member = authenticationService.getMemberByAuthentication();
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         account.updateName(requestDto.getAccountName());
 
-        updateAccount(memberId);
+        updateAccount(member.getMemberId());
     }
 
-    public void verityPwd(AccountPwdRequestDto requestDto, Long memberId) {
-        Member member = memberRepository.findById(memberId).get();
+    public void verityPwd(AccountPwdRequestDto requestDto) {
+        Member member = authenticationService.getMemberByAuthentication();
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
@@ -103,36 +104,36 @@ public class AccountService {
     }
 
     @Transactional
-    public void updatePwd(AccountPwdRequestDto requestDto, Long memberId) {
-        Member member = memberRepository.findById(memberId).get();
+    public void updatePwd(AccountPwdRequestDto requestDto) {
+        Member member = authenticationService.getMemberByAuthentication();
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         account.updatePassword(passwordEncryptUtil.encrypt(requestDto.getPassword()));
 
-        updateAccount(memberId);
+        updateAccount(member.getMemberId());
     }
 
     @Transactional
-    public void updatePayDate(int day, Long memberId) {
-        Member member = memberRepository.findById(memberId).get();
+    public void updatePayDate(int day) {
+        Member member = authenticationService.getMemberByAuthentication();
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         account.updatePayDate(day);
 
-        updateAccount(memberId);
+        updateAccount(member.getMemberId());
     }
 
     @Transactional
-    public void updateMinAmount(AccountAmountRequestDto requestDto, Long memberId) {
-        Member member = memberRepository.findById(memberId).get();
+    public void updateMinAmount(AccountAmountRequestDto requestDto) {
+        Member member = authenticationService.getMemberByAuthentication();
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         account.updateMinAmount(requestDto.getAmount());
 
-        updateAccount(memberId);
+        updateAccount(member.getMemberId());
     }
 
     @Transactional
@@ -145,14 +146,14 @@ public class AccountService {
     }
 
     @Transactional
-    public TransferResponseDto transfer(TransferRequestDto requestDto, Long memberId) {
-        Member member = memberRepository.findById(memberId).get();
+    public TransferResponseDto transfer(TransferRequestDto requestDto) {
+        Member member = authenticationService.getMemberByAuthentication();
 
         if (requestDto.getTransferBank().equals("IDK은행")) { // 받는사람 입금
             
         }
 
-        Account account = withdraw(memberId, requestDto.getTransferAmount());
+        Account account = withdraw(requestDto.getTransferAmount());
         Transaction transaction = Transaction.builder()
                 .category(Category.송금)
                 .content(requestDto.getMyPaymentContent())
@@ -167,8 +168,8 @@ public class AccountService {
     }
 
     @Transactional
-    public Account withdraw(Long memberId, Long amount) { // 출금
-        Member member = memberRepository.findById(memberId).get();
+    public Account withdraw(Long amount) { // 출금
+        Member member = authenticationService.getMemberByAuthentication();
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
@@ -180,8 +181,8 @@ public class AccountService {
 
 
     @Transactional
-    public Account deposit(Long memberId, Long amount) { // 입금
-        Member member = memberRepository.findById(memberId).get();
+    public Account deposit(Long amount) { // 입금
+        Member member = authenticationService.getMemberByAuthentication();
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 

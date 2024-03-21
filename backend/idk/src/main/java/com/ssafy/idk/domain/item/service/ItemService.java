@@ -11,6 +11,7 @@ import com.ssafy.idk.domain.item.exception.ItemException;
 import com.ssafy.idk.domain.item.repository.ItemRepository;
 import com.ssafy.idk.domain.member.domain.Member;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
+import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.global.error.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class ItemService {
     private final MemberRepository memberRepository;
     private final AccountService accountService;
     private final TransactionRepository transactionRepository;
+    private final AuthenticationService authenticationService;
 
     public List<ItemResponseDto> getItemListOfCategory(int category) {
         List<Item> itemList = itemRepository.findAllByCategory(category);
@@ -52,14 +54,14 @@ public class ItemService {
     }
 
     @Transactional
-    public boolean buyItem(Long itemId, Long memberId, Long accountType) {
+    public boolean buyItem(Long itemId, Long accountType) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemException(ErrorCode.ITEM_NOT_FOUND));
 
-        Member member = memberRepository.findById(memberId).get();
+        Member member = authenticationService.getMemberByAuthentication();
 
         if(accountType == 1) { // 결제 수단이 계좌인 경우
-            Account account = accountService.withdraw(memberId, item.getPrice());
+            Account account = accountService.withdraw(item.getPrice());
             Transaction transaction = Transaction.builder()
                     .category(Category.출금)
                     .content(item.getShop())
