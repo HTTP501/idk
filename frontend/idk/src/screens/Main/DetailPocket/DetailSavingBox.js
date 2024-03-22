@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 const DetailSavingBox = ({ navigation, route }) => {
-    const pocketId = route.params.pocketId
+  const pocketId = route.params.pocketId;
   return (
     <View>
       <Text>저금통 상세</Text>
