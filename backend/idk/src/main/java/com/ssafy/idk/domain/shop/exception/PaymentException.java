@@ -1,14 +1,14 @@
-package com.ssafy.idk.domain.item.exception;
+package com.ssafy.idk.domain.shop.exception;
 
 import com.ssafy.idk.global.error.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class ItemException extends RuntimeException {
+public class PaymentException extends RuntimeException {
 
     private final ErrorCode errorCode;
 
-    public ItemException(ErrorCode errorCode) {
+    public PaymentException(ErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 }

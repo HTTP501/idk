@@ -1,5 +1,6 @@
 package com.ssafy.idk.global.config;
 
+import com.ssafy.idk.domain.shop.domain.OrderInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,7 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -36,5 +38,14 @@ public class RedisConfig {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new GenericToStringSerializer<>(Object.class));
         return redisTemplate;
+    }
+
+    @Bean
+    public RedisTemplate<String, OrderInfo> orderRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, OrderInfo> orderRedisTemplate = new RedisTemplate<>();
+        orderRedisTemplate.setConnectionFactory(redisConnectionFactory);
+        orderRedisTemplate.setKeySerializer(new StringRedisSerializer());
+        orderRedisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(OrderInfo.class));
+        return orderRedisTemplate;
     }
 }

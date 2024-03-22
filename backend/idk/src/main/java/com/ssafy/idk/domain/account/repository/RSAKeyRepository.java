@@ -8,6 +8,4 @@ import java.util.Optional;
 
 @Repository
 public interface RSAKeyRepository extends CrudRepository<RSAKey, Long> {
-
-    Optional<RSAKey> findByMemberId(Long memberId);
 }

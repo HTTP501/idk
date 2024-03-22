@@ -2,8 +2,9 @@ package com.ssafy.idk.global.error;
 
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.exception.RSAKeyException;
-import com.ssafy.idk.domain.item.exception.ItemException;
+import com.ssafy.idk.domain.shop.exception.ItemException;
 import com.ssafy.idk.domain.member.exception.MemberException;
+import com.ssafy.idk.domain.shop.exception.PaymentException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }
 
+    @ExceptionHandler(PaymentException.class)
+    protected ResponseEntity<ErrorResponse> handlePaymentException(PaymentException ex) {
+        log.error("handlePaymentException", ex);
+        final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
     @ExceptionHandler({ AccessDeniedException.class })
     public ResponseEntity handleAccessDeniedException(final AccessDeniedException ex) {
         log.error(" handleAccessDeniedException", ex);
@@ -52,7 +60,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler( Exception.class )
     public ResponseEntity<Object> handleAll(final Exception ex) {
         log.error("handleAll", ex);
-        System.out.println("모든 예외 처리");
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
