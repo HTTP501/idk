@@ -39,7 +39,11 @@ public enum ErrorCode {
     ANALYST_NOT_FOUND(404, "AN404", "해당 연월 지출내역이 없습니다."),
 
     // RSAKEY
-    RSAKEY_NOT_FOUND(404, "R404", "RSAKEY가 존재하지 않습니다.");
+    RSAKEY_NOT_FOUND(404, "R404", "RSAKEY가 존재하지 않습니다."),
+
+    // PAYMENT
+    PAYMENT_VERIFY_FAIL(400, "P401", "결제수단 검증에 실패했습니다"),
+    PAYMENT_INFORMATION_NOT_FOUND(404, "P402", "결제 요청 정보를 찾을 수 없습니다");
 
     private final int status;
     private final String code;

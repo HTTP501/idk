@@ -43,7 +43,11 @@ public enum ResultCode {
     ANALYST_GET_UTILITY_AMOUNT_SUCCESS(200, "AN003", "공과금 지출 금액을 조회했습니다."),
     ANALYST_GET_COMMON_AMOUNT_SUCCESS(200, "AN004", "일반 지출 금액을 조회했습니다."),
     ANALYST_GET_MONTH_AMOUNT_SUCCESS(200, "AN005", "특정 월 지출 금액을 조회했습니다."),
-    ANALYST_GET_CURRENT_MONTH_AMOUNT_SUCCESS(200, "AN006", "이번 달 지출 금액을 조회했습니다.");
+    ANALYST_GET_CURRENT_MONTH_AMOUNT_SUCCESS(200, "AN006", "이번 달 지출 금액을 조회했습니다."),
+
+    // PAYMENT
+    PAYMENT_READY_SUCCESS(200, "P001", "결제 요청을 성공했습니다"),
+    PAYMENT_APPROVAL_SUCCESS(200, "P002", "결제 승인을 성공했습니다");
 
     private final int status;
     private final String code;
