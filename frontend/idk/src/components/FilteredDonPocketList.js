@@ -1,18 +1,6 @@
-import {
-  GestureHandlerRootView,
-  gestureHandlerRootHOC,
-} from "react-native-gesture-handler";
-import DraggableFlatList, {
-  ScaleDecorator,
-  ShadowDecorator,
-  OpacityDecorator,
-  useOnCellActiveAnimation,
-  NestableDraggableFlatList,
-} from "react-native-draggable-flatlist";
-
 import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Dimensions } from "react-native";
-import { useRef, useState } from "react";
+import DonPocket from "./DonPocketItem";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -30,7 +18,7 @@ const FilteredDonPocketList = function ({ navigation, filteredPocketData }) {
       <TouchableOpacity
         onPress={() => {
           console.log("상세 페이지 이동");
-          // 저금통은 저금통 페이지로 ㄱㄱ
+          // 저금통은 저금통 페이지로 
           if (data.pocketType === "piggyBank") {
             navigation.navigate("DetailSavingBox", { pocketId });
           } else {
@@ -40,7 +28,7 @@ const FilteredDonPocketList = function ({ navigation, filteredPocketData }) {
         activeOpacity={1}
         style={[styles.donpocketlist]}
       >
-        <DonPocket data={data} />
+        <DonPocket item={data} isActive={null} />
       </TouchableOpacity>
     );
   };
@@ -48,56 +36,13 @@ const FilteredDonPocketList = function ({ navigation, filteredPocketData }) {
   const Pocket = () => {
     return (
       <View>
-      {data.map((item =>  <RenderItem data={item} keyExtractor={(item) => item.pocketId} />)
-      )}
+        {data.map((item) => (
+          <RenderItem data={item} keyExtractor={(item) => item.pocketId} />
+        ))}
       </View>
     );
   };
   return <Pocket />;
-};
-
-// 돈포켓
-const DonPocket = ({ data }) => {
-  let today = new Date();
-  
-  const donPocket = data;
-  const menuIcon = require("../../assets/icons/menu.png");
-  const checkIcon = require("../../assets/icons/check.png");
-  const closeIcon = require("../../assets/icons/close.png");
-  const openIcon = require("../../assets/icons/open.png");
-  const pigIcon = require("../../assets/icons/pig.png");
-
-  return (
-    <View
-      className="flex-row items-center p-5"
-      style={[styles.donpocket, styles.shadow]}
-    >
-      {/* 돈포켓 상태 */}
-      {donPocket.pocketType === "piggyBank" ? (
-        <Image source={pigIcon} />
-      ) : donPocket.isPaid === true ? (
-        <Image source={checkIcon} />
-      ) : donPocket.isDeposited === true ? (
-        <Image source={closeIcon} />
-      ) : (
-        <Image source={openIcon} />
-      )}
-
-      {/* 돈포켓 내용 */}
-      <View className="flex-grow items-start ml-3">
-        <View className="flex-row items-center">
-          <Text className="font-bold text-lg mr-3">{donPocket.pocketName}</Text>
-          <Text className="">
-            {today.getMonth()}월 {donPocket.paymentDate}일
-          </Text>
-        </View>
-
-        <Text className="">{formattedNumber(donPocket.balance)}원</Text>
-      </View>
-      {/* 돈포켓 순서 정렬 */}
-      <Image source={menuIcon} />
-    </View>
-  );
 };
 
 const styles = StyleSheet.create({

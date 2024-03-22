@@ -1,25 +1,21 @@
 import {
   GestureHandlerRootView,
-  gestureHandlerRootHOC,
 } from "react-native-gesture-handler";
-import DraggableFlatList, {
+import {
   ScaleDecorator,
   ShadowDecorator,
   OpacityDecorator,
   useOnCellActiveAnimation,
   NestableDraggableFlatList,
 } from "react-native-draggable-flatlist";
-
-import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { Dimensions } from "react-native";
 import { useRef, useState } from "react";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const SCREEN_HEIGHT = Dimensions.get("window").height;
-const formattedNumber = function (number) {
-  return number.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
-};
-import theme from "../style";
+
+import DonPocket from "./DonPocketItem";
+
 
 // 돈포켓 리스트
 const DonPocketList = function ({ navigation, pocketData, changePocketOrder }) {
@@ -72,50 +68,6 @@ const DonPocketList = function ({ navigation, pocketData, changePocketOrder }) {
   return <Pocket />;
 };
 
-// 돈포켓
-const DonPocket = ({ item, isActive }) => {
-  let today = new Date();
-  const donPocket = item;
-  const menuIcon = require("../../assets/icons/menu.png");
-  const checkIcon = require("../../assets/icons/check.png");
-  const closeIcon = require("../../assets/icons/close.png");
-  const openIcon = require("../../assets/icons/open.png");
-  const pigIcon = require("../../assets/icons/pig.png");
-  // 꾹 누르면 그림자 없에기
-  const shadow = isActive ? null : styles.shadow;
-
-  return (
-    <View
-      className="flex-row items-center p-5"
-      style={[styles.donpocket, shadow]}
-    >
-      {/* 돈포켓 상태 */}
-      {donPocket.pocketType === "piggyBank" ? (
-        <Image source={pigIcon} />
-      ) : donPocket.isPaid === true ? (
-        <Image source={checkIcon} />
-      ) : donPocket.isDeposited === true ? (
-        <Image source={closeIcon} />
-      ) : (
-        <Image source={openIcon} />
-      )}
-
-      {/* 돈포켓 내용 */}
-      <View className="flex-grow items-start ml-3">
-        <View className="flex-row items-center">
-          <Text className="font-bold text-lg mr-3">{donPocket.pocketName}</Text>
-          <Text className="">
-            {today.getMonth()}월 {donPocket.paymentDate}일
-          </Text>
-        </View>
-
-        <Text className="">{formattedNumber(donPocket.balance)}원</Text>
-      </View>
-      {/* 돈포켓 순서 정렬 */}
-      <Image source={menuIcon} />
-    </View>
-  );
-};
 
 const styles = StyleSheet.create({
   shadow: {
