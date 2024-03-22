@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Text, View, Dimensions, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import theme from '../../../../style';
 import { useNavigation } from '@react-navigation/native';
+import formattedNumber from '../../../../components/moneyFormatter';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const RegistAutoSendFinish = ({ navigation,route }) => {
@@ -15,9 +16,13 @@ const RegistAutoSendFinish = ({ navigation,route }) => {
   const endMonth = route.params.endMonth
   const showMyAccountName = route.params.showMyAccountName
   const showOtherAccountName = route.params.showOtherAccountName
+  const settingStart = route.params.settingStart
+  const settingEnd = route.params.settingEnd
+  
   const payload = {
-    bankName,accountId,date,amount,startYear,startMonth,endYear,endMonth,showMyAccountName,showOtherAccountName
+    bankName,accountId,date,amount,startYear,startMonth,endYear,endMonth,showMyAccountName,showOtherAccountName,settingEnd
   }
+  
 
   return (
     <View style={styles.container}>
@@ -31,7 +36,7 @@ const RegistAutoSendFinish = ({ navigation,route }) => {
       </View>
       <View style={styles.box}>
         <Text>이체 금액 </Text>
-        <Text>{amount}원</Text>
+        <Text>{formattedNumber(amount)}원</Text>
       </View>
       <View style={styles.box}>
         <Text>자동이체 주기</Text>
@@ -39,15 +44,14 @@ const RegistAutoSendFinish = ({ navigation,route }) => {
       </View>
       <View style={styles.box}>
         <Text>자동이체 기간</Text>
-        <Text>{startYear}.{startMonth} ~ {endYear}.{endMonth}</Text>
+        <Text>{startYear}.{startMonth} ~ {settingEnd ? <Text>{endYear}.{endMonth}</Text>: <Text>종료일 없음</Text>}</Text>
       </View>
       </View>
-      
       <TouchableOpacity style={theme.bottomButton} 
       onPress={() => {
         console.log(payload)
         navigation.navigate('Main')}}>
-        <Text className='text-white text-lg'>확인</Text>
+        <Text className='text-white text-lg font-bold'>확인</Text>
       </TouchableOpacity>
     </View>
   );
