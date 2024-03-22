@@ -39,6 +39,7 @@ public class AccountService {
     @Transactional
     public AccountCreateResponseDto createAccount(AccountCreateRequestDto requestDto) {
         Member member = authenticationService.getMemberByAuthentication();
+        if(accountRepository.findByMember(member).isPresent()) throw new AccountException(ErrorCode.ACCOUNT_EXISTS);
 
         // RSAKey 생성
         HashMap<String, String> keyPair = RSAUtil.generateKeyPair();

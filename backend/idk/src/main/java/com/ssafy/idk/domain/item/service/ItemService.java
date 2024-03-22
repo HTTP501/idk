@@ -28,7 +28,6 @@ import java.util.List;
 public class ItemService {
 
     private final ItemRepository itemRepository;
-    private final MemberRepository memberRepository;
     private final AccountService accountService;
     private final TransactionRepository transactionRepository;
     private final AuthenticationService authenticationService;
