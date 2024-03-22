@@ -126,12 +126,19 @@ const Chart = () => {
             <G>
               {x.ticks().map((tick, index) => (
                 <G key={index}>
-                  <Ellipse
-                    x={x(tick)}
-                    y={height - marginBottom + 17}
-                    rx={20}
-                    ry={10}
-                    fill={skyBright1}
+                  <Rect
+                    x={x(tick) - 17}
+                    y={height - marginBottom + 7}
+                    width="35"
+                    height="18"
+                    rx={3}
+                    ry={3}
+                    fill={
+                      d3.timeFormat("%Y")(tick) == selectedYear &&
+                      d3.timeFormat("%m")(tick) == selectedMonth
+                        ? skyBright1
+                        : "grey"
+                    }
                     onPress={() => clickMonth(d3.timeFormat("%y.%m")(tick))}
                   />
                   <SvgText
@@ -139,6 +146,7 @@ const Chart = () => {
                     y={height - marginBottom + 20}
                     fontSize="10"
                     textAnchor="middle"
+                    fill={"white"}
                   >
                     {d3.timeFormat("%y.%m")(tick)}
                   </SvgText>
