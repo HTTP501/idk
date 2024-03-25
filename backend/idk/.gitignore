@@ -38,3 +38,5 @@ out/
 
 ### secret file ###
 application.yml
+*.key
+*.pem
