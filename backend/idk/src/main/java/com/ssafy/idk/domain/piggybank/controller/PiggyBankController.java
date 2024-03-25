@@ -27,9 +27,16 @@ public class PiggyBankController {
     }
 
     @Operation(summary = "저금통 조회")
-    @GetMapping(value = "/{accountId}")
-    public ResponseEntity<ResultResponse> getPiggyBank(@PathVariable("accountId") Long accountId) {
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.PIGGY_BANK_GET_SUCCESS, piggyBankService.getPiggyBank(accountId)));
+    @GetMapping(value = "")
+    public ResponseEntity<ResultResponse> getPiggyBank() {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.PIGGY_BANK_GET_SUCCESS, piggyBankService.getPiggyBank()));
+    }
+
+
+    @Operation(summary = "저금통 해지")
+    @DeleteMapping(value = "/{piggyBankId}")
+    public ResponseEntity<ResultResponse> deletePiggyBank(@PathVariable("piggyBankId") Long piggyBankId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.PIGGY_BANK_DELETE_SUCCESS, piggyBankService.deletePiggyBank(piggyBankId)));
     }
 
 }
