@@ -31,17 +31,17 @@ const TransactionList = ({ navigation }) => {
   let [loading, setLoading] = useState(false);
   useEffect(() => {
     console.log("계좌, 돈포켓 API 호출 위치");
-    getAccountAxios(
-      (res) => {
-        setAccount(res.data.data);
-      },
-      (err) => {
-        console.log(err);
-      }
-    )
+    // getAccountAxios(
+    //   (res) => {
+    //     setAccount(res.data.data);
+    //   },
+    //   (err) => {
+    //     console.log(err);
+    //   }
+    // )
     setTimeout(() => {
       setLoading(true);
-    }, 1000);
+    }, 300);
   }, [isFocused]);
 
   // 이체 데이터
@@ -107,7 +107,7 @@ const TransactionList = ({ navigation }) => {
           <Option account={account} />
 
           {/* 이체내역 */}
-          <DepositList deposit={deposit} />
+          <DepositList deposit={deposit} navigation={navigation}/>
           <StatusBar style="auto" />
         </ScrollView>
       ) : <Loading/>}
