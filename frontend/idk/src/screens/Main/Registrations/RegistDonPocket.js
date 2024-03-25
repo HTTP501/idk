@@ -40,8 +40,8 @@ const RegistDonPocket = ({navigation}) => {
         돈포켓 생성하기
       </Text>
       <View className="items-center">
-        {myData.map((item) => (
-          <Pocket myDataItemId={item} navigation={navigation}/>
+        {myData.map((item, index) => (
+          <Pocket myDataItemId={item} key={index} navigation={navigation}/>
         ))}
       </View>
     </View>

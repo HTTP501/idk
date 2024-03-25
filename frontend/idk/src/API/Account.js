@@ -13,6 +13,7 @@ export const createAccountAxios = async function (data, success, fail) {
 export const getAccountAxios = async function (success, fail) {
   await local.get("/account/").then(success).catch(fail);
 };
+
 // 이체내역 조회
 export const getAccountTransactionAxios = async function (success, fail) {
   await local.get("/transaction/").then(success).catch(fail);
