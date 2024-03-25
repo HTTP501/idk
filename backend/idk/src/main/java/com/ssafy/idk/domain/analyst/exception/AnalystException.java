@@ -1,4 +1,4 @@
-package com.ssafy.idk.domain.Analyst.exception;
+package com.ssafy.idk.domain.analyst.exception;
 
 import com.ssafy.idk.global.error.ErrorCode;
 import lombok.Getter;
