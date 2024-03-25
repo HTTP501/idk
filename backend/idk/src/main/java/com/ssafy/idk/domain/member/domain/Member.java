@@ -1,9 +1,11 @@
 package com.ssafy.idk.domain.member.domain;
 
+import com.ssafy.idk.domain.Analyst.domain.Analyst;
 import com.ssafy.idk.domain.account.domain.Account;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -43,4 +45,12 @@ public class Member {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public void updateAutoTransferPushEnabled() {
+        this.autoTransferPushEnabled = !this.autoTransferPushEnabled;
+    }
+
+    public void updateTransactionPushEnabled() {
+        this.transactionPushEnabled = !this.transactionPushEnabled;
+    }
 }

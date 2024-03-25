@@ -12,32 +12,38 @@ public class RedisService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
+    // 인증 코드 저장
     public void saveVerificationCodeToRedis(String phoneNumber, String verificationCode) {
         String key = "verification_code_" + phoneNumber;
         redisTemplate.opsForValue().set(key, verificationCode);
-        redisTemplate.expire(key, 5, TimeUnit.MINUTES); // 인증 코드는 5분 후에 만료될 수 있도록 설정
+        redisTemplate.expire(key, 5, TimeUnit.MINUTES);
     }
 
+    // 리프래시 토큰 저장
     public void saveRefreshTokenToRedis(String phoneNumber, String refreshToken) {
         String key = "refresh_token_" + phoneNumber;
         redisTemplate.opsForValue().set(key, refreshToken);
     }
 
+    // 인증 코드 조회
     public String getVerificationCodeFromRedis(String phoneNumber) {
         String key = "verification_code_" + phoneNumber;
         return redisTemplate.opsForValue().get(key);
     }
 
+    // 리프래시 토큰 조회
     public String getRefreshTokenFromRedis(String phoneNumber) {
         String key = "refresh_token_" + phoneNumber;
         return redisTemplate.opsForValue().get(key);
     }
 
+    // 인증 코드 삭제
     public void deleteVerificationCode(String phoneNumber) {
         String key = "verification_code_" + phoneNumber;
         redisTemplate.delete(key);
     }
 
+    // 리프래시 토큰 삭제
     public void deleteRefreshToken(String phoneNumber) {
         String key = "refresh_token_" + phoneNumber;
         redisTemplate.delete(key);

@@ -34,6 +34,8 @@ public enum ResultCode {
     MEMBER_LOGIN_BIO_SUCCESS(200, "M004", "생체 인증 로그인 성공했습니다."),
     MEMBER_PHONE_VERIFICATION_REQUEST_SUCCESS(200, "M005", "휴대폰 본인 인증 요청 성공했습니다."),
     MEMBER_PHONE_CODE_VERIFICATION_SUCCESS(200, "M006", "휴대폰 인증 코드 검증에 성공했습니다."),
+    MEMBER_AUTO_TRANSFER_PUSH_SUCCESS(200, "M007", "자동이체 알림 설정을 변경했습니다."),
+    MEMBER_TRANSACTION_PUSH_SUCCESS(200, "M008", "입출금 알림 설정을 변경했습니다."),
 
     // PIGGY_BANK
     PIGGY_BANK_CREATE_SUCCESS(201, "PB201", "저금통 가입에 성공했습니다."),
@@ -73,10 +75,18 @@ public enum ResultCode {
     POCKET_DEPOSIT_SUCCESS(200, "P208", "해당 돈 포켓에 목표금액을 입금했습니다."),
     POCKET_WITHDRAWAL_SUCCESS(200, "P209", "해당 돈 포켓의 입금금액을 출금했습니다."),
 
+    // Analyst
+    ANALYST_GET_TOTAL_AMOUNT_SUCCESS(200, "AN001", "총 지출 금액을 조회했습니다."),
+    ANALYST_GET_CARD_AMOUNT_SUCCESS(200, "AN002", "카드 지출 금액을 조회했습니다."),
+    ANALYST_GET_UTILITY_AMOUNT_SUCCESS(200, "AN003", "공과금 지출 금액을 조회했습니다."),
+    ANALYST_GET_COMMON_AMOUNT_SUCCESS(200, "AN004", "일반 지출 금액을 조회했습니다."),
+    ANALYST_GET_MONTH_AMOUNT_SUCCESS(200, "AN005", "특정 월 지출 금액을 조회했습니다."),
+    ANALYST_GET_CURRENT_MONTH_AMOUNT_SUCCESS(200, "AN006", "이번 달 지출 금액을 조회했습니다."),
 
+    // PAYMENT
+    PAYMENT_READY_SUCCESS(200, "P001", "결제 요청을 성공했습니다"),
+    PAYMENT_APPROVAL_SUCCESS(200, "P002", "결제 승인을 성공했습니다"),
     ;
-
-
 
     private final int status;
     private final String code;

@@ -21,8 +21,8 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @Operation(summary = "계좌 입출금 내역 조회")
-    @GetMapping("/{memberId}")
-    public ResponseEntity<ResultResponse> getAccount(@PathVariable("memberId") Long memberId){
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.ACCOUNT_GET_SUCCESS, transactionService.getTransaction(memberId)));
+    @GetMapping("/")
+    public ResponseEntity<ResultResponse> getAccount(){
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.ACCOUNT_GET_SUCCESS, transactionService.getTransaction()));
     }
 }

@@ -1,4 +1,4 @@
-package com.ssafy.idk.domain.item.dto.response;
+package com.ssafy.idk.domain.shop.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
