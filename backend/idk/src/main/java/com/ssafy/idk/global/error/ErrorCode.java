@@ -7,6 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorCode {
 
+    // COMMON
+    COMMON_MEMBER_NOT_CORRECT(409, "C401", "해당 요청 사용자와 해당 정보의 사용자가 일치하지 않습니다."),
+
     // ITEM
     ITEM_CATEGORY_NOT_FOUND(404, "I401", "해당 상품의 카테고리가 존재하지 않습니다"),
     ITEM_NOT_FOUND(404, "I402", "해당 상품이 존재하지 않습니다"),
@@ -42,9 +45,37 @@ public enum ErrorCode {
     // RSAKEY
     RSAKEY_NOT_FOUND(404, "R404", "RSAKEY가 존재하지 않습니다."),
 
+    // PIGGY_BANK
+    PIGGY_BANK_EXISTS(409, "PB401", "이미 저금통을 가입한 계좌입니다."),
+    PIGGY_BANK_INSUFFICIENT_ACCOUNT_BALANCE(409, "PB402", "계좌 잔액이 부족합니다."),
+    PIGGY_BANK_NOT_FOUND(404, "PB403", "저금통이 존재하지 않습니다."),
+    PIGGY_BANK_INSUFFICIENT_BALANCE(409, "PB404", "저금통 잔액이 부족합니다."),
+
+    // TARGET_SAVING
+    TARGET_SAVING_NOT_FOUND(404, "TS401", "해당 목표저축이 존재하지 않습니다."),
+
+    // AUTO_TRANSFER
+    AUTO_TRANSFER_MY_ACCOUNT_NOT_FOUND(404, "AT401", "출금 계좌가 유효하지 않습니다."),
+    AUTO_TRANSFER_INVALID_ACCOUNT(404, "AT402", "자동이체 계좌가 유효하지 않습니다."),
+    AUTO_TRANSFER_AMOUNT_NEED_TO_EXCEED_ZERO(409, "AT403", "자동이체 금액은 0원 이하로 등록할 수 없습니다."),
+    AUTO_TRANSFER_IMPOSSIBLE_STARTDATE(409, "AT404", "자동이체 기간이 유효하지 않습니다."),
+    AUTO_TRANSFER_NOT_FOUND(404, "AT405", "해당 자동이체 정보가 존재하지 않습니다."),
+
+    // AUTO_DEBIT
+    AUTO_DEBIT_NOT_FOUND(404, "AD401", "해당 자동납부가 존재하지 않습니다."),
+
+    // POCKET
+    POCKET_TARGET_SAVING_NOT_FOUND(404, "P401", "해당 목표저축이 존재하지 않습니다."),
+    POCKET_AUTO_TRANSFER_NOT_FOUND(404, "P402", "해당 자동이체가 존재하지 않습니다."),
+    POCKET_AUTO_DEBIT_NOT_FOUND(404, "P403", "해당 자동결제가 존재하지 않습니다."),
+    POCKET_NOT_FOUND(404, "P404", "해당 돈 포켓이 존재하지 않습니다."),
+    POCKET_IMPOSSIBLE_DEPOSIT(409, "P405", "해당 돈 포켓에 돈을 입금할 수 없습니다."),
+    POCKET_IMPOSSIBLE_WITHDRAWAL(409, "P406", "해당 돈 포켓의 돈을 출금할 수 없습니다."),
+
     // PAYMENT
     PAYMENT_VERIFY_FAIL(400, "P401", "결제수단 검증에 실패했습니다"),
-    PAYMENT_INFORMATION_NOT_FOUND(404, "P402", "결제 요청 정보를 찾을 수 없습니다");
+    PAYMENT_INFORMATION_NOT_FOUND(404, "P402", "결제 요청 정보를 찾을 수 없습니다")
+    ;
 
     private final int status;
     private final String code;
