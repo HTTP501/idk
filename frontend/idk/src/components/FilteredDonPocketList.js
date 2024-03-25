@@ -21,6 +21,8 @@ const FilteredDonPocketList = function ({ navigation, filteredPocketData }) {
           // 저금통은 저금통 페이지로 
           if (data.pocketType === "piggyBank") {
             navigation.navigate("DetailSavingBox", { pocketId });
+          } else if (data.pocketType === 'saving') {
+            navigation.navigate("DetailGoalSaving", { pocketId });
           } else {
             navigation.navigate("DetailPocket", { pocketId });
           }
@@ -37,7 +39,7 @@ const FilteredDonPocketList = function ({ navigation, filteredPocketData }) {
     return (
       <View>
         {data.map((item) => (
-          <RenderItem data={item} keyExtractor={(item) => item.pocketId} />
+          <RenderItem key={item.pocketId} data={item} keyExtractor={(item) => item.pocketId} />
         ))}
       </View>
     );

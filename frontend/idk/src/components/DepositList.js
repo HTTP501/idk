@@ -41,7 +41,7 @@ const DepositOnedayList = function ({ item,navigation }) {
         item={item} 
         key={index}
         navigation={navigation}
-        />;
+        />
       })}
     </View>
   );
@@ -67,7 +67,7 @@ const DepositItem = function ({ item,navigation }) {
       </View>
       <View className="flex-grow">
         <Text>{item.transactionContent}</Text>
-        <Text>{time}</Text>
+        <Text className='text-xs'>{time}</Text>
       </View>
       <View className="items-end">
         <Text

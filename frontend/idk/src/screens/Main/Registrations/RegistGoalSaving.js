@@ -68,7 +68,7 @@ const RegistGoalSaving = ({ navigation, route }) => {
   useEffect(() => {
     const numberTerm = Number(term);
     if ((term !== " ") & (numberTerm * goalAmount !== 0)) {
-      setMonthlyAmount(String(Math.ceil(goalAmount / numberTerm)));
+      setMonthlyAmount(String(Math.ceil(goalAmount / numberTerm / 100) * 100));
     }
   }, [term, goalAmount]);
 
