@@ -1,4 +1,4 @@
-package com.ssafy.idk.domain.piggybank.dto;
+package com.ssafy.idk.domain.piggybank.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,15 +11,20 @@ public class PiggyBankResponseDto {
 
     private Long piggyBankId;
     private Long accountId;
+    private String name;
+    private Long balance;
 
     public static PiggyBankResponseDto of (
-            final Long piggyBankId,
-            final Long accountId
+            Long piggyBankId,
+            Long accountId,
+            String name,
+            Long balance
     ) {
         return PiggyBankResponseDto.builder()
                 .piggyBankId(piggyBankId)
                 .accountId(accountId)
+                .name(name)
+                .balance(balance)
                 .build();
     }
-
 }

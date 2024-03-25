@@ -46,7 +46,7 @@ public enum ErrorCode {
     RSAKEY_NOT_FOUND(404, "R404", "RSAKEY가 존재하지 않습니다."),
 
     // PIGGY_BANK
-    PIGGY_BANK_ALREADY_CREATED(409, "PB401", "이미 저금통을 가입한 계좌입니다."),
+    PIGGY_BANK_EXISTS(409, "PB401", "이미 저금통을 가입한 계좌입니다."),
     PIGGY_BANK_INSUFFICIENT_ACCOUNT_BALANCE(409, "PB402", "계좌 잔액이 부족합니다."),
     PIGGY_BANK_NOT_FOUND(404, "PB403", "저금통이 존재하지 않습니다."),
     PIGGY_BANK_INSUFFICIENT_BALANCE(409, "PB404", "저금통 잔액이 부족합니다."),

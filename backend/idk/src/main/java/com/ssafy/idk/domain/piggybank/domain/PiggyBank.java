@@ -3,6 +3,9 @@ package com.ssafy.idk.domain.piggybank.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -18,5 +21,20 @@ public class PiggyBank {
 
     @JoinColumn(name = "account_id")
     private Long accountId;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "balance")
+    private Long balance;
+
+    @Column(name = "create_at")
+    private LocalDateTime createAt;
+
+    @PrePersist
+    public void prePresist() {
+        this.name = "저금통";
+        this.createAt = LocalDateTime.now();
+    }
 
 }
