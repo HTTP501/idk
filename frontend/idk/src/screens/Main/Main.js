@@ -56,15 +56,16 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     // 계좌 데이터 받아오기
     console.log("계좌, 돈포켓 API 호출 위치");
     // Axios 주석처리
-    // getAccountAxios(
-    //   (res) => {
-    //     console.log("계좌 조회",res.data.data)
-    //     setAccount(res.data.data);
-    //   },
-    //   (err) => {
-    //     console.log(err);
-    //   }
-    // );
+    getAccountAxios(
+      (res) => {
+        console.log("Main.js의 계좌조회 res",res)
+  
+        setAccount(res.data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
     setTimeout(() => {
       setLoading(true);
     }, 500);
