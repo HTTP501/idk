@@ -21,7 +21,7 @@ const AUTH_KEY = "@auth";
 const SIGNUP_KEY = "@signup";
 
 export default function MainApp() {
-  // AsyncStorage.clear()
+  // AsyncStorage.clear();
   const navigation = useNavigation();
   const [authData, setAuthData] = useState({});
   const [signupData, setSignupData] = useState({});
