@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ssafy.ca.dto.CreateCIRequestDto;
 import com.ssafy.ca.dto.GetCIRequestDto;
 import com.ssafy.ca.dto.SignRequestDto;
+import com.ssafy.ca.dto.SignVerifyRequestDto;
 import com.ssafy.ca.global.result.ResultCode;
 import com.ssafy.ca.global.result.ResultResponse;
 import com.ssafy.ca.service.CaService;
@@ -26,7 +27,7 @@ public class CaController {
     @PostMapping("/member/ci_create")
     public ResponseEntity<ResultResponse> createCI(@RequestBody CreateCIRequestDto requestDto) {
 
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.CA_CI_CREATE_SUCCESS, caService.createCI(requestDto)));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.CA_CREATE_CI_SUCCESS, caService.createCI(requestDto)));
     }
 
     // ci 조회
@@ -34,17 +35,23 @@ public class CaController {
     @GetMapping("/member/ci")
     public ResponseEntity<ResultResponse> getCI(@RequestBody GetCIRequestDto requestDto) {
 
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.CA_CI_CREATE_SUCCESS, caService.getCI(requestDto)));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.CA_CI_GET_SUCCESS, caService.getCI(requestDto)));
     }
 
     // 전자서명 요청
     @Operation(summary = "전자서명 요청")
-    @GetMapping("/sign_request")
-    public ResponseEntity<ResultResponse> signRequest(@RequestBody SignRequestDto requestDto) throws JsonProcessingException {
+    @PostMapping("/sign_request")
+    public ResponseEntity<ResultResponse> signRequest(@RequestBody SignRequestDto requestDto) throws Exception {
 
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.CA_CI_CREATE_SUCCESS, caService.signRequest(requestDto)));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.CA_SIGN_REQUEST_SUCCESS, caService.signRequest(requestDto)));
     }
 
 
     // 전자서명 검증
+    @Operation(summary = "전자서명 검증")
+    @PostMapping("/sign_verify")
+    public ResponseEntity<ResultResponse> signVerify(@RequestBody SignVerifyRequestDto requestDto) throws Exception {
+
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.CA_SIGN_VERIFY_SUCCESS, caService.signVerify(requestDto)));
+    }
 }

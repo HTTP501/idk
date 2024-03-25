@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,11 +31,13 @@ public class Member {
     @Column(name = "connection_information")
     private String connectionInformation;
 
-    @Lob
-    @Column(name = "digital_signature")
-    private String digitalSignature;
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<OrganizationMember> organizationMembers;
 
-    public void updateDigitalSignature(String digitalSignature) {
-        this.digitalSignature = digitalSignature;
-    }
+//    @Column(name = "digital_signature", length = 1000, unique = true)
+//    private String digitalSignature;
+//
+//    public void updateDigitalSignature(String digitalSignature) {
+//        this.digitalSignature = digitalSignature;
+//    }
 }

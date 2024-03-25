@@ -18,7 +18,6 @@ public class DigitalSignature {
 
     private static final Logger LOGGER = Logger.getLogger(DigitalSignature.class.getName());
 
-
     // 전자서명 생성
     public static byte[] signData(byte[] data) throws Exception {
 

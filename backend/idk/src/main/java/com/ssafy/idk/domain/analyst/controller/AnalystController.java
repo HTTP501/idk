@@ -1,6 +1,6 @@
-package com.ssafy.idk.domain.analyst.controller;
+package com.ssafy.idk.domain.Analyst.controller;
 
-import com.ssafy.idk.domain.analyst.service.AnalystService;
+import com.ssafy.idk.domain.Analyst.service.AnalystService;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
