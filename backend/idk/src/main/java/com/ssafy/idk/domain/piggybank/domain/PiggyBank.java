@@ -36,4 +36,12 @@ public class PiggyBank {
     @OneToMany(mappedBy = "piggyBank", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<PiggyBankTransaction> transactions = new ArrayList<>();
 
+    public void deposit(Long amount) { // 입금
+        this.balance += amount;
+    }
+    public void withdraw(Long amount) {
+        this.balance -= amount;
+    }
+
+
 }
