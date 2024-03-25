@@ -36,6 +36,7 @@ public enum ResultCode {
     MEMBER_PHONE_CODE_VERIFICATION_SUCCESS(200, "M006", "휴대폰 인증 코드 검증에 성공했습니다."),
     MEMBER_AUTO_TRANSFER_PUSH_SUCCESS(200, "M007", "자동이체 알림 설정을 변경했습니다."),
     MEMBER_TRANSACTION_PUSH_SUCCESS(200, "M008", "입출금 알림 설정을 변경했습니다."),
+    MEMBER_GET_INFO_SUCCESS(200, "M009", "회원 정보를 조회했습니다."),
 
     // PIGGY_BANK
     PIGGY_BANK_CREATE_SUCCESS(201, "PB201", "저금통 가입에 성공했습니다."),

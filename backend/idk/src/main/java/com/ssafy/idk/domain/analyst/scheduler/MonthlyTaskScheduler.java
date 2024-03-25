@@ -1,6 +1,6 @@
-package com.ssafy.idk.domain.Analyst.scheduler;
+package com.ssafy.idk.domain.analyst.scheduler;
 
-import com.ssafy.idk.domain.Analyst.service.AnalystService;
+import com.ssafy.idk.domain.analyst.service.AnalystService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

@@ -79,16 +79,23 @@ public class MemberController {
     }
 
     @Operation(summary = "자동이체 알림 설정 변경")
-    @PostMapping("/push/auto-transfer")
+    @PutMapping("/push/auto-transfer")
     public ResponseEntity<ResultResponse> autoTransferPush() {
         memberService.autoTransferPush();
         return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_AUTO_TRANSFER_PUSH_SUCCESS));
     }
 
     @Operation(summary = "입출금 알림 설정 변경")
-    @PostMapping("/push/transaction")
+    @PutMapping("/push/transaction")
     public ResponseEntity<ResultResponse> transactionPush() {
         memberService.transactionPush();
         return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_TRANSACTION_PUSH_SUCCESS));
+    }
+
+    @Operation(summary = "회원 정보 조회")
+    @GetMapping("/push")
+    public ResponseEntity<ResultResponse> getMemberInfo() {
+
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_GET_INFO_SUCCESS, memberService.getMemberInfo()));
     }
 }
