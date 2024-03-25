@@ -1,13 +1,13 @@
-package com.ssafy.idk.domain.analyst.service;
+package com.ssafy.idk.domain.Analyst.service;
 
-import com.ssafy.idk.domain.analyst.domain.Analyst;
+import com.ssafy.idk.domain.Analyst.domain.Analyst;
 
-import com.ssafy.idk.domain.analyst.dto.AnalystAllAmountResponse;
-import com.ssafy.idk.domain.analyst.dto.AnalystAllAmountResponse.AnalystAllAmount;
-import com.ssafy.idk.domain.analyst.dto.AnalystMonthAmountResponse;
-import com.ssafy.idk.domain.analyst.exception.AnalystException;
-import com.ssafy.idk.domain.analyst.repository.AnalystRepository;
-import com.ssafy.idk.domain.analyst.dto.AnalystCurrentMonthAmoutnResponse;
+import com.ssafy.idk.domain.Analyst.dto.AnalystAllAmountResponse;
+import com.ssafy.idk.domain.Analyst.dto.AnalystAllAmountResponse.AnalystAllAmount;
+import com.ssafy.idk.domain.Analyst.dto.AnalystCurrentMonthAmoutnResponse;
+import com.ssafy.idk.domain.Analyst.dto.AnalystMonthAmountResponse;
+import com.ssafy.idk.domain.Analyst.exception.AnalystException;
+import com.ssafy.idk.domain.Analyst.repository.AnalystRepository;
 import com.ssafy.idk.domain.member.domain.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.global.error.ErrorCode;

@@ -1,5 +1,6 @@
-package com.ssafy.idk.domain.analyst.dto;
+package com.ssafy.idk.domain.Analyst.dto;
 
+import com.ssafy.idk.domain.Analyst.domain.Analyst;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
