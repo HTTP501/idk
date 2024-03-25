@@ -55,19 +55,19 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   useEffect(() => {
     // 계좌 데이터 받아오기
     console.log("계좌, 돈포켓 API 호출 위치");
-
-    getAccountAxios(
-      (res) => {
-        console.log(res.data.data)
-        setAccount(res.data.data);
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+    // Axios 주석처리
+    // getAccountAxios(
+    //   (res) => {
+    //     console.log("계좌 조회",res.data.data)
+    //     setAccount(res.data.data);
+    //   },
+    //   (err) => {
+    //     console.log(err);
+    //   }
+    // );
     setTimeout(() => {
       setLoading(true);
-    }, 1000);
+    }, 500);
     // getPocketAxios(res=>{console.log(res)}, err=>{console.log(err)})
   }, [isFocused]);
 
@@ -238,8 +238,8 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
                     navigation={navigation}
                   />
                   <PlusButton
-                    title={"구독 서비스 등록하기"}
-                    destination={"RegistSubscribe"}
+                    title={"돈포켓 생성하기"}
+                    destination={"RegistDonPocket"}
                     navigation={navigation}
                   />
                   <PlusButton
