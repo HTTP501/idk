@@ -1,6 +1,6 @@
 import { Dimensions } from "react-native";
 
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import theme from "../style";
 import formattedNumber from "./moneyFormatter";
 
@@ -20,8 +20,8 @@ const DepositList = function ({ deposit }) {
   const dateList = Array.from(dateMap.entries());
   return (
     <View>
-      {dateList.map((item) => {
-        return <DepositOnedayList item={item} />;
+      {dateList.map((item, index) => {
+        return <DepositOnedayList item={item} key={index}/>;
       })}
     </View>
   );
@@ -35,8 +35,9 @@ const DepositOnedayList = function ({ item }) {
   return (
     <View>
       <Text className="ml-8 mb-2 text-xs">{date}</Text>
-      {dayitimes.map((item) => {
+      {dayitimes.map((item, index) => {
         return <DepositItem
+        key={index}
         item={item} />;
       })}
     </View>
@@ -54,12 +55,10 @@ const DepositItem = function ({ item }) {
   }`;
   return (
     <View className="flex-row gap-3 px-8 py-3">
-      <View>
-        <Text>아이콘</Text>
-      </View>
+      <Image source={require('../../assets/icons/money.png')} style={{ width: 45, height: 45 }}/>
       <View className="flex-grow">
         <Text>{item.transactionContent}</Text>
-        <Text>{time}</Text>
+        <Text className='text-xs'>{time}</Text>
       </View>
       <View className="items-end">
         <Text

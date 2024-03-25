@@ -29,7 +29,7 @@ const FinishCreateAccount = ({ navigation }) => {
       </View>
       <View className='flex-row items-center mb-60' style={{ width: 200 }}>
         <Text className='text-lg font-bold mr-5'>개설일자 </Text>
-        <Text className='text-base'>{ accountCreatedAt.substr(0,10) }</Text>
+        <Text className='text-base'>{ accountCreatedAt ? accountCreatedAt.substr(0,10) : '' }</Text>
       </View>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Tab')}>
         <Text className='text-white text-lg'>확인</Text>

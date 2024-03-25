@@ -40,7 +40,6 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   useEffect(() => {
     const getAccount = async () => {
       const a = await AsyncStorage.getItem(ACCOUNT_KEY);
-      console.log(a);
       if (a === null) {
         Alert.alert("계좌번호가 없습니다.", "계좌 생성 페이지로 이동합니다.", [
           { text: "확인", onPress: () => navigation.navigate("AccountStack") },
@@ -58,11 +57,12 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
 
     getAccountAxios(
       (res) => {
-        console.log(res.data.data)
+        // console.log(res.data.data)
         setAccount(res.data.data);
       },
       (err) => {
         console.log(err);
+        console.log(err.response);
       }
     );
     setTimeout(() => {

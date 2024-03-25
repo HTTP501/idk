@@ -31,11 +31,15 @@ const DonPocketList = function ({ navigation, pocketData, changePocketOrder }) {
         <OpacityDecorator activeOpacity={0.1}>
           <ShadowDecorator>
             <TouchableOpacity
+              key={pocketId} // 고유한 키 추가
               onLongPress={drag}
               onPress={() => {
                 // 상세 페이지 이동
-                navigation.navigate("DetailPocket", { pocketId });
-                
+                if (item.pocketType === 'saving') {
+                  navigation.navigate("DetailGoalSaving", { pocketId });
+                } else {
+                  navigation.navigate("DetailPocket", { pocketId });
+                }
               }}
               activeOpacity={1}
               style={[styles.donpocketlist]}
