@@ -44,7 +44,7 @@ const DonPocketList = function ({ navigation, pocketData, changePocketOrder }) {
               activeOpacity={1}
               style={[styles.donpocketlist]}
             >
-              <DonPocket item={item} isActive={isActive} />
+              <DonPocket item={item} isActive={isActive} isFiltered={false}/>
             </TouchableOpacity>
           </ShadowDecorator>
         </OpacityDecorator>

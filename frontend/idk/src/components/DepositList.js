@@ -1,11 +1,12 @@
 import { Dimensions } from "react-native";
 
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet,TouchableOpacity } from "react-native";
 import theme from "../style";
 import formattedNumber from "./moneyFormatter";
 
 
-const DepositList = function ({ deposit }) {
+
+const DepositList = function ({ deposit,navigation }) {
   // 1. 날짜별 맵 생성
   const dateMap = new Map();
   for (const item of deposit) {
@@ -20,31 +21,33 @@ const DepositList = function ({ deposit }) {
   const dateList = Array.from(dateMap.entries());
   return (
     <View>
-      {dateList.map((item, index) => {
-        return <DepositOnedayList item={item} key={index}/>;
+      {dateList.map((item,index) => {
+        return <DepositOnedayList item={item} key={index} navigation={navigation}/>;
       })}
     </View>
   );
 };
 
 
-const DepositOnedayList = function ({ item }) {
+const DepositOnedayList = function ({ item,navigation }) {
   const date = item[0];
   const dayitimes = item[1];
   // console.log(date,dayitimes);
   return (
     <View>
       <Text className="ml-8 mb-2 text-xs">{date}</Text>
-      {dayitimes.map((item, index) => {
+      {dayitimes.map((item,index) => {
         return <DepositItem
+        item={item} 
         key={index}
-        item={item} />;
+        navigation={navigation}
+        />
       })}
     </View>
   );
 };
 
-const DepositItem = function ({ item }) {
+const DepositItem = function ({ item,navigation }) {
   const date = new Date(item.transactionCreatedAt);
   // 시간 추출
   const hours = date.getHours();
@@ -54,8 +57,14 @@ const DepositItem = function ({ item }) {
     minutes < 10 ? "0" + minutes : minutes
   }`;
   return (
-    <View className="flex-row gap-3 px-8 py-3">
-      <Image source={require('../../assets/icons/money.png')} style={{ width: 45, height: 45 }}/>
+    <TouchableOpacity className="flex-row gap-3 px-8 py-3"
+    onPress={()=>{
+      console.log('이체 상세 들어가기')
+      navigation.navigate("DetailTransaction",{transactionId:item.transactionId})
+    }}>
+      <View>
+        <Text>아이콘</Text>
+      </View>
       <View className="flex-grow">
         <Text>{item.transactionContent}</Text>
         <Text className='text-xs'>{time}</Text>
@@ -72,7 +81,7 @@ const DepositItem = function ({ item }) {
         </Text>
         <Text>{formattedNumber(item.transactionBalance)}원</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 const styles = StyleSheet.create({});

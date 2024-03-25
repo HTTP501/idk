@@ -70,11 +70,13 @@ const CreateAccount = ({ navigation }) => {
         accountPayDate: Number(accountPayDate)
       },
       async res => {
+        console.log("CreateAccount.js 의 createAccount res",res)
         setAccountNumber(res.data.data.accountNumber)
         setAccountCreatedAt(res.data.data.accountCreatedAt)
         Alert.alert('계좌 생성이 완료되었습니다.','',[{text:'확인', onPress: () => navigation.navigate('FinishCreateAccount')}])
       },
       err => {
+        console.log("CreateAccount.js 의 에러",err)
       }
     )
   }

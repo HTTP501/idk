@@ -4,7 +4,7 @@ import formattedNumber from "./moneyFormatter";
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 // 돈포켓
-const DonPocket = ({ item, isActive }) => {
+const DonPocket = ({ item, isActive, isFiltered }) => {
   let today = new Date();
   const donPocket = item;
   const menuIcon = require("../../assets/icons/menu.png");
@@ -22,13 +22,31 @@ const DonPocket = ({ item, isActive }) => {
     >
       {/* 돈포켓 상태 */}
       {donPocket.pocketType === "piggyBank" ? (
-        <Image source={pigIcon} />
+        <Image
+          source={pigIcon}
+          style={{ width: 30, height: 50, resizeMode: "contain" }}
+        />
       ) : donPocket.isPaid === true ? (
-        <Image source={checkIcon} />
+        <Image
+          source={checkIcon}
+          style={{ width: 30, height: 50, resizeMode: "contain" }}
+        />
       ) : donPocket.isDeposited === true ? (
-        <Image source={closeIcon} />
+        <TouchableOpacity
+        onPress={()=>{console.log('돈포켓해제')}}>
+          <Image
+            source={closeIcon}
+            style={{ width: 30, height: 50, resizeMode: "contain" }}
+          />
+        </TouchableOpacity>
       ) : (
-        <Image source={openIcon} />
+        <TouchableOpacity
+        onPress={()=>{console.log('돈포켓잠금')}}>
+          <Image
+            source={openIcon}
+            style={{ width: 30, height: 50, resizeMode: "contain" }}
+          />
+        </TouchableOpacity>
       )}
 
       {/* 돈포켓 내용 */}
@@ -43,7 +61,7 @@ const DonPocket = ({ item, isActive }) => {
         <Text className="">{formattedNumber(donPocket.balance)}원</Text>
       </View>
       {/* 돈포켓 순서 정렬 */}
-      <Image source={menuIcon} />
+      {isFiltered ? null : <Image source={menuIcon} />}
     </View>
   );
 };

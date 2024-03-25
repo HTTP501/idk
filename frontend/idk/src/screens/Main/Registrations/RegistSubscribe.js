@@ -12,11 +12,14 @@ import {
 import theme from "../../../style";
 import formattedNumber from "../../../components/moneyFormatter";
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
-const RegistSubscribe = ({ navigation }) => {
+// 페이지
+const RegistSubscribe = ({ navigation,route }) => {
   // 서비스 명과, 이체 주기, 가격 변수
-  let [serviceName, setServiceName] = useState("");
+  const transactionData = route.params.transactionData
+  let [serviceName, setServiceName] = useState(transactionData.transactionContent);
   let [period, setPeriod] = useState(15);
-  let [price, setPrice] = useState(3750);
+  let [price, setPrice] = useState(transactionData.transactionAmount);
+  console.log(transactionData)
   // 돈 입력
   const changeMoney = (text)=>{
     if (text.length === 0){
@@ -59,7 +62,7 @@ const RegistSubscribe = ({ navigation }) => {
       <ServiceList
         changeService={(name, cost) => {
           setServiceName(name);
-          setPrice(cost);
+          // setPrice(cost);
         }}
       />
 
@@ -205,7 +208,7 @@ const ServiceList = function ({ changeService }) {
                   {item.name === "기타" ? (
                     <Text className="text-3xl font-bold">+</Text>
                   ) : (
-                    <Image source={item.source} />
+                    <Image source={item.source} style={{width:50, height:50, resizeMode:'contain'}}/>
                   )}
                 </TouchableOpacity>
               );

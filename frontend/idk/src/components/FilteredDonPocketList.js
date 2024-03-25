@@ -30,7 +30,7 @@ const FilteredDonPocketList = function ({ navigation, filteredPocketData }) {
         activeOpacity={1}
         style={[styles.donpocketlist]}
       >
-        <DonPocket item={data} isActive={null} />
+        <DonPocket item={data} isActive={null} isFiltered={true}/>
       </TouchableOpacity>
     );
   };
