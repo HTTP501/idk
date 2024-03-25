@@ -38,6 +38,44 @@ public enum ResultCode {
     MEMBER_TRANSACTION_PUSH_SUCCESS(200, "M008", "입출금 알림 설정을 변경했습니다."),
     MEMBER_GET_INFO_SUCCESS(200, "M009", "회원 정보를 조회했습니다."),
 
+    // PIGGY_BANK
+    PIGGY_BANK_CREATE_SUCCESS(201, "PB201", "저금통 가입에 성공했습니다."),
+    PIGGY_BANK_DELETE_SUCCESS(204, "PB202", "저금통 해지에 성공했습니다."),
+    PIGGY_BANK_GET_SUCCESS(200, "PB203", "저금통을 조회했습니다."),
+    PIGGY_BANK_GET_DETAIL_SUCCESS(200, "PB204", "저금통 입출금내역을 조회했습니다."),
+    PIGGY_BANK_DEPOSIT_SUCCESS(201, "PB205", "저금통에 입금을 완료했습니다."),
+    PIGGY_BANK_WITHDRAW_SUCCESS(201, "PB206", "저금통에서 출금을 완료했습니다."),
+
+    // TARGET_SAVING
+    TARGET_SAVING_CREATE_SUCCESS(201, "TS201", "목표저축 등록을 완료했습니다."),
+    TARGET_SAVING_DELETE_SUCCESS(204, "TS202", "목표저축 해지를 완료했습니다."),
+    TARGET_SAVING_GET_SUCCESS(200, "TS203", "해당 목표저축을 조회했습니다."),
+    TARGET_SAVING_LIST_GET_SUCCESS(200, "TS204", "목표저축 목록을 조회했습니다."),
+
+    // AUTO_TRANSFER
+    AUTO_TRANSFER_CREATE_SUCCESS(201, "AT201", "자동이체 등록을 완료했습니다."),
+    AUTO_TRANSFER_UPDATE_SUCCESS(200, "AT202", "자동이체 수정을 완료했습니다."),
+    AUTO_TRANSFER_DELETE_SUCCESS(204, "AT203", "자동이체 삭제를 완료했습니다."),
+    AUTO_TRANSFER_GET_SUCCESS(200, "AT204", "해당 자동이체 내역을 조회했습니다."),
+    AUTO_TRANSFER_LIST_GET_SUCCESS(200, "AT205", "자동이체 목록을 조회했습니다."),
+
+    // AUTO_DEBIT
+    AUTO_DEBIT_CREATE_SUCCESS(201, "AD201", "자동결제 등록을 완료했습니다."),
+    AUTO_DEBIT_DELETE_SUCCESS(204, "AD202", "자동결제 해지를 완료했습니다."),
+    AUTO_DEBIT_GET_SUCCESS(200, "AD203", "해당 자동결제를 조회했습니다."),
+    AUTO_DEBIT_LIST_GET_SUCCESS(200, "AD204", "자동결제 목록을 조회했습니다."),
+
+    // POCKET
+    POCKET_CREATE_BY_TARGET_SAVING_SUCCESS(201, "P201", "목표저축을 통해 돈 포켓을 생성했습니다."),
+    POCKET_CREATE_BY_AUTO_TRANSFER_SUCCESS(201, "P202", "자동이체를 통해 돈 포켓을 생성했습니다."),
+    POCKET_CREATE_BY_AUTO_DEBIT_SUCCESS(201, "P203", "자동결제를 통해 돈 포켓을 생성했습니다."),
+    POCKET_GET_SUCCESS(200, "P204", "해당 돈 포켓을 조회했습니다."),
+    POCKET_UPDATE_NAME_SUCCESS(200, "P205", "해당 돈 포켓의 이름을 수정했습니다."),
+    POCKET_UPDATE_IS_ACTIVATED_SUCCESS(200, "P206", "해당 돈 포켓의 활성화 여부를 수정했습니다."),
+    POCKET_DELETE_SUCCESS(204, "P207", "해당 돈 포켓을 해지했습니다."),
+    POCKET_DEPOSIT_SUCCESS(200, "P208", "해당 돈 포켓에 목표금액을 입금했습니다."),
+    POCKET_WITHDRAWAL_SUCCESS(200, "P209", "해당 돈 포켓의 입금금액을 출금했습니다."),
+
     // Analyst
     ANALYST_GET_TOTAL_AMOUNT_SUCCESS(200, "AN001", "총 지출 금액을 조회했습니다."),
     ANALYST_GET_CARD_AMOUNT_SUCCESS(200, "AN002", "카드 지출 금액을 조회했습니다."),
@@ -48,7 +86,8 @@ public enum ResultCode {
 
     // PAYMENT
     PAYMENT_READY_SUCCESS(200, "P001", "결제 요청을 성공했습니다"),
-    PAYMENT_APPROVAL_SUCCESS(200, "P002", "결제 승인을 성공했습니다");
+    PAYMENT_APPROVAL_SUCCESS(200, "P002", "결제 승인을 성공했습니다"),
+    ;
 
     private final int status;
     private final String code;
