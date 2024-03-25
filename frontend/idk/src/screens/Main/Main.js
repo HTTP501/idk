@@ -37,7 +37,6 @@ import PiggyBank from "../../components/PiggyBankItem";
 // 메인 페이지
 const Main = gestureHandlerRootHOC(({ navigation }) => {
   const ACCOUNT_KEY = "@account";
-
   // 다른페이지에 갔다가 돌아왔을때 hook 걸어줌
   const isFocused = useIsFocused();
   let [loading, setLoading] = useState(false);

@@ -23,12 +23,9 @@ const Settings = ({ navigation }) => {
     ChangeAccountNameAxios(
       {accountName: accountName},
       res => {
-        console.log(res);
         Alert.alert('계좌 별명 변경이 완료되었습니다.','',[{text:'확인'}])
       },
       err => {
-        console.log(err);
-        console.log(err.response);
       }
     )
   };
@@ -85,7 +82,7 @@ const Settings = ({ navigation }) => {
         <View className='my-10 self-start'>
           <Text className='text-3xl font-bold'>알림 관리</Text>
         </View>
-        <View style={styles.box}>
+        <View style={{...styles.box, paddingBottom:0}}>
           <Text className='text-base text-zinc-500'>입출금 알림(Push)</Text>
           <Switch
             trackColor={{ false: "#767577", true: "#81b0ff" }}
@@ -95,7 +92,7 @@ const Settings = ({ navigation }) => {
             value={isDepositNotificationEnabled}
           />
         </View>
-        <View style={styles.box}>
+        <View style={{...styles.box, paddingBottom:0}}>
           <Text className='text-base text-zinc-500'>자동이체 알림</Text>
           <Switch
             trackColor={{ false: "#767577", true: "#81b0ff" }}
@@ -171,11 +168,13 @@ const styles = StyleSheet.create({
     paddingTop: 100
   },
   box : {
-    width: SCREEN_WIDTH * (9/10),
+    width: SCREEN_WIDTH * (8/10),
     marginBottom: 30,
     borderBottomWidth: 0.5,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingBottom: 10,
+    alignItems: 'center',
   },
   modalContainer: {
     flex: 1,
