@@ -4,7 +4,7 @@ import com.ssafy.idk.domain.analyst.domain.Analyst;
 
 import com.ssafy.idk.domain.analyst.dto.AnalystAllAmountResponse;
 import com.ssafy.idk.domain.analyst.dto.AnalystAllAmountResponse.AnalystAllAmount;
-import com.ssafy.idk.domain.analyst.dto.AnalystCurrentMonthAmoutnResponse;
+import com.ssafy.idk.domain.analyst.dto.AnalystCurrentMonthAmountResponse;
 import com.ssafy.idk.domain.analyst.dto.AnalystMonthAmountResponse;
 import com.ssafy.idk.domain.analyst.exception.AnalystException;
 import com.ssafy.idk.domain.analyst.repository.AnalystRepository;
@@ -60,11 +60,11 @@ public class AnalystService {
     }
 
     // 이번 달 지출 조회 (미완)
-    public AnalystCurrentMonthAmoutnResponse getCurrentMonthAmount() {
+    public AnalystCurrentMonthAmountResponse getCurrentMonthAmount() {
 
         Member member = authenticationService.getMemberByAuthentication();
 
-        return AnalystCurrentMonthAmoutnResponse.of();
+        return AnalystCurrentMonthAmountResponse.of();
     }
 
     // 매달 1일 자정에 이전 달 지출 정보 저장 (미완)
