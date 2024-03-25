@@ -1,13 +1,13 @@
-package com.ssafy.idk.domain.Analyst.service;
+package com.ssafy.idk.domain.analyst.service;
 
-import com.ssafy.idk.domain.Analyst.domain.Analyst;
+import com.ssafy.idk.domain.analyst.domain.Analyst;
 
-import com.ssafy.idk.domain.Analyst.dto.AnalystAllAmountResponse;
-import com.ssafy.idk.domain.Analyst.dto.AnalystAllAmountResponse.AnalystAllAmount;
-import com.ssafy.idk.domain.Analyst.dto.AnalystCurrentMonthAmoutnResponse;
-import com.ssafy.idk.domain.Analyst.dto.AnalystMonthAmountResponse;
-import com.ssafy.idk.domain.Analyst.exception.AnalystException;
-import com.ssafy.idk.domain.Analyst.repository.AnalystRepository;
+import com.ssafy.idk.domain.analyst.dto.AnalystAllAmountResponse;
+import com.ssafy.idk.domain.analyst.dto.AnalystAllAmountResponse.AnalystAllAmount;
+import com.ssafy.idk.domain.analyst.dto.AnalystCurrentMonthAmountResponse;
+import com.ssafy.idk.domain.analyst.dto.AnalystMonthAmountResponse;
+import com.ssafy.idk.domain.analyst.exception.AnalystException;
+import com.ssafy.idk.domain.analyst.repository.AnalystRepository;
 import com.ssafy.idk.domain.member.domain.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.global.error.ErrorCode;
@@ -60,11 +60,11 @@ public class AnalystService {
     }
 
     // 이번 달 지출 조회 (미완)
-    public AnalystCurrentMonthAmoutnResponse getCurrentMonthAmount() {
+    public AnalystCurrentMonthAmountResponse getCurrentMonthAmount() {
 
         Member member = authenticationService.getMemberByAuthentication();
 
-        return AnalystCurrentMonthAmoutnResponse.of();
+        return AnalystCurrentMonthAmountResponse.of();
     }
 
     // 매달 1일 자정에 이전 달 지출 정보 저장 (미완)

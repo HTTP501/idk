@@ -8,11 +8,11 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor
-public class AnalystCurrentMonthAmoutnResponse {
+public class AnalystCurrentMonthAmountResponse {
 
-    public static AnalystCurrentMonthAmoutnResponse of(
+    public static AnalystCurrentMonthAmountResponse of(
     ) {
-        return AnalystCurrentMonthAmoutnResponse.builder()
+        return AnalystCurrentMonthAmountResponse.builder()
                 .build();
     }
 
