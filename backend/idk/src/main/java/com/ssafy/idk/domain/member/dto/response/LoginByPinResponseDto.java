@@ -12,15 +12,12 @@ import java.util.List;
 @AllArgsConstructor
 public class LoginByPinResponseDto {
 
-    private Long memberId;
     private String accessToken;
 
     public static LoginByPinResponseDto of(
-            Long memberId,
             String accessToken
     ) {
         return LoginByPinResponseDto.builder()
-                .memberId(memberId)
                 .accessToken(accessToken)
                 .build();
     }

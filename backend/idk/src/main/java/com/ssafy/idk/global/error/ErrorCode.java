@@ -18,6 +18,7 @@ public enum ErrorCode {
     ACCOUNT_FAIL_SAVE(400, "A403", "계좌 저장을 실패했습니다"),
     ACCOUNT_PWD_NOT_SAME(400, "A404", "계좌 비밀번호와 다릅니다"),
     ACCOUNT_BALANCE_LACK(400, "A405", "계좌의 잔액이 부족합니다"),
+    ACCOUNT_EXISTS(404, "A406", "계좌가 존재합니다"),
 
     // TRANSACTION
 
@@ -34,8 +35,16 @@ public enum ErrorCode {
     MEMBER_INVALID_HEADER_FORMAT(400, "M410", "Authorization 헤더는 Bearer 토큰 형식이어야 합니다."),
     MEMBER_UNKNOWN_ERROR(400, "M411", "알 수 없는 에러가 발생했습니다."),
 
+    // ANALYST
+    ANALYST_NOT_MATCHED_TYPE(400, "AN400", "해당 지출 유형이 없습니다."),
+    ANALYST_NOT_FOUND(404, "AN404", "해당 연월 지출내역이 없습니다."),
+
     // RSAKEY
-    RSAKEY_NOT_FOUND(404, "R404", "RSAKEY가 존재하지 않습니다.");
+    RSAKEY_NOT_FOUND(404, "R404", "RSAKEY가 존재하지 않습니다."),
+
+    // PAYMENT
+    PAYMENT_VERIFY_FAIL(400, "P401", "결제수단 검증에 실패했습니다"),
+    PAYMENT_INFORMATION_NOT_FOUND(404, "P402", "결제 요청 정보를 찾을 수 없습니다");
 
     private final int status;
     private final String code;

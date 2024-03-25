@@ -1,4 +1,4 @@
-package com.ssafy.idk.domain.member.repository;
+package com.ssafy.idk.domain.Analyst.repository;
 
 import com.ssafy.idk.domain.Analyst.domain.Analyst;
 import com.ssafy.idk.domain.member.domain.Member;
@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface MemberRepository extends JpaRepository<Member, Long> {
-
-    Optional<Member> findByPhoneNumber(String phoneNumber);
+public interface AnalystRepository extends JpaRepository<Analyst, Long> {
+    List<Analyst> findAllByMember(Member member);
+    Optional<Analyst> findByMemberAndYearAndMonth(Member member, Integer year, Integer month);
 
 }
