@@ -119,19 +119,6 @@ public class PiggyBankService {
         PiggyBank piggyBank = piggyBankRepository.findByPiggyBankId(piggyBankId)
                 .orElseThrow(() -> new PiggyBankException(ErrorCode.PIGGY_BANK_NOT_FOUND));
 
-//        // 저금통 입출금 내역 조회
-//        List<PiggyBankTransaction> arrayPiggyBankTransaction = piggyBankTranscationRepository.findByPiggyBank(piggyBank);
-//
-//        List<PiggyBankTransactionResponseDto> arrayTransactionResponseDto = new ArrayList<>();
-//        for (PiggyBankTransaction transaction : arrayPiggyBankTransaction) {
-//            arrayTransactionResponseDto.add(
-//                    PiggyBankTransactionResponseDto.of(transaction.getAmount(),
-//                    transaction.getBalance(),
-//                    transaction.getContent(),
-//                    transaction.getCreateAt()
-//            ));
-//        }
-
         return PiggyBankDetailResponseDto.of(
                 piggyBank.getPiggyBankId(),
                 account.getAccountId(),
