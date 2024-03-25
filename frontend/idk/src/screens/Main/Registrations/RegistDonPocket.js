@@ -73,14 +73,14 @@ const Pocket = function ({ myDataItemId,navigation }) {
           </View>
         ) : (
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: theme["sky-basic"] }]}
+            style={[styles.button, { backgroundColor: theme["sky-bright-4"] }]}
             onPress={() => {
               console.log("돈포켓 연결");
               setIsSelected(true);
               setShowModal(true);
             }}
           >
-            <Text className="font-bold text-white">생성</Text>
+            <Text className="font-bold">생성</Text>
           </TouchableOpacity>
         )}
       </View>
