@@ -10,6 +10,7 @@ import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.global.error.ErrorCode;
 import com.ssafy.idk.global.util.RSAUtil;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,14 +36,13 @@ public class MemberService {
     public SignupResponseDto signup(SignupRequestDto requestDto, HttpServletResponse response) {
 
         // RSAKey 생성
-//        HashMap<String, String> keyPair = RSAUtil.generateKeyPair();
-//        String publicKey = keyPair.get("publicKey");
-//        String privateKey = keyPair.get("privateKey");
+        HashMap<String, String> keyPair = RSAUtil.generateKeyPair();
+        String publicKey = keyPair.get("publicKey");
+        String privateKey = keyPair.get("privateKey");
 
         Member member = Member.builder()
                 .name(requestDto.getName())
-                .birth(requestDto.getBirth())
-//                .birth(RSAUtil.encode(publicKey, requestDto.getBirth()))
+                .birthDate(RSAUtil.encode(publicKey, requestDto.getBirthDate()))
                 .pin(bCryptPasswordEncoder.encode(requestDto.getPin()))
                 .phoneNumber(requestDto.getPhoneNumber())
                 .hasBiometric(requestDto.getHasBiometric())
@@ -57,7 +57,7 @@ public class MemberService {
         }
 
         Member savedMember = memberRepository.save(member);
-//        rsaKeyService.saveRSAKey(savedMember.getMemberId(), privateKey);
+        rsaKeyService.saveRSAKey(savedMember.getMemberId(), privateKey);
 
         String accessToken = tokenService.issueToken(response, member);
 
@@ -172,14 +172,24 @@ public class MemberService {
     }
 
     // 자동이체 알림 설정 변경
+    @Transactional
     public void autoTransferPush() {
         Member member = authenticationService.getMemberByAuthentication();
         member.updateAutoTransferPushEnabled();
     }
 
     // 입출금 알림 설정 변경
+    @Transactional
     public void transactionPush() {
         Member member = authenticationService.getMemberByAuthentication();
         member.updateTransactionPushEnabled();
     }
+
+    // 회원 정보 조회
+    public MemberInfoResponseDto getMemberInfo() {
+        Member member = authenticationService.getMemberByAuthentication();
+        return MemberInfoResponseDto.of(member.getTransactionPushEnabled(), member.getAutoTransferPushEnabled());
+    }
+
+
 }
