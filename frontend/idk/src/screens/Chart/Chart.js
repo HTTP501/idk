@@ -19,6 +19,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import * as d3 from "d3";
 import Svg, { Ellipse, G, Rect, Line, Text as SvgText } from "react-native-svg";
+import { Timeline, Tween, Back } from "gsap-rn";
 
 const Chart = () => {
   const [selectedMonth, setSelectedMonth] = useState(null);
@@ -151,18 +152,7 @@ const Chart = () => {
 
     setSelectedYear(dateData.getFullYear());
     setSelectedMonth(dateData.getMonth() + 1);
-    console.log(average); // (있는 경우) 찾은 데이터를 기록합니다.
   };
-  //   await nowData.forEach((data) => {
-  //     if (
-  //       data.date.getFullYear() == selectedYear &&
-  //       data.date.getMonth() + 1 == selectedMonth
-  //     ) {
-  //       setAmount(data.amount);
-  //     }
-  //   });
-  //   console.log(nowAmount);
-  // };
 
   const totalAverageChart = () => {
     return (
@@ -198,7 +188,7 @@ const Chart = () => {
           }}
         >
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            <Svg height={height + 20} width={width}>
+            <Svg height={height + 20} width={width} id="barChart">
               <Line
                 x1="10"
                 y1={height + 20 - marginBottom - y(average)}
@@ -286,6 +276,7 @@ const Chart = () => {
                         </SvgText>
                       ) : null}
                       <Rect
+                        id={d.id}
                         x={barX}
                         y={barY - 20}
                         width={barWidth}
