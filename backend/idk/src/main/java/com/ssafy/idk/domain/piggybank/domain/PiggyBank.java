@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,19 +26,14 @@ public class PiggyBank {
     @OneToOne(fetch = FetchType.LAZY)
     private Account account;
 
-    @Column(name = "name") @NotNull
-    private String name;
-
     @Column(name = "balance") @NotNull
     private Long balance;
 
     @Column(name = "create_at") @NotNull
     private LocalDateTime createAt;
 
-    @PrePersist
-    public void prePresist() {
-        this.name = "저금통";
-        this.createAt = LocalDateTime.now();
-    }
+    @Column(name = "piggy_bank_transaction_id")
+    @OneToMany(mappedBy = "piggyBank", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<PiggyBankTransaction> transactions = new ArrayList<>();
 
 }

@@ -42,7 +42,7 @@ public enum ResultCode {
     PIGGY_BANK_CREATE_SUCCESS(201, "PB201", "저금통 가입에 성공했습니다."),
     PIGGY_BANK_DELETE_SUCCESS(204, "PB202", "저금통 해지에 성공했습니다."),
     PIGGY_BANK_GET_SUCCESS(200, "PB203", "저금통을 조회했습니다."),
-    PIGGY_BANK_TRANSACTION_GET_SUCCESS(200, "PB204", "저금통 입출금내역을 조회했습니다."),
+    PIGGY_BANK_GET_DETAIL_SUCCESS(200, "PB204", "저금통 입출금내역을 조회했습니다."),
     PIGGY_BANK_DEPOSIT_SUCCESS(201, "PB205", "저금통에 입금을 완료했습니다."),
     PIGGY_BANK_WITHDRAW_SUCCESS(201, "PB206", "저금통에서 출금을 완료했습니다."),
 

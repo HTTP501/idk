@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.transform.Result;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/piggy-bank")
@@ -32,11 +34,15 @@ public class PiggyBankController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.PIGGY_BANK_GET_SUCCESS, piggyBankService.getPiggyBank()));
     }
 
-
     @Operation(summary = "저금통 해지")
     @DeleteMapping(value = "/{piggyBankId}")
     public ResponseEntity<ResultResponse> deletePiggyBank(@PathVariable("piggyBankId") Long piggyBankId) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.PIGGY_BANK_DELETE_SUCCESS, piggyBankService.deletePiggyBank(piggyBankId)));
     }
 
+    @Operation(summary = "저금통 상세 조회")
+    @GetMapping(value = "/{piggyBankId}")
+    public ResponseEntity<ResultResponse> getDetailPiggyBank(@PathVariable("piggyBankId") Long piggyBankId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.PIGGY_BANK_GET_DETAIL_SUCCESS, piggyBankService.getDetailPiggyBank(piggyBankId)));
+    }
 }
