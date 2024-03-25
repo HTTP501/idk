@@ -14,6 +14,7 @@ import com.ssafy.idk.domain.piggybank.exception.PiggyBankException;
 import com.ssafy.idk.domain.piggybank.repository.PiggyBankRepository;
 import com.ssafy.idk.domain.piggybank.repository.PiggyBankTranscationRepository;
 import com.ssafy.idk.global.error.ErrorCode;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ public class PiggyBankService {
     private final PiggyBankTranscationRepository piggyBankTranscationRepository;
     private final AuthenticationService authenticationService;
 
+    @Transactional
     public PiggyBankCreateResponseDto createPiggyBank(PiggyBankCreateRequestDto requestDto) {
 
         Member member = authenticationService.getMemberByAuthentication();
@@ -73,6 +75,7 @@ public class PiggyBankService {
         return PiggyBankResponseDto.of(piggyBank.getPiggyBankId(), piggyBank.getAccount().getAccountId(), piggyBank.getBalance());
     }
 
+    @Transactional
     public PiggyBankDeleteResponseDto deletePiggyBank(Long piggyBankId) {
 
         Member member = authenticationService.getMemberByAuthentication();
