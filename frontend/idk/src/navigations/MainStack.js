@@ -2,14 +2,14 @@ import * as React from 'react';
 import Main from '../screens/Main/Main'
 import { CheckSendMoneyInfo, EnterAccount, FinishSendMoney,EnterMoney } from '../screens/Main/SendMoney';
 import { AgreeMyData, CheckMyData, LinkMyData, OutSidePage } from '../screens/Main/MyData/index'
-import { RegistAutoSendContent,RegistAutoSendFinish,RegistGoalSaving, RegistAutoSendAgree, RegistSubscribe,RegistSavingBox } from '../screens/Main/Registrations';
+import { RegistAutoSendContent,RegistAutoSendFinish,RegistGoalSaving,RegistDonPocket, RegistAutoSendAgree, RegistSubscribe,RegistSavingBox } from '../screens/Main/Registrations';
 import TransactionList from '../screens/Main/DetailMyaccount/TransactionList';
 import { DetailPocket, DetailPocketSetting, DetailSavingBox, MinusSavingBox } from '../screens/Main/DetailPocket'
 import { View, Text, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons'; // Import Ionicons from Expo
-
+import DetailTransaction from '../screens/Main/DetailMyaccount/DetailTransaction';
 const Stack = createNativeStackNavigator();
 
 function MainStack({ navigation }) {
@@ -51,6 +51,8 @@ function MainStack({ navigation }) {
         <Stack.Screen name="DetailPocketSetting" component={DetailPocketSetting} options={{ headerShown: true, title:"" }} />
         <Stack.Screen name="DetailSavingBox" component={DetailSavingBox} options={{ headerShown: true, title:"" }} />
         <Stack.Screen name="MinusSavingBox" component={MinusSavingBox} options={{ headerShown: true, title:"" }} />
+        <Stack.Screen name="DetailTransaction" component={DetailTransaction} options={{ headerShown: true, title:"" }} />
+        <Stack.Screen name="RegistDonPocket" component={RegistDonPocket} options={{ headerShown: true, title:"" }} />
       </Stack.Navigator>
   );
 }

@@ -4,4 +4,6 @@ import RegistSavingBox from './RegistSavingBox'
 import RegistSubscribe from './RegistSubscribe'
 import RegistAutoSendContent from './RegistAutoSend/RegistAutoSendContent'
 import RegistAutoSendFinish from './RegistAutoSend/RegistAutoSendFinish'
-export {RegistAutoSendFinish, RegistAutoSendAgree,RegistAutoSendContent, RegistSavingBox, RegistGoalSaving, RegistSubscribe }
+import RegistDonPocket from './RegistDonPocket'
+
+export {RegistAutoSendFinish, RegistAutoSendAgree,RegistAutoSendContent, RegistSavingBox, RegistGoalSaving, RegistSubscribe,RegistDonPocket }

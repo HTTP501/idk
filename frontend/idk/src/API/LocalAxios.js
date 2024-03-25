@@ -19,7 +19,9 @@ export default function localAxios() {
       try {
         const accessToken = await AsyncStorage.getItem("@auth")
         config.headers["Content-Type"] = 'application/json'
-        config.headers.Authorization = `Bearer ${JSON.parse(accessToken).accessToken}`
+        if (accessToken !== null) {
+          config.headers.Authorization = `Bearer ${JSON.parse(accessToken).accessToken}`
+        }
       } catch (error) {
         console.error("Error while setting authorization header:", error)
       }
