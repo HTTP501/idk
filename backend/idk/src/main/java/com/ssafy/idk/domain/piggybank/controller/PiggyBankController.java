@@ -2,6 +2,7 @@ package com.ssafy.idk.domain.piggybank.controller;
 
 
 import com.ssafy.idk.domain.piggybank.dto.request.PiggyBankCreateRequestDto;
+import com.ssafy.idk.domain.piggybank.dto.request.PiggyBankDepositRequestDto;
 import com.ssafy.idk.domain.piggybank.service.PiggyBankService;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;
@@ -44,5 +45,11 @@ public class PiggyBankController {
     @GetMapping(value = "/{piggyBankId}")
     public ResponseEntity<ResultResponse> getDetailPiggyBank(@PathVariable("piggyBankId") Long piggyBankId) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.PIGGY_BANK_GET_DETAIL_SUCCESS, piggyBankService.getDetailPiggyBank(piggyBankId)));
+    }
+
+    @Operation(summary = "저금통 입금")
+    @PatchMapping(value = "/deposit")
+    public ResponseEntity<ResultResponse> depositPiggyBank(@RequestBody PiggyBankDepositRequestDto requestDto) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.PIGGY_BANK_DEPOSIT_SUCCESS, piggyBankService.deposit(requestDto)));
     }
 }

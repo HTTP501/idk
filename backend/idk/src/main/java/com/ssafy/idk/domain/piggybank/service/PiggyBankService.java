@@ -1,14 +1,17 @@
 package com.ssafy.idk.domain.piggybank.service;
 
 import com.ssafy.idk.domain.account.domain.Account;
+import com.ssafy.idk.domain.account.domain.Category;
+import com.ssafy.idk.domain.account.domain.Transaction;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
-import com.ssafy.idk.domain.account.service.AccountService;
+import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.member.domain.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.piggybank.domain.PiggyBank;
 import com.ssafy.idk.domain.piggybank.domain.PiggyBankTransaction;
 import com.ssafy.idk.domain.piggybank.dto.request.PiggyBankCreateRequestDto;
+import com.ssafy.idk.domain.piggybank.dto.request.PiggyBankDepositRequestDto;
 import com.ssafy.idk.domain.piggybank.dto.response.*;
 import com.ssafy.idk.domain.piggybank.exception.PiggyBankException;
 import com.ssafy.idk.domain.piggybank.repository.PiggyBankRepository;
@@ -28,8 +31,9 @@ public class PiggyBankService {
 
     private final AccountRepository accountRepository;
     private final PiggyBankRepository piggyBankRepository;
-    private final PiggyBankTranscationRepository piggyBankTranscationRepository;
+    private final PiggyBankTranscationRepository piggyBankTransactionRepository;
     private final AuthenticationService authenticationService;
+    private final TransactionRepository transactionRepository;
 
     @Transactional
     public PiggyBankCreateResponseDto createPiggyBank(PiggyBankCreateRequestDto requestDto) {
@@ -115,24 +119,98 @@ public class PiggyBankService {
         PiggyBank piggyBank = piggyBankRepository.findByPiggyBankId(piggyBankId)
                 .orElseThrow(() -> new PiggyBankException(ErrorCode.PIGGY_BANK_NOT_FOUND));
 
-        // 저금통 입출금 내역 조회
-        List<PiggyBankTransaction> arrayPiggyBankTransaction = piggyBankTranscationRepository.findByPiggyBank(piggyBank);
-
-        List<PiggyBankTransactionResponseDto> arrayTransactionResponseDto = new ArrayList<>();
-        for (PiggyBankTransaction transaction : arrayPiggyBankTransaction) {
-            arrayTransactionResponseDto.add(
-                    PiggyBankTransactionResponseDto.of(transaction.getAmount(),
-                    transaction.getBalance(),
-                    transaction.getContent(),
-                    transaction.getCreateAt()
-            ));
-        }
+//        // 저금통 입출금 내역 조회
+//        List<PiggyBankTransaction> arrayPiggyBankTransaction = piggyBankTranscationRepository.findByPiggyBank(piggyBank);
+//
+//        List<PiggyBankTransactionResponseDto> arrayTransactionResponseDto = new ArrayList<>();
+//        for (PiggyBankTransaction transaction : arrayPiggyBankTransaction) {
+//            arrayTransactionResponseDto.add(
+//                    PiggyBankTransactionResponseDto.of(transaction.getAmount(),
+//                    transaction.getBalance(),
+//                    transaction.getContent(),
+//                    transaction.getCreateAt()
+//            ));
+//        }
 
         return PiggyBankDetailResponseDto.of(
                 piggyBank.getPiggyBankId(),
                 account.getAccountId(),
                 piggyBank.getBalance(),
-                arrayTransactionResponseDto
+                arrayTransactionResponseDto(piggyBankId)
+        );
+    }
+
+    public List<PiggyBankTransactionResponseDto> arrayTransactionResponseDto(Long piggyBankId) {
+
+        // 저금통 입출금 내역 조회
+        List<PiggyBankTransaction> arrayPiggyBankTransaction = piggyBankTransactionRepository.findByPiggyBank(
+                piggyBankRepository.findByPiggyBankId(piggyBankId)
+                        .orElseThrow(() -> new PiggyBankException(ErrorCode.PIGGY_BANK_NOT_FOUND)));
+
+        List<PiggyBankTransactionResponseDto> arrayTransactionResponseDto = new ArrayList<>();
+        for (PiggyBankTransaction transaction : arrayPiggyBankTransaction) {
+            arrayTransactionResponseDto.add(
+                    PiggyBankTransactionResponseDto.of(transaction.getAmount(),
+                            transaction.getBalance(),
+                            transaction.getContent(),
+                            transaction.getCreateAt()
+                    ));
+        }
+
+        return arrayTransactionResponseDto;
+    }
+
+    @Transactional
+    public DepositResponseDto deposit(PiggyBankDepositRequestDto requestDto) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        Account account = accountRepository.findByMember(member)
+                .orElseThrow(() -> new PiggyBankException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        if (member != account.getMember())
+            throw new PiggyBankException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        // 저금통 유무 확인
+        PiggyBank piggyBank = piggyBankRepository.findByAccount(account)
+                .orElseThrow(() -> new PiggyBankException(ErrorCode.PIGGY_BANK_NOT_FOUND));
+
+        // 계좌 잔고에서 입금 금액만큼 출금할 수 있는지 확인
+        if (account.getBalance() < requestDto.getAmount())
+            throw new PiggyBankException(ErrorCode.PIGGY_BANK_INSUFFICIENT_ACCOUNT_BALANCE);
+
+        // 계좌 출금
+        account.withdraw(requestDto.getAmount());
+        Account savedAccount = accountRepository.save(account);
+
+        // 계좌 입출금 내역 저장
+        Transaction transaction = Transaction.builder()
+                .category(Category.저금통)
+                .content("저금통으로 입금")
+                .amount(requestDto.getAmount())
+                .balance(account.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(account)
+                .build();
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        // 저금통 입금
+        piggyBank.deposit(requestDto.getAmount());
+
+        // 저금통 입출금 내역 저장
+        PiggyBankTransaction piggyBankTransaction = PiggyBankTransaction.builder()
+                .piggyBank(piggyBank)
+                .createAt(LocalDateTime.now())
+                .amount(requestDto.getAmount())
+                .balance(piggyBank.getBalance())
+                .content("저금통으로 입금")
+                .build();
+        PiggyBankTransaction savedPiggyBankTransaction = piggyBankTransactionRepository.save(piggyBankTransaction);
+
+        return DepositResponseDto.of(
+                savedPiggyBankTransaction.getPiggyBankTransactionId(),
+                arrayTransactionResponseDto(piggyBank.getPiggyBankId())
         );
     }
 }
