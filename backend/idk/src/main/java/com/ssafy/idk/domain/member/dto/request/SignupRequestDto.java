@@ -8,7 +8,7 @@ import lombok.Setter;
 public class SignupRequestDto {
 
     private String name;
-    private String birth;
+    private String birthDate;
     private String pin;
     private String phoneNumber;
     private Boolean hasBiometric;
