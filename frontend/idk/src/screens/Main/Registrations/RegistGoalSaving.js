@@ -35,13 +35,32 @@ const RegistGoalSaving = ({ navigation, route }) => {
     }
   }, []);
 
+  // 목표 기간 변경
+  const changeTermAmount = (text) => {
+    if (text.length === 0 || text===" ") {
+      setTerm("");
+    } else {
+      const number = Number(text.replace(/[^0-9]/g, ""));
+      if (number>600){
+        Alert.alert("50년 이상의 기간은 불가능해요.","",[{ text: "확인" }])
+        setTerm("")
+      } else {
+        setTerm(number)
+      }
+    }
+  };
   // 목표 금액 변경
   const changeGoalAmount = (text) => {
     if (text.length === 0) {
       setGoalAmount(0);
     } else {
       const number = Number(text.replace(/[^0-9]/g, ""));
-      setGoalAmount(number);
+      if (number>100000000){
+        Alert.alert("1억 이상의 목표 금액은 불가능해요.","",[{ text: "확인" }])
+        setGoalAmount(100000000)
+      } else {
+        setGoalAmount(number)
+      }
     }
   };
 
@@ -60,7 +79,7 @@ const RegistGoalSaving = ({ navigation, route }) => {
     } else {
       const number = Number(text.replace(/[^0-9]/g, ""));
       if (number < 1 || number > 28) {
-        alert("이체 날짜는 1일부터 28일 사이로 설정해주세요");
+        Alert.alert("이체 날짜는 1일부터 28일 사이로 설정해주세요","",[{ text: "확인" }]);
         setDate("");
       } else {
         setDate(String(number));
@@ -149,7 +168,7 @@ const RegistGoalSaving = ({ navigation, route }) => {
               keyboardType="numeric"
               style={{ borderBottomWidth: 1, borderColor: theme.grey }}
               onChangeText={(text) =>
-                setTerm(Number(text.replace(/[^0-9]/g, "")))
+                changeTermAmount(text)
               }
             />
             <Text className="text-lg font-bold">개월동안</Text>
