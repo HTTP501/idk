@@ -99,7 +99,5 @@ public class DigitalSignature {
             LOGGER.severe("전자 서명 검증 중 오류 발생: " + e.getMessage());
             throw new CaException(ErrorCode.CA_SIGN_VERIFY_ERROR);
         }
-
-
     }
 }
