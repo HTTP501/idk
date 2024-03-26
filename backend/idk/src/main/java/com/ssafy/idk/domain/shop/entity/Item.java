@@ -1,4 +1,4 @@
-package com.ssafy.idk.domain.shop.domain;
+package com.ssafy.idk.domain.shop.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

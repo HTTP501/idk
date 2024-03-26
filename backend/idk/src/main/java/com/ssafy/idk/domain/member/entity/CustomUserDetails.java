@@ -1,4 +1,4 @@
-package com.ssafy.idk.domain.member.domain;
+package com.ssafy.idk.domain.member.entity;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

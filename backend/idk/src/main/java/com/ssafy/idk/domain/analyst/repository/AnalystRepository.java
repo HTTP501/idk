@@ -1,7 +1,7 @@
 package com.ssafy.idk.domain.analyst.repository;
 
-import com.ssafy.idk.domain.analyst.domain.Analyst;
-import com.ssafy.idk.domain.member.domain.Member;
+import com.ssafy.idk.domain.analyst.entity.Analyst;
+import com.ssafy.idk.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

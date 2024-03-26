@@ -1,6 +1,6 @@
-package com.ssafy.idk.domain.account.domain;
+package com.ssafy.idk.domain.account.entity;
 
-import com.ssafy.idk.domain.member.domain.Member;
+import com.ssafy.idk.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
