@@ -33,6 +33,7 @@ public class CaService {
 
     // CI 생성
     // 회원가입과 유사
+    @Transactional
     public CreateCIResponseDto createCI(CreateCIRequestDto requestDto) {
 
         String name = requestDto.getName();
@@ -65,11 +66,7 @@ public class CaService {
     }
 
     // CI 조회
-    public GetCIResponseDto getCI(GetCIRequestDto requestDto) {
-
-        String name = requestDto.getName();
-        String birthDate = requestDto.getBirthDate();
-        String phoneNumber = requestDto.getPhoneNumber();
+    public GetCIResponseDto getCI(String name, String birthDate, String phoneNumber) {
 
         // 이름, 전화번호, 주민번호 유효성 검사
         isValidInput(name, birthDate, phoneNumber);
@@ -79,7 +76,7 @@ public class CaService {
 
         // NULL 체크
         String userCI = member.getConnectionInformation();
-        if (userCI != null) {
+        if (userCI == null) {
             throw new CaException(ErrorCode.CA_CI_NOT_EXIST);
         }
         return GetCIResponseDto.of(userCI);
