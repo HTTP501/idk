@@ -2,7 +2,7 @@ package com.ssafy.idk.domain.piggybank.controller;
 
 
 import com.ssafy.idk.domain.piggybank.dto.request.PiggyBankCreateRequestDto;
-import com.ssafy.idk.domain.piggybank.dto.request.PiggyBankDepositRequestDto;
+import com.ssafy.idk.domain.piggybank.dto.request.PiggyBankTransactionRequestDto;
 import com.ssafy.idk.domain.piggybank.service.PiggyBankService;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;
@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.xml.transform.Result;
 
 @RequiredArgsConstructor
 @RestController
@@ -49,11 +47,13 @@ public class PiggyBankController {
 
     @Operation(summary = "저금통 입금")
     @PatchMapping(value = "/{piggyBankId}/deposit")
-    public ResponseEntity<ResultResponse> depositPiggyBank(@RequestBody PiggyBankDepositRequestDto requestDto, @PathVariable("piggyBankId") Long piggyBankId) {
+    public ResponseEntity<ResultResponse> depositPiggyBank(@RequestBody PiggyBankTransactionRequestDto requestDto, @PathVariable("piggyBankId") Long piggyBankId) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.PIGGY_BANK_DEPOSIT_SUCCESS, piggyBankService.deposit(requestDto, piggyBankId)));
     }
 
-//    @Operation(summary = "저금통 출금")
-//    @PatchMapping(value = "/withdrawal")
-//    public ResponseEntity<ResultResponse> withdrawalPiggyBank(@RequestBody)
+    @Operation(summary = "저금통 출금")
+    @PatchMapping(value = "/{piggyBankId}/withdrawal")
+    public ResponseEntity<ResultResponse> withdrawPiggyBank(@RequestBody PiggyBankTransactionRequestDto requestDto, @PathVariable("piggyBankId") Long piggyBankId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.PIGGY_BANK_WITHDRAW_SUCCESS, piggyBankService.withdraw(requestDto, piggyBankId)));
+    }
 }

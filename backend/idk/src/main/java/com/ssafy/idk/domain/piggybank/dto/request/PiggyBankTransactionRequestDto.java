@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class PiggyBankDepositRequestDto {
+public class PiggyBankTransactionRequestDto {
 
     private Long amount;
 
