@@ -1,4 +1,4 @@
-package com.ssafy.idk.domain.Analyst.domain;
+package com.ssafy.idk.domain.analyst.domain;
 
 import com.ssafy.idk.domain.member.domain.Member;
 import jakarta.persistence.*;
