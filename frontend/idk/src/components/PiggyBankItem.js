@@ -15,7 +15,7 @@ const PiggyBank = ({ piggyBankData,navigation }) => {
       className="flex-row items-center p-5"
       style={[styles.donpocket, styles.shadow]}
       onPress={()=>{
-        navigation.navigate("DetailSavingBox", { pocketId:donPocket?.pocketId });
+        navigation.navigate("DetailSavingBox", { pocketId:donPocket?.piggyBankId });
       }}
     >
       {/* 돈포켓 상태 */}
