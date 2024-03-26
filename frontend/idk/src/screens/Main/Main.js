@@ -30,6 +30,7 @@ import DonPocketList from "../../components/DonPocketList";
 import * as SplashScreen from "expo-splash-screen";
 import { getAccountAxios } from "../../API/Account";
 import { getPocketAxios } from "../../API/DonPocket";
+import { getPiggyBankAxios } from "../../API/Saving";
 import FilteredDonPocketList from "../../components/FilteredDonPocketList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loading from "../../components/Loading";
@@ -41,11 +42,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   const isFocused = useIsFocused();
   let [loading, setLoading] = useState(false);
   // 저금통 데이터
-  const [piggyBankData, setPiggyBankData] = useState({
-    piggyBankId: 1,
-    accountId: 1,
-    balance: 100000000,
-  });
+  const [piggyBankData, setPiggyBankData] = useState(null);
   useEffect(() => {
     // 계좌 데이터 받아오기
     console.log("계좌, 돈포켓 API 호출 위치");
@@ -58,7 +55,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
           // 스토리지에 계좌정보만 저장해주기
           const data = JSON.stringify({
             accountNumber: res.data.data.accountNumber,
-            accountCreatedAt: res.data.data.accountCreatedAt,
+            accountId: res.data.data.accountId
           });
           AsyncStorage.setItem(ACCOUNT_KEY, data);
         },
@@ -80,6 +77,15 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
       );
     };
     getAccount();
+    // 저금통 조회
+    getPiggyBankAxios(
+      res => {
+        setPiggyBankData(res.data.data)
+      },
+      err => {
+        setPiggyBankData(null)
+      }
+    )
     setTimeout(() => {
       setLoading(true);
     }, 700);
@@ -145,17 +151,6 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
       order: 4,
     },
   ]);
-  // 돈포켓
-  let [piggyBank, setPiggyBank] = useState([
-    {
-      pocketId: "5",
-      pocketType: "piggyBank",
-      piggyBankId: 12531,
-      pocketName: "돈포켓이름5",
-      balance: 28300,
-      paymentDate: "3",
-    },
-  ]);
 
   let [pocketType, setPocketType] = useState("total");
 
@@ -208,7 +203,10 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
                   pocketData={pocketData}
                   changePocketOrder={(data) => setPocketData(data)}
                 />
-                <PiggyBank piggyBankData={piggyBankData} navigation={navigation}/>
+                {piggyBankData 
+                  ? <PiggyBank piggyBankData={piggyBankData} navigation={navigation}/>
+                  : null
+                }
               </View>
             ) : pocketType === "saving" ? (
               // 저축 돈포켓
