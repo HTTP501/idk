@@ -48,8 +48,12 @@ public class PiggyBankController {
     }
 
     @Operation(summary = "저금통 입금")
-    @PatchMapping(value = "/deposit")
-    public ResponseEntity<ResultResponse> depositPiggyBank(@RequestBody PiggyBankDepositRequestDto requestDto) {
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.PIGGY_BANK_DEPOSIT_SUCCESS, piggyBankService.deposit(requestDto)));
+    @PatchMapping(value = "/{piggyBankId}/deposit")
+    public ResponseEntity<ResultResponse> depositPiggyBank(@RequestBody PiggyBankDepositRequestDto requestDto, @PathVariable("piggyBankId") Long piggyBankId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.PIGGY_BANK_DEPOSIT_SUCCESS, piggyBankService.deposit(requestDto, piggyBankId)));
     }
+
+//    @Operation(summary = "저금통 출금")
+//    @PatchMapping(value = "/withdrawal")
+//    public ResponseEntity<ResultResponse> withdrawalPiggyBank(@RequestBody)
 }

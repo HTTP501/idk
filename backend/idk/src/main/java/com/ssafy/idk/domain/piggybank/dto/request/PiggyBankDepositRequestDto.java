@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PiggyBankDepositRequestDto {
 
-    private Long piggyBankId;
     private Long amount;
 
 }
