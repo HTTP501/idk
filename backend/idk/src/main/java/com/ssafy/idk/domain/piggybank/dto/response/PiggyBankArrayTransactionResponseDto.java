@@ -9,17 +9,14 @@ import java.util.List;
 @Builder
 @Getter
 @AllArgsConstructor
-public class DepositResponseDto {
+public class PiggyBankArrayTransactionResponseDto {
 
-    private Long piggyBankTransactionId;
     private List<PiggyBankTransactionResponseDto> arrayTransaction;
 
-    public static DepositResponseDto of(
-            Long piggyBankTransactionId,
+    public static PiggyBankArrayTransactionResponseDto of(
             List<PiggyBankTransactionResponseDto> arrayTransaction
     ) {
-        return DepositResponseDto.builder()
-                .piggyBankTransactionId(piggyBankTransactionId)
+        return PiggyBankArrayTransactionResponseDto.builder()
                 .arrayTransaction(arrayTransaction)
                 .build();
     }
