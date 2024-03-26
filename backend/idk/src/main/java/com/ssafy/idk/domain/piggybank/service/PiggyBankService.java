@@ -123,11 +123,11 @@ public class PiggyBankService {
                 piggyBank.getPiggyBankId(),
                 account.getAccountId(),
                 piggyBank.getBalance(),
-                arrayTransactionResponseDto(piggyBankId)
+                arrayPiggyBankTransaction(piggyBankId)
         );
     }
 
-    public List<PiggyBankTransactionResponseDto> arrayTransactionResponseDto(Long piggyBankId) {
+    public List<PiggyBankTransactionResponseDto> arrayPiggyBankTransaction(Long piggyBankId) {
 
         // 저금통 입출금 내역 조회
         List<PiggyBankTransaction> arrayPiggyBankTransaction = piggyBankTransactionRepository.findByPiggyBank(
@@ -198,7 +198,7 @@ public class PiggyBankService {
         piggyBankTransactionRepository.save(piggyBankTransaction);
 
         return PiggyBankArrayTransactionResponseDto.of(
-                arrayTransactionResponseDto(piggyBank.getPiggyBankId())
+                arrayPiggyBankTransaction(piggyBank.getPiggyBankId())
         );
     }
 
@@ -250,7 +250,7 @@ public class PiggyBankService {
         transactionRepository.save(transaction);
 
         return PiggyBankArrayTransactionResponseDto.of(
-                arrayTransactionResponseDto(piggyBank.getPiggyBankId())
+                arrayPiggyBankTransaction(piggyBank.getPiggyBankId())
         );
     }
 }
