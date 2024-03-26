@@ -1,9 +1,8 @@
-package com.ssafy.idk.domain.member.domain;
+package com.ssafy.idk.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter

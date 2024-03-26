@@ -1,6 +1,6 @@
 package com.ssafy.idk.domain.account.service;
 
-import com.ssafy.idk.domain.account.domain.RSAKey;
+import com.ssafy.idk.domain.account.entity.RSAKey;
 import com.ssafy.idk.domain.account.exception.RSAKeyException;
 import com.ssafy.idk.domain.account.repository.RSAKeyRepository;
 import com.ssafy.idk.global.error.ErrorCode;

@@ -1,15 +1,15 @@
 package com.ssafy.idk.domain.shop.service;
 
-import com.ssafy.idk.domain.account.domain.Account;
-import com.ssafy.idk.domain.account.domain.Category;
-import com.ssafy.idk.domain.account.domain.Transaction;
+import com.ssafy.idk.domain.account.entity.Account;
+import com.ssafy.idk.domain.account.entity.Category;
+import com.ssafy.idk.domain.account.entity.Transaction;
 import com.ssafy.idk.domain.account.dto.response.AccountResponseDto;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.account.service.AccountService;
-import com.ssafy.idk.domain.member.domain.Member;
+import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
-import com.ssafy.idk.domain.shop.domain.Item;
-import com.ssafy.idk.domain.shop.domain.OrderInfo;
+import com.ssafy.idk.domain.shop.entity.Item;
+import com.ssafy.idk.domain.shop.entity.OrderInfo;
 import com.ssafy.idk.domain.shop.dto.request.ApprovalPaymentRequestDto;
 import com.ssafy.idk.domain.shop.dto.request.ReadyPaymentRequestDto;
 import com.ssafy.idk.domain.shop.exception.ItemException;
