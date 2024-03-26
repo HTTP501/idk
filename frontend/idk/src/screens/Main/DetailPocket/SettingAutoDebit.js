@@ -7,7 +7,7 @@ import { ChangeAccountNameAxios } from '../../../API/Account'
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const DetailPocketSetting = ({ navigation, route }) => {
+const SettingAutoDebit = ({ navigation, route }) => {
   const pocketId = route.params.pocketId
   const [showModal, setShowModal] = useState(false);
   const [isActivated, setIsActivated] = useState(false);
@@ -101,7 +101,7 @@ const DetailPocketSetting = ({ navigation, route }) => {
   );
 };
 
-export default DetailPocketSetting;
+export default SettingAutoDebit;
 
 const styles = StyleSheet.create({
   container : {
