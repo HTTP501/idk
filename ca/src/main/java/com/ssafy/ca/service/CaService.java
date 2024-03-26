@@ -35,16 +35,30 @@ public class CaService {
     // 회원가입과 유사
     public CreateCIResponseDto createCI(CreateCIRequestDto requestDto) {
 
-        // connection Information 생성
-        String connectionInformation = CICreator.generateCI(requestDto.getName(), requestDto.getBirthDate(), requestDto.getPhoneNumber());
+        String name = requestDto.getName();
+        String phoneNumber = requestDto.getPhoneNumber();
+        String birthDate = requestDto.getBirthDate();
+
+        // 이름, 전화번호, 주민번호 유효성 검사
+        isValidInput(name, birthDate, phoneNumber);
+
+        // 유저 중복 체크
+        memberRepository.findByNameAndBirthDateAndPhoneNumber(name, birthDate, phoneNumber)
+                .ifPresent(member -> {
+                    throw new CaException(ErrorCode.CA_MEMBER_DUPLICATED);
+                });
+
+        // ci 생성
+        String connectionInformation = CICreator.generateCI(name, birthDate, phoneNumber);
 
         Member member = Member.builder()
-                .name(requestDto.getName())
-                .birthDate(requestDto.getBirthDate())
-                .phoneNumber(requestDto.getPhoneNumber())
+                .name(name)
+                .birthDate(birthDate)
+                .phoneNumber(phoneNumber)
                 .connectionInformation(connectionInformation)
                 .build();
 
+        // 유저 저장
         memberRepository.save(member);
 
         return CreateCIResponseDto.of(connectionInformation);
@@ -52,52 +66,74 @@ public class CaService {
 
     // CI 조회
     public GetCIResponseDto getCI(GetCIRequestDto requestDto) {
-        Member member = memberRepository.findByNameAndBirthDateAndPhoneNumber(requestDto.getName(), requestDto.getBirthDate(), requestDto.getPhoneNumber())
-                .orElseThrow(() -> new CaException(ErrorCode.asdf));
-        return GetCIResponseDto.of(member.getConnectionInformation());
+
+        String name = requestDto.getName();
+        String birthDate = requestDto.getBirthDate();
+        String phoneNumber = requestDto.getPhoneNumber();
+
+        // 이름, 전화번호, 주민번호 유효성 검사
+        isValidInput(name, birthDate, phoneNumber);
+
+        Member member = memberRepository.findByNameAndBirthDateAndPhoneNumber(name, birthDate, phoneNumber)
+                .orElseThrow(() -> new CaException(ErrorCode.CA_MEMBER_NOT_FOUND));
+
+        // NULL 체크
+        String userCI = member.getConnectionInformation();
+        if (userCI != null) {
+            throw new CaException(ErrorCode.CA_CI_NOT_EXIST);
+        }
+        return GetCIResponseDto.of(userCI);
     }
 
     // 전자서명 요청(생성)
     public SignResponseDto signRequest(SignRequestDto requestDto) throws Exception {
 
+        // 유효성 검증
+        isValidInput(requestDto.getName(), requestDto.getBirthDate(), requestDto.getPhoneNumber());
+
         // 사용자 조회
         Member member = memberRepository.findByNameAndBirthDateAndPhoneNumber(requestDto.getName(), requestDto.getBirthDate(), requestDto.getPhoneNumber())
                 .orElseThrow(() -> new CaException(ErrorCode.CA_MEMBER_NOT_FOUND));
 
-        // ci 검증
-        if (!member.getConnectionInformation().equals(requestDto.getConnectionInformation())) {
+        String memberCI = member.getConnectionInformation();
+        String requestCI = requestDto.getConnectionInformation();
+
+        // null 체크, ci 검증
+        if (memberCI == null || !memberCI.equals(requestCI)) {
             throw new CaException(ErrorCode.CA_CI_INVALID);
         }
 
+        // 전송 요청 내용 목록
+        String agreement = requestDto.getAgreement();
+        List<ConsentInfoDto> consentInfoList = requestDto.getConsentInfoList();
+
         // 전자서명 데이터 준비 (요청 데이터를 바탕으로 생성)
-        List<Map<String, String>> signedDataList = prepareSignData(requestDto, member);
+        List<Map<String, String>> signedDataList = prepareSignData(member, agreement, consentInfoList);
 
         return SignResponseDto.of(signedDataList);
     }
+
+    // 데이터 전처리 및 전자서명 생성
     @Transactional
-    private List<Map<String, String>> prepareSignData(SignRequestDto requestDto, Member member) throws Exception {
+    private List<Map<String, String>> prepareSignData(Member member, String agreement, List<ConsentInfoDto> consentInfoList) throws Exception {
 
-        String agreement = requestDto.getAgreement();
-        String name = requestDto.getName();
-        String birthDate = requestDto.getBirthDate();
-        String phoneNumber = requestDto.getPhoneNumber();
-        String connectionInformation = requestDto.getConnectionInformation();
-
-        List<ConsentInfoDto> consentInfoList = requestDto.getConsentInfoList();
+        // (전송 요청 대상 + 서명) 목록
+        List<Map<String, String>> orgDataList = new ArrayList<>();
 
         // 전자서명 묶음 생성
-        List<Map<String, String>> orgDataList = new ArrayList<>();
         for (ConsentInfoDto consentInfoDto : consentInfoList) {
 
-            // 유저 정보를 Map 형태로 저장
+            // db 저장용 서명 데이터
             Map<String, String> signDataMap = new HashMap<>();
+
+            // 응답 데이터용
             Map<String, String> orgData = new HashMap<>();
 
             signDataMap.put("agreement", agreement);
-            signDataMap.put("name", name);
-            signDataMap.put("birthDate", birthDate);
-            signDataMap.put("phoneNumber", phoneNumber);
-            signDataMap.put("connectionInformation", connectionInformation);
+            signDataMap.put("name", member.getName());
+            signDataMap.put("birthDate", member.getBirthDate());
+            signDataMap.put("phoneNumber", member.getPhoneNumber());
+            signDataMap.put("connectionInformation", member.getConnectionInformation());
 
             signDataMap.put("orgCode", consentInfoDto.getOrgCode());
             signDataMap.put("orgType", consentInfoDto.getType());
@@ -110,6 +146,7 @@ public class CaService {
             Organization organization = organizationRepository.findByOrgCode(consentInfoDto.getOrgCode())
                     .orElseThrow(() -> new CaException(ErrorCode.CA_ORGANIZATION_NOT_FOUND));
 
+            // 서명 데이터 문자열로 변환
             String signData = signDataMap.toString();
 
             // 중개테이블에 저장
@@ -120,27 +157,24 @@ public class CaService {
                     .build();
             organizationMemberRepositoy.save(organizationMember);
 
-            // 전자서명 생성
+            // 전자서명 생성, Base64 인코딩
             byte[] signedDataByte = DigitalSignature.signData(signData.getBytes());
             String encodedSignedData = Base64.getEncoder().encodeToString(signedDataByte);
 
             orgData.put("signedData", encodedSignedData);
-
             orgDataList.add(orgData);
         }
 
         return orgDataList;
     }
 
-
-//     전자서명 검증
+    // 전자서명 검증
     public SignVerifyResponseDto signVerify(SignVerifyRequestDto requestDto) throws Exception {
 
         // 요청으로부터 기관 코드(orgCode), 사용자 정보(ci), 전자서명(signedData)를 추출합니다.
         String orgCode = requestDto.getOrgCode();
         String ci = requestDto.getConnectionInformation();
         String digitalSignature = requestDto.getDigitalSignature();
-
 
         // 해당 기관 조회
         Organization organization = organizationRepository.findByOrgCode(orgCode)
@@ -166,5 +200,22 @@ public class CaService {
         boolean result = DigitalSignature.verifySignature(originalData, signedData);
 
         return SignVerifyResponseDto.of(result);
+    }
+
+    public void isValidInput(String name, String birthDate, String phoneNumber) {
+        // 이름은 한 자리 이상의 문자열인지 확인
+        if (name == null || name.isEmpty()) {
+            throw new CaException(ErrorCode.CA_REQUEST_INVALID);
+        }
+
+        // 생년월일은 13자리의 문자열인지 확인
+        if (birthDate == null || birthDate.length() != 13) {
+            throw new CaException(ErrorCode.CA_REQUEST_INVALID);
+        }
+
+        // 전화번호는 11자리의 문자열인지 확인
+        if (phoneNumber == null || phoneNumber.length() != 11) {
+            throw new CaException(ErrorCode.CA_REQUEST_INVALID);
+        }
     }
 }

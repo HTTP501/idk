@@ -7,12 +7,18 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorCode {
 
-    asdf(400, "CE400", "에러"),
-    CA_CI_INVALID(400, "CE400", "유효하지 않은 CI입니다."),
-    CA_SIGN_ERROR(400, "CE400", "전자 서명 에러"),
-    CA_MEMBER_NOT_FOUND(400, "CE400", "유저를 찾을 수 없습니다."),
-    CA_ORGANIZATION_NOT_FOUND(400, "CE400", "기관을 찾을 수 없습니다."),
-    CA_SIGNATURE_NOT_FOUND(400, "CE400", "유저의 전자서명이 없습니다.");
+    CA_REQUEST_INVALID(400, "C400", "유효하지 않은 요청입니다."),
+    CA_CI_CREATE_FAILED(400, "C400", "CI 생성에 실패했습니다."),
+    CA_CI_NOT_EXIST(400, "C400", "CI가 존재하지 않습니다."),
+    CA_MEMBER_DUPLICATED(409, "C409", "이미 존재하는 사용자입니다."),
+    CA_CI_INVALID(400, "C400", "유효하지 않은 CI입니다."),
+    CA_SIGN_ERROR(400, "C400", "전자 서명 에러"),
+    CA_SIGN_VERIFY_ERROR(400, "C400", "전자 서명 검증 에러"),
+    CA_MEMBER_NOT_FOUND(400, "C400", "존재하지 않는 사용자입니다."),
+    CA_ORGANIZATION_NOT_FOUND(400, "C400", "기관을 찾을 수 없습니다."),
+    CA_PRIVATE_KEY_NOT_EXIST(400, "C400", "개인 키 파일이 존재하지 않습니다."),
+    CA_CERTIFICATION_NOT_EXIST(400, "C400", "인증서 파일이 존재하지 않습니다."),
+    CA_SIGNATURE_NOT_FOUND(400, "C400", "유저의 전자서명이 없습니다.");
 
 
     private final int status;
