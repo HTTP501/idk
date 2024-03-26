@@ -1,6 +1,6 @@
 package com.ssafy.idk.domain.analyst.service;
 
-import com.ssafy.idk.domain.analyst.domain.Analyst;
+import com.ssafy.idk.domain.analyst.entity.Analyst;
 
 import com.ssafy.idk.domain.analyst.dto.AnalystAllAmountResponse;
 import com.ssafy.idk.domain.analyst.dto.AnalystAllAmountResponse.AnalystAllAmount;
@@ -8,7 +8,7 @@ import com.ssafy.idk.domain.analyst.dto.AnalystCurrentMonthAmountResponse;
 import com.ssafy.idk.domain.analyst.dto.AnalystMonthAmountResponse;
 import com.ssafy.idk.domain.analyst.exception.AnalystException;
 import com.ssafy.idk.domain.analyst.repository.AnalystRepository;
-import com.ssafy.idk.domain.member.domain.Member;
+import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
-package com.ssafy.idk.domain.piggybank.domain;
+package com.ssafy.idk.domain.piggybank.entity;
 
 
-import com.ssafy.idk.domain.account.domain.Account;
+import com.ssafy.idk.domain.account.entity.Account;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

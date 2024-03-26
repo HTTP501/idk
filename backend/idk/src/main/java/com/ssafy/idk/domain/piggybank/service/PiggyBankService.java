@@ -1,15 +1,15 @@
 package com.ssafy.idk.domain.piggybank.service;
 
-import com.ssafy.idk.domain.account.domain.Account;
-import com.ssafy.idk.domain.account.domain.Category;
-import com.ssafy.idk.domain.account.domain.Transaction;
+import com.ssafy.idk.domain.account.entity.Account;
+import com.ssafy.idk.domain.account.entity.Category;
+import com.ssafy.idk.domain.account.entity.Transaction;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
-import com.ssafy.idk.domain.member.domain.Member;
+import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
-import com.ssafy.idk.domain.piggybank.domain.PiggyBank;
-import com.ssafy.idk.domain.piggybank.domain.PiggyBankTransaction;
+import com.ssafy.idk.domain.piggybank.entity.PiggyBank;
+import com.ssafy.idk.domain.piggybank.entity.PiggyBankTransaction;
 import com.ssafy.idk.domain.piggybank.dto.request.PiggyBankCreateRequestDto;
 import com.ssafy.idk.domain.piggybank.dto.request.PiggyBankTransactionRequestDto;
 import com.ssafy.idk.domain.piggybank.dto.response.*;
