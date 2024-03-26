@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Text,
   View,
@@ -8,16 +8,31 @@ import {
   TextInput,
   Image,
   Modal,
+  Alert
 } from "react-native";
 import theme from "../../../style";
 import { AntDesign } from "@expo/vector-icons";
 import formattedNumber from "../../../components/moneyFormatter";
+import {joinPiggyBankListAxios} from '../../../API/Saving'
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
+const ACCOUNT_KEY = "@account";
 //
 const RegistSavingBox = ({ navigation }) => {
   const pigIcon = require("../../../../assets/icons/pig.png");
   let [deposit, setDeposit] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [accountId, setAccountId] = useState(null)
+
+  useEffect(() => {
+    const getAcocuntId = async() => {
+      const a = await AsyncStorage.getItem(ACCOUNT_KEY)
+      setAccountId(JSON.parse(a).accountId)
+    }
+    getAcocuntId()
+  }, [])
+
   //  입력값 숫자로 변경
   const changeMoney = (text) => {
     if (text.length === 0) {
@@ -28,10 +43,39 @@ const RegistSavingBox = ({ navigation }) => {
     }
   };
   //   저금통 가입하기 버튼
-  const registFinish = async () => {
-    // await
-    console.log(deposit, "원으로 시작, 저금통 등록");
-    setShowModal(true)
+  const registFinish = () => {
+    joinPiggyBankListAxios(
+      {accountId: accountId, deposit: deposit},
+      res => {
+        setShowModal(true)
+      },
+      err => {
+        if (err.response.data.code === 'PB401') {
+          Alert.alert(
+            "이미 저금통을 가입한 계좌입니다.",
+            "계좌 페이지로 이동합니다.",
+            [
+              {
+                text: "확인",
+                onPress: () => navigation.navigate("Main"),
+              },
+            ]
+          )
+        } else if (err.response.data.code === 'PB402') {
+          Alert.alert(
+            "계좌 잔액이 부족합니다.",
+            "",
+            [
+              {
+                text: "확인",
+              },
+            ]
+          )
+        }
+        setDeposit(0)
+        setShowModal(false)
+      }
+    )
   };
   //   화면
   return (
