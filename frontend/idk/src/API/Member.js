@@ -40,6 +40,13 @@ export const signupAxios = async function (data, success, fail) {
         .catch(fail)
 }
 
+// 회원 정보 조회
+export const memberAxios = async function (success, fail) {
+  await local.get('/member/push')
+        .then(success)
+        .catch(fail)
+}
+
 // 자동이체 알림 설정
 export const autoTransferAxios = async function (success, fail) {
   await local.put('/member/push/auto-transfer')
