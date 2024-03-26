@@ -9,7 +9,7 @@ import { FontAwesome } from '@expo/vector-icons';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const DetailGoalSaving = ({ navigation, route }) => {
+const SettingTargetSaving = ({ navigation, route }) => {
   const [showModal, setShowModal] = useState(false);
   const presentPrice = 2000000
   const targetPrice = 5000000
@@ -92,9 +92,6 @@ const DetailGoalSaving = ({ navigation, route }) => {
           showsVerticalScrollIndicator={false}  
         >
           <View style={{paddingHorizontal: SCREEN_WIDTH * (1/10)}}>
-            <View className="mt-10 mb-2" >
-              <Header navigation={navigation}/>
-            </View>
             <View className='flex-row items-end self-start mb-8'>
               <Text className='text-2xl font-bold'>30개월</Text>
               <Text className='text-base'> 후에 목표 달성!</Text>
@@ -206,29 +203,14 @@ const DetailGoalSaving = ({ navigation, route }) => {
   );
 };
 
-// 헤더
-const Header = ({navigation}) => {
-  const logo = require("../../../../assets/logo/color_idk_bank_logo.png");
-  return (
-    <View className="flex-row justify-between items-center">
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("Main");
-        }}
-      >
-        <Image source={logo} style={{ width: 90, resizeMode: "contain" }} />
-      </TouchableOpacity>
-      <Text className='text-lg font-bold'>돈포켓 이름</Text>
-    </View>
-  );
-};
 
-export default DetailGoalSaving;
+export default SettingTargetSaving;
 
 const styles = StyleSheet.create({
   container : {
     flex: 1,
     backgroundColor: 'white',
+    paddingTop: 100
   },
   box : {
     width: SCREEN_WIDTH * (8/10),

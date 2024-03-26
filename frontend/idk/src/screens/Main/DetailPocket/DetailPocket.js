@@ -24,6 +24,7 @@ import Loading from "../../../components/Loading";
 
 const DetailPocket = ({ navigation, route }) => {
   const pocketId = route.params.pocketId
+  const pocketType = route.params.pocketType
   let [loading, setLoading] = useState(false);
   useEffect(() => {
     setTimeout(() => {
@@ -97,7 +98,13 @@ const DetailPocket = ({ navigation, route }) => {
               <TouchableOpacity
                 style={styles.setting}
                 onPress={() => {
-                  navigation.navigate("DetailPocketSetting", { pocketId });
+                  if (pocketType === 'saving') {
+                    navigation.navigate('SettingTargetSaving', { pocketId })
+                  } else if (pocketType === 'autoTransfer') {
+                    navigation.navigate("SettingAutoDebit", { pocketId });
+                  } else if (pocketType === 'autoDebit') {
+                    navigation.navigate('SettingAutoTransfer', { pocketId })
+                  }
                 }}
               >
                 <AntDesign name="setting" size={36} color={theme["sky-basic"]} />
@@ -107,7 +114,7 @@ const DetailPocket = ({ navigation, route }) => {
 
 
           {/* 이체내역 */}
-          <DepositList deposit={deposit} />
+          <DepositList deposit={deposit} navigation={navigation} />
           <StatusBar style="auto" />
         </ScrollView>
       ) : <Loading/>}
