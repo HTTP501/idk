@@ -118,8 +118,8 @@ const DetailTransaction = ({ navigation, route }) => {
         {/*  */}
         <ScrollView showsVerticalScrollIndicator={false} className="mt-3">
           <Text className="text-lg font-bold my-3">최근 3개월간 거래 내역</Text>
-          {recentTransactionData.map((item) => (
-            <DepositItem item={item} />
+          {recentTransactionData.map((item, index) => (
+            <DepositItem item={item} key={index} />
           ))}
         </ScrollView>
       </View>

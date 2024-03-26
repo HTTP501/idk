@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, ScrollView, Modal, Switch, Alert } from 'react-native';
 import theme from '../../style';
 import { AntDesign } from '@expo/vector-icons'; // Import Ionicons from Expo
-import { autoTransferAxios, transactionAxios } from '../../API/Member'
+import { autoTransferAxios, transactionAxios, memberAxios } from '../../API/Member'
 import { ChangeAccountNameAxios } from '../../API/Account'
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -35,26 +35,35 @@ const Settings = ({ navigation }) => {
     setIsAutoTransferNotificationEnabled(previousState => !previousState)
     autoTransferAxios(
       res => {
-        console.log(res.data);
       },
       err => {
-        console.log(err.response);
       }
-    )
-  }
-
+      )
+    }
+  
   // 입출금 알림 설정 Axios
   const HandleTransactionAxios = () => {
     setIsDepositNotificationEnabled(previousState => !previousState)
     transactionAxios(
       res => {
-        console.log(res.data);
       },
       err => {
-        console.log(err.response);
+      }
+      )
+    }
+      
+      // 회원 정보 조회
+  useEffect(() => {
+    memberAxios(
+      res => {
+        console.log('회원정보조회');
+        setIsDepositNotificationEnabled(res.data.data.transactionPushEnabled)
+        setIsAutoTransferNotificationEnabled(res.data.data.autoTransferPushEnabled)
+      },
+      err => {
       }
     )
-  }
+  }, [])
 
   return (
     <View style={styles.container}>

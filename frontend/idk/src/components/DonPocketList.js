@@ -25,6 +25,7 @@ const DonPocketList = function ({ navigation, pocketData, changePocketOrder }) {
   const renderItem = ({ item, drag }) => {
     // 상세 페이지로 넘길때 id만 넘긴다
     const pocketId = item.pocketId;
+    const pocketType = item.pocketType
     const { isActive } = useOnCellActiveAnimation();
     return (
       <ScaleDecorator>
@@ -35,11 +36,7 @@ const DonPocketList = function ({ navigation, pocketData, changePocketOrder }) {
               onLongPress={drag}
               onPress={() => {
                 // 상세 페이지 이동
-                if (item.pocketType === 'saving') {
-                  navigation.navigate("DetailGoalSaving", { pocketId });
-                } else {
-                  navigation.navigate("DetailPocket", { pocketId });
-                }
+                navigation.navigate("DetailPocket", { pocketId, pocketType });
               }}
               activeOpacity={1}
               style={[styles.donpocketlist]}
