@@ -16,21 +16,21 @@ public class PiggyBankTransactionResponseDto {
     private Long amount;
     private Long balance;
     private String content;
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     public static PiggyBankTransactionResponseDto of(
             Long piggyBankTransactionId,
             Long amount,
             Long balance,
             String content,
-            LocalDateTime createAt
+            LocalDateTime createdAt
     ) {
         return PiggyBankTransactionResponseDto.builder()
                 .piggyBankTransactionId(piggyBankTransactionId)
                 .amount(amount)
                 .balance(balance)
                 .content(content)
-                .createAt(createAt)
+                .createdAt(createdAt)
                 .build();
     }
 }

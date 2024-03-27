@@ -8,6 +8,7 @@ import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.piggybank.exception.PiggyBankException;
 import com.ssafy.idk.domain.targetsaving.dto.request.TargetSavingCreateRequestDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingCreateResponseDto;
+import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingDeleteResponseDto;
 import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
 import com.ssafy.idk.domain.targetsaving.exception.TargetSavingException;
 import com.ssafy.idk.domain.targetsaving.repository.TargetSavingRepository;
@@ -71,5 +72,26 @@ public class TargetSavingService {
                 savedTargetSaving.getMonthlyAmount(),
                 savedTargetSaving.getGoalAmount()
                 );
+    }
+
+    @Transactional
+    public TargetSavingDeleteResponseDto deleteTargetSaving(Long targetSavingId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        TargetSaving targetSaving = targetSavingRepository.findById(targetSavingId)
+                .orElseThrow(() -> new TargetSavingException(ErrorCode.TARGET_SAVING_NOT_FOUND));
+
+        Account account = targetSaving.getAccount();
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        if (member != account.getMember())
+            throw new PiggyBankException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        // 돈 포켓 기능 구현 후 잔고 업데이트 구현 필요
+        
+        targetSavingRepository.deleteById(targetSavingId);
+
+        return TargetSavingDeleteResponseDto.of(account.getBalance());
     }
 }
