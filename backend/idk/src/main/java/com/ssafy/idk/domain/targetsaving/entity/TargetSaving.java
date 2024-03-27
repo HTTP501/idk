@@ -46,22 +46,11 @@ public class TargetSaving {
     @Column(name = "created_at") @NotNull
     private LocalDateTime createdAt;
 
-    @OneToOne(mappedBy = "targetSaving", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "targetSaving", cascade = CascadeType.ALL)
+    @JoinColumn(name = "pocket_id")
     private Pocket pocket;
 
-    @Override
-    public String toString() {
-        return "TargetSaving{" +
-                "targetSavingId=" + targetSavingId +
-                ", account=" + account +
-                ", name='" + name + '\'' +
-                ", date=" + date +
-                ", term=" + term +
-                ", monthlyAmount=" + monthlyAmount +
-                ", goalAmount=" + goalAmount +
-                ", itemId=" + itemId +
-                ", createdAt=" + createdAt +
-                ", pocket=" + pocket +
-                '}';
+    public void setPocket(Pocket pocket) {
+        this.pocket = pocket;
     }
 }
