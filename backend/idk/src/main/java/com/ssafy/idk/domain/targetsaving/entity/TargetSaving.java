@@ -42,7 +42,7 @@ public class TargetSaving {
     @Column(name = "item_id")
     private Long itemId;
 
-    @Column(name = "create_at") @NotNull
-    private LocalDateTime createAt;
+    @Column(name = "created_at") @NotNull
+    private LocalDateTime createdAt;
 
 }
