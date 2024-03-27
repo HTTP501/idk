@@ -31,4 +31,10 @@ public class AutoTransferController {
         autoTransferService.deleteAutoTransfer(autoTransferId);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_TRANSFER_DELETE_SUCCESS));
     }
+
+    @Operation(summary = "자동이체 상세 조회")
+    @GetMapping(value = "/{autoTransferId}")
+    public ResponseEntity<ResultResponse> getAutoTransfer(@PathVariable(name = "autoTransferId") Long autoTransferId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_TRANSFER_GET_SUCCESS, autoTransferService.getAutoTransfer(autoTransferId)));
+    }
 }

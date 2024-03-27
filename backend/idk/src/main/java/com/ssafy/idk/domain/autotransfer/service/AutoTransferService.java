@@ -5,6 +5,7 @@ import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.autotransfer.dto.request.AutoTransferCreateRequestDto;
 import com.ssafy.idk.domain.autotransfer.dto.response.AutoTransferCreateResponseDto;
+import com.ssafy.idk.domain.autotransfer.dto.response.AutoTransferGetResponseDto;
 import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
 import com.ssafy.idk.domain.autotransfer.repository.AutoTransferRepository;
 import com.ssafy.idk.domain.member.entity.Member;
@@ -93,5 +94,31 @@ public class AutoTransferService {
             throw new AutoTransferException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
         autoTransferRepository.deleteById(autoTransferId);
+    }
+
+    public AutoTransferGetResponseDto getAutoTransfer(Long autoTransferId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        // 자동이체 유무 확인
+        AutoTransfer autoTransfer = autoTransferRepository.findById(autoTransferId)
+                .orElseThrow(() -> new AutoTransferException(ErrorCode.AUTO_TRANSFER_NOT_FOUND));
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        Account account = autoTransfer.getAccount();
+        if (member != account.getMember())
+            throw new AutoTransferException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        return AutoTransferGetResponseDto.of(
+                autoTransfer.getAutoTransferId(),
+                autoTransfer.getToAccount(),
+                autoTransfer.getToAccountBank(),
+                autoTransfer.getStartYearMonth(),
+                autoTransfer.getEndYearMonth(),
+                autoTransfer.getAmount(),
+                autoTransfer.getDate(),
+                autoTransfer.getShowRecipientBankAccount(),
+                autoTransfer.getShowMyBankAccount()
+        );
     }
 }
