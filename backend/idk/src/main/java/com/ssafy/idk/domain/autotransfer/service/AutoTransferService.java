@@ -11,6 +11,7 @@ import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.autotransfer.exception.AutoTransferException;
 import com.ssafy.idk.global.error.ErrorCode;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class AutoTransferService {
     private final AutoTransferRepository autoTransferRepository;
     private final AccountRepository accountRepository;
 
+    @Transactional
     public AutoTransferCreateResponseDto createAutoTransfer(AutoTransferCreateRequestDto requestDto) {
 
         Member member = authenticationService.getMemberByAuthentication();
@@ -74,5 +76,22 @@ public class AutoTransferService {
                 savedAutoTransfer.getStartYearMonth(),
                 savedAutoTransfer.getEndYearMonth()
         );
+    }
+
+    @Transactional
+    public void deleteAutoTransfer(Long autoTransferId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        // 자동이체 유무 확인
+        AutoTransfer autoTransfer = autoTransferRepository.findById(autoTransferId)
+                .orElseThrow(() -> new AutoTransferException(ErrorCode.AUTO_TRANSFER_NOT_FOUND));
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        Account account = autoTransfer.getAccount();
+        if (member != account.getMember())
+            throw new AutoTransferException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        autoTransferRepository.deleteById(autoTransferId);
     }
 }

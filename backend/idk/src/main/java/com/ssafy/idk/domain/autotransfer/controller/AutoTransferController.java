@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,8 +22,13 @@ public class AutoTransferController {
     @Operation(summary = "자동이체 가입")
     @PostMapping(value = "")
     public ResponseEntity<ResultResponse> createAutoTransfer(@RequestBody AutoTransferCreateRequestDto requestDto) {
-
         return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_TRANSFER_CREATE_SUCCESS, autoTransferService.createAutoTransfer(requestDto)));
     }
 
+    @Operation(summary = "자동이체 해지")
+    @DeleteMapping(value = "/{autoTransferId}")
+    public ResponseEntity<ResultResponse> deleteAutoTransfer(@PathVariable(name = "autoTransferId") Long autoTransferId) {
+        autoTransferService.deleteAutoTransfer(autoTransferId);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_TRANSFER_DELETE_SUCCESS));
+    }
 }
