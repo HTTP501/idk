@@ -36,11 +36,12 @@ const DepositOnedayList = function ({ item,navigation }) {
   return (
     <View>
       <Text className="ml-8 mb-2 text-xs">{date}</Text>
-      {dayitimes.map((item) => {
+      {dayitimes.map((item,index) => {
         return <DepositItem
         item={item} 
+        key={index}
         navigation={navigation}
-        />;
+        />
       })}
     </View>
   );
@@ -66,7 +67,7 @@ const DepositItem = function ({ item,navigation }) {
       </View>
       <View className="flex-grow">
         <Text>{item.transactionContent}</Text>
-        <Text>{time}</Text>
+        <Text className='text-xs'>{time}</Text>
       </View>
       <View className="items-end">
         <Text

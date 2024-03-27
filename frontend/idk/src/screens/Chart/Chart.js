@@ -20,58 +20,90 @@ import { NavigationContainer } from "@react-navigation/native";
 import * as d3 from "d3";
 import Svg, { Ellipse, G, Rect, Line, Text as SvgText } from "react-native-svg";
 import { Timeline, Tween, Back } from "gsap-rn";
+import { callAnalystDataAxios } from "../../API/ChartData.js";
+import Loading from "../../components/Loading.js";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Chart = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
-  const [nowData, setNowData] = useState([]);
-  const [average, setAverage] = useState(0);
-  const [nowAmount, setAmount] = useState(0);
+  const [nowData, setNowData] = useState(null);
+  const [nowDonutData, setNowDonutData] = useState([]);
+  const [average, setAverage] = useState(null);
+  const [nowAmount, setAmount] = useState(null);
+  const [maxAmount, setMaxAmount] = useState(null);
+  const [nowCategory, setNowCategory] = useState("total");
+  const [callOver, setCallOver] = useState(false);
 
   useEffect(() => {
+    if (callOver === true) {
+      setIsLoading(false);
+    }
+  }, [callOver]);
+
+  useEffect(() => {
+    const getResponse = (response) => {
+      setNowData(response.data.data.amountList);
+    };
+    const fail = (error) => {
+      console.log(error);
+    };
+    callAnalystDataAxios("total", getResponse, fail);
+  }, []);
+
+  useEffect(() => {
+    if (nowData !== null) {
+      changeData();
+    }
+  }, [nowData]);
+
+  useEffect(() => {
+    if (average !== null && maxAmount !== null && nowAmount !== null) {
+      setCallOver(true);
+    }
+  }, [average, maxAmount, nowAmount]);
+
+  const changeData = async () => {
     const nowDate = new Date();
     const nowYear = nowDate.getFullYear();
     const nowMonth = nowDate.getMonth() + 1;
-    setSelectedMonth(nowMonth);
-    setSelectedYear(nowYear);
 
-    const data = [
-      { date: new Date("2023-04-01"), amount: 30 },
-      { date: new Date("2023-05-01"), amount: 80 },
-      { date: new Date("2023-06-01"), amount: 100 },
-      { date: new Date("2023-07-01"), amount: 180 },
-      { date: new Date("2023-08-01"), amount: 90 },
-      { date: new Date("2023-09-01"), amount: 120 },
-      { date: new Date("2023-10-01"), amount: 150 },
-      { date: new Date("2023-11-01"), amount: 110 },
-      { date: new Date("2023-12-01"), amount: 120 },
-      { date: new Date("2024-01-01"), amount: 110 },
-      { date: new Date("2024-02-01"), amount: 130 },
-      { date: new Date("2024-03-01"), amount: 200 },
-    ];
+    const calculAverage = async (data) => {
+      let tmpSum = 0,
+        tmpAmount = 0,
+        tmpMaxAmount = 0;
 
-    setNowData(data);
-
-    const calculAverage = (data) => {
-      let tmpSum = 0;
-      data.forEach((each) => {
+      await data.forEach((each) => {
         // 평균을 내기 위해서 다 더함
-        tmpSum += each.amount;
-
-        // 접속한 달의 사용요금을 먼저 상태로 지정
         if (
-          each.date.getFullYear() == selectedYear &&
-          each.date.getMonth() + 1 == selectedMonth
+          new Date(`${each.year}-${each.month}-01`) <= nowDate &&
+          oneYearAgo <= new Date(`${each.year}-${each.month}-01`)
         ) {
-          setAmount(each.amount);
+          tmpSum += Math.floor(each.amount / 10000);
+
+          // 접속한 달의 사용요금을 먼저 상태로 지정
+          if (each.year === nowYear && each.month === nowMonth) {
+            tmpAmount = Math.floor(each.amount / 10000);
+          }
+          // 차트의 Y값을 조절하기 위해서 현재 데이터에서 최고값을 찾는다.
+          if (Math.floor(each.amount / 10000) > tmpMaxAmount) {
+            tmpMaxAmount = Math.floor(each.amount / 10000);
+          }
         }
       });
       // 1년 동안의 소비를 더해 평균값을 냄
-      setAverage(Math.floor(tmpSum / 12));
-    };
 
-    calculAverage(data);
-  }, []);
+      const tmpAverage = Math.floor(tmpSum / 12);
+
+      setAverage(tmpAverage);
+      setAmount(tmpAmount);
+      setMaxAmount(tmpMaxAmount);
+      setSelectedMonth(nowMonth);
+      setSelectedYear(nowYear);
+    };
+    calculAverage(nowData);
+  };
 
   const ChartStyle = StyleSheet.create({
     mainContainer: {
@@ -91,6 +123,30 @@ const Chart = () => {
     topChartArea: {
       flex: 2,
       marginTop: 30,
+    },
+    categoryMainBox: {
+      borderWidth: 1,
+      borderRadius: 10,
+      backgroundColor: theme["light-grey-darkness"],
+      borderColor: theme["light-grey-darkness"],
+      width: "100%",
+      flexDirection: "row",
+      height: 30,
+      justifyContent: "space-around",
+      alignItems: "center",
+      marginTop: 20,
+    },
+    categoryBox: {
+      borderWidth: 1,
+      textAlign: "center",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 5,
+      height: 30,
+      width: 80,
+    },
+    categoryTxt: {
+      fontSize: 15,
     },
   });
 
@@ -130,28 +186,82 @@ const Chart = () => {
     .scaleUtc()
     // 현재로부터 1년까지 범위로 정함
     .domain([oneYearAgo, now])
-    .range([10, width]);
+    .range([20, width]);
 
   // y축 (수직선) 축척 선언
   const y = d3
     .scaleLinear()
-    .domain([0, 250])
-    .range([height - marginBottom, marginTop]);
+    .domain([0, maxAmount + maxAmount / 3])
+    .range([height, 0]);
 
   const clickMonth = async (dateData) => {
     const foundData = await nowData.find((data) => {
       return (
-        data.date.getFullYear() === dateData.getFullYear() &&
-        data.date.getMonth() + 1 === dateData.getMonth() + 1
+        new Date(`${data.year}-${data.month}-01`).getFullYear() ===
+          dateData.getFullYear() &&
+        new Date(`${data.year}-${data.month}-01`).getMonth() + 1 ===
+          dateData.getMonth() + 1
       );
     });
 
     if (foundData) {
-      setAmount(foundData.amount);
+      setAmount(Math.floor(foundData.amount / 10000));
     }
 
     setSelectedYear(dateData.getFullYear());
     setSelectedMonth(dateData.getMonth() + 1);
+  };
+
+  const categoryBtn = (text, category) => {
+    const changeCategory = () => {
+      setNowCategory(category);
+    };
+
+    return (
+      <TouchableOpacity onPress={changeCategory}>
+        <View
+          style={{
+            ...ChartStyle.categoryBox,
+            backgroundColor:
+              nowCategory === category
+                ? theme["sky-bright-4"]
+                : theme["light-grey-darkness"],
+            borderColor:
+              nowCategory === category
+                ? theme["sky-bright-4"]
+                : theme["light-grey-darkness"],
+          }}
+        >
+          <Text style>{text}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  // 카테고리가 바뀌었을때 콜백할 함수
+  useEffect(() => {
+    const getResponse = (response) => {
+      setNowData(response.data.data.amountList);
+    };
+    const fail = (error) => {
+      console.log(error);
+    };
+    callAnalystDataAxios(nowCategory, getResponse, fail);
+  }, [nowCategory]);
+
+  const categoryBar = () => {
+    return (
+      <View style={{ ...ChartStyle.categoryMainBox }}>
+        {/* 총 지출버튼 */}
+        {categoryBtn("총 지출", "total")}
+        {/* 카드 지출 버튼 */}
+        {categoryBtn("카드 지출", "card")}
+        {/* 공과금 버튼 */}
+        {categoryBtn("공과금", "utility")}
+        {/* 일반 지출 버튼 */}
+        {categoryBtn("일반 지출", "common")}
+      </View>
+    );
   };
 
   const totalAverageChart = () => {
@@ -176,7 +286,9 @@ const Chart = () => {
           </Text>
         )}
         {/* 카테고리 선택 바 만들기 */}
-        <View></View>
+        {categoryBar()}
+
+        {/* 바 차트 부분 */}
         <View
           style={{
             width: "auto",
@@ -188,19 +300,19 @@ const Chart = () => {
           }}
         >
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            <Svg height={height + 20} width={width} id="barChart">
+            <Svg height={height + 50} width={width} id="barChart">
               <Line
                 x1="10"
-                y1={height + 20 - marginBottom - y(average)}
+                y1={y(average)}
                 x2={width - 25}
-                y2={height + 20 - marginBottom - y(average)}
+                y2={y(average)}
                 stroke={skyBright1}
                 strokeWidth="2"
                 strokeDasharray="5, 5"
               />
               <SvgText
                 x={width - 10}
-                y={height + 20 - marginBottom - y(average) + 4}
+                y={y(average) + 4}
                 fontSize="13"
                 textAnchor="middle"
                 fill={skyBright1}
@@ -210,7 +322,7 @@ const Chart = () => {
               <G>
                 <Rect
                   x={0}
-                  y={height - marginBottom - 1}
+                  y={height}
                   width={width - 20}
                   height="40"
                   rx={3}
@@ -221,7 +333,7 @@ const Chart = () => {
                   <G key={index} onPress={() => clickMonth(tick)}>
                     <Rect
                       x={x(tick) - 22}
-                      y={height - marginBottom + 7}
+                      y={height + 8}
                       width="45"
                       height="24"
                       rx={3}
@@ -236,7 +348,7 @@ const Chart = () => {
                     />
                     <SvgText
                       x={x(tick)}
-                      y={height - marginBottom + 25}
+                      y={height + 25}
                       fontSize="13"
                       textAnchor="middle"
                       fill={"black"}
@@ -258,32 +370,38 @@ const Chart = () => {
                 ))} */}
                 {nowData.map((d, index) => {
                   const barWidth = 25; // 막대의 너비를 설정합니다. 실제 애플리케이션에서는 동적으로 계산할 수 있습니다.
-                  const barHeight = height - marginBottom - y(d.amount); // 막대의 높이를 계산합니다.
-                  const barX = x(d.date) - barWidth / 2; // 막대의 x 위치를 계산합니다.
-                  const barY = y(d.amount); // 막대의 y 위치를 계산합니다.
+                  const barHeight =
+                    height - marginBottom - y(Math.floor(d.amount / 10000)); // 막대의 높이를 계산합니다.
+                  const barX =
+                    x(new Date(`${d.year}-${d.month}-01`)) - barWidth / 2; // 막대의 x 위치를 계산합니다.
+                  const barY = y(Math.floor(d.amount / 10000)); // 막대의 y 위치를 계산합니다.
 
                   return (
                     <G key={index}>
-                      {d.date.getFullYear() == selectedYear &&
-                      d.date.getMonth() + 1 == selectedMonth ? (
+                      {new Date(`${d.year}-${d.month}-01`).getFullYear() ==
+                        selectedYear &&
+                      new Date(`${d.year}-${d.month}-01`).getMonth() + 1 ==
+                        selectedMonth ? (
                         <SvgText
                           x={barX + 12}
-                          y={barY - 30}
+                          y={barY - 5}
                           fill={skyBright1}
                           textAnchor="middle"
                         >
-                          {d.amount}
+                          {Math.floor(d.amount / 10000)}
                         </SvgText>
                       ) : null}
                       <Rect
                         id={d.id}
                         x={barX}
-                        y={barY - 20}
+                        y={barY}
                         width={barWidth}
                         height={barHeight}
                         fill={
-                          d.date.getFullYear() == selectedYear &&
-                          d.date.getMonth() + 1 == selectedMonth
+                          new Date(`${d.year}-${d.month}-01`).getFullYear() ==
+                            selectedYear &&
+                          new Date(`${d.year}-${d.month}-01`).getMonth() + 1 ==
+                            selectedMonth
                             ? skyBright1
                             : lightGreyDarkness
                         } // 막대의 색상을 정합니다.
@@ -301,12 +419,18 @@ const Chart = () => {
   };
 
   return (
-    <ScrollView
-      style={{ ...ChartStyle.mainContainer, backgroundColor: "white" }}
-    >
-      {topBar()}
-      <View style={{ ...ChartStyle.topChartArea }}>{totalAverageChart()}</View>
-    </ScrollView>
+    <View style={{ ...ChartStyle.mainContainer, backgroundColor: "white" }}>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <ScrollView style={{ backgroundColor: "white" }}>
+          {topBar()}
+          <View style={{ ...ChartStyle.topChartArea }}>
+            {totalAverageChart()}
+          </View>
+        </ScrollView>
+      )}
+    </View>
   );
 };
 

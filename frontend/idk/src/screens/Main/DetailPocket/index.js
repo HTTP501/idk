@@ -1,7 +1,8 @@
 import DetailPocket from './DetailPocket'
-import DetailPocketSetting from './DetailPocketSetting'
+import SettingAutoDebit from './SettingAutoDebit'
 import DetailSavingBox from './DetailSavingBox'
-import DetailGoalSaving from './DetailGoalSaving'
+import SettingTargetSaving from './SettingTargetSaving'
 import MinusSavingBox from './MinusSavingBox'
+import SettingAutoTransfer from './SettingAutoTransfer'
 
-export { DetailPocket, DetailPocketSetting, DetailSavingBox, MinusSavingBox, DetailGoalSaving }
+export { DetailPocket, SettingAutoDebit, DetailSavingBox, MinusSavingBox, SettingTargetSaving, SettingAutoTransfer }

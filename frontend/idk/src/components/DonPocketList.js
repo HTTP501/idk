@@ -25,22 +25,23 @@ const DonPocketList = function ({ navigation, pocketData, changePocketOrder }) {
   const renderItem = ({ item, drag }) => {
     // 상세 페이지로 넘길때 id만 넘긴다
     const pocketId = item.pocketId;
+    const pocketType = item.pocketType
     const { isActive } = useOnCellActiveAnimation();
     return (
       <ScaleDecorator>
         <OpacityDecorator activeOpacity={0.1}>
           <ShadowDecorator>
             <TouchableOpacity
+              key={pocketId} // 고유한 키 추가
               onLongPress={drag}
               onPress={() => {
                 // 상세 페이지 이동
-                navigation.navigate("DetailPocket", { pocketId });
-                
+                navigation.navigate("DetailPocket", { pocketId, pocketType });
               }}
               activeOpacity={1}
               style={[styles.donpocketlist]}
             >
-              <DonPocket item={item} isActive={isActive} />
+              <DonPocket item={item} isActive={isActive} isFiltered={false}/>
             </TouchableOpacity>
           </ShadowDecorator>
         </OpacityDecorator>

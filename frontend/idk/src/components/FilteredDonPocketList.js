@@ -14,21 +14,22 @@ const FilteredDonPocketList = function ({ navigation, filteredPocketData }) {
   const RenderItem = ({ data }) => {
     // 상세 페이지로 넘길때 id만 넘긴다
     const pocketId = data.pocketId;
+    const pocketType = data.pocketType
     return (
       <TouchableOpacity
         onPress={() => {
           console.log("상세 페이지 이동");
           // 저금통은 저금통 페이지로 
           if (data.pocketType === "piggyBank") {
-            navigation.navigate("DetailSavingBox", { pocketId });
+            navigation.navigate("DetailSavingBox", { pocketId, pocketType });
           } else {
-            navigation.navigate("DetailPocket", { pocketId });
+            navigation.navigate("DetailPocket", { pocketId, pocketType });
           }
         }}
         activeOpacity={1}
         style={[styles.donpocketlist]}
       >
-        <DonPocket item={data} isActive={null} />
+        <DonPocket item={data} isActive={null} isFiltered={true}/>
       </TouchableOpacity>
     );
   };
@@ -37,7 +38,7 @@ const FilteredDonPocketList = function ({ navigation, filteredPocketData }) {
     return (
       <View>
         {data.map((item) => (
-          <RenderItem data={item} keyExtractor={(item) => item.pocketId} />
+          <RenderItem key={item.pocketId} data={item} keyExtractor={(item) => item.pocketId} />
         ))}
       </View>
     );

@@ -4,7 +4,7 @@ import { CheckSendMoneyInfo, EnterAccount, FinishSendMoney,EnterMoney } from '..
 import { AgreeMyData, CheckMyData, LinkMyData, OutSidePage } from '../screens/Main/MyData/index'
 import { RegistAutoSendContent,RegistAutoSendFinish,RegistGoalSaving,RegistDonPocket, RegistAutoSendAgree, RegistSubscribe,RegistSavingBox } from '../screens/Main/Registrations';
 import TransactionList from '../screens/Main/DetailMyaccount/TransactionList';
-import { DetailPocket, DetailPocketSetting, DetailSavingBox, MinusSavingBox } from '../screens/Main/DetailPocket'
+import { DetailPocket, SettingAutoDebit, DetailSavingBox, MinusSavingBox, SettingTargetSaving, SettingAutoTransfer } from '../screens/Main/DetailPocket'
 import { View, Text, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -13,10 +13,10 @@ import DetailTransaction from '../screens/Main/DetailMyaccount/DetailTransaction
 const Stack = createNativeStackNavigator();
 
 function MainStack({ navigation }) {
-  const renderBackButton = () => {
+  const renderBackButton = (color) => {
     return (
     <TouchableOpacity onPress={() => navigation.goBack()}>
-      <Ionicons name="chevron-back" size={24} color="black" />
+      <Ionicons name="chevron-back" size={24} color={color} />
     </TouchableOpacity>
     ) 
   }
@@ -41,16 +41,18 @@ function MainStack({ navigation }) {
         <Stack.Screen name="RegistSubscribe" component={RegistSubscribe} options={{  headerShown: true, title:"" }} />
         <Stack.Screen name="RegistSavingBox" component={RegistSavingBox} options={{  headerShown: true, title:"" }} />
         <Stack.Screen name="AgreeMyData" component={AgreeMyData} options={{ headerShown: false }} />
-        <Stack.Screen name="CheckMyData" component={CheckMyData} options={{ headerLeft: () => renderBackButton(), title: '마이데이터 조회', headerRight: () => appendMydata() }} />
+        <Stack.Screen name="CheckMyData" component={CheckMyData} options={{ headerLeft: () => renderBackButton('black'), title: '마이데이터 조회', headerRight: () => appendMydata() }} />
         <Stack.Screen name="LinkMyData" component={LinkMyData } options={{ headerShown: false }} />
         <Stack.Screen name="OutSidePage" component={OutSidePage } options={{ headerShown: false }} />
         <Stack.Screen name="RegistAutoSendAgree" component={RegistAutoSendAgree} options={{ headerShown: true, title:"" }} />
         <Stack.Screen name="RegistAutoSendContent" component={RegistAutoSendContent} options={{ headerShown: true, title:"" }} />
         <Stack.Screen name="RegistAutoSendFinish" component={RegistAutoSendFinish} options={{ headerShown: true, title:"" }} />
-        <Stack.Screen name="DetailPocket" component={DetailPocket} options={{ headerShown: true, title:"" }} />
-        <Stack.Screen name="DetailPocketSetting" component={DetailPocketSetting} options={{ headerShown: true, title:"" }} />
-        <Stack.Screen name="DetailSavingBox" component={DetailSavingBox} options={{ headerShown: true, title:"" }} />
-        <Stack.Screen name="MinusSavingBox" component={MinusSavingBox} options={{ headerShown: true, title:"" }} />
+        <Stack.Screen name="DetailPocket" component={DetailPocket} options={{ headerShown: false }} />
+        <Stack.Screen name="SettingAutoDebit" component={SettingAutoDebit} options={{ headerLeft: () => renderBackButton('black'), title: '설정'}} />
+        <Stack.Screen name="DetailSavingBox" component={DetailSavingBox} options={{ headerShown: false }} />
+        <Stack.Screen name="SettingTargetSaving" component={SettingTargetSaving} options={{ headerLeft: () => renderBackButton('black'), title: '설정'}} />
+        <Stack.Screen name="SettingAutoTransfer" component={SettingAutoTransfer} options={{ headerLeft: () => renderBackButton('black'), title: '설정'}} />
+        <Stack.Screen name="MinusSavingBox" component={MinusSavingBox} options={{ headerShown: false}} />
         <Stack.Screen name="DetailTransaction" component={DetailTransaction} options={{ headerShown: true, title:"" }} />
         <Stack.Screen name="RegistDonPocket" component={RegistDonPocket} options={{ headerShown: true, title:"" }} />
       </Stack.Navigator>

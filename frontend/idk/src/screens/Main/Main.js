@@ -30,49 +30,78 @@ import DonPocketList from "../../components/DonPocketList";
 import * as SplashScreen from "expo-splash-screen";
 import { getAccountAxios } from "../../API/Account";
 import { getPocketAxios } from "../../API/DonPocket";
+import { getPiggyBankAxios } from "../../API/Saving";
 import FilteredDonPocketList from "../../components/FilteredDonPocketList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loading from "../../components/Loading";
+import PiggyBank from "../../components/PiggyBankItem";
 // 메인 페이지
 const Main = gestureHandlerRootHOC(({ navigation }) => {
   const ACCOUNT_KEY = "@account";
-  // 계좌 번호가 있는지 판단해서 없으면 계좌 생성
-  useEffect(() => {
-    const getAccount = async () => {
-      const a = await AsyncStorage.getItem(ACCOUNT_KEY);
-      console.log(a);
-      if (a === null) {
-        Alert.alert("계좌번호가 없습니다.", "계좌 생성 페이지로 이동합니다.", [
-          { text: "확인", onPress: () => navigation.navigate("AccountStack") },
-        ]);
-      }
-    };
-    getAccount();
-  }, []);
   // 다른페이지에 갔다가 돌아왔을때 hook 걸어줌
   const isFocused = useIsFocused();
   let [loading, setLoading] = useState(false);
+  // 저금통 데이터
+  const [piggyBankData, setPiggyBankData] = useState(null);
   useEffect(() => {
     // 계좌 데이터 받아오기
     console.log("계좌, 돈포켓 API 호출 위치");
-    // Axios 주석처리
-    // getAccountAxios(
-    //   (res) => {
-    //     console.log("계좌 조회",res.data.data)
-    //     setAccount(res.data.data);
-    //   },
-    //   (err) => {
-    //     console.log(err);
-    //   }
-    // );
+    // 계좌 조회 Axios
+    const getAccount = async () => {
+      getAccountAxios(
+        (res) => {
+          console.log(res.data.data);
+          setAccount(res.data.data);
+          // 스토리지에 계좌정보만 저장해주기
+          const data = JSON.stringify({
+            accountNumber: res.data.data.accountNumber,
+            accountId: res.data.data.accountId
+          });
+          AsyncStorage.setItem(ACCOUNT_KEY, data);
+        },
+        (err) => {
+          // 계좌 번호가 있는지 판단해서 없으면 계좌 생성페이지로 이동
+          if (err.response.data.code === "A401") {
+            Alert.alert(
+              "계좌번호가 없습니다.",
+              "계좌 생성 페이지로 이동합니다.",
+              [
+                {
+                  text: "확인",
+                  onPress: () => navigation.navigate("AccountStack"),
+                },
+              ]
+            );
+          }
+        }
+      );
+    };
+    getAccount();
+    // 저금통 조회
+    getPiggyBankAxios(
+      res => {
+        setPiggyBankData(res.data.data)
+      },
+      err => {
+        setPiggyBankData(null)
+      }
+    )
     setTimeout(() => {
       setLoading(true);
-    }, 500);
+    }, 700);
     // getPocketAxios(res=>{console.log(res)}, err=>{console.log(err)})
   }, [isFocused]);
 
   // 계좌 데이터 - 더미
-  let [account, setAccount] = useState({"accountAvailableAmount": 0, "accountBalance": 0, "accountId": 8, "accountMinAmount": 0, "accountName": "IDK 우리나라 국민우대통장", "accountNumber": "1234567891010", "accountPayDate": 1});
+  let [account, setAccount] = useState({
+    accountAvailableAmount: 0,
+    accountBalance: 0,
+    accountId: 8,
+    accountMinAmount: 0,
+    accountName: "IDK 우리나라 국민우대통장",
+    accountNumber: "1234567891010",
+    accountPayDate: 1,
+  });
   // 돈포켓 데이터
   let [pocketData, setPocketData] = useState([
     {
@@ -120,17 +149,6 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
       isDeposited: false,
       isPaid: false,
       order: 4,
-    },
-  ]);
-  // 돈포켓
-  let [piggyBank, setPiggyBank] = useState([
-    {
-      pocketId: "5",
-      pocketType: "piggyBank",
-      piggyBankId: 12531,
-      pocketName: "돈포켓이름5",
-      balance: 28300,
-      paymentDate: "3",
     },
   ]);
 
@@ -185,10 +203,10 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
                   pocketData={pocketData}
                   changePocketOrder={(data) => setPocketData(data)}
                 />
-                <FilteredDonPocketList
-                  navigation={navigation}
-                  filteredPocketData={piggyBank}
-                />
+                {piggyBankData 
+                  ? <PiggyBank piggyBankData={piggyBankData} navigation={navigation}/>
+                  : null
+                }
               </View>
             ) : pocketType === "saving" ? (
               // 저축 돈포켓
