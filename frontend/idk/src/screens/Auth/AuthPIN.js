@@ -8,6 +8,7 @@ const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const AUTH_KEY = '@auth'
 const SIGNUP_KEY = '@signup'
+const AUTHMETHOD_KEY = '@authMethod'
 
 const AuthPIN = ({ navigation }) => {
   const [showModal, setShowModal] = useState(false);
@@ -15,7 +16,13 @@ const AuthPIN = ({ navigation }) => {
 
   // 들어오자마자 지문 인식 가능한 기기인지 판단
   useEffect(() => {
-    checkBiometricAvailability();
+    const a = AsyncStorage.getItem(AUTHMETHOD_KEY)
+    // 로그인 방법 정보가 없으면 모달 띄워서 확인
+    if (a === null) {
+      checkBiometricAvailability();
+    } else if (a === 'bio') { // 마지막에 지문으로 로그인했으면 또 지문 로그인
+      authenticate()
+    }
   }, []);
 
   const checkBiometricAvailability = async () => {
@@ -36,7 +43,6 @@ const AuthPIN = ({ navigation }) => {
 
     if (result.success) {
       // 인증 성공
-      setShowModal(false)
       loginBioAxios(
         {
           phoneNumber: phoneNumber
@@ -44,10 +50,11 @@ const AuthPIN = ({ navigation }) => {
         async res => {
           console.log(res.data);
           Alert.alert('지문 인증이 완료되었습니다.','',[{text:'확인'}])
-          navigation.navigate('Tab');
+          navigation.reset({routes: [{name: 'Tab'}]})
           // 로그인도 처리해야 하므로 AUTH_KEY로 memberId, accessToken 저장
           const a = JSON.stringify({accessToken:res.data.data.accessToken})
           await AsyncStorage.setItem(AUTH_KEY, a)
+          await AsyncStorage.setItem(AUTHMETHOD_KEY, 'bio')
         },
         err => {
           console.log(err.response);
@@ -58,7 +65,6 @@ const AuthPIN = ({ navigation }) => {
       )
     } else {
       // 인증 실패 또는 취소
-      setShowModal(false)
       Alert.alert('지문 인증이 실패했습니다.','',[{text:'확인'}])
     }
   };
@@ -92,10 +98,11 @@ const AuthPIN = ({ navigation }) => {
       async (res) => {
         setShowModal(false)
         Alert.alert('간편 인증이 완료되었습니다.','',[{text:'확인'}])
-        navigation.navigate('Tab');
+        navigation.reset({routes: [{name: 'Tab'}]})
         // 로그인도 처리해야 하므로 AUTH_KEY로 memberId, accessToken 저장
         const a = JSON.stringify({accessToken:res.data.data.accessToken})
         await AsyncStorage.setItem(AUTH_KEY, a)
+        await AsyncStorage.setItem(AUTHMETHOD_KEY, 'pin')
         // 입력된 비밀번호 초기화
         setPin('');
       },

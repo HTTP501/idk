@@ -12,19 +12,13 @@ const FilteredDonPocketList = function ({ navigation, filteredPocketData }) {
   // 필터된 돈포켓 데이터
   const data = filteredPocketData;
   const RenderItem = ({ data }) => {
-    // 상세 페이지로 넘길때 id만 넘긴다
     const pocketId = data.pocketId;
     const pocketType = data.pocketType
     return (
       <TouchableOpacity
         onPress={() => {
           console.log("상세 페이지 이동");
-          // 저금통은 저금통 페이지로 
-          if (data.pocketType === "piggyBank") {
-            navigation.navigate("DetailSavingBox", { pocketId, pocketType });
-          } else {
-            navigation.navigate("DetailPocket", { pocketId, pocketType });
-          }
+          navigation.navigate("DetailPocket", { pocketId, pocketType });
         }}
         activeOpacity={1}
         style={[styles.donpocketlist]}

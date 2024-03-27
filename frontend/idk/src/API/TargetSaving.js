@@ -4,13 +4,11 @@ import React, { useState } from "react";
 
 const local = LocalAxios()
 
-
-// 자동이체 전체 조회
-export const getAutoTransferAxios = async function (data, success, fail) {
-  await local.get('/auto-transfer', data)
+// 목표저축 가입
+export const joinTargetSavingAxios = async function (data, success, fail) {
+  await local.post('/target-saving', data)
         .then(success)
         .catch(fail)
 };
-
 
 

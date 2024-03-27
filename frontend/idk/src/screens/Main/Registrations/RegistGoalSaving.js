@@ -13,8 +13,11 @@ import theme from "../../../style";
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 import formattedNumber from "../../../components/moneyFormatter";
 import { Alert } from "react-native";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AntDesign } from "@expo/vector-icons";
+import { joinTargetSavingAxios } from '../../../API/TargetSaving'
+
+const ACCOUNT_KEY = "@account";
 
 const RegistGoalSaving = ({ navigation, route }) => {
   let [goalName, setGoalName] = useState("");
@@ -24,6 +27,8 @@ const RegistGoalSaving = ({ navigation, route }) => {
   let [goalAmount, setGoalAmount] = useState(0);
   let [itemId, setitemId] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [accountId, setAccountId] = useState(null)
+
   // 목표 물건 받기
   useEffect(() => {
     const item = route.params.item;
@@ -33,6 +38,12 @@ const RegistGoalSaving = ({ navigation, route }) => {
       setGoalAmount(item.price);
       setitemId(item.id);
     }
+    // accountId 받기
+    const getAccountId = async() => {
+      const a = await AsyncStorage.getItem(ACCOUNT_KEY)
+      setAccountId(JSON.parse(a).accountId)
+    }
+    getAccountId()
   }, []);
 
   // 목표 기간 변경
@@ -87,8 +98,9 @@ const RegistGoalSaving = ({ navigation, route }) => {
     }
   };
   const titleConfirm = (str) => {
-    const pattern = /^\S+$/;
-    return pattern.test(str);
+    // 문자열에서 공백을 모두 제거한 후 길이를 확인하여 문자가 있는지 여부를 판단합니다.
+    const trimmedStr = str.replace(/\s/g, ''); // 공백 제거
+    return trimmedStr.length > 0; // 문자가 있는지 여부를 반환합니다.
   };
   const numberConfirm = (data) => {
     const number = Number(data);
@@ -107,9 +119,9 @@ const RegistGoalSaving = ({ navigation, route }) => {
       numberConfirm(monthlyAmount) &&
       numberConfirm(goalAmount)
     ) {
-      // await axios
-      // 보낼 데이터
+      // 목표저축 가입 Axios
       const payload = {
+        accountId: accountId,
         name: goalName,
         date: date,
         term: term,
@@ -117,8 +129,14 @@ const RegistGoalSaving = ({ navigation, route }) => {
         goalAmount: goalAmount,
         itemId: itemId,
       };
-      console.log(payload);
-      setShowModal(true);
+      joinTargetSavingAxios(
+        payload,
+        res => {
+          setShowModal(true);
+        },
+        err => {
+        }
+      )
     } else {
       // title , message, buttons 순서
       Alert.alert("빈칸을 채워주세요", "", [{ text: "확인" }]);
@@ -227,9 +245,7 @@ const RegistGoalSaving = ({ navigation, route }) => {
       </ScrollView>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => {
-          registFinish();
-        }}
+        onPress={registFinish}
       >
         <Text className="text-white text-lg font-bold">등록하기</Text>
       </TouchableOpacity>
