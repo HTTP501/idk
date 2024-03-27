@@ -3,7 +3,6 @@ package com.ssafy.idk.domain.pocket.entity;
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
 import com.ssafy.idk.domain.autodebit.entity.AutoDebit;
-import com.ssafy.idk.domain.piggybank.entity.PiggyBankTransaction;
 import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +28,7 @@ public class Pocket {
     @JoinColumn(name = "account_id") @NotNull
     private Account account;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "target_saving_id")
     private TargetSaving targetSaving;
 
