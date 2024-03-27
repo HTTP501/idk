@@ -96,7 +96,7 @@ public class TargetSavingService {
             throw new PiggyBankException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
         // 돈 포켓 기능 구현 후 잔고 업데이트 구현 필요
-
+        
         targetSavingRepository.deleteById(targetSavingId);
 
         return TargetSavingDeleteResponseDto.of(account.getBalance());

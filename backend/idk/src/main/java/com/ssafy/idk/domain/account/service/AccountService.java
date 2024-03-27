@@ -127,11 +127,12 @@ public class AccountService {
     }
 
     @Transactional
-    public void updateMinAmount(AccountAmountRequestDto requestDto) {
+    public void updateMinAmount(AmountRequestDto requestDto) {
         Member member = authenticationService.getMemberByAuthentication();
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
+        if(requestDto.getAmount() < 0) throw new AccountException(ErrorCode.ACCOUNT_MIN_AMOUNT_MINUS);
         account.updateMinAmount(requestDto.getAmount());
 
         updateAccount(member.getMemberId());
@@ -149,19 +150,21 @@ public class AccountService {
     @Transactional
     public TransferResponseDto transfer(TransferRequestDto requestDto) {
         Member member = authenticationService.getMemberByAuthentication();
+        Account account = accountRepository.findByMemberWithPessimisticLock(member)
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         if (requestDto.getTransferBank().equals("IDK은행")) { // 받는사람 입금
-            
+
         }
 
-        Account account = withdraw(requestDto.getTransferAmount());
+        Account savedAccount = withdraw(requestDto.getTransferAmount());
         Transaction transaction = Transaction.builder()
                 .category(Category.송금)
                 .content(requestDto.getMyPaymentContent())
                 .amount(requestDto.getTransferAmount())
-                .balance(account.getBalance())
+                .balance(savedAccount.getBalance())
                 .createdAt(LocalDateTime.now())
-                .account(account)
+                .account(savedAccount)
                 .build();
         Transaction savedTransaction = transactionRepository.save(transaction);
 
@@ -174,7 +177,7 @@ public class AccountService {
         Account account = accountRepository.findByMemberWithPessimisticLock(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        if(account.getBalance()-amount < 0) throw new AccountException(ErrorCode.ACCOUNT_BALANCE_LACK);
+        if(account.getBalance()-account.getMinAmount() < amount) throw new AccountException(ErrorCode.ACCOUNT_BALANCE_LACK);
 
         account.withdraw(amount);
         return account;

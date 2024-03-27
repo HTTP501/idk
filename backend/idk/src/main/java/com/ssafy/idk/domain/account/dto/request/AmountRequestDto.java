@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class AccountAmountRequestDto {
+public class AmountRequestDto {
 
     private Long amount;
 }
