@@ -10,6 +10,7 @@ import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.domain.targetsaving.dto.request.TargetSavingCreateRequestDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingCreateResponseDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingDeleteResponseDto;
+import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingGetResponseDto;
 import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
 import com.ssafy.idk.domain.targetsaving.exception.TargetSavingException;
 import com.ssafy.idk.domain.targetsaving.repository.TargetSavingRepository;
@@ -95,10 +96,12 @@ public class TargetSavingService {
         if (member != account.getMember())
             throw new PiggyBankException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
-        // 돈 포켓 기능 구현 후 잔고 업데이트 구현 필요
-        
         targetSavingRepository.deleteById(targetSavingId);
 
         return TargetSavingDeleteResponseDto.of(account.getBalance());
+    }
+
+    public TargetSavingGetResponseDto getTargetSaving(Long targetSavingId) {
+        return null;
     }
 }
