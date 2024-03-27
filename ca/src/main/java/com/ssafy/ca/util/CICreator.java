@@ -1,5 +1,8 @@
 package com.ssafy.ca.util;
 
+import com.ssafy.ca.exception.CaException;
+import com.ssafy.ca.global.error.ErrorCode;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -25,13 +28,13 @@ public class CICreator {
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
-                if(hex.length() == 1) hexString.append('0');
+                if (hex.length() == 1) hexString.append('0');
                 hexString.append(hex);
             }
 
             return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 알고리즘이 존재하지 않습니다.", e);
+        } catch (Exception e) {
+            throw new CaException(ErrorCode.CA_CI_CREATE_FAILED);
         }
     }
 }
