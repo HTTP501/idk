@@ -1,7 +1,9 @@
 package com.ssafy.idk.domain.pocket.entity;
 
 import com.ssafy.idk.domain.account.entity.Account;
-import com.ssafy.idk.domain.piggybank.entity.PiggyBankTransaction;
+import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
+import com.ssafy.idk.domain.autodebit.entity.AutoDebit;
+import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -26,17 +28,17 @@ public class Pocket {
     @JoinColumn(name = "account_id") @NotNull
     private Account account;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "target_saving_id")
-    private Account targetSavingId;
+    private TargetSaving targetSaving;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auto_transfer_id")
-    private Account autoTransferId;
+    private AutoTransfer autoTransfer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auto_debit_id")
-    private Account autoDebitId;
+    private AutoDebit autoDebit;
 
     @Column(name = "name") @NotNull
     private String name;
@@ -53,10 +55,27 @@ public class Pocket {
     @Column(name = "is_paid") @NotNull
     private boolean isPaid;
 
-    @Column(name = "order") @NotNull
-    private Integer order;
+    @Column(name = "order_number") @NotNull
+    private Integer orderNumber;
 
     @OneToMany(mappedBy = "pocket", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<PocketTransaction> arrayPocketTranscation = new ArrayList<>();
 
+    @Override
+    public String toString() {
+        return "Pocket{" +
+                "pocketId=" + pocketId +
+                ", account=" + account +
+                ", targetSaving=" + targetSaving +
+                ", autoTransfer=" + autoTransfer +
+                ", autoDebit=" + autoDebit +
+                ", name='" + name + '\'' +
+                ", target=" + target +
+                ", isActivated=" + isActivated +
+                ", isDeposited=" + isDeposited +
+                ", isPaid=" + isPaid +
+                ", orderNumber=" + orderNumber +
+                ", arrayPocketTranscation=" + arrayPocketTranscation +
+                '}';
+    }
 }
