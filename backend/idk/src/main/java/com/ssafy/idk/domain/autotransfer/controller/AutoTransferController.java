@@ -37,4 +37,10 @@ public class AutoTransferController {
     public ResponseEntity<ResultResponse> getAutoTransfer(@PathVariable(name = "autoTransferId") Long autoTransferId) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_TRANSFER_GET_SUCCESS, autoTransferService.getAutoTransfer(autoTransferId)));
     }
+
+    @Operation(summary = "자동이체 목록 조회")
+    @GetMapping(value = "/list/{accountId}")
+    public ResponseEntity<ResultResponse> getAutoTransferList(@PathVariable(name = "accountId") Long accountId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_TRANSFER_LIST_GET_SUCCESS, autoTransferService.getArrayAutoTransfer(accountId)));
+    }
 }
