@@ -24,7 +24,7 @@ public class SignRequestDto {
     @Setter
     public static class ConsentInfoDto {
         private String orgCode;
-        private String type;
+        private String orgType;
     }
 }
 

@@ -9,13 +9,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public class SignVerifyResponseDto {
 
-    private boolean isVerified;
 
     public static SignVerifyResponseDto of(
-            boolean isVerified
     ) {
         return SignVerifyResponseDto.builder()
-                .isVerified(isVerified)
                 .build();
     }
 }
