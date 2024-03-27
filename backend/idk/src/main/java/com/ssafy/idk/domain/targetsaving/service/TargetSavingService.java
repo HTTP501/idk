@@ -4,12 +4,12 @@ import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
-import com.ssafy.idk.domain.piggybank.exception.PiggyBankException;
 import com.ssafy.idk.domain.pocket.entity.Pocket;
 import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.domain.targetsaving.dto.request.TargetSavingCreateRequestDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingCreateResponseDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingDeleteResponseDto;
+import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingGetListResponseDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingGetResponseDto;
 import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
 import com.ssafy.idk.domain.targetsaving.exception.TargetSavingException;
@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -123,5 +125,34 @@ public class TargetSavingService {
                 targetSaving.getMonthlyAmount(),
                 targetSaving.getGoalAmount()
         );
+    }
+
+    public TargetSavingGetListResponseDto getTargetSavingList(Long accountId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new TargetSavingException(ErrorCode.ACCOUNT_NOT_FOUND));
+        if (member != account.getMember())
+            throw new TargetSavingException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        List<TargetSaving> arrayTargetSaving = account.getArrayTargetSaving();
+
+        List<TargetSavingGetResponseDto> arrayTargetSavingGetResponseDto = new ArrayList<>();
+        for (TargetSaving targetSaving : arrayTargetSaving) {
+            arrayTargetSavingGetResponseDto.add(
+                    TargetSavingGetResponseDto.of(
+                            targetSaving.getTargetSavingId(),
+                            targetSaving.getName(),
+                            targetSaving.getDate(),
+                            targetSaving.getTerm(),
+                            targetSaving.getCount(),
+                            targetSaving.getMonthlyAmount(),
+                            targetSaving.getGoalAmount()
+                    ));
+        }
+
+        return TargetSavingGetListResponseDto.of(arrayTargetSavingGetResponseDto);
     }
 }
