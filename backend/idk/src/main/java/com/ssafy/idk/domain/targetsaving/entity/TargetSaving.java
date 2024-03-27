@@ -34,6 +34,9 @@ public class TargetSaving {
     @Column(name = "term") @NotNull
     private Integer term;
 
+    @Column(name = "count") @NotNull
+    private Integer count;
+
     @Column(name = "monthly_amount") @NotNull
     private Long monthlyAmount;
 
@@ -52,5 +55,10 @@ public class TargetSaving {
 
     public void setPocket(Pocket pocket) {
         this.pocket = pocket;
+    }
+
+    @PrePersist
+    public void prePresist() {
+        this.count = 0;
     }
 }
