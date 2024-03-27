@@ -33,9 +33,9 @@ public class CaController {
     // ci 조회
     @Operation(summary = "ci 조회")
     @GetMapping("/member/ci")
-    public ResponseEntity<ResultResponse> getCI(@RequestBody GetCIRequestDto requestDto) {
+    public ResponseEntity<ResultResponse> getCI(@RequestParam("name") String name, @RequestParam("birthDate") String birthDate, @RequestParam("phoneNumber") String phoneNumber) {
 
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.CA_CI_GET_SUCCESS, caService.getCI(requestDto)));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.CA_CI_GET_SUCCESS, caService.getCI(name, birthDate, phoneNumber)));
     }
 
     // 전자서명 요청
