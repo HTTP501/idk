@@ -1,12 +1,12 @@
 package com.ssafy.idk.domain.targetsaving.service;
 
 import com.ssafy.idk.domain.account.entity.Account;
-import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.piggybank.exception.PiggyBankException;
-//import com.ssafy.idk.domain.pocket.service.PocketService;
+import com.ssafy.idk.domain.pocket.entity.Pocket;
+import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.domain.targetsaving.dto.request.TargetSavingCreateRequestDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingCreateResponseDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingDeleteResponseDto;
@@ -27,7 +27,7 @@ public class TargetSavingService {
     private final AuthenticationService authenticationService;
     private final TargetSavingRepository targetSavingRepository;
     private final AccountRepository accountRepository;
-//    private final PocketService pocketService;
+    private final PocketService pocketService;
 
     @Transactional
     public TargetSavingCreateResponseDto createTargetSaving(TargetSavingCreateRequestDto requestDto) {
@@ -66,10 +66,10 @@ public class TargetSavingService {
 
         TargetSaving savedTargetSaving = targetSavingRepository.save(targetSaving);
 
-        System.out.println("savedTargetSaving = " + savedTargetSaving.toString());
-
-        // 돈 포켓 생성
-//        pocketService.createByTargetSaving(savedTargetSaving.getTargetSavingId());
+        // 돈 포켓 동시 생성
+        Pocket pocket = pocketService.createByTargetSaving(savedTargetSaving, account);
+        savedTargetSaving.setPocket(pocket);
+        targetSavingRepository.save(savedTargetSaving);
 
         return TargetSavingCreateResponseDto.of(
                 savedTargetSaving.getTargetSavingId(),
@@ -96,7 +96,7 @@ public class TargetSavingService {
             throw new PiggyBankException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
         // 돈 포켓 기능 구현 후 잔고 업데이트 구현 필요
-        
+
         targetSavingRepository.deleteById(targetSavingId);
 
         return TargetSavingDeleteResponseDto.of(account.getBalance());

@@ -29,7 +29,7 @@ public class Pocket {
     @JoinColumn(name = "account_id") @NotNull
     private Account account;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "target_saving_id")
     private TargetSaving targetSaving;
 
@@ -62,21 +62,11 @@ public class Pocket {
     @OneToMany(mappedBy = "pocket", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<PocketTransaction> arrayPocketTranscation;
 
-    @Override
-    public String toString() {
-        return "Pocket{" +
-                "pocketId=" + pocketId +
-                ", account=" + account +
-                ", targetSaving=" + targetSaving +
-                ", autoTransfer=" + autoTransfer +
-                ", autoDebit=" + autoDebit +
-                ", name='" + name + '\'' +
-                ", target=" + target +
-                ", isActivated=" + isActivated +
-                ", isDeposited=" + isDeposited +
-                ", isPaid=" + isPaid +
-                ", orderNumber=" + orderNumber +
-                ", arrayPocketTranscation=" + arrayPocketTranscation +
-                '}';
+    @PrePersist
+    public void prePresist() {
+        this.isActivated = false;
+        this.isDeposited = false;
+        this.isPaid = false;
     }
+
 }
