@@ -51,7 +51,7 @@ public class CaController {
     @Operation(summary = "전자서명 검증")
     @PostMapping("/sign_verify")
     public ResponseEntity<ResultResponse> signVerify(@RequestBody SignVerifyRequestDto requestDto) throws Exception {
-
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.CA_SIGN_VERIFY_SUCCESS, caService.signVerify(requestDto)));
+        caService.signVerify(requestDto);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.CA_SIGN_VERIFY_SUCCESS));
     }
 }
