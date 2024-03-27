@@ -8,10 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,6 +22,12 @@ public class TargetSavingController {
     @PostMapping(value = "")
     public ResponseEntity<ResultResponse> createTargetSaving(@RequestBody TargetSavingCreateRequestDto requestDto) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.TARGET_SAVING_CREATE_SUCCESS, targetSavingService.createTargetSaving(requestDto)));
+    }
+
+    @Operation(summary = "목표저축 해지")
+    @DeleteMapping(value = "/{targetSavingId}")
+    public ResponseEntity<ResultResponse> deleteTargetSaving(@PathVariable("targetSavingId") Long targetSavingId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.TARGET_SAVING_DELETE_SUCCESS, targetSavingService.deleteTargetSaving(targetSavingId)));
     }
 
 }

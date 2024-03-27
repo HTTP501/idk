@@ -84,16 +84,15 @@ public class PiggyBankService {
 
         Member member = authenticationService.getMemberByAuthentication();
 
-        Account account = accountRepository.findByMember(member)
-                .orElseThrow(() -> new PiggyBankException(ErrorCode.ACCOUNT_NOT_FOUND));
+        // 저금통 유무 확인
+        PiggyBank piggyBank = piggyBankRepository.findByPiggyBankId(piggyBankId)
+                .orElseThrow(() -> new PiggyBankException(ErrorCode.PIGGY_BANK_NOT_FOUND));
+
+        Account account = piggyBank.getAccount();
 
         // API 요청 사용자 및 계좌 사용자 일치 여부 확인
         if (member != account.getMember())
             throw new PiggyBankException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
-
-        // 저금통 유무 확인
-        PiggyBank piggyBank = piggyBankRepository.findByPiggyBankId(piggyBankId)
-                .orElseThrow(() -> new PiggyBankException(ErrorCode.PIGGY_BANK_NOT_FOUND));
 
         // 입금 : 저금통 잔고 -> 계좌
         account.deposit(piggyBank.getBalance());
@@ -193,7 +192,7 @@ public class PiggyBankService {
                 .createAt(LocalDateTime.now())
                 .amount(requestDto.getAmount())
                 .balance(piggyBank.getBalance())
-                .content("계좌에서 입금")
+                .content("입금")
                 .build();
         piggyBankTransactionRepository.save(piggyBankTransaction);
 
@@ -230,7 +229,7 @@ public class PiggyBankService {
                 .createAt(LocalDateTime.now())
                 .amount(requestDto.getAmount())
                 .balance(piggyBank.getBalance())
-                .content("계좌로 출금")
+                .content("출금")
                 .build();
         piggyBankTransactionRepository.save(piggyBankTransaction);
 
