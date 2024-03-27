@@ -33,7 +33,7 @@ public class PiggyBankTransaction {
     @Column(name = "content") @NotNull
     private String content;
 
-    @Column(name = "create_at") @NotNull
-    private LocalDateTime createAt;
+    @Column(name = "created_at") @NotNull
+    private LocalDateTime createdAt;
 
 }

@@ -29,8 +29,8 @@ public class PiggyBank {
     @Column(name = "balance") @NotNull
     private Long balance;
 
-    @Column(name = "create_at") @NotNull
-    private LocalDateTime createAt;
+    @Column(name = "created_at") @NotNull
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "piggyBank", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<PiggyBankTransaction> transactions = new ArrayList<>();
