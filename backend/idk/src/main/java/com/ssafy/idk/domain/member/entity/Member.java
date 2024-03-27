@@ -1,8 +1,10 @@
 package com.ssafy.idk.domain.member.entity;
 
+import com.ssafy.idk.domain.mydata.entity.Mydata;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -42,6 +44,15 @@ public class Member {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "mydata_agreement_terms")
+    private String MydataAgreementTerms;
+
+    @Column(name = "digital_signature")
+    private String digitalSignature;
+
+    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Mydata> mydataList;
 
     @PrePersist
     public void prePersist() {
