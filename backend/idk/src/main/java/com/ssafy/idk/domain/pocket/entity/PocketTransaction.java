@@ -33,7 +33,7 @@ public class PocketTransaction {
     @Column(name = "balance") @NotNull
     private Long balance;
 
-    @Column(length = 20, name = "amount") @NotNull
+    @Column(length = 20, name = "content") @NotNull
     private String content;
 
 }
