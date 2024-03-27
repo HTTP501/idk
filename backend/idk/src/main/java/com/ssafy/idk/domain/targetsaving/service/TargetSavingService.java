@@ -69,7 +69,7 @@ public class TargetSavingService {
         System.out.println("savedTargetSaving = " + savedTargetSaving.toString());
 
         // 돈 포켓 생성
-        pocketService.createByTargetSaving(savedTargetSaving.getTargetSavingId());
+//        pocketService.createByTargetSaving(savedTargetSaving.getTargetSavingId());
 
         return TargetSavingCreateResponseDto.of(
                 savedTargetSaving.getTargetSavingId(),
