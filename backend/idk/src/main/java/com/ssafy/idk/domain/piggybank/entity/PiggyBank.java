@@ -32,7 +32,6 @@ public class PiggyBank {
     @Column(name = "create_at") @NotNull
     private LocalDateTime createAt;
 
-    @Column(name = "piggy_bank_transaction_id")
     @OneToMany(mappedBy = "piggyBank", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<PiggyBankTransaction> transactions = new ArrayList<>();
 
