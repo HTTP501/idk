@@ -63,7 +63,7 @@ public enum ErrorCode {
     AUTO_TRANSFER_MY_ACCOUNT_NOT_FOUND(404, "AT401", "출금 계좌가 유효하지 않습니다."),
     AUTO_TRANSFER_INVALID_ACCOUNT(404, "AT402", "자동이체 계좌가 유효하지 않습니다."),
     AUTO_TRANSFER_AMOUNT_NEED_TO_EXCEED_ZERO(409, "AT403", "자동이체 금액은 0원 이하로 등록할 수 없습니다."),
-    AUTO_TRANSFER_IMPOSSIBLE_STARTDATE(409, "AT404", "자동이체 기간이 유효하지 않습니다."),
+    AUTO_TRANSFER_INVALID_TERM(409, "AT404", "자동이체 기간이 유효하지 않습니다."),
     AUTO_TRANSFER_NOT_FOUND(404, "AT405", "해당 자동이체 정보가 존재하지 않습니다."),
 
     // AUTO_DEBIT
