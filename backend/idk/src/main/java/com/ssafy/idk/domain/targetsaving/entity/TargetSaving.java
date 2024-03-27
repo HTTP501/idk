@@ -1,6 +1,7 @@
 package com.ssafy.idk.domain.targetsaving.entity;
 
 import com.ssafy.idk.domain.account.entity.Account;
+import com.ssafy.idk.domain.pocket.entity.Pocket;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -45,4 +46,22 @@ public class TargetSaving {
     @Column(name = "created_at") @NotNull
     private LocalDateTime createdAt;
 
+    @OneToOne(mappedBy = "targetSaving", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private Pocket pocket;
+
+    @Override
+    public String toString() {
+        return "TargetSaving{" +
+                "targetSavingId=" + targetSavingId +
+                ", account=" + account +
+                ", name='" + name + '\'' +
+                ", date=" + date +
+                ", term=" + term +
+                ", monthlyAmount=" + monthlyAmount +
+                ", goalAmount=" + goalAmount +
+                ", itemId=" + itemId +
+                ", createdAt=" + createdAt +
+                ", pocket=" + pocket +
+                '}';
+    }
 }

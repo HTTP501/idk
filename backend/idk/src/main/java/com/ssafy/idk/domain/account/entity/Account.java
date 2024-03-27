@@ -1,11 +1,14 @@
 package com.ssafy.idk.domain.account.entity;
 
 import com.ssafy.idk.domain.member.entity.Member;
+import com.ssafy.idk.domain.pocket.entity.Pocket;
+import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
 import jakarta.persistence.*;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -51,6 +54,12 @@ public class Account {
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     List<Transaction> transactionList;
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<TargetSaving> arrayTargetSaving;
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    List<Pocket> arrayPocketOrders;
 
     public void updateName(String name) {
         this.name = name;
