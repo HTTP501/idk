@@ -173,7 +173,10 @@ const styles = StyleSheet.create({
   lock: {
     position: 'absolute',
     end: 20,
-    top: 20
+    top: 20,
+    height:50,
+    width:40,
+    resizeMode:'contain'
   },
   setting: {
     position: 'absolute',
