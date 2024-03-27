@@ -1,7 +1,5 @@
 package com.ssafy.idk.domain.account.dto.response;
 
-import com.ssafy.idk.domain.account.domain.Category;
-import jdk.jfr.ContentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

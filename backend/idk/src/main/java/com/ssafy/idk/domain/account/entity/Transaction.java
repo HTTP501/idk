@@ -1,4 +1,4 @@
-package com.ssafy.idk.domain.account.domain;
+package com.ssafy.idk.domain.account.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

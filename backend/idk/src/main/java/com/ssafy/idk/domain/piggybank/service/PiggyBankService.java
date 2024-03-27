@@ -1,15 +1,15 @@
 package com.ssafy.idk.domain.piggybank.service;
 
-import com.ssafy.idk.domain.account.domain.Account;
-import com.ssafy.idk.domain.account.domain.Category;
-import com.ssafy.idk.domain.account.domain.Transaction;
+import com.ssafy.idk.domain.account.entity.Account;
+import com.ssafy.idk.domain.account.entity.Category;
+import com.ssafy.idk.domain.account.entity.Transaction;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
-import com.ssafy.idk.domain.member.domain.Member;
+import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
-import com.ssafy.idk.domain.piggybank.domain.PiggyBank;
-import com.ssafy.idk.domain.piggybank.domain.PiggyBankTransaction;
+import com.ssafy.idk.domain.piggybank.entity.PiggyBank;
+import com.ssafy.idk.domain.piggybank.entity.PiggyBankTransaction;
 import com.ssafy.idk.domain.piggybank.dto.request.PiggyBankCreateRequestDto;
 import com.ssafy.idk.domain.piggybank.dto.request.PiggyBankTransactionRequestDto;
 import com.ssafy.idk.domain.piggybank.dto.response.*;
@@ -84,16 +84,15 @@ public class PiggyBankService {
 
         Member member = authenticationService.getMemberByAuthentication();
 
-        Account account = accountRepository.findByMember(member)
-                .orElseThrow(() -> new PiggyBankException(ErrorCode.ACCOUNT_NOT_FOUND));
+        // 저금통 유무 확인
+        PiggyBank piggyBank = piggyBankRepository.findByPiggyBankId(piggyBankId)
+                .orElseThrow(() -> new PiggyBankException(ErrorCode.PIGGY_BANK_NOT_FOUND));
+
+        Account account = piggyBank.getAccount();
 
         // API 요청 사용자 및 계좌 사용자 일치 여부 확인
         if (member != account.getMember())
             throw new PiggyBankException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
-
-        // 저금통 유무 확인
-        PiggyBank piggyBank = piggyBankRepository.findByPiggyBankId(piggyBankId)
-                .orElseThrow(() -> new PiggyBankException(ErrorCode.PIGGY_BANK_NOT_FOUND));
 
         // 입금 : 저금통 잔고 -> 계좌
         account.deposit(piggyBank.getBalance());
@@ -142,7 +141,7 @@ public class PiggyBankService {
                             transaction.getAmount(),
                             transaction.getBalance(),
                             transaction.getContent(),
-                            transaction.getCreateAt()
+                            transaction.getCreatedAt()
                     ));
         }
 
@@ -190,10 +189,10 @@ public class PiggyBankService {
         // 저금통 입출금 내역 저장
         PiggyBankTransaction piggyBankTransaction = PiggyBankTransaction.builder()
                 .piggyBank(piggyBank)
-                .createAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .amount(requestDto.getAmount())
                 .balance(piggyBank.getBalance())
-                .content("계좌에서 입금")
+                .content("입금")
                 .build();
         piggyBankTransactionRepository.save(piggyBankTransaction);
 
@@ -227,10 +226,10 @@ public class PiggyBankService {
         // 저금통 입출금 내역 저장
         PiggyBankTransaction piggyBankTransaction = PiggyBankTransaction.builder()
                 .piggyBank(piggyBank)
-                .createAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .amount(requestDto.getAmount())
                 .balance(piggyBank.getBalance())
-                .content("계좌로 출금")
+                .content("출금")
                 .build();
         piggyBankTransactionRepository.save(piggyBankTransaction);
 
