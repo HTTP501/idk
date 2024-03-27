@@ -94,7 +94,7 @@ public class TargetSavingService {
 
         // API 요청 사용자 및 계좌 사용자 일치 여부 확인
         if (member != account.getMember())
-            throw new PiggyBankException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+            throw new TargetSavingException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
         targetSavingRepository.deleteById(targetSavingId);
 
@@ -102,6 +102,26 @@ public class TargetSavingService {
     }
 
     public TargetSavingGetResponseDto getTargetSaving(Long targetSavingId) {
-        return null;
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        TargetSaving targetSaving = targetSavingRepository.findById(targetSavingId)
+                .orElseThrow(() -> new TargetSavingException(ErrorCode.TARGET_SAVING_NOT_FOUND));
+
+        Account account = targetSaving.getAccount();
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        if (member != account.getMember())
+            throw new TargetSavingException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        return TargetSavingGetResponseDto.of(
+                targetSavingId,
+                targetSaving.getName(),
+                targetSaving.getDate(),
+                targetSaving.getTerm(),
+                targetSaving.getCount(),
+                targetSaving.getMonthlyAmount(),
+                targetSaving.getGoalAmount()
+        );
     }
 }

@@ -30,4 +30,10 @@ public class TargetSavingController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.TARGET_SAVING_DELETE_SUCCESS, targetSavingService.deleteTargetSaving(targetSavingId)));
     }
 
+    @Operation(summary = "목표저축 조회")
+    @GetMapping(value = "/{targetSavingId}")
+    public ResponseEntity<ResultResponse> getTargetSaving(@PathVariable("targetSavingId") Long targetSavingId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.TARGET_SAVING_GET_SUCCESS, targetSavingService.getTargetSaving(targetSavingId)));
+    }
+
 }

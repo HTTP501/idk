@@ -25,7 +25,7 @@ public class TargetSaving {
     @JoinColumn(name = "account_id") @NotNull
     private Account account;
 
-    @Column(name = "name") @NotNull
+    @Column(length = 20, name = "name") @NotNull
     private String name;
 
     @Column(name = "date") @NotNull
