@@ -31,7 +31,7 @@ const FinishCreateAccount = ({ navigation }) => {
         <Text className='text-lg font-bold mr-5'>개설일자 </Text>
         <Text className='text-base'>{ accountCreatedAt ? accountCreatedAt.substr(0,10) : '' }</Text>
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Tab')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.reset({routes: [{name: 'Tab'}]})}>
         <Text className='text-white text-lg'>확인</Text>
       </TouchableOpacity>
     </View>
