@@ -58,7 +58,7 @@ public class TargetSavingService {
                 .monthlyAmount(requestDto.getMonthlyAmount())
                 .goalAmount(requestDto.getGoalAmount())
                 .itemId(requestDto.getItemId())
-                .createAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .account(account)
                 .build();
 
