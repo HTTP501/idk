@@ -101,7 +101,7 @@ const FinishEnterPIN = ({ route, navigation }) => {
     <View style={styles.container}>
       <Image source={require('../../../assets/check.png')} />
       <Text className='text-3xl font-bold mb-72 mt-10'>간편 비밀번호 등록 완료</Text>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AccountStack')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.reset({routes: [{name: 'AccountStack'}]})}>
         <Text className='text-white text-lg'>계좌 개설</Text>
       </TouchableOpacity>
 
