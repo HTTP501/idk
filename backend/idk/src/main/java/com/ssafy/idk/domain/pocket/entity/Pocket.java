@@ -59,7 +59,7 @@ public class Pocket {
     private Integer orderNumber;
 
     @OneToMany(mappedBy = "pocket", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<PocketTransaction> arrayPocketTranscation = new ArrayList<>();
+    private List<PocketTransaction> arrayPocketTranscation;
 
     @Override
     public String toString() {
