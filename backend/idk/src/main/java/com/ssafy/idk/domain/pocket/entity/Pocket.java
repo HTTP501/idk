@@ -29,7 +29,7 @@ public class Pocket {
     @JoinColumn(name = "account_id") @NotNull
     private Account account;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_saving_id")
     private TargetSaving targetSaving;
 
@@ -60,7 +60,7 @@ public class Pocket {
     private Integer orderNumber;
 
     @OneToMany(mappedBy = "pocket", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<PocketTransaction> arrayPocketTranscation = new ArrayList<>();
+    private List<PocketTransaction> arrayPocketTranscation;
 
     @Override
     public String toString() {
