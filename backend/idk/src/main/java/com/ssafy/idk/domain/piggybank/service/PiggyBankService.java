@@ -141,7 +141,7 @@ public class PiggyBankService {
                             transaction.getAmount(),
                             transaction.getBalance(),
                             transaction.getContent(),
-                            transaction.getCreateAt()
+                            transaction.getCreatedAt()
                     ));
         }
 
@@ -189,7 +189,7 @@ public class PiggyBankService {
         // 저금통 입출금 내역 저장
         PiggyBankTransaction piggyBankTransaction = PiggyBankTransaction.builder()
                 .piggyBank(piggyBank)
-                .createAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .amount(requestDto.getAmount())
                 .balance(piggyBank.getBalance())
                 .content("입금")
@@ -226,7 +226,7 @@ public class PiggyBankService {
         // 저금통 입출금 내역 저장
         PiggyBankTransaction piggyBankTransaction = PiggyBankTransaction.builder()
                 .piggyBank(piggyBank)
-                .createAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .amount(requestDto.getAmount())
                 .balance(piggyBank.getBalance())
                 .content("출금")
