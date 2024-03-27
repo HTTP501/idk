@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -61,21 +60,10 @@ public class Pocket {
     @OneToMany(mappedBy = "pocket", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<PocketTransaction> arrayPocketTranscation;
 
-    @Override
-    public String toString() {
-        return "Pocket{" +
-                "pocketId=" + pocketId +
-                ", account=" + account +
-                ", targetSaving=" + targetSaving +
-                ", autoTransfer=" + autoTransfer +
-                ", autoDebit=" + autoDebit +
-                ", name='" + name + '\'' +
-                ", target=" + target +
-                ", isActivated=" + isActivated +
-                ", isDeposited=" + isDeposited +
-                ", isPaid=" + isPaid +
-                ", orderNumber=" + orderNumber +
-                ", arrayPocketTranscation=" + arrayPocketTranscation +
-                '}';
+    @PrePersist
+    public void prePresist() {
+        this.isActivated = false;
+        this.isDeposited = false;
+        this.isPaid = false;
     }
 }
