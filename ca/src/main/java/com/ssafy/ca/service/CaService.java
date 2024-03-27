@@ -191,10 +191,20 @@ public class CaService {
         byte[] originalData = signData.getBytes();
 
         // 전자서명 데이터 디코딩
-        byte[] signedData = Base64.getDecoder().decode(digitalSignature);
+        byte[] signedData;
+        try {
+            signedData = Base64.getDecoder().decode(digitalSignature);
+        } catch (Exception e) {
+            throw new CaException(ErrorCode.CA_SIGN_INVALID);
+        }
 
         // 무결성 검증 + 데이터 검증
         boolean result = DigitalSignature.verifySignature(originalData, signedData);
+
+        // 검증 실패
+        if (!result) {
+            throw new CaException(ErrorCode.CA_SIGN_VERIFY_FAILED);
+        }
 
         return SignVerifyResponseDto.of(result);
     }
