@@ -171,7 +171,7 @@ public class AccountService {
     @Transactional
     public Account withdraw(Long amount) { // 출금
         Member member = authenticationService.getMemberByAuthentication();
-        Account account = accountRepository.findByMember(member)
+        Account account = accountRepository.findByMemberWithPessimisticLock(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         if(account.getBalance()-amount < 0) throw new AccountException(ErrorCode.ACCOUNT_BALANCE_LACK);
@@ -180,14 +180,24 @@ public class AccountService {
         return account;
     }
 
-
     @Transactional
     public Account deposit(Long amount) { // 입금
         Member member = authenticationService.getMemberByAuthentication();
-        Account account = accountRepository.findByMember(member)
+        Account account = accountRepository.findByMemberWithPessimisticLock(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         account.deposit(amount);
+        return account;
+    }
+
+    @Transactional
+    public Account withdrawTest(Long memberId, Long amount) {
+        Member member = memberRepository.findById(memberId).get();
+        Account account = accountRepository.findByMemberWithPessimisticLock(member)
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        if(account.getBalance()-amount < 0) throw new AccountException(ErrorCode.ACCOUNT_BALANCE_LACK);
+        account.withdraw(amount);
         return account;
     }
 }
