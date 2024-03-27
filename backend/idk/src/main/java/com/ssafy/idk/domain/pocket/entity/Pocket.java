@@ -26,7 +26,7 @@ public class Pocket {
     @JoinColumn(name = "account_id") @NotNull
     private Account account;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_saving_id")
     private Account targetSavingId;
 
