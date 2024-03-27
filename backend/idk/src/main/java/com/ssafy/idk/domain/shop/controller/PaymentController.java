@@ -23,13 +23,19 @@ public class PaymentController {
     @Operation(summary = "결제 요청")
     @PostMapping(value="/ready", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultResponse> readyPayment(@RequestBody ReadyPaymentRequestDto requestDto){
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.SUCCESS, paymentService.readyPayment(requestDto)));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.PAYMENT_READY_SUCCESS, paymentService.readyPayment(requestDto)));
     }
 
     @Operation(summary = "결제 승인")
     @PostMapping(value="/approval", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultResponse> approvalPayment(@RequestBody ApprovalPaymentRequestDto requestDto){
         paymentService.approvalPayment(requestDto);
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.SUCCESS));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.PAYMENT_APPROVAL_SUCCESS));
     }
+
+//    @Operation(summary = "상품 목표저축 조회")
+//    @GetMapping(value="/targetsaving")
+//    public ResponseEntity<ResultResponse> getItemTargetSaving(){
+//        return ResponseEntity.ok(ResultResponse.of(ResultCode.SUCCESS, paymentService.getItemTargetSaving()));
+//    }
 }

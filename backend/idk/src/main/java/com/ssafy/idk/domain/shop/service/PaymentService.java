@@ -3,7 +3,8 @@ package com.ssafy.idk.domain.shop.service;
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.account.entity.Category;
 import com.ssafy.idk.domain.account.entity.Transaction;
-import com.ssafy.idk.domain.account.dto.response.AccountResponseDto;
+import com.ssafy.idk.domain.account.exception.AccountException;
+import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.account.service.AccountService;
 import com.ssafy.idk.domain.member.entity.Member;
@@ -36,6 +37,7 @@ public class PaymentService {
     private final AccountService accountService;
     private final ItemRepository itemRepository;
     private final TransactionRepository transactionRepository;
+    private final AccountRepository accountRepository;
     private final RedisTemplate<String, OrderInfo> orderRedisTemplate;
     
     @Transactional
@@ -43,9 +45,16 @@ public class PaymentService {
         Member member = authenticationService.getMemberByAuthentication();
         // 결제수단 검증
         if(requestDto.getPayType() == 1) { // 계좌 검증
-            AccountResponseDto accountResponseDto = accountService.getAccount();
-            if(accountResponseDto.getAccountId() != requestDto.getPaymentId())
+            Account account = accountRepository.findByMember(member)
+                    .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+            if(account.getAccountId() != requestDto.getPaymentId()) // 계좌 PK 검증
                 throw new PaymentException(ErrorCode.PAYMENT_VERIFY_FAIL);
+            // 잔액 확인
+            Item item = itemRepository.findById(requestDto.getItemId())
+                    .orElseThrow(() -> new ItemException(ErrorCode.ITEM_NOT_FOUND));
+            if(account.getBalance() - account.getMinAmount() < item.getPrice())
+                throw new PaymentException(ErrorCode.PAYMENT_BALANCE_FAIL);
+
         }
 
         // redis에 임시 주문 정보 저장
