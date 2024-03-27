@@ -1,11 +1,9 @@
 package com.ssafy.ca.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.ssafy.ca.domain.Member;
 import com.ssafy.ca.domain.Organization;
 import com.ssafy.ca.domain.OrganizationMember;
-import com.ssafy.ca.domain.SignData;
 import com.ssafy.ca.dto.*;
 import com.ssafy.ca.dto.SignRequestDto.ConsentInfoDto;
 import com.ssafy.ca.exception.CaException;
@@ -15,9 +13,7 @@ import com.ssafy.ca.repository.OrganizationMemberRepositoy;
 import com.ssafy.ca.repository.OrganizationRepository;
 import com.ssafy.ca.util.CICreator;
 import com.ssafy.ca.util.DigitalSignature;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -133,11 +129,11 @@ public class CaService {
             signDataMap.put("connectionInformation", member.getConnectionInformation());
 
             signDataMap.put("orgCode", consentInfoDto.getOrgCode());
-            signDataMap.put("orgType", consentInfoDto.getType());
+            signDataMap.put("orgType", consentInfoDto.getOrgType());
 
             // 기관 정보를 Map 형태로 저장
             orgData.put("orgCode", consentInfoDto.getOrgCode());
-            orgData.put("orgType", consentInfoDto.getType());
+            orgData.put("orgType", consentInfoDto.getOrgType());
 
             // 기관 조회
             Organization organization = organizationRepository.findByOrgCode(consentInfoDto.getOrgCode())
@@ -166,7 +162,7 @@ public class CaService {
     }
 
     // 전자서명 검증
-    public SignVerifyResponseDto signVerify(SignVerifyRequestDto requestDto) throws Exception {
+    public void signVerify(SignVerifyRequestDto requestDto) throws Exception {
 
         // 요청으로부터 기관 코드(orgCode), 사용자 정보(ci), 전자서명(signedData)를 추출합니다.
         String orgCode = requestDto.getOrgCode();
@@ -205,8 +201,6 @@ public class CaService {
         if (!result) {
             throw new CaException(ErrorCode.CA_SIGN_VERIFY_FAILED);
         }
-
-        return SignVerifyResponseDto.of(result);
     }
 
     public void isValidInput(String name, String birthDate, String phoneNumber) {
