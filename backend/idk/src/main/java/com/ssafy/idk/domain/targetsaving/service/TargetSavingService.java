@@ -6,7 +6,7 @@ import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.piggybank.exception.PiggyBankException;
-import com.ssafy.idk.domain.pocket.service.PocketService;
+//import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.domain.targetsaving.dto.request.TargetSavingCreateRequestDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingCreateResponseDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingDeleteResponseDto;
@@ -27,7 +27,7 @@ public class TargetSavingService {
     private final AuthenticationService authenticationService;
     private final TargetSavingRepository targetSavingRepository;
     private final AccountRepository accountRepository;
-    private final PocketService pocketService;
+//    private final PocketService pocketService;
 
     @Transactional
     public TargetSavingCreateResponseDto createTargetSaving(TargetSavingCreateRequestDto requestDto) {
