@@ -1,0 +1,82 @@
+package com.ssafy.idk.domain.pocket.entity;
+
+import com.ssafy.idk.domain.account.entity.Account;
+import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
+import com.ssafy.idk.domain.autodebit.entity.AutoDebit;
+import com.ssafy.idk.domain.piggybank.entity.PiggyBankTransaction;
+import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Table(name = "POCKET")
+public class Pocket {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "pocket_id") @NotNull
+    private Long pocketId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id") @NotNull
+    private Account account;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "target_saving_id")
+    private TargetSaving targetSaving;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "auto_transfer_id")
+    private AutoTransfer autoTransfer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "auto_debit_id")
+    private AutoDebit autoDebit;
+
+    @Column(name = "name") @NotNull
+    private String name;
+
+    @Column(name = "target") @NotNull
+    private Long target;
+
+    @Column(name = "is_activated") @NotNull
+    private boolean isActivated;
+
+    @Column(name = "is_deposited") @NotNull
+    private boolean isDeposited;
+
+    @Column(name = "is_paid") @NotNull
+    private boolean isPaid;
+
+    @Column(name = "order_number") @NotNull
+    private Integer orderNumber;
+
+    @OneToMany(mappedBy = "pocket", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<PocketTransaction> arrayPocketTranscation;
+
+    @Override
+    public String toString() {
+        return "Pocket{" +
+                "pocketId=" + pocketId +
+                ", account=" + account +
+                ", targetSaving=" + targetSaving +
+                ", autoTransfer=" + autoTransfer +
+                ", autoDebit=" + autoDebit +
+                ", name='" + name + '\'' +
+                ", target=" + target +
+                ", isActivated=" + isActivated +
+                ", isDeposited=" + isDeposited +
+                ", isPaid=" + isPaid +
+                ", orderNumber=" + orderNumber +
+                ", arrayPocketTranscation=" + arrayPocketTranscation +
+                '}';
+    }
+}
