@@ -43,7 +43,7 @@ const Account = ({ account, navigation }) => {
     >
       <View className="gap-1">
         <View className="flex-row justify-between">
-          <Text className="font-bold">{account.accountName}</Text>
+          <Text className="font-bold">{account?.accountName}</Text>
           {/* 설정 아이콘 */}
           <TouchableOpacity
             onPress={() => {

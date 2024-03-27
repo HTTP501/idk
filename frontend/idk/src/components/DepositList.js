@@ -1,6 +1,6 @@
 import { Dimensions } from "react-native";
 
-import { View, Text, StyleSheet,TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet,TouchableOpacity ,Image} from "react-native";
 import theme from "../style";
 import formattedNumber from "./moneyFormatter";
 
@@ -51,19 +51,20 @@ const DepositItem = function ({ item,navigation }) {
   const date = new Date(item.transactionCreatedAt);
   // 시간 추출
   const hours = date.getHours();
+  
   const minutes = date.getMinutes();
   // 12시간 형식으로 변환 (오전/오후 표시 없음)
   const time = `${hours < 10 ? "0" + hours : hours}:${
     minutes < 10 ? "0" + minutes : minutes
   }`;
   return (
-    <TouchableOpacity className="flex-row gap-3 px-8 py-3"
+    <TouchableOpacity className="flex-row gap-3 px-8 py-3 items-center"
     onPress={()=>{
       console.log('이체 상세 들어가기')
       navigation.navigate("DetailTransaction",{transactionId:item.transactionId})
     }}>
       <View>
-        <Text>아이콘</Text>
+      <Image source={require('../../assets/icons/money.png')} style={{ width: 35, height:35,resizeMode:"contain"}}/>
       </View>
       <View className="flex-grow">
         <Text>{item.transactionContent}</Text>

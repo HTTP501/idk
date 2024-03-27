@@ -98,11 +98,11 @@ const DetailPocket = ({ navigation, route }) => {
               <TouchableOpacity
                 style={styles.setting}
                 onPress={() => {
-                  if (pocketType === 'saving') {
+                  if (pocketType === '목표저축') {
                     navigation.navigate('SettingTargetSaving', { pocketId })
-                  } else if (pocketType === 'autoTransfer') {
+                  } else if (pocketType === '자동결제') {
                     navigation.navigate("SettingAutoDebit", { pocketId });
-                  } else if (pocketType === 'autoDebit') {
+                  } else if (pocketType === '자동이체') {
                     navigation.navigate('SettingAutoTransfer', { pocketId })
                   }
                 }}
@@ -173,7 +173,10 @@ const styles = StyleSheet.create({
   lock: {
     position: 'absolute',
     end: 20,
-    top: 20
+    top: 20,
+    height:50,
+    width:40,
+    resizeMode:'contain'
   },
   setting: {
     position: 'absolute',

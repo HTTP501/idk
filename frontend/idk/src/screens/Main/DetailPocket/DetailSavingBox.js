@@ -71,6 +71,9 @@ const DetailSavingBox = ({ navigation, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       fetchPiggyBankDetail();
+      setTimeout(() => {
+        setLoading(true);
+      }, 700);
     }, [])
   );
 

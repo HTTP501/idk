@@ -10,9 +10,49 @@ import { AntDesign } from "@expo/vector-icons";
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 import theme from "../../../style";
 import formattedNumber from "../../../components/moneyFormatter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getAutoDebitAxios } from '../../../API/AutoDebit'
+import { getAutoTransferAxios } from '../../../API/AutoTransfer'
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const ACCOUNT_KEY = "@account";
+
 // 페이지
 const RegistDonPocket = ({navigation}) => {
+  const [autoTransferList, setAutoTransferList] = useState(null)
+  const [autoDebitList, setAutoDebitList] = useState(null)
+  const [accountId, setAccountId] = useState(null)
+
+  useEffect(() => {
+    const getAccountId = async () => {
+      const a = await AsyncStorage.getItem(ACCOUNT_KEY)
+      setAccountId(JSON.parse(a).accountId)
+    }
+    // // 자동결제 Axios
+    // getAutoDebitAxios(
+    //   {accountId: accountId},
+    //   res => {
+    //     console.log(res.data);
+    //   },
+    //   err => {
+    //     console.log(err);
+    //     console.log(err.response);
+    //   }
+    // )
+    // // 자동이체 Axios
+    // getAutoTransferAxios(
+    //   {accountId: accountId},
+    //   res => {
+    //     console.log(res.data);
+    //   },
+    //   err => {
+    //     console.log(err);
+    //     console.log(err.response);
+    //   }
+    // )
+    getAccountId()
+  })
+
   const myData = [
     {
       name: "어디로든 그린 카드",
