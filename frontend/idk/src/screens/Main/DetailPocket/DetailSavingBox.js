@@ -40,6 +40,7 @@ const DetailSavingBox = ({ navigation, route }) => {
     getPiggyBankDetailAxios(
       pocketId,
       res => {
+        console.log(res.data.data.arrayTransaction);
         setArrayTransaction(res.data.data.arrayTransaction)
         setBalance(res.data.data.balance)
         setPiggyBankId(res.data.data.piggyBankId)
@@ -72,6 +73,9 @@ const DetailSavingBox = ({ navigation, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       fetchPiggyBankDetail();
+      setTimeout(() => {
+        setLoading(true);
+      }, 700);
     }, [])
   );
 

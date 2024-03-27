@@ -31,54 +31,65 @@ import * as SplashScreen from "expo-splash-screen";
 import { getAccountAxios } from "../../API/Account";
 import { getPocketAxios } from "../../API/DonPocket";
 import { getPiggyBankAxios } from "../../API/Saving";
+import { getPocketListAxios } from '../../API/DonPocket'
 import FilteredDonPocketList from "../../components/FilteredDonPocketList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loading from "../../components/Loading";
 import PiggyBank from "../../components/PiggyBankItem";
+
+import { useFocusEffect } from "@react-navigation/native";
+
 // 메인 페이지
 const Main = gestureHandlerRootHOC(({ navigation }) => {
   const ACCOUNT_KEY = "@account";
-  // 다른페이지에 갔다가 돌아왔을때 hook 걸어줌
-  const isFocused = useIsFocused();
   let [loading, setLoading] = useState(false);
   // 저금통 데이터
   const [piggyBankData, setPiggyBankData] = useState(null);
-  useEffect(() => {
-    // 계좌 데이터 받아오기
-    console.log("계좌, 돈포켓 API 호출 위치");
+
+  // Axios 데이터 불러오기
+  const fetchData = async () => {
     // 계좌 조회 Axios
-    const getAccount = async () => {
-      getAccountAxios(
-        (res) => {
-          console.log(res.data.data);
-          setAccount(res.data.data);
-          // 스토리지에 계좌정보만 저장해주기
-          const data = JSON.stringify({
-            accountNumber: res.data.data.accountNumber,
-            accountId: res.data.data.accountId
-          });
-          AsyncStorage.setItem(ACCOUNT_KEY, data);
-        },
-        (err) => {
-          // 계좌 번호가 있는지 판단해서 없으면 계좌 생성페이지로 이동
-          if (err.response.data.code === "A401") {
-            Alert.alert(
-              "계좌번호가 없습니다.",
-              "계좌 생성 페이지로 이동합니다.",
-              [
-                {
-                  text: "확인",
-                  onPress: () => navigation.navigate("AccountStack"),
-                },
-              ]
-            );
-          }
+    await getAccountAxios(
+      (res) => {
+        console.log(res.data.data);
+        setAccount(res.data.data);
+        // 스토리지에 계좌정보만 저장해주기
+        const data = JSON.stringify({
+          accountNumber: res.data.data.accountNumber,
+          accountId: res.data.data.accountId
+        });
+        AsyncStorage.setItem(ACCOUNT_KEY, data);
+
+        
+        // 돈포켓 조회 Axios
+        // getPocketListAxios(
+        //   {accountId: res.data.data.accountId},
+        //   res => {
+        //     console.log(res);
+        //   },
+        //   err => {
+        //     console.log(err);
+        //   }
+        // )
+      },
+      (err) => {
+        // 계좌 번호가 있는지 판단해서 없으면 계좌 생성페이지로 이동
+        if (err.response.data.code === "A401") {
+          Alert.alert(
+            "계좌번호가 없습니다.",
+            "계좌 생성 페이지로 이동합니다.",
+            [
+              {
+                text: "확인",
+                onPress: () => navigation.navigate("AccountStack"),
+              },
+            ]
+          );
         }
-      );
-    };
-    getAccount();
-    // 저금통 조회
-    getPiggyBankAxios(
+      }
+    );
+    // 저금통 조회 Axios
+    await getPiggyBankAxios(
       res => {
         setPiggyBankData(res.data.data)
       },
@@ -86,29 +97,29 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
         setPiggyBankData(null)
       }
     )
-    setTimeout(() => {
-      setLoading(true);
-    }, 700);
-    // getPocketAxios(res=>{console.log(res)}, err=>{console.log(err)})
-  }, [isFocused]);
+  }
+
+
+  // 화면 포커싱 시 데이터 다시 가져오기
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(false)
+      fetchData();
+      setTimeout(() => {
+        setLoading(true);
+      }, 700);
+    }, [])
+  );
 
   // 계좌 데이터 - 더미
-  let [account, setAccount] = useState({
-    accountAvailableAmount: 0,
-    accountBalance: 0,
-    accountId: 8,
-    accountMinAmount: 0,
-    accountName: "IDK 우리나라 국민우대통장",
-    accountNumber: "1234567891010",
-    accountPayDate: 1,
-  });
+  const [account, setAccount] = useState({"accountAvailableAmount": 0, "accountBalance": 0, "accountId": 4, "accountMinAmount": 0, "accountName": "IDK 우리나라 국민우대통장", "accountNumber": "1234567891010", "accountPayDate": 1});
   // 돈포켓 데이터
-  let [pocketData, setPocketData] = useState([
+  const [pocketData, setPocketData] = useState([
     {
       pocketId: "1",
-      pocketType: "saving",
+      pocketType: "목표저축",
       totalPaymentCnt: 1,
-      savingId: 2198211,
+      targetSavingId: 2198211,
       pocketName: "돈포켓이름1",
       balance: 60200,
       paymentDate: "15",
@@ -118,7 +129,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     },
     {
       pocketId: "2",
-      pocketType: "autoTransfer",
+      pocketType: "자동이체",
       autoTransferId: 1241,
       pocketName: "돈포켓이름2",
       balance: 12567000,
@@ -129,7 +140,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     },
     {
       pocketId: "3",
-      pocketType: "autoDebit",
+      pocketType: "자동결제",
       autoDebitId: 12451,
       pocketName: "돈포켓이름3",
       balance: 12000,
@@ -140,7 +151,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     },
     {
       pocketId: "4",
-      pocketType: "saving",
+      pocketType: "목표저축",
       totalPaymentCnt: 10,
       savingId: 12513,
       pocketName: "돈포켓이름4",
@@ -156,13 +167,13 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
 
   // 필터링 된 데이터
   let [savingPocketData, setSavingPocketData] = useState(
-    pocketData.filter((item) => item.pocketType === "saving")
+    pocketData.filter((item) => item.pocketType === "목표저축")
   );
   let [autoTransferPocketData, setAutoTransferPocketData] = useState(
-    pocketData.filter((item) => item.pocketType === "autoTransfer")
+    pocketData.filter((item) => item.pocketType === "자동이체")
   );
   let [autoDebitPocketData, setAutoDebitPocketData] = useState(
-    pocketData.filter((item) => item.pocketType === "autoDebit")
+    pocketData.filter((item) => item.pocketType === "자동결제")
   );
 
   // 돈포켓 총 금액
@@ -208,13 +219,13 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
                   : null
                 }
               </View>
-            ) : pocketType === "saving" ? (
+            ) : pocketType === "목표저축" ? (
               // 저축 돈포켓
               <FilteredDonPocketList
                 navigation={navigation}
                 filteredPocketData={savingPocketData}
               />
-            ) : pocketType === "autoTransfer" ? (
+            ) : pocketType === "자동이체" ? (
               // 자동이체 돈포켓
               <FilteredDonPocketList
                 navigation={navigation}

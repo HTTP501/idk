@@ -12,7 +12,7 @@ const EnterBirthId = ({ route, navigation }) => {
   const receiveData = route.params
   const sendData = {
     ...receiveData,
-    birth: firstInputValue + '-' + secondInputValue
+    birthDate: firstInputValue + secondInputValue
   }
 
   const handleFirstTextInputChange = (text) => {
