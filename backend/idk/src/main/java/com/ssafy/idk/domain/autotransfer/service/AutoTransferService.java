@@ -126,7 +126,8 @@ public class AutoTransferService {
                 autoTransfer.getAmount(),
                 autoTransfer.getDate(),
                 autoTransfer.getShowRecipientBankAccount(),
-                autoTransfer.getShowMyBankAccount()
+                autoTransfer.getShowMyBankAccount(),
+                (autoTransfer.getPocket() == null ? null : autoTransfer.getPocket().getPocketId())
         );
     }
 
@@ -154,7 +155,8 @@ public class AutoTransferService {
                             autoTransfer.getAmount(),
                             autoTransfer.getDate(),
                             autoTransfer.getShowRecipientBankAccount(),
-                            autoTransfer.getShowMyBankAccount()
+                            autoTransfer.getShowMyBankAccount(),
+                            (autoTransfer.getPocket() == null ? null : autoTransfer.getPocket().getPocketId())
                     )
             );
         }
