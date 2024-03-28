@@ -70,6 +70,10 @@ public class Pocket {
         this.name = name;
     }
 
+    public void setActivated(boolean activated) {
+        isActivated = activated;
+    }
+
     @PrePersist
     public void prePresist() {
         this.balance = 0L;

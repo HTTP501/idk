@@ -158,6 +158,7 @@ public class PocketService {
         );
     }
 
+    @Transactional
     public PocketAutoTransferDeleteResponseDto deletePocketAutoTransfer(Long pocketId) {
 
         Member member = authenticationService.getMemberByAuthentication();
@@ -183,6 +184,7 @@ public class PocketService {
         );
     }
 
+    @Transactional
     public PocketUpdateNameResponseDto updatePocketName(PocketUpdateNameRequestDto requestDto, Long pocketId) {
 
         Member member = authenticationService.getMemberByAuthentication();
@@ -202,6 +204,29 @@ public class PocketService {
         return PocketUpdateNameResponseDto.of(
                 savedPocket.getPocketId(),
                 savedPocket.getName()
+        );
+    }
+
+    @Transactional
+    public PocketUpdateIsActivatedResponseDto updatePocketIsActivated(Long pocketId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        // 포켓 유무 확인
+        Pocket pocket = pocketRepository.findById(pocketId)
+                .orElseThrow(() -> new PocketException(ErrorCode.POCKET_NOT_FOUND));
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        Account account = pocket.getAccount();
+        if (member != account.getMember())
+            throw new PocketException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        pocket.setActivated(!pocket.isActivated());
+        Pocket savedPocket = pocketRepository.save(pocket);
+
+        return PocketUpdateIsActivatedResponseDto.of(
+                savedPocket.getPocketId(),
+                savedPocket.isActivated()
         );
     }
 }
