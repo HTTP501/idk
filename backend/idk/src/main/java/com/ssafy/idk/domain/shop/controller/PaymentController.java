@@ -32,10 +32,4 @@ public class PaymentController {
         paymentService.approvalPayment(requestDto);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.PAYMENT_APPROVAL_SUCCESS));
     }
-
-//    @Operation(summary = "상품 목표저축 조회")
-//    @GetMapping(value="/targetsaving")
-//    public ResponseEntity<ResultResponse> getItemTargetSaving(){
-//        return ResponseEntity.ok(ResultResponse.of(ResultCode.SUCCESS, paymentService.getItemTargetSaving()));
-//    }
 }

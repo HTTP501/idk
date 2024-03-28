@@ -43,23 +43,22 @@ public class PaymentService {
     @Transactional
     public String readyPayment(ReadyPaymentRequestDto requestDto) {
         Member member = authenticationService.getMemberByAuthentication();
-        // 결제수단 검증
-        if(requestDto.getPayType() == 1) { // 계좌 검증
-            Account account = accountRepository.findByMember(member)
-                    .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
-            if(account.getAccountId() != requestDto.getPaymentId()) // 계좌 PK 검증
-                throw new PaymentException(ErrorCode.PAYMENT_VERIFY_FAIL);
-            // 잔액 확인
-            Item item = itemRepository.findById(requestDto.getItemId())
-                    .orElseThrow(() -> new ItemException(ErrorCode.ITEM_NOT_FOUND));
-            if(account.getBalance() - account.getMinAmount() < item.getPrice())
-                throw new PaymentException(ErrorCode.PAYMENT_BALANCE_FAIL);
+        Account account = accountRepository.findByMember(member)
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        }
+        // 결제수단 검증
+        if(account.getAccountId() != requestDto.getAccountId()) // 계좌 PK 검증
+            throw new PaymentException(ErrorCode.PAYMENT_VERIFY_FAIL);
+
+        // 잔액 확인
+        Item item = itemRepository.findById(requestDto.getItemId())
+                .orElseThrow(() -> new ItemException(ErrorCode.ITEM_NOT_FOUND));
+        if(account.getBalance() - account.getMinAmount() < item.getPrice())
+            throw new PaymentException(ErrorCode.PAYMENT_BALANCE_FAIL);
 
         // redis에 임시 주문 정보 저장
         String orderId = generateOrderId();
-        OrderInfo orderInfo = new OrderInfo(requestDto.getItemId(), requestDto.getPayType(), member.getMemberId());
+        OrderInfo orderInfo = new OrderInfo(member.getMemberId(), requestDto.getItemId());
         orderRedisTemplate.opsForValue().set(orderId, orderInfo);
         orderRedisTemplate.expire(orderId, 5, TimeUnit.MINUTES);
 
@@ -79,18 +78,16 @@ public class PaymentService {
                 .orElseThrow(() -> new ItemException(ErrorCode.ITEM_NOT_FOUND));
 
         // 해당 정보를 통해 실제 결제한다.
-        if(orderInfo.getMethod() == 1) { // 결제 수단이 계좌인 경우
-            Account account = accountService.withdraw(item.getPrice());
-            Transaction transaction = Transaction.builder()
-                    .category(Category.출금)
-                    .content(item.getShop())
-                    .amount(item.getPrice())
-                    .balance(account.getBalance())
-                    .createdAt(LocalDateTime.now())
-                    .account(account)
-                    .build();
-            transactionRepository.save(transaction);
-        }
+        Account account = accountService.withdraw(item.getPrice());
+        Transaction transaction = Transaction.builder()
+                .category(Category.출금)
+                .content(item.getShop())
+                .amount(item.getPrice())
+                .balance(account.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(account)
+                .build();
+        transactionRepository.save(transaction);
     }
 
     public static String generateOrderId() {

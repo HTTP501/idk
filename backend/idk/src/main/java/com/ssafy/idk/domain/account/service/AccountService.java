@@ -48,6 +48,8 @@ public class AccountService {
 
         rsaKeyService.saveRSAKey(member.getMemberId(), privateKey);
 
+        // 계좌번호 생성
+
         Account account = Account.builder()
                 .number(RSAUtil.encode(publicKey,"1234567891010"))
                 .password(passwordEncryptUtil.encrypt(requestDto.getAccountPassword()))
