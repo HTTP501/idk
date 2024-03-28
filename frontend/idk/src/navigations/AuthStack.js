@@ -2,7 +2,7 @@ import * as React from 'react';
 import { AuthLocal, AuthPIN } from '../screens/Auth';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import AuthPW from '../screens/Auth/AuthPW';
 const Stack = createNativeStackNavigator();
 
 function AuthStack() {
@@ -10,6 +10,7 @@ function AuthStack() {
     <Stack.Navigator>
       <Stack.Screen name="AuthPIN" component={AuthPIN} options={{ headerShown: false }} />
       <Stack.Screen name="AuthLocal" component={AuthLocal} options={{ headerShown: false }} />
+      <Stack.Screen name="AuthPW" component={AuthPW} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

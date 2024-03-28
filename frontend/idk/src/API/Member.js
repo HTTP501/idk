@@ -14,6 +14,7 @@ export const phoneAxios = async function (data, success, fail) {
 
 // 휴대폰 인증 확인 요청
 export const phoneCodeAxios = async function (data, success, fail) {
+
   await local.post('/member/phone/code', data)
         .then(success)
         .catch(fail)
@@ -25,6 +26,7 @@ export const loginPINAxios = async function (data, success, fail) {
         .then(success)
         .catch(fail)
 }
+
 
 // 생체인증 로그인
 export const loginBioAxios = async function (data, success, fail) {

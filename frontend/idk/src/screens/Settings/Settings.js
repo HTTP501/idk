@@ -9,6 +9,7 @@ const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const Settings = ({ navigation }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [accountName, setAccountName] = useState('');
   const [isDepositNotificationEnabled, setIsDepositNotificationEnabled] = useState(false);
   const [isAutoTransferNotificationEnabled, setIsAutoTransferNotificationEnabled] = useState(false);
@@ -135,6 +136,15 @@ const Settings = ({ navigation }) => {
           <Text className='text-base text-zinc-500'>저금통 등록</Text>
           <AntDesign name="right" size={20} color="grey" />
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.box}
+          onPress={() =>{
+            setIsDeleteModalVisible(true) 
+            console.log("해지하기")}}
+        >
+          <Text className="text-base text-zinc-500">계좌 해지하기</Text>
+          <AntDesign name="right" size={20} color="grey" />
+        </TouchableOpacity>
       </ScrollView>
 
       
@@ -162,6 +172,33 @@ const Settings = ({ navigation }) => {
             </View>
           </View>
         </Modal>
+        <Modal
+        visible={isDeleteModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsDeleteModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>정말 해지하시겠습니까?</Text>
+            <View className="flex-row justify-between w-full px-5">
+            <TouchableOpacity
+              style={styles.modalButton1}
+              onPress={()=>setIsDeleteModalVisible(false)}
+              
+            >
+              <Text className="font-bold text-lg">유지하기</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton2}
+              onPress={()=>{setIsDeleteModalVisible(false)}}
+            >
+              <Text className="font-bold text-lg text-gray-500">해지하기</Text>
+            </TouchableOpacity>
+          </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -221,5 +258,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10
+  },  modalButton1: {
+    flexGrow:1,
+    height: 50,
+    marginRight:30,
+    backgroundColor: theme["sky-bright-2"],
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    marginBottom: 10,
   },
+  modalButton2: {
+    flexGrow:1,
+    height: 50,
+    backgroundColor: theme.grey,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,}
+
 });
