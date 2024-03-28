@@ -13,6 +13,7 @@ import {
   Modal,
   Alert,
 } from "react-native";
+import DonPocketDepositList from "../../../components/DonPocketDepositList";
 // 컴포넌트들
 import theme from "../../../style";
 import formattedNumber from "../../../components/moneyFormatter";
@@ -97,7 +98,7 @@ const DetailSavingBox = ({ navigation, route }) => {
                 />
                 <Text className="text-2xl font-bold ml-5">저금통</Text>
               </View>
-              <Text className="text-3xl font-bold mt-5">{balance}원</Text>
+              <Text className="text-3xl font-bold mt-5">{formattedNumber(balance)}원</Text>
               <Text className="text-base mt-3">
                 매달 월급일, 남은 잔고가 쌓인 돈이에요!
               </Text>
@@ -133,7 +134,7 @@ const DetailSavingBox = ({ navigation, route }) => {
 
           {/* 저금통 내역 */}
           {arrayTransaction ? (
-            <DepositList arrayTransaction={arrayTransaction} />
+            <DonPocketDepositList arrayTransaction={arrayTransaction} />
           ) : null}
           <StatusBar style="auto" />
         </ScrollView>
@@ -144,81 +145,6 @@ const DetailSavingBox = ({ navigation, route }) => {
   );
 };
 
-// 저금통 내역
-const DepositList = function ({ arrayTransaction }) {
-  // 1. 날짜별 맵 생성
-  const dateMap = new Map();
-  for (const item of arrayTransaction) {
-    const date = item.createdAt.substring(0, 10); // 날짜 추출
-    if (!dateMap.has(date)) {
-      dateMap.set(date, []);
-    }
-    dateMap.get(date).push(item);
-  }
-
-  // 2. 맵을 리스트로 변환
-  const dateList = Array.from(dateMap.entries());
-  return (
-    <View>
-      {dateList.map((item, index) => {
-        return <DepositOnedayList item={item} key={index} />;
-      })}
-    </View>
-  );
-};
-
-// 날짜
-const DepositOnedayList = function ({ item }) {
-  const date = item[0];
-  const dayitimes = item[1];
-  // console.log(date,dayitimes);
-  return (
-    <View>
-      <Text className="ml-8 mb-2 text-xs">{date}</Text>
-      {dayitimes.map((item, index) => {
-        return <DepositItem item={item} key={index} />;
-      })}
-    </View>
-  );
-};
-
-// 날짜에 대한 아이템
-const DepositItem = function ({ item }) {
-  const date = new Date(item.createdAt);
-  // 시간 추출
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  // 12시간 형식으로 변환 (오전/오후 표시 없음)
-  const time = `${hours < 10 ? "0" + hours : hours}:${
-    minutes < 10 ? "0" + minutes : minutes
-  }`;
-  return (
-    <View className="flex-row gap-3 px-8 py-3">
-      <View>
-        <Image
-          source={require("../../../../assets/icons/money.png")}
-          style={{ width: 50, height: 50 }}
-        />
-      </View>
-      <View className="flex-grow">
-        <Text>{item.content}</Text>
-        <Text className="text-xs">{time}</Text>
-      </View>
-      <View className="items-end">
-        <Text
-          style={
-            item.content === "입금"
-              ? { color: theme["sky-basic"] }
-              : { color: "red" }
-          }
-        >
-          {formattedNumber(item.amount)}원
-        </Text>
-        <Text>{formattedNumber(item.balance)}원</Text>
-      </View>
-    </View>
-  );
-};
 
 // 헤더
 const Header = ({ navigation, piggyBankId }) => {

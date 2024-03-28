@@ -21,12 +21,10 @@ export const getAccountTransactionAxios = async function (success, fail) {
 
 // 계좌 입금
 export const DepositMyAccountAxios = async function (data, success, fail) {
-  console.log(data)
   await local.post("/transaction/deposit", data).then(success).catch(fail);
 };
-// 계좌 입금
+// 계좌 출금
 export const WithdrawMyAccountAxios = async function (data, success, fail) {
-  console.log(data)
   await local.post("/transaction/withdraw", data).then(success).catch(fail);
 };
 

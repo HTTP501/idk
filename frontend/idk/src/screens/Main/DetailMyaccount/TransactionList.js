@@ -10,39 +10,82 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
+
 // 컴포넌트들
 import theme from "../../../style";
 import Account from "../../../components/MyAccount";
 import DepositList from "../../../components/DepositList";
 import formattedNumber from "../../../components/moneyFormatter";
-// 화면 크기
-import { Dimensions } from "react-native";
-const SCREEN_WIDTH = Dimensions.get("window").width;
-const SCREEN_HEIGHT = Dimensions.get("window").height;
-import { useIsFocused } from "@react-navigation/native";
-import { getAccountAxios } from "../../../API/Account";
+import { useFocusEffect } from "@react-navigation/native";
+import {
+  getAccountAxios,
+  getAccountTransactionAxios,
+} from "../../../API/Account";
 import Loading from "../../../components/Loading";
 
+// 화면 크기
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_HEIGHT = Dimensions.get("window").height;
+// 페이지
 const TransactionList = ({ navigation }) => {
   // 계좌 데이터 - 더미
-  let [account, setAccount] = useState({"accountAvailableAmount": 0, "accountBalance": 0, "accountId": 8, "accountMinAmount": 0, "accountName": "IDK 우리나라 국민우대통장", "accountNumber": "1234567891010", "accountPayDate": 1});
-  const isFocused = useIsFocused();
+  let [account, setAccount] = useState({
+    accountAvailableAmount: 0,
+    accountBalance: 0,
+    accountId: 8,
+    accountMinAmount: 0,
+    accountName: "IDK 우리나라 국민우대통장",
+    accountNumber: "1234567891010",
+    accountPayDate: 1,
+  });
+
   let [loading, setLoading] = useState(false);
+
+  // Axios 데이터 불러오기
+  const fetchData = async () => {
+    // 계좌 조회 Axios
+    
+    await getAccountAxios(
+      (res) => {
+        // console.log(res.data.data);
+        setAccount(res.data.data);
+      },
+      (err) => {
+        // 계좌 번호가 있는지 판단해서 없으면 계좌 생성페이지로 이동
+        if (err.response.data.code === "A401") {
+          Alert.alert(
+            "계좌번호가 없습니다.",
+            "계좌 생성 페이지로 이동합니다.",
+            [
+              {
+                text: "확인",
+                onPress: () => navigation.navigate("AccountStack"),
+              },
+            ]
+          );
+        }
+      }
+    );
+    await getAccountTransactionAxios(
+      (res) => {
+        console.log("계좌 입출금 내역", res.data.data);
+        setDeposit(res.data.data)
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+  // 화면 포커싱 시 데이터 다시 가져오기
   useEffect(() => {
-    console.log("계좌, 돈포켓 API 호출 위치");
-    // getAccountAxios(
-    //   (res) => {
-    //     setAccount(res.data.data);
-    //   },
-    //   (err) => {
-    //     console.log(err);
-    //   }
-    // )
+    setLoading(false);
+    fetchData();
     setTimeout(() => {
       setLoading(true);
-    }, 300);
-  }, [isFocused]);
+    }, 700);
+  }, []);
 
   // 이체 데이터
   let [deposit, setDeposit] = useState([
@@ -83,9 +126,7 @@ const TransactionList = ({ navigation }) => {
       transactionCreatedAt: "2024-03-03 12:00:01",
     },
   ]);
-  useEffect(() => {
-    console.log("계좌, 이체 API 호출 위치");
-  }, []);
+
 
   return (
     <View className="flex-1">
@@ -107,10 +148,12 @@ const TransactionList = ({ navigation }) => {
           <Option account={account} />
 
           {/* 이체내역 */}
-          <DepositList deposit={deposit} navigation={navigation}/>
+          <DepositList deposit={deposit} navigation={navigation} />
           <StatusBar style="auto" />
         </ScrollView>
-      ) : <Loading/>}
+      ) : (
+        <Loading />
+      )}
     </View>
   );
 };
