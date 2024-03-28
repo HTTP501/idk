@@ -33,7 +33,7 @@ public class PiggyBank {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "piggyBank", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<PiggyBankTransaction> transactions = new ArrayList<>();
+    private List<PiggyBankTransaction> transactions;
 
     public void deposit(Long amount) { // 입금
         this.balance += amount;

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TransferRequestDto {
 
+    private Long receiverId;
     private String accountNumber;
     private String transferBank;
     private Long transferAmount;

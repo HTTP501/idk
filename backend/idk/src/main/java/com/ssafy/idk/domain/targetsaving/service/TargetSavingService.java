@@ -1,14 +1,19 @@
 package com.ssafy.idk.domain.targetsaving.service;
 
 import com.ssafy.idk.domain.account.entity.Account;
-import com.ssafy.idk.domain.account.exception.AccountException;
+import com.ssafy.idk.domain.account.entity.Category;
+import com.ssafy.idk.domain.account.entity.Transaction;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
+import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
-import com.ssafy.idk.domain.piggybank.exception.PiggyBankException;
+import com.ssafy.idk.domain.pocket.entity.Pocket;
+import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.domain.targetsaving.dto.request.TargetSavingCreateRequestDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingCreateResponseDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingDeleteResponseDto;
+import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingGetListResponseDto;
+import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingGetResponseDto;
 import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
 import com.ssafy.idk.domain.targetsaving.exception.TargetSavingException;
 import com.ssafy.idk.domain.targetsaving.repository.TargetSavingRepository;
@@ -18,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +33,8 @@ public class TargetSavingService {
     private final AuthenticationService authenticationService;
     private final TargetSavingRepository targetSavingRepository;
     private final AccountRepository accountRepository;
+    private final PocketService pocketService;
+    private final TransactionRepository transactionRepository;
 
     @Transactional
     public TargetSavingCreateResponseDto createTargetSaving(TargetSavingCreateRequestDto requestDto) {
@@ -64,6 +73,11 @@ public class TargetSavingService {
 
         TargetSaving savedTargetSaving = targetSavingRepository.save(targetSaving);
 
+        // 돈 포켓 동시 생성
+        Pocket pocket = pocketService.createByTargetSaving(savedTargetSaving, account);
+        savedTargetSaving.setPocket(pocket);
+        targetSavingRepository.save(savedTargetSaving);
+
         return TargetSavingCreateResponseDto.of(
                 savedTargetSaving.getTargetSavingId(),
                 savedTargetSaving.getName(),
@@ -86,12 +100,81 @@ public class TargetSavingService {
 
         // API 요청 사용자 및 계좌 사용자 일치 여부 확인
         if (member != account.getMember())
-            throw new PiggyBankException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+            throw new TargetSavingException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
-        // 돈 포켓 기능 구현 후 잔고 업데이트 구현 필요
-        
+        // 목표저축 납입액 계좌로 이동
+        Long amount = targetSaving.getCount() * targetSaving.getMonthlyAmount();
         targetSavingRepository.deleteById(targetSavingId);
 
+        account.deposit(amount);
+        accountRepository.save(account);
+
+        // 계좌 입출금 내역 저장
+        Transaction transaction = Transaction.builder()
+                .category(Category.목표저축)
+                .content("목표저축 해지")
+                .amount(amount)
+                .balance(account.getBalance() + amount)
+                .createdAt(LocalDateTime.now())
+                .account(account)
+                .build();
+        transactionRepository.save(transaction);
+
         return TargetSavingDeleteResponseDto.of(account.getBalance());
+    }
+
+    public TargetSavingGetResponseDto getTargetSaving(Long targetSavingId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        TargetSaving targetSaving = targetSavingRepository.findById(targetSavingId)
+                .orElseThrow(() -> new TargetSavingException(ErrorCode.TARGET_SAVING_NOT_FOUND));
+
+        Account account = targetSaving.getAccount();
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        if (member != account.getMember())
+            throw new TargetSavingException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        return TargetSavingGetResponseDto.of(
+                targetSavingId,
+                targetSaving.getName(),
+                targetSaving.getDate(),
+                targetSaving.getCreatedAt(),
+                targetSaving.getTerm(),
+                targetSaving.getCount(),
+                targetSaving.getMonthlyAmount(),
+                targetSaving.getGoalAmount()
+        );
+    }
+
+    public TargetSavingGetListResponseDto getTargetSavingList(Long accountId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new TargetSavingException(ErrorCode.ACCOUNT_NOT_FOUND));
+        if (member != account.getMember())
+            throw new TargetSavingException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        List<TargetSaving> arrayTargetSaving = account.getArrayTargetSaving();
+
+        List<TargetSavingGetResponseDto> arrayTargetSavingGetResponseDto = new ArrayList<>();
+        for (TargetSaving targetSaving : arrayTargetSaving) {
+            arrayTargetSavingGetResponseDto.add(
+                    TargetSavingGetResponseDto.of(
+                            targetSaving.getTargetSavingId(),
+                            targetSaving.getName(),
+                            targetSaving.getDate(),
+                            targetSaving.getCreatedAt(),
+                            targetSaving.getTerm(),
+                            targetSaving.getCount(),
+                            targetSaving.getMonthlyAmount(),
+                            targetSaving.getGoalAmount()
+                    ));
+        }
+
+        return TargetSavingGetListResponseDto.of(arrayTargetSavingGetResponseDto);
     }
 }

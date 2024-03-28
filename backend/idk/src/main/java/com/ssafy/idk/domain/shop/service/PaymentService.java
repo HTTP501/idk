@@ -3,9 +3,11 @@ package com.ssafy.idk.domain.shop.service;
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.account.entity.Category;
 import com.ssafy.idk.domain.account.entity.Transaction;
-import com.ssafy.idk.domain.account.dto.response.AccountResponseDto;
+import com.ssafy.idk.domain.account.exception.AccountException;
+import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.account.service.AccountService;
+import com.ssafy.idk.domain.account.service.RSAKeyService;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.shop.entity.Item;
@@ -16,6 +18,7 @@ import com.ssafy.idk.domain.shop.exception.ItemException;
 import com.ssafy.idk.domain.shop.exception.PaymentException;
 import com.ssafy.idk.domain.shop.repository.ItemRepository;
 import com.ssafy.idk.global.error.ErrorCode;
+import com.ssafy.idk.global.util.RSAUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,21 +39,28 @@ public class PaymentService {
     private final AccountService accountService;
     private final ItemRepository itemRepository;
     private final TransactionRepository transactionRepository;
+    private final AccountRepository accountRepository;
     private final RedisTemplate<String, OrderInfo> orderRedisTemplate;
     
     @Transactional
-    public String readyPayment(ReadyPaymentRequestDto requestDto) {
+    public String readyPayment(Long itemId) {
         Member member = authenticationService.getMemberByAuthentication();
+        Account account = accountRepository.findByMember(member)
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
         // 결제수단 검증
-        if(requestDto.getPayType() == 1) { // 계좌 검증
-            AccountResponseDto accountResponseDto = accountService.getAccount();
-            if(accountResponseDto.getAccountId() != requestDto.getPaymentId())
-                throw new PaymentException(ErrorCode.PAYMENT_VERIFY_FAIL);
-        }
+        if(!accountService.accountNumberVerity(member.getMemberId()))
+            throw new PaymentException(ErrorCode.PAYMENT_VERIFY_FAIL);
+
+        // 잔액 확인
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ItemException(ErrorCode.ITEM_NOT_FOUND));
+        if(account.getBalance() - account.getMinAmount() < item.getPrice())
+            throw new PaymentException(ErrorCode.PAYMENT_BALANCE_FAIL);
 
         // redis에 임시 주문 정보 저장
         String orderId = generateOrderId();
-        OrderInfo orderInfo = new OrderInfo(requestDto.getItemId(), requestDto.getPayType(), member.getMemberId());
+        OrderInfo orderInfo = new OrderInfo(member.getMemberId(), itemId);
         orderRedisTemplate.opsForValue().set(orderId, orderInfo);
         orderRedisTemplate.expire(orderId, 5, TimeUnit.MINUTES);
 
@@ -70,18 +80,16 @@ public class PaymentService {
                 .orElseThrow(() -> new ItemException(ErrorCode.ITEM_NOT_FOUND));
 
         // 해당 정보를 통해 실제 결제한다.
-        if(orderInfo.getMethod() == 1) { // 결제 수단이 계좌인 경우
-            Account account = accountService.withdraw(item.getPrice());
-            Transaction transaction = Transaction.builder()
-                    .category(Category.출금)
-                    .content(item.getShop())
-                    .amount(item.getPrice())
-                    .balance(account.getBalance())
-                    .createdAt(LocalDateTime.now())
-                    .account(account)
-                    .build();
-            transactionRepository.save(transaction);
-        }
+        Account account = accountService.withdraw(member.getMemberId(), item.getPrice());
+        Transaction transaction = Transaction.builder()
+                .category(Category.출금)
+                .content(item.getShop())
+                .amount(item.getPrice())
+                .balance(account.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(account)
+                .build();
+        transactionRepository.save(transaction);
     }
 
     public static String generateOrderId() {
