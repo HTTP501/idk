@@ -5,8 +5,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class PocketCreateTargetSavingRequestDto {
+public class PocketCreateAutoTransferRequestDto {
 
-    private Long targetSavingId;
+    private Long autoTransferId;
 
 }

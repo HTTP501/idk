@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class AutoTransferCreateRequestDto {
 
     private Long accountId;
+    private String name;
     private String toAccount;
     private String toAccountBank;
     private Long amount;
