@@ -15,6 +15,7 @@ public class TransactionResponseDto {
     private String transactionContent;
     private Long transactionAmount;
     private Long transactionBalance;
+    private Boolean isDeposit;
     private LocalDateTime transactionCreatedAt;
 
     public static TransactionResponseDto of(
@@ -22,6 +23,7 @@ public class TransactionResponseDto {
             final String transactionContent,
             final Long transactionAmount,
             final Long transactionBalance,
+            final Boolean isDeposit,
             final LocalDateTime transactionCreatedAt
     ) {
         return TransactionResponseDto.builder()
@@ -29,6 +31,7 @@ public class TransactionResponseDto {
                 .transactionContent(transactionContent)
                 .transactionAmount(transactionAmount)
                 .transactionBalance(transactionBalance)
+                .isDeposit(isDeposit)
                 .transactionCreatedAt(transactionCreatedAt)
                 .build();
     }
