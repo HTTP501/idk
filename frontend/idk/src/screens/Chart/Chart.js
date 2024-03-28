@@ -10,6 +10,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState, useRef } from "react";
@@ -18,18 +19,30 @@ import theme from "../../style";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import * as d3 from "d3";
-import Svg, { Ellipse, G, Rect, Line, Text as SvgText } from "react-native-svg";
+import Svg, {
+  Ellipse,
+  Circle,
+  G,
+  Rect,
+  Line,
+  Path,
+  Text as SvgText,
+} from "react-native-svg";
 import { Timeline, Tween, Back } from "gsap-rn";
-import { callAnalystDataAxios } from "../../API/ChartData.js";
+import {
+  callAnalystDataAxios,
+  callAnalystMonthDataAxios,
+} from "../../API/ChartData.js";
 import Loading from "../../components/Loading.js";
 import { useFocusEffect } from "@react-navigation/native";
 
-const Chart = () => {
+const Chart = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isDonutLoading, setIsDonutLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
   const [nowData, setNowData] = useState(null);
-  const [nowDonutData, setNowDonutData] = useState([]);
+  const [nowDonutData, setNowDonutData] = useState(null);
   const [average, setAverage] = useState(null);
   const [nowAmount, setAmount] = useState(null);
   const [maxAmount, setMaxAmount] = useState(null);
@@ -38,7 +51,16 @@ const Chart = () => {
   // 화면 사이즈 인식
   const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 
-  // 모든 상태가 세팅이 되면 로딩 해제
+  // 시작하자마자 이번달 정보를 보여주기 위해 스크롤 참조
+  const ScrollViewRef = useRef();
+
+  useEffect(() => {
+    if (ScrollViewRef !== null) {
+      ScrollViewRef.current.scrollToEnd({ animated: false });
+    }
+  }, [ScrollViewRef]);
+
+  // 모든 상태가 세팅이 되면 로딩 해제 및 스크롤이동
   useEffect(() => {
     if (callOver === true) {
       setIsLoading(false);
@@ -47,6 +69,7 @@ const Chart = () => {
 
   // 맨 처음 들어왔을때, 데이터 호출
   useEffect(() => {
+    // 바 차트 데이터호출
     const getResponse = (response) => {
       setNowData(response.data.data.amountList);
     };
@@ -54,6 +77,21 @@ const Chart = () => {
       console.log(error);
     };
     callAnalystDataAxios("total", getResponse, fail);
+
+    // 도넛 차트 데이터 호출
+    const getMonthDataResponse = (response) => {
+      setNowDonutData(response.data.data);
+    };
+
+    const requestYear = new Date().getFullYear();
+    const requestMonth = new Date().getMonth() + 1;
+
+    callAnalystMonthDataAxios(
+      requestYear,
+      requestMonth,
+      getMonthDataResponse,
+      fail
+    );
   }, []);
 
   // Axios 요청으로 Data가 들어왔다면 상태를 변경할 changeData를 호출
@@ -69,6 +107,42 @@ const Chart = () => {
       setCallOver(true);
     }
   }, [average, maxAmount, nowAmount]);
+
+  // 카테고리가 바뀌었을때 콜백할 함수
+  useEffect(() => {
+    const getResponse = (response) => {
+      setNowData(response.data.data.amountList);
+    };
+    const fail = (error) => {
+      console.log(error);
+    };
+    callAnalystDataAxios(nowCategory, getResponse, fail);
+  }, [nowCategory]);
+
+  // 현재 달 or 월이 바뀌었을때 콜백할 함수
+  useEffect(() => {
+    if (selectedMonth != null && selectedYear != null) {
+      const getMonthDataResponse = (response) => {
+        setNowDonutData(response.data.data);
+      };
+      const fail = (error) => {
+        console.log(error);
+      };
+
+      callAnalystMonthDataAxios(
+        selectedYear,
+        selectedMonth,
+        getMonthDataResponse,
+        fail
+      );
+    }
+  }, [selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    if (nowDonutData !== null) {
+      setIsDonutLoading(false);
+    }
+  }, [nowDonutData]);
 
   // Axios 요청으로 받은 데이터를 계산하여 상태로 바꾸어주는 함수
   const changeData = async () => {
@@ -174,10 +248,7 @@ const Chart = () => {
 
   const width = 730;
   const height = 400;
-  const marginTop = 20;
-  const marginRight = 20;
   const marginBottom = 30;
-  const marginLeft = 40;
   const skyBright1 = "#7ECEFF";
   const lightGreyDarkness = "#C0C0C0";
   const lightGrey = "#ededed";
@@ -245,17 +316,6 @@ const Chart = () => {
     );
   };
 
-  // 카테고리가 바뀌었을때 콜백할 함수
-  useEffect(() => {
-    const getResponse = (response) => {
-      setNowData(response.data.data.amountList);
-    };
-    const fail = (error) => {
-      console.log(error);
-    };
-    callAnalystDataAxios(nowCategory, getResponse, fail);
-  }, [nowCategory]);
-
   // 바 차트 상단에서 항목을 바꾸어줄 버튼 바 컴포넌트
   const categoryBar = () => {
     return (
@@ -308,7 +368,11 @@ const Chart = () => {
             marginTop: 20,
           }}
         >
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+          <ScrollView
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            ref={ScrollViewRef}
+          >
             <Svg height={height + 50} width={width} id="barChart">
               <Line
                 x1="10"
@@ -366,17 +430,6 @@ const Chart = () => {
                     </SvgText>
                   </G>
                 ))}
-                {/* {y.ticks().map((tick, index) => (
-                  <SvgText
-                    key={index}
-                    x={marginLeft - 10}
-                    y={y(tick)}
-                    fontSize="10"
-                    textAnchor="end"
-                  >
-                    {tick}
-                  </SvgText>
-                ))} */}
                 {nowData.map((d, index) => {
                   const barWidth = 25; // 막대의 너비를 설정합니다. 실제 애플리케이션에서는 동적으로 계산할 수 있습니다.
                   const barHeight =
@@ -427,11 +480,41 @@ const Chart = () => {
     );
   };
 
-  const donutData = [];
-
   // 도넛 차트 컴포넌트
-  const donutChart = () => {
-    // const dountChartWidth = windowWidth * 0.8
+  const donutChart = (target, targetData, targetTotal) => {
+    const formattedNumber = function (number) {
+      return number.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
+    };
+
+    const titleMatch = {
+      fixedAmount: "고정 지출",
+      saveAmount: "목표 저축",
+      commonAmount: "일반 지출",
+      piggyAmount: "저금통",
+      foodAmount: "식품",
+      electronicAmount: "전자제품",
+      clothesAmount: "의류",
+      etcAmount: "기타",
+      beautyAmount: "뷰티",
+    };
+
+    const entries = Object.entries(targetData);
+
+    entries.sort((a, b) => a[1] - b[1]);
+
+    const sortedKeys = entries.map((entry) => entry[0]).reverse();
+    const sortedValues = entries.map((entry) => entry[1]).reverse();
+    const totalPrice = formattedNumber(targetTotal);
+
+    const radius = 100;
+    const donutColor = ["#3FB7FF", "#369CDA", "#2D82B6", "#C0C0C0", "#EDEDED"];
+
+    const pieChart = d3.pie().value((d) => d)(sortedValues);
+
+    const usedAverage = sortedValues.map((amount, index) => {
+      return Math.round((amount / targetTotal) * 100);
+    });
+
     return (
       <View
         style={{
@@ -443,9 +526,135 @@ const Chart = () => {
           marginTop: 20,
         }}
       >
-        <Text></Text>
-        <Svg width={windowWidth * 0.5} height={windowHeight * 0.3}>
-          <G></G>
+        <Text
+          style={{
+            marginTop: 15,
+            fontSize: 15,
+            marginBottom: 15,
+            fontWeight: "bold",
+          }}
+        >
+          {target}
+          {"    "}
+          <Text style={{ fontSize: 25, fontWeight: "bold" }}>
+            {totalPrice}원
+          </Text>
+        </Text>
+        <Svg width={"100%"} height={windowHeight * 0.6}>
+          <G translate={`${windowWidth * 0.4}, ${windowHeight * 0.15}`}>
+            {pieChart.map((piece, index) => {
+              const arcGenerator = d3
+                .arc()
+                .innerRadius(radius - 60)
+                .outerRadius(radius - index * 6)
+                .padAngle(0.05)
+                .cornerRadius(5);
+
+              const path = arcGenerator(piece);
+
+              return <Path key={index} d={path} fill={donutColor[index]} />;
+            })}
+            {/* {pieChart.map((piece, index) => {
+              const labelPosition = arcGenerator.centroid(piece);
+              return (
+                <SvgText
+                  key={`text-${index}`}
+                  x={labelPosition[0]}
+                  y={labelPosition[1]}
+                  fill="white"
+                  textAnchor="middle"
+                  alignmentBaseline="middle"
+                  fontSize={15}
+                >
+                  {piece.value}
+                </SvgText>
+              );
+            })} */}
+            <Circle
+              cx={windowWidth * 0.25}
+              cy={windowHeight * 0.05}
+              r="40"
+              fill={donutColor[0]}
+            />
+
+            <Circle
+              cx={windowWidth * 0.25}
+              cy={windowHeight * 0.05}
+              r="35"
+              fill="white"
+            />
+
+            <SvgText
+              x={windowWidth * 0.25}
+              y={windowHeight * 0.05}
+              textAnchor="middle"
+              fontSize="15"
+              fontWeight="bold"
+            >
+              {titleMatch[sortedKeys[0]]}
+            </SvgText>
+            <SvgText
+              x={windowWidth * 0.24}
+              y={windowHeight * 0.07}
+              textAnchor="middle"
+              fontSize="15"
+              fontWeight="bold"
+            >
+              {usedAverage[0]}%
+            </SvgText>
+          </G>
+          {/* {sortedKeys.forEach((each, index) => {
+              <Rect
+                x={windowWidth * 0.05}
+                y={windowHeight * (0.35 + index * 0.03)}
+              />
+              <SvgText x="0" y="0">
+                {"Hi"}
+              </SvgText>
+          })} */}
+          {sortedKeys.map((each, index) => (
+            <React.Fragment key={each}>
+              <Rect
+                x={windowWidth * 0.05}
+                y={windowHeight * (0.34 + index * 0.05)}
+                width="15"
+                height="15"
+                rx="2"
+                ry="2"
+                fill={donutColor[index]}
+              />
+              <SvgText
+                x={windowWidth * 0.27}
+                y={windowHeight * (0.35 + index * 0.05)}
+                fill="black"
+                textAnchor="middle"
+                alignmentBaseline="middle"
+                fontSize="15"
+              >
+                {titleMatch[each]}
+              </SvgText>
+              <SvgText
+                x={windowWidth * 0.46}
+                y={windowHeight * (0.35 + index * 0.05)}
+                fill="black"
+                textAnchor="middle"
+                alignmentBaseline="middle"
+                fontSize="15"
+              >
+                {usedAverage[index]}%
+              </SvgText>
+              <SvgText
+                x={windowWidth * 0.6}
+                y={windowHeight * (0.342 + index * 0.05)}
+                fill="black"
+                alignmentBaseline="middle"
+                fontSize="17"
+                fontWeight="bold"
+              >
+                {formattedNumber(sortedValues[index]).trim()}원
+              </SvgText>
+            </React.Fragment>
+          ))}
         </Svg>
       </View>
     );
@@ -456,10 +665,40 @@ const Chart = () => {
       {isLoading ? (
         <Loading />
       ) : (
-        <ScrollView style={{ backgroundColor: "white" }}>
+        <ScrollView
+          style={{ backgroundColor: "white" }}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+        >
           {topBar()}
           <View style={{ ...ChartStyle.topChartArea }}>
             {totalAverageChart()}
+          </View>
+          <View>
+            {isDonutLoading ? (
+              <ActivityIndicator size={"large"} color={theme["sky-basic"]} />
+            ) : (
+              <View>
+                {donutChart(
+                  "총 지출",
+                  nowDonutData.totalAmountBreakdown,
+                  nowDonutData.totalAmount
+                )}
+              </View>
+            )}
+          </View>
+          <View style={{ marginBottom: 40 }}>
+            {isDonutLoading ? (
+              <ActivityIndicator size={"large"} color={theme["sky-basic"]} />
+            ) : (
+              <View>
+                {donutChart(
+                  "일반 지출",
+                  nowDonutData.totalCommonAmountBreakdown,
+                  nowDonutData.totalCommonAmount
+                )}
+              </View>
+            )}
           </View>
         </ScrollView>
       )}
