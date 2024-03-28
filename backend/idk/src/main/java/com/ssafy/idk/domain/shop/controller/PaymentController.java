@@ -21,9 +21,9 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @Operation(summary = "결제 요청")
-    @PostMapping(value="/ready", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResultResponse> readyPayment(@RequestBody ReadyPaymentRequestDto requestDto){
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.PAYMENT_READY_SUCCESS, paymentService.readyPayment(requestDto)));
+    @PostMapping(value="/ready/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResultResponse> readyPayment(@PathVariable("itemId") Long itemId){
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.PAYMENT_READY_SUCCESS, paymentService.readyPayment(itemId)));
     }
 
     @Operation(summary = "결제 승인")
