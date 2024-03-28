@@ -11,6 +11,7 @@ import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.member.entity.Member;
+import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.global.error.ErrorCode;
@@ -177,14 +178,15 @@ public class AccountService {
     @Transactional
     public TransferResponseDto transfer(TransferRequestDto requestDto) {
         Member member = authenticationService.getMemberByAuthentication();
-        Account account = accountRepository.findByMemberWithPessimisticLock(member)
-                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        if (requestDto.getTransferBank().equals("IDK은행")) { // 받는사람 입금
+        if (requestDto.getTransferBank().equals("IDK은행")) { // 받는사람이 IDK은행인 경우
+            if(!accountNumberVerity(requestDto.getReceiverId()))
+                throw new AccountException(ErrorCode.ACCOUNT_TRANSFER_RECEIVER_FAIL);
 
+            deposit(requestDto.getReceiverId(), requestDto.getTransferAmount());
         }
 
-        Account savedAccount = withdraw(requestDto.getTransferAmount());
+        Account savedAccount = withdraw(member.getMemberId(), requestDto.getTransferAmount());
         Transaction transaction = Transaction.builder()
                 .category(Category.송금)
                 .content(requestDto.getMyPaymentContent())
@@ -198,9 +200,29 @@ public class AccountService {
         return TransferResponseDto.of(savedTransaction.getAmount(), savedTransaction.getBalance());
     }
 
+    public boolean accountNumberVerity(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
+        Account account = accountRepository.findByMember(member)
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        // 계좌번호 복호화
+        String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
+        String accountNumber = RSAUtil.decode(privateKey, account.getNumber());
+
+        int[] weights = {2, 3, 4, 5, 6, 7, 8, 9, 2, 3};
+        int sum = 0;
+        for (int i = 0; i < 10; i++) {
+            sum += (accountNumber.charAt(i) - '0') * weights[i];
+        }
+        int checksum = (11 - (sum % 11)) % 10;
+        return checksum == Integer.parseInt(String.valueOf(accountNumber.charAt(11)));
+    }
+
     @Transactional
-    public Account withdraw(Long amount) { // 출금
-        Member member = authenticationService.getMemberByAuthentication();
+    public Account withdraw(Long memberId, Long amount) { // 출금
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
         Account account = accountRepository.findByMemberWithPessimisticLock(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
@@ -211,23 +233,13 @@ public class AccountService {
     }
 
     @Transactional
-    public Account deposit(Long amount) { // 입금
-        Member member = authenticationService.getMemberByAuthentication();
+    public Account deposit(Long memberId, Long amount) { // 입금
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
         Account account = accountRepository.findByMemberWithPessimisticLock(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         account.deposit(amount);
-        return account;
-    }
-
-    @Transactional
-    public Account withdrawTest(Long memberId, Long amount) {
-        Member member = memberRepository.findById(memberId).get();
-        Account account = accountRepository.findByMemberWithPessimisticLock(member)
-                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
-
-        if(account.getBalance()-amount < 0) throw new AccountException(ErrorCode.ACCOUNT_BALANCE_LACK);
-        account.withdraw(amount);
         return account;
     }
 }

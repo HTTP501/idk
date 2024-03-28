@@ -41,7 +41,6 @@ public class PaymentService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final RedisTemplate<String, OrderInfo> orderRedisTemplate;
-    private final RSAKeyService rsaKeyService;
     
     @Transactional
     public String readyPayment(Long itemId) {
@@ -50,8 +49,8 @@ public class PaymentService {
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         // 결제수단 검증
-        System.out.println("결제수단 : "+accountNumberVerity());
-        if(!accountNumberVerity()) throw new PaymentException(ErrorCode.PAYMENT_VERIFY_FAIL);
+        if(!accountService.accountNumberVerity(member.getMemberId()))
+            throw new PaymentException(ErrorCode.PAYMENT_VERIFY_FAIL);
 
         // 잔액 확인
         Item item = itemRepository.findById(itemId)
@@ -68,26 +67,6 @@ public class PaymentService {
         return orderId;
     }
 
-    public boolean accountNumberVerity() {
-        Member member = authenticationService.getMemberByAuthentication();
-        Account account = accountRepository.findByMember(member)
-                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
-
-        // 계좌번호 복호화
-        String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
-        String accountNumber = RSAUtil.decode(privateKey, account.getNumber());
-        System.out.println("체크섬 확인 "+accountNumber);
-
-        int[] weights = {2, 3, 4, 5, 6, 7, 8, 9, 2, 3};
-        int sum = 0;
-        for (int i = 0; i < 10; i++) {
-            sum += (accountNumber.charAt(i) - '0') * weights[i];
-        }
-        int checksum = (11 - (sum % 11)) % 10;
-        System.out.println(checksum+" "+accountNumber.charAt(11));
-        return checksum == Integer.parseInt(String.valueOf(accountNumber.charAt(11)));
-    }
-
     @Transactional
     public void approvalPayment(ApprovalPaymentRequestDto requestDto) {
         Member member = authenticationService.getMemberByAuthentication();
@@ -101,7 +80,7 @@ public class PaymentService {
                 .orElseThrow(() -> new ItemException(ErrorCode.ITEM_NOT_FOUND));
 
         // 해당 정보를 통해 실제 결제한다.
-        Account account = accountService.withdraw(item.getPrice());
+        Account account = accountService.withdraw(member.getMemberId(), item.getPrice());
         Transaction transaction = Transaction.builder()
                 .category(Category.출금)
                 .content(item.getShop())

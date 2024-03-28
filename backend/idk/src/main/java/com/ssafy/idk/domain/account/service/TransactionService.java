@@ -58,7 +58,7 @@ public class TransactionService {
         Member member = authenticationService.getMemberByAuthentication();
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
-        Account savedAccount = accountService.deposit(requestDto.getAmount());
+        Account savedAccount = accountService.deposit(member.getMemberId(), requestDto.getAmount());
 
         Transaction transaction = Transaction.builder()
                 .category(Category.입금)
@@ -77,7 +77,7 @@ public class TransactionService {
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
         
-        Account savedAccount = accountService.withdraw(requestDto.getAmount());
+        Account savedAccount = accountService.withdraw(member.getMemberId(), requestDto.getAmount());
 
         Transaction transaction = Transaction.builder()
                 .category(Category.입금)
