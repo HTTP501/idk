@@ -11,6 +11,7 @@ import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.member.entity.Member;
+import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.global.error.ErrorCode;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -48,8 +50,11 @@ public class AccountService {
 
         rsaKeyService.saveRSAKey(member.getMemberId(), privateKey);
 
+        // 계좌번호 생성
+        String accountNumber = generateAccountNumber();
+
         Account account = Account.builder()
-                .number(RSAUtil.encode(publicKey,"1234567891010"))
+                .number(RSAUtil.encode(publicKey,accountNumber))
                 .password(passwordEncryptUtil.encrypt(requestDto.getAccountPassword()))
                 .name(requestDto.getAccountName())
                 .payDate(requestDto.getAccountPayDate())
@@ -61,6 +66,29 @@ public class AccountService {
         Account savedAccount = accountRepository.save(account);
         updateAccount(member.getMemberId());
         return AccountCreateResponseDto.of(RSAUtil.decode(privateKey, savedAccount.getNumber()), savedAccount.getCreatedAt());
+    }
+
+    public String generateAccountNumber() {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("501"); // 은행 식별 번호
+        sb.append("10"); // 계좌 유형 번호 (10은 예금)
+
+        // 고객 계좌 식별 번호 (랜덤 생성)
+        for(int i = 0; i < 6; i++) {
+            sb.append(random.nextInt(10));
+        }
+        
+        // 검증용 숫자 계산
+        int[] weights = {2, 3, 4, 5, 6, 7, 8, 9, 2, 3};
+        int sum = 0;
+        for (int i = 0; i < 10; i++) {
+            sum += (sb.charAt(i) - '0') * weights[i];
+        }
+        int checksum = (11 - (sum % 11)) % 10;
+        sb.append(checksum);
+        return sb.toString();
     }
 
     public AccountResponseDto getAccount() {
@@ -127,11 +155,12 @@ public class AccountService {
     }
 
     @Transactional
-    public void updateMinAmount(AccountAmountRequestDto requestDto) {
+    public void updateMinAmount(AmountRequestDto requestDto) {
         Member member = authenticationService.getMemberByAuthentication();
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
+        if(requestDto.getAmount() < 0) throw new AccountException(ErrorCode.ACCOUNT_MIN_AMOUNT_MINUS);
         account.updateMinAmount(requestDto.getAmount());
 
         updateAccount(member.getMemberId());
@@ -150,41 +179,64 @@ public class AccountService {
     public TransferResponseDto transfer(TransferRequestDto requestDto) {
         Member member = authenticationService.getMemberByAuthentication();
 
-        if (requestDto.getTransferBank().equals("IDK은행")) { // 받는사람 입금
-            
+        if (requestDto.getTransferBank().equals("IDK은행")) { // 받는사람이 IDK은행인 경우
+            if(!accountNumberVerity(requestDto.getReceiverId()))
+                throw new AccountException(ErrorCode.ACCOUNT_TRANSFER_RECEIVER_FAIL);
+
+            deposit(requestDto.getReceiverId(), requestDto.getTransferAmount());
         }
 
-        Account account = withdraw(requestDto.getTransferAmount());
+        Account savedAccount = withdraw(member.getMemberId(), requestDto.getTransferAmount());
         Transaction transaction = Transaction.builder()
                 .category(Category.송금)
                 .content(requestDto.getMyPaymentContent())
                 .amount(requestDto.getTransferAmount())
-                .balance(account.getBalance())
+                .balance(savedAccount.getBalance())
                 .createdAt(LocalDateTime.now())
-                .account(account)
+                .account(savedAccount)
                 .build();
         Transaction savedTransaction = transactionRepository.save(transaction);
 
         return TransferResponseDto.of(savedTransaction.getAmount(), savedTransaction.getBalance());
     }
 
-    @Transactional
-    public Account withdraw(Long amount) { // 출금
-        Member member = authenticationService.getMemberByAuthentication();
+    public boolean accountNumberVerity(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        if(account.getBalance()-amount < 0) throw new AccountException(ErrorCode.ACCOUNT_BALANCE_LACK);
+        // 계좌번호 복호화
+        String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
+        String accountNumber = RSAUtil.decode(privateKey, account.getNumber());
+
+        int[] weights = {2, 3, 4, 5, 6, 7, 8, 9, 2, 3};
+        int sum = 0;
+        for (int i = 0; i < 10; i++) {
+            sum += (accountNumber.charAt(i) - '0') * weights[i];
+        }
+        int checksum = (11 - (sum % 11)) % 10;
+        return checksum == Integer.parseInt(String.valueOf(accountNumber.charAt(11)));
+    }
+
+    @Transactional
+    public Account withdraw(Long memberId, Long amount) { // 출금
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
+        Account account = accountRepository.findByMemberWithPessimisticLock(member)
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        if(account.getBalance()-account.getMinAmount() < amount) throw new AccountException(ErrorCode.ACCOUNT_BALANCE_LACK);
 
         account.withdraw(amount);
         return account;
     }
 
-
     @Transactional
-    public Account deposit(Long amount) { // 입금
-        Member member = authenticationService.getMemberByAuthentication();
-        Account account = accountRepository.findByMember(member)
+    public Account deposit(Long memberId, Long amount) { // 입금
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
+        Account account = accountRepository.findByMemberWithPessimisticLock(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         account.deposit(amount);
