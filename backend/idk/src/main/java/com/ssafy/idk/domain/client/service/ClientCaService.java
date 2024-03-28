@@ -8,6 +8,7 @@ import com.ssafy.idk.domain.client.dto.response.SignResponseDto;
 import com.ssafy.idk.domain.mydata.exception.MydataException;
 import com.ssafy.idk.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -22,10 +23,14 @@ import java.util.Map;
 public class ClientCaService {
 
     private final RestTemplate restTemplate;
+    @Value("${spring.mydata.ca-url}")
+    private String caUrl;
+
 
     // ci 생성 요청
     public String createCiRequest(String name, String birthDate, String phoneNumber) {
-        String caServerUrl = "http://localhost:8080/api/ca/member/ci_create";
+        String caServerUrl = caUrl.concat("/api/ca/member/ci_create");
+        System.out.println("caServerUrl = " + caServerUrl);
         CreateCiRequestDto createCiRequestDto = CreateCiRequestDto.of(name, birthDate, phoneNumber);
 
         // HttpHeaders 설정
@@ -51,7 +56,8 @@ public class ClientCaService {
 
     // ci 조회 요청
     public String getCiRequset(String name, String birthDate, String phoneNumber) {
-        String caServerUrl = "http://localhost:8080/api/ca/member/ci";
+        String caServerUrl = caUrl.concat("/api/ca/member/ci");
+//        String caServerUrl = caUrl.concat("http://localhost:8080/api/ca/memeber/ci");
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(caServerUrl)
                 .queryParam("name", name)
@@ -84,7 +90,7 @@ public class ClientCaService {
 
     // 전자서명 요청
     public List<Map<String, String>> signRequest(SignRequestDto signRequestDto) {
-        String caServerUrl = "http://localhost:8080/api/ca/sign_request";
+        String caServerUrl = caUrl.concat("/api/ca/sign_request");
 
         // HttpHeaders 설정
         HttpHeaders headers = new HttpHeaders();

@@ -20,6 +20,7 @@ import com.ssafy.idk.domain.mydata.repository.OrganizationRepository;
 import com.ssafy.idk.global.error.ErrorCode;
 import com.ssafy.idk.global.util.RSAUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -44,8 +45,9 @@ public class MydataService {
     private final ClientMydataService clientMydataService;
 
 
-    @org.springframework.beans.factory.annotation.Value("${spring.mydata.agree-terms}")
+    @Value("${spring.mydata.agree-terms}")
     private String agreement;
+
 
 
     // 마이데이터 약관 동의

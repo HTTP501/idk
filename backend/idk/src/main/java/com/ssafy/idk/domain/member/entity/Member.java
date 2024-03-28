@@ -34,13 +34,13 @@ public class Member {
     private String connectionInformation;
 
     @Column(name = "has_biometric")
-    private Boolean hasBiometric = false;
+    private Boolean hasBiometric;
 
     @Column(name = "transaction_push_enabled")
-    private Boolean transactionPushEnabled = false;
+    private Boolean transactionPushEnabled;
 
     @Column(name = "auto_transfer_push_enabled")
-    private Boolean autoTransferPushEnabled = false;
+    private Boolean autoTransferPushEnabled;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -49,7 +49,7 @@ public class Member {
     private LocalDateTime updatedAt;
 
     @Column(name = "mydata_agreed")
-    private Boolean mydataAgreed = false;
+    private Boolean mydataAgreed;
 
     @Column(name = "digital_signature", length = 10000)
     private String digitalSignature;

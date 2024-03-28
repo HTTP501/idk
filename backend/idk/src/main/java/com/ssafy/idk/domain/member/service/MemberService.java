@@ -66,6 +66,9 @@ public class MemberService {
                 .phoneNumber(requestDto.getPhoneNumber())
                 .connectionInformation(connectionInformation)
                 .hasBiometric(requestDto.getHasBiometric())
+                .autoTransferPushEnabled(false)
+                .transactionPushEnabled(false)
+                .mydataAgreed(false)
                 .build();
 
 
