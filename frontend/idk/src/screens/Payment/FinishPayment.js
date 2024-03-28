@@ -18,6 +18,7 @@ import theme from "../../style";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import CheckBox from "expo-checkbox";
+import { payRequestAxios, approvalPayAxios } from "../../API/PayRequest.js";
 
 const FinishPayment = ({ route, navigation }) => {
   const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
