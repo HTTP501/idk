@@ -5,7 +5,7 @@ import { passwordAxios } from '../../API/Account';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 
-const AuthPW = ({ navigation,destination }) => {
+const AuthPW = ({ navigation, changeResult }) => {
   
   const [password, setPassword] = useState('');
 
@@ -18,7 +18,7 @@ const AuthPW = ({ navigation,destination }) => {
     const numericText = text.replace(/[^\d]/g, '');
     // 입력된 숫자가 4자리인지 확인
     if (numericText.length === 4) {
-      // 6자리인 경우 자동으로 확인
+      // 4자리인 경우 자동으로 확인
       verifyPassword(numericText);
     } else {
       // 6자리가 아닌 경우 현재 입력된 값을 상태에 업데이트
@@ -33,9 +33,12 @@ const AuthPW = ({ navigation,destination }) => {
         password: numericText,
       },
       async (res) => {
-        console.log(res)
-        // Alert.alert('간편 인증이 완료되었습니다.','',[{text:'확인'}])
-        navigation.reset({routes: [{name: destination, params:{result:true}}]})
+        console.log(res.data.message)
+        Alert.alert('간편 인증이 완료되었습니다.','',[{text:'확인',
+        onPress:()=>{
+          changeResult(true)
+        }}])
+        // navigation.reset({routes: [{name: destination, params:{result:true}}]})
 
         // 입력된 비밀번호 초기화
         setPassword('');
@@ -55,8 +58,8 @@ const AuthPW = ({ navigation,destination }) => {
 
   return (
     <View style={styles.container}>
-      <Text className='text-3xl font-bold mb-4 text-white'>간편 비밀번호 인증</Text>
-      <Text className='text-lg mb-24 text-white'>숫자 6자리를 입력해주세요</Text>
+      <Text className='text-3xl font-bold mb-4 text-white'>계좌 비밀번호 인증</Text>
+      <Text className='text-lg mb-24 text-white'>숫자 4자리를 입력해주세요</Text>
       <TextInput
         autoFocus={true}
         placeholderTextColor={'white'}

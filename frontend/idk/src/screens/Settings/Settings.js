@@ -3,8 +3,9 @@ import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, Scroll
 import theme from '../../style';
 import { AntDesign } from '@expo/vector-icons'; // Import Ionicons from Expo
 import { autoTransferAxios, transactionAxios, memberAxios } from '../../API/Member'
-import { ChangeAccountNameAxios } from '../../API/Account'
-
+import { ChangeAccountNameAxios, deleteAccountAxios } from '../../API/Account'
+import AuthPW from '../Auth/AuthPW';
+import { useFocusEffect } from '@react-navigation/native';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const Settings = ({ navigation }) => {
@@ -13,18 +14,23 @@ const Settings = ({ navigation }) => {
   const [accountName, setAccountName] = useState('');
   const [isDepositNotificationEnabled, setIsDepositNotificationEnabled] = useState(false);
   const [isAutoTransferNotificationEnabled, setIsAutoTransferNotificationEnabled] = useState(false);
-
+  const [isChecking, setIsChecking] = useState(false)
+  const [isPasswordChecked, setIsPasswordChecked] = useState(false)
+  // useFocusEffect(()=>{
+  //   setIsChecking(false)
+  //   setIsPasswordChecked(false)
+  // },[])
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
-  
+
   // 계좌 별명 변경 Axios
   const handleNicknameChange = () => {
     setIsModalVisible(false);
     ChangeAccountNameAxios(
-      {accountName: accountName},
+      { accountName: accountName },
       res => {
-        Alert.alert('계좌 별명 변경이 완료되었습니다.','',[{text:'확인'}])
+        Alert.alert('계좌 별명 변경이 완료되었습니다.', '', [{ text: '확인' }])
       },
       err => {
       }
@@ -39,9 +45,9 @@ const Settings = ({ navigation }) => {
       },
       err => {
       }
-      )
-    }
-  
+    )
+  }
+
   // 입출금 알림 설정 Axios
   const HandleTransactionAxios = () => {
     setIsDepositNotificationEnabled(previousState => !previousState)
@@ -50,10 +56,27 @@ const Settings = ({ navigation }) => {
       },
       err => {
       }
-      )
-    }
-      
-      // 회원 정보 조회
+    )
+  }
+  // 계좌 해지
+  const deleteAccount = (res) => {
+    setIsPasswordChecked(res)
+    setIsChecking(!res)
+    deleteAccountAxios(response => {
+      console.log(response.data.message)
+      Alert.alert("계좌가 해지되었습니다.", "", [{
+        text: '확인',
+        onPress: () => {
+          navigation.navigate('AccountStack', { screen: 'Agreement' })
+        }
+      }])
+    },
+      err => {
+        console.log(err)
+      })
+
+  }
+  // 회원 정보 조회
   useEffect(() => {
     memberAxios(
       res => {
@@ -67,138 +90,153 @@ const Settings = ({ navigation }) => {
   }, [])
 
   return (
-    <View style={styles.container}>
-      <ScrollView 
-        contentContainerStyle={{ paddingBottom: 50, flexGrow:1, alignItems:'center', justifyContent:'center'}}
-        showsVerticalScrollIndicator={false}  
-      >
-        <View className='mb-10 self-start'>
-          <Text className='text-3xl font-bold'>계좌 관리</Text>
-        </View>
-        <TouchableOpacity 
-          style={styles.box}
-          onPress={toggleModal} // Open modal when the button is pressed
-        >
-          <Text className='text-base text-zinc-500'>계좌 별명 변경</Text>
-          <AntDesign name="right" size={20} color="grey" />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.box}
-          onPress={() => navigation.navigate('ChangeAccountPW')}
-        >
-          <Text className='text-base text-zinc-500'>계좌 비밀번호 변경</Text>
-          <AntDesign name="right" size={20} color="grey" />
-        </TouchableOpacity>
-        <View className='my-10 self-start'>
-          <Text className='text-3xl font-bold'>알림 관리</Text>
-        </View>
-        <View style={{...styles.box, paddingBottom:0}}>
-          <Text className='text-base text-zinc-500'>입출금 알림(Push)</Text>
-          <Switch
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={isDepositNotificationEnabled ? "#f4f3f4" : "#f4f3f4"}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={HandleTransactionAxios}
-            value={isDepositNotificationEnabled}
-          />
-        </View>
-        <View style={{...styles.box, paddingBottom:0}}>
-          <Text className='text-base text-zinc-500'>자동이체 알림</Text>
-          <Switch
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={isAutoTransferNotificationEnabled ? "#f4f3f4" : "#f4f3f4"}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={HandleAutoTransfer}
-            value={isAutoTransferNotificationEnabled}
-          />
-        </View>
-        <View className='my-10 self-start'>
-          <Text className='text-3xl font-bold'>돈포켓 관리</Text>
-        </View>
-        <TouchableOpacity 
-          style={styles.box}
-          onPress={() => navigation.navigate('ChangeLeastHoldMoney')}
-        >
-          <Text className='text-base text-zinc-500'>최소보유금액 설정</Text>
-          <AntDesign name="right" size={20} color="grey" />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.box}
-          onPress={() => navigation.navigate('ChangeSalaryDay')}
-        >
-          <Text className='text-base text-zinc-500'>월급일 설정</Text>
-          <AntDesign name="right" size={20} color="grey" />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.box}
-          onPress={() => navigation.navigate('RegistSavingBox')}
-        >
-          <Text className='text-base text-zinc-500'>저금통 등록</Text>
-          <AntDesign name="right" size={20} color="grey" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.box}
-          onPress={() =>{
-            setIsDeleteModalVisible(true) 
-            console.log("해지하기")}}
-        >
-          <Text className="text-base text-zinc-500">계좌 해지하기</Text>
-          <AntDesign name="right" size={20} color="grey" />
-        </TouchableOpacity>
-      </ScrollView>
+    <View className="flex flex-1">
+      {
+        isChecking ?
+          // 체크한 결과 올려서 저장
+          <AuthPW changeResult={(res) => {
+            deleteAccount(res)
 
-      
-      <Modal
-          visible={isModalVisible}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setIsModalVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>계좌 별명 변경</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="새로운 별명을 입력하세요"
-                value={accountName}
-                onChangeText={setAccountName}
-              />
+          }} /> :
+          <View style={styles.container}>
+            <ScrollView
+              contentContainerStyle={{ paddingBottom: 50, flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}
+              showsVerticalScrollIndicator={false}
+            >
+              <View className='mb-5 self-start'>
+                <Text className='text-3xl font-bold'>계좌 관리</Text>
+              </View>
               <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleNicknameChange} // Call function to change nickname
+                style={styles.box}
+                onPress={toggleModal} // Open modal when the button is pressed
               >
-                <Text style={styles.buttonText}>변경</Text>
+                <Text className='text-base text-zinc-500'>계좌 별명 변경</Text>
+                <AntDesign name="right" size={20} color="grey" />
               </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-        <Modal
-        visible={isDeleteModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setIsDeleteModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>정말 해지하시겠습니까?</Text>
-            <View className="flex-row justify-between w-full px-5">
-            <TouchableOpacity
-              style={styles.modalButton1}
-              onPress={()=>setIsDeleteModalVisible(false)}
-              
+              <TouchableOpacity
+                style={styles.box}
+                onPress={() => navigation.navigate('ChangeAccountPW')}
+              >
+                <Text className='text-base text-zinc-500'>계좌 비밀번호 변경</Text>
+                <AntDesign name="right" size={20} color="grey" />
+              </TouchableOpacity>
+              <View className='my-3 self-start'>
+                <Text className='text-3xl font-bold'>알림 관리</Text>
+              </View>
+              <View style={{ ...styles.box,marginBottom:20, paddingBottom: 0 }}>
+                <Text className='text-base text-zinc-500'>입출금 알림(Push)</Text>
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={isDepositNotificationEnabled ? "#f4f3f4" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={HandleTransactionAxios}
+                  value={isDepositNotificationEnabled}
+                />
+              </View>
+              <View style={{ ...styles.box, paddingBottom: 0 }}>
+                <Text className='text-base text-zinc-500'>자동이체 알림</Text>
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={isAutoTransferNotificationEnabled ? "#f4f3f4" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={HandleAutoTransfer}
+                  value={isAutoTransferNotificationEnabled}
+                />
+              </View>
+              <View className='my-5 self-start'>
+                <Text className='text-3xl font-bold'>돈포켓 관리</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.box}
+                onPress={() => navigation.navigate('ChangeLeastHoldMoney')}
+              >
+                <Text className='text-base text-zinc-500'>최소보유금액 설정</Text>
+                <AntDesign name="right" size={20} color="grey" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.box}
+                onPress={() => navigation.navigate('ChangeSalaryDay')}
+              >
+                <Text className='text-base text-zinc-500'>월급일 설정</Text>
+                <AntDesign name="right" size={20} color="grey" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.box}
+                onPress={() => navigation.navigate('RegistSavingBox')}
+              >
+                <Text className='text-base text-zinc-500'>저금통 등록</Text>
+                <AntDesign name="right" size={20} color="grey" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.box}
+                onPress={() => {
+                  setIsDeleteModalVisible(true)
+                  console.log("해지하기")
+                }}
+              >
+                <Text className="text-base text-zinc-500">계좌 해지하기</Text>
+                <AntDesign name="right" size={20} color="grey" />
+              </TouchableOpacity>
+            </ScrollView>
+
+
+            <Modal
+              visible={isModalVisible}
+              transparent={true}
+              animationType="slide"
+              onRequestClose={() => setIsModalVisible(false)}
             >
-              <Text className="font-bold text-lg">유지하기</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.modalButton2}
-              onPress={()=>{setIsDeleteModalVisible(false)}}
+              <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>계좌 별명 변경</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="새로운 별명을 입력하세요"
+                    value={accountName}
+                    onChangeText={setAccountName}
+                  />
+                  <TouchableOpacity
+                    style={styles.modalButton}
+                    onPress={handleNicknameChange} // Call function to change nickname
+                  >
+                    <Text style={styles.buttonText}>변경</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+            <Modal
+              visible={isDeleteModalVisible}
+              transparent={true}
+              animationType="slide"
+              onRequestClose={() => setIsDeleteModalVisible(false)}
             >
-              <Text className="font-bold text-lg text-gray-500">해지하기</Text>
-            </TouchableOpacity>
+              <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>정말 해지하시겠습니까?</Text>
+                  <View className="flex-row justify-between w-full px-5">
+                    <TouchableOpacity
+                      style={styles.modalButton1}
+                      onPress={() => setIsDeleteModalVisible(false)}
+
+                    >
+                      <Text className="font-bold text-lg">유지하기</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.modalButton2}
+                      onPress={() => {
+                        setIsDeleteModalVisible(false)
+                        setIsChecking(true)
+                      }}
+                    >
+                      <Text className="font-bold text-lg text-gray-500">해지하기</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+
           </View>
-          </View>
-        </View>
-      </Modal>
+      }
     </View>
   );
 };
@@ -206,15 +244,15 @@ const Settings = ({ navigation }) => {
 export default Settings;
 
 const styles = StyleSheet.create({
-  container : {
+  container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
     paddingTop: 100
   },
-  box : {
-    width: SCREEN_WIDTH * (8/10),
+  box: {
+    width: SCREEN_WIDTH * (8 / 10),
     marginBottom: 30,
     borderBottomWidth: 0.5,
     flexDirection: 'row',
@@ -258,10 +296,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10
-  },  modalButton1: {
-    flexGrow:1,
+  }, modalButton1: {
+    flexGrow: 1,
     height: 50,
-    marginRight:30,
+    marginRight: 30,
     backgroundColor: theme["sky-bright-2"],
     justifyContent: "center",
     alignItems: "center",
@@ -269,11 +307,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   modalButton2: {
-    flexGrow:1,
+    flexGrow: 1,
     height: 50,
     backgroundColor: theme.grey,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 10,}
+    borderRadius: 10,
+  }
 
 });
