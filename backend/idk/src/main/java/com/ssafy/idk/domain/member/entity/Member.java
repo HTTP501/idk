@@ -4,7 +4,6 @@ import com.ssafy.idk.domain.mydata.entity.Mydata;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter
