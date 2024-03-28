@@ -63,6 +63,7 @@ public class Account {
     private List<AutoTransfer> arrayAutoTransfer;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OrderBy("orderNumber asc")
     List<Pocket> arrayPocketOrders;
 
     public void updateName(String name) {

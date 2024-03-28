@@ -21,6 +21,12 @@ public class PocketController {
 
     private final PocketService pocketService;
 
+    @Operation(summary = "돈 포켓 목록 조회")
+    @GetMapping(value = "/account/{accountId}")
+    public ResponseEntity<ResultResponse> getArrayPocket(@PathVariable(name = "accountId") Long accountId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_GET_LIST_SUCCESS, pocketService.getArrayPocket(accountId)));
+    }
+
     @Operation(summary = "자동이체 돈 포켓 가입")
     @PostMapping(value = "/auto-transfer")
     public ResponseEntity<ResultResponse> createPocketAutoTransfer(@RequestBody PocketCreateAutoTransferRequestDto requestDto) {

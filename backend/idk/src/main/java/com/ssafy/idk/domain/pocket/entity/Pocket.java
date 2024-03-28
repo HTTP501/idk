@@ -27,6 +27,9 @@ public class Pocket {
     @JoinColumn(name = "account_id") @NotNull
     private Account account;
 
+    @Column(name = "pocket_type") @NotNull
+    private PocketType pocketType;
+
     @OneToOne
     @JoinColumn(name = "target_saving_id")
     private TargetSaving targetSaving;
