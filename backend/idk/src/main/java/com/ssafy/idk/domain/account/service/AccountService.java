@@ -167,6 +167,15 @@ public class AccountService {
         updateAccount(member.getMemberId());
     }
 
+    @Transactional
+    public void updateAccount(Long memberId) {
+        Member member = memberRepository.findById(memberId).get();
+        Account account = accountRepository.findByMember(member)
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        account.updateTime();
+    }
+
     public ReadyTransferResponseDto readyTransfer(ReadyTransferRequestDto requestDto) {
         if (requestDto.getBankName().equals("IDK은행")) {
             List<Member> memberList = memberRepository.findAll();
@@ -182,19 +191,10 @@ public class AccountService {
                 }
             }
         } else { // 마이데이터 조회
-            
+
         }
         // 해당 은행에 해당 유저가 없는 경우
         throw new TransferException(ErrorCode.TRANSFER_USER_NOT_FOUND);
-    }
-
-    @Transactional
-    public void updateAccount(Long memberId) {
-        Member member = memberRepository.findById(memberId).get();
-        Account account = accountRepository.findByMember(member)
-                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
-
-        account.updateTime();
     }
 
     @Transactional

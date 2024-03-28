@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TransferException.class)
-    protected ResponseEntity<ErrorResponse> handleTransferException(AccountException ex) {
+    protected ResponseEntity<ErrorResponse> handleTransferException(TransferException ex) {
         log.error("handleTransferException", ex);
         final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));

@@ -74,14 +74,14 @@ public class AccountController {
     }
 
     @Operation(summary = "이체할 사용자 조회")
-    @GetMapping(value="/transfer/ready", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value="/transfer/ready", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResultResponse> readyTransfer(@RequestBody ReadyTransferRequestDto requestDto) {
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.ACCOUNT_TRANSFER_SUCCESS, accountService.readyTransfer(requestDto)));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.TRANSFER_READY_SUCCESS, accountService.readyTransfer(requestDto)));
     }
 
     @Operation(summary = "송금(이체)")
     @PostMapping("/transfer")
     public ResponseEntity<ResultResponse> transfer(@RequestBody TransferRequestDto requestDto) {
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.ACCOUNT_TRANSFER_SUCCESS, accountService.transfer(requestDto)));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.TRANSFER_SUCCESS, accountService.transfer(requestDto)));
     }
 }
