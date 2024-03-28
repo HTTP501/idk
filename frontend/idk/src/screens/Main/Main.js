@@ -191,7 +191,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
             <View style={styles.back}></View>
             {/* 로고 알람 */}
             <View className="px-10 mt-10 mb-2">
-              <Header />
+              <Header navigation={navigation}/>
             </View>
 
             {/* 계좌 */}
@@ -306,7 +306,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   );
 });
 // 헤더
-const Header = () => {
+const Header = ({navigation}) => {
   const logo = require("../../../assets/logo/white_idk_bank_logo.png");
   return (
     <View className="flex-row justify-between items-center">
@@ -315,6 +315,7 @@ const Header = () => {
       </View>
       <TouchableOpacity
         onPress={() => {
+          navigation.navigate("Notification")
           console.log("알람페이지로 가기");
         }}
       >

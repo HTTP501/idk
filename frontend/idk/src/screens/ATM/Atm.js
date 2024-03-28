@@ -12,6 +12,7 @@ import theme from "../../style";
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 import { useEffect, useState } from "react";
 import formattedNumber from "../../components/moneyFormatter";
+import { DepositMyAccountAxios } from "../../API/Account";
 const keyboard = [
   {
     text: 1,
@@ -54,26 +55,38 @@ const ATM = function () {
   let [enterMoney, setEnterMoney] = useState(false);
   let [outMoney, setOutMoney] = useState(false);
   let [money, setMoney] = useState(0);
-const myAccountAmount = 10100
-  const changeMoney = function(num){
-    if (num === "정정"){
-        setMoney(Math.floor(money/10))
-    } else if (num==="만"){
-        setMoney(money*10000)
+  const myAccountAmount = 10100;
+  // 입금
+  const DepositMyAccount = function () {
+    DepositMyAccountAxios(
+      data={ amount: Number(money) },
+      (res) => {
+        console.log("성공", res);
+      },
+      (err) => {
+        console.log("실패", err);
+      }
+    );
+  };
+  // 돈 변경
+  const changeMoney = function (num) {
+    if (num === "정정") {
+      setMoney(Math.floor(money / 10));
+    } else if (num === "만") {
+      setMoney(money * 10000);
     } else {
-        setMoney(money*10+Number(num))
+      setMoney(money * 10 + Number(num));
     }
-
-  }
-  useEffect(()=>{
-    if (outMoney && money > myAccountAmount){
-        alert("잔액 이상 출금할 수 없습니다")
-        setMoney(myAccountAmount)
-    } else if ( enterMoney && money > 50000000){
-        alert("5천만원 이상 입금할 수 없습니다")
-        setMoney(50000000)
+  };
+  useEffect(() => {
+    if (outMoney && money > myAccountAmount) {
+      alert("잔액 이상 출금할 수 없습니다");
+      setMoney(myAccountAmount);
+    } else if (enterMoney && money > 50000000) {
+      alert("5천만원 이상 입금할 수 없습니다");
+      setMoney(50000000);
     }
-  },[money])
+  }, [money]);
   //   버튼
   const renderItem = ({ item }) => {
     let bgColor = null;
@@ -84,10 +97,12 @@ const myAccountAmount = 10100
     }
 
     return (
-      <TouchableOpacity activeOpacity={0.6}
-      onPress={()=>{
-        changeMoney(item.text)
-      }}>
+      <TouchableOpacity
+        activeOpacity={0.6}
+        onPress={() => {
+          changeMoney(item.text);
+        }}
+      >
         <LinearGradient
           colors={["#e3e3e3", "#969696"]}
           className="py-1 items-center rounded-lg"
@@ -110,7 +125,6 @@ const myAccountAmount = 10100
         colors={["#e3e3e3", "#969696"]}
         className="h-full w-full "
       >
-
         <View
           className="mx-10 mt-20 flex"
           style={[
@@ -181,7 +195,7 @@ const myAccountAmount = 10100
                     onPress={() => {
                       setEnterMoney(false);
                       setOutMoney(false);
-                      setMoney(0)
+                      setMoney(0);
                     }}
                     className="p-1 px-5 rounded"
                     style={{ backgroundColor: theme.red }}
@@ -193,6 +207,7 @@ const myAccountAmount = 10100
                     <TouchableOpacity
                       className="p-1 px-5 rounded"
                       style={{ backgroundColor: theme.grey }}
+                      onPress={DepositMyAccount}
                     >
                       <Text className="text-lg font-bold">입금</Text>
                     </TouchableOpacity>
@@ -215,8 +230,9 @@ const myAccountAmount = 10100
                   <Text
                     className="font-bold text-3xl bg-gray-100 mr-2"
                     style={{ flex: 9 }}
-                    
-                  >{formattedNumber(money)}</Text>
+                  >
+                    {formattedNumber(money)}
+                  </Text>
                   <Text className="font-bold text-2xl" style={{ flex: 1 }}>
                     원
                   </Text>
@@ -226,7 +242,7 @@ const myAccountAmount = 10100
             )}
           </View>
         </View>
-        
+
         {enterMoney || outMoney ? (
           <FlatList
             data={keyboard}
@@ -241,8 +257,14 @@ const myAccountAmount = 10100
               alignItems: "center",
             }}
           />
-        ) : <Text className="text-center font-bold mt-10"
-        style={{fontSize:80}}>ATM</Text>}
+        ) : (
+          <Text
+            className="text-center font-bold mt-10"
+            style={{ fontSize: 80 }}
+          >
+            ATM
+          </Text>
+        )}
       </LinearGradient>
     </View>
   );
