@@ -1,7 +1,7 @@
-package com.ssafy.idk.domain.piggybank.domain;
+package com.ssafy.idk.domain.piggybank.entity;
 
 
-import com.ssafy.idk.domain.account.domain.Account;
+import com.ssafy.idk.domain.account.entity.Account;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -29,10 +29,9 @@ public class PiggyBank {
     @Column(name = "balance") @NotNull
     private Long balance;
 
-    @Column(name = "create_at") @NotNull
-    private LocalDateTime createAt;
+    @Column(name = "created_at") @NotNull
+    private LocalDateTime createdAt;
 
-    @Column(name = "piggy_bank_transaction_id")
     @OneToMany(mappedBy = "piggyBank", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<PiggyBankTransaction> transactions = new ArrayList<>();
 

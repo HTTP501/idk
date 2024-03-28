@@ -53,6 +53,9 @@ public enum ErrorCode {
 
     // TARGET_SAVING
     TARGET_SAVING_NOT_FOUND(404, "TS401", "해당 목표저축이 존재하지 않습니다."),
+    TARGET_SAVING_INVALID_DATE(409, "TS402", "유효하지 않은 이체날짜입니다."),
+    TARGET_SAVING_INVALID_TERM(409, "TS403", "유효하지 않은 이체기간입니다."),
+    TARGET_SAVING_INCORRECT_AMOUNT(409, "TS404", "유효하지 않은 목표기간, 월납입액 및 목표금액입니다."),
 
     // AUTO_TRANSFER
     AUTO_TRANSFER_MY_ACCOUNT_NOT_FOUND(404, "AT401", "출금 계좌가 유효하지 않습니다."),

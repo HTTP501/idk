@@ -1,6 +1,6 @@
-package com.ssafy.idk.domain.analyst.domain;
+package com.ssafy.idk.domain.analyst.entity;
 
-import com.ssafy.idk.domain.member.domain.Member;
+import com.ssafy.idk.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
