@@ -104,7 +104,7 @@ export default function MainApp() {
           />
           <Image
             source={require("../assets/logo/explain4.png")}
-            style={{ width: 275, height: 427, borderRadius: 20 }}
+            style={{ width: 274, height: 427, borderRadius: 20 }}
           />
           <View style={{ width: 275, height: 427, justifyContent: "center" }}>
             <TouchableOpacity
