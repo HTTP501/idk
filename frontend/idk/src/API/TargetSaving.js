@@ -11,4 +11,18 @@ export const joinTargetSavingAxios = async function (data, success, fail) {
         .catch(fail)
 };
 
+// 목표저축 해지
+export const deleteTargetSavingAxios = async function (targetSavingId, success, fail) {
+  await local.delete(`/target-saving/${targetSavingId}`)
+        .then(success)
+        .catch(fail)
+};
+
+// 목표저축 가입
+export const getTargetSavingAxios = async function (targetSavingId, success, fail) {
+  await local.get(`/target-saving/${targetSavingId}`)
+        .then(success)
+        .catch(fail)
+};
+
 

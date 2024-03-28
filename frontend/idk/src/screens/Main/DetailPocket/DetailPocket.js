@@ -23,10 +23,19 @@ import { useIsFocused } from "@react-navigation/native";
 import Loading from "../../../components/Loading";
 
 const DetailPocket = ({ navigation, route }) => {
-  const pocketId = route.params.pocketId
-  const pocketType = route.params.pocketType
+  const pocketId = route.params.pocketData.pocketId
+  const pocketType = route.params.pocketData.pocketType
+  const [donPocketId, setDonPocketId] = useState(null)
+
   let [loading, setLoading] = useState(false);
   useEffect(() => {
+    if (pocketType === '목표저축') {
+      setDonPocketId(route.params.pocketData.targetSavingId)
+    } else if (pocketType === '자동이체') {
+      setDonPocketId(route.params.pocketData.autoTransferId)
+    } else {
+      setDonPocketId(route.params.pocketData.AutoDebitId)
+    }
     setTimeout(() => {
       setLoading(true);
     }, 1000);
@@ -99,11 +108,11 @@ const DetailPocket = ({ navigation, route }) => {
                 style={styles.setting}
                 onPress={() => {
                   if (pocketType === '목표저축') {
-                    navigation.navigate('SettingTargetSaving', { pocketId })
+                    navigation.navigate('SettingTargetSaving', { pocketId, donPocketId })
                   } else if (pocketType === '자동결제') {
-                    navigation.navigate("SettingAutoDebit", { pocketId });
+                    navigation.navigate("SettingAutoDebit", { pocketId, donPocketId });
                   } else if (pocketType === '자동이체') {
-                    navigation.navigate('SettingAutoTransfer', { pocketId })
+                    navigation.navigate('SettingAutoTransfer', { pocketId, donPocketId })
                   }
                 }}
               >

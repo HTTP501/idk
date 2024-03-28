@@ -6,17 +6,42 @@ import { autoTransferAxios, transactionAxios } from '../../../API/Member'
 import { ChangeAccountNameAxios } from '../../../API/Account'
 import Loading from "../../../components/Loading";
 import { FontAwesome } from '@expo/vector-icons';
+import { deleteTargetSavingAxios, getTargetSavingAxios} from '../../../API/TargetSaving'
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const SettingTargetSaving = ({ navigation, route }) => {
   const [showModal, setShowModal] = useState(false);
-  const presentPrice = 2000000
-  const targetPrice = 5000000
+  const [presentPrice, setPresentPrice] = useState(0)
+  const [targetPrice, setTargetPrice] = useState(1)
+  const [data, setData] = useState(null)
+  const [name, setName] = useState(null)
 
   const pocketId = route.params.pocketId
+  const donPocketId = route.params.donPocketId
+
   let [loading, setLoading] = useState(false);
   useEffect(() => {
+    getTargetSavingAxios(
+      donPocketId,
+      res => {
+        console.log(res);
+        console.log(res.data);
+        setData(res.data.data)
+        setName(res.data.data.name)
+        setPresentPrice(res.data.data.count * res.data.data.monthlyAmount)
+        setTargetPrice(res.data.data.goalAmount)
+      },
+      err => {
+        console.log(err);
+        console.log(err.response);
+        if (err.response.data.code === 'C401') {
+          Alert.alert('해당 목표저축 사용자와 해당 요청 사용자가 일치하지 않습니다.', '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'TS401') {
+          Alert.alert('해당 목표저축이 존재하지 않습니다.', '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        }
+      }
+    )
     setTimeout(() => {
       setLoading(true);
     }, 1000);
@@ -29,6 +54,17 @@ const SettingTargetSaving = ({ navigation, route }) => {
 
   // 돈포켓 해지 Axios
   const deleteDonPocket = () => {
+    deleteTargetSavingAxios(
+      donPocketId,
+      res => {
+        console.log(res);
+        Alert.alert('해지가 완료되었습니다.', '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+      },
+      err => {
+        console.log(err);
+        console.log(err.response);
+      }
+    )
     setShowModal(false)
   }
 
@@ -93,7 +129,7 @@ const SettingTargetSaving = ({ navigation, route }) => {
         >
           <View style={{paddingHorizontal: SCREEN_WIDTH * (1/10)}}>
             <View className='flex-row items-end self-start mb-8'>
-              <Text className='text-2xl font-bold'>30개월</Text>
+              <Text className='text-2xl font-bold'>{data.term}개월</Text>
               <Text className='text-base'> 후에 목표 달성!</Text>
             </View>
             {/* 애니메이션 */}
@@ -105,8 +141,10 @@ const SettingTargetSaving = ({ navigation, route }) => {
           <View style={styles.box}>
             <Text className='text-base font-bold mb-1'>이름</Text>
             <TextInput
-              placeholder='돈포켓 이름'
+              placeholder={data.name}
               className='text-base'
+              value={name}
+              onChangeText={(text) => setName(text)}
             >
             </TextInput>
           </View>
@@ -114,50 +152,31 @@ const SettingTargetSaving = ({ navigation, route }) => {
             <Text className='text-base font-bold mb-1'>이체일</Text>
             <View className='flex-row'>
               <Text className='text-base'>매월 </Text>
-              <TextInput
-                placeholder='15'
-                className='text-base'
-              >
-              </TextInput>
-              <Text className='text-base'> 일</Text>
+              <Text className='text-base'>{data.date} 일</Text>
             </View>
           </View>
           <View style={styles.box}>
             <Text className='text-base font-bold mb-1'>현재 금액</Text>
             <View className='flex-row'>
-              <Text className='text-base'>2000000</Text>
+              <Text className='text-base'>{data.count * data.monthlyAmount}</Text>
               <Text className='text-base'> 원</Text>
             </View>
           </View>
           <View style={styles.box}>
             <Text className='text-base font-bold mb-1'>목표 금액</Text>
             <View className='flex-row'>
-              <TextInput
-                placeholder='500000'
-                className='text-base'
-              >
-              </TextInput>
-              <Text className='text-base'> 원</Text>
+              <Text className='text-base'>{data.goalAmount} 원</Text>
             </View>
           </View>
           <View style={styles.box}>
             <Text className='text-base font-bold mb-1'>남은 기간</Text>
             <View className='flex-row'>
-              <TextInput
-                placeholder='2'
-                className='text-base'
-              >
-              </TextInput>
-              <Text className='text-base'> 개월</Text>
+              <Text className='text-base'>{data.term - data.count} 개월</Text>
             </View>
           </View>
           <View style={styles.box}>
             <Text className='text-base font-bold mb-1'>시작일</Text>
-            <Text className='text-base'>2023-02-15</Text>
-          </View>
-          <View style={styles.box}>
-            <Text className='text-base font-bold mb-1'>다음 이체일</Text>
-            <Text className='text-base'>2024-02-15</Text>
+            <Text className='text-base'>{data.createdAt.substring(0, 10)}</Text>
           </View>
           <TouchableOpacity
             style={styles.deleteButton}
@@ -180,13 +199,14 @@ const SettingTargetSaving = ({ navigation, route }) => {
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Text className='text-2xl font-bold mb-3'>돈포켓 이름을</Text>
-              <Text className='text-2xl font-bold mb-3'>해지하시겠습니까?</Text>
+              <Text className='text-xl font-bold mb-1'>'{name}' 목표저축을</Text>
+              <Text className='text-xl font-bold mb-1'>해지하시겠습니까?</Text>
+              <Text className='text-sm mb-3'>모은 금액은 모두 계좌로 돌아갑니다.</Text>
               <TouchableOpacity
                 style={styles.modalButton1}
                 onPress={deleteDonPocket}
               >
-                <Text className='text-lg font-bold'>해지하기</Text>
+                <Text className='text-lg font-bold'>목표저축 해지하기</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalButton2}
