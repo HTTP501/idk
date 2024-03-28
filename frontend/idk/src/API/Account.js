@@ -19,6 +19,15 @@ export const getAccountTransactionAxios = async function (success, fail) {
   await local.get("/transaction/").then(success).catch(fail);
 };
 
+// 계좌 입금
+export const DepositMyAccountAxios = async function (data, success, fail) {
+  await local.post("/transaction/deposit", data).then(success).catch(fail);
+};
+// 계좌 출금
+export const WithdrawMyAccountAxios = async function (data, success, fail) {
+  await local.post("/transaction/withdraw", data).then(success).catch(fail);
+};
+
 // 계좌 이름 변경
 export const ChangeAccountNameAxios = async function (data, success, fail) {
   await local
@@ -36,6 +45,7 @@ export const CheckAccountPasswordAxios = async function (data, success, fail) {
   await local.post("/account/pwd", data).then(success).catch(fail);
 };
 
+
 // 최소보유금액 설정
 export const settingMinumumAxios = async function (data, success, fail) {
   await local.put("/account/minimum", data).then(success).catch(fail);
@@ -45,3 +55,4 @@ export const settingMinumumAxios = async function (data, success, fail) {
 export const settingIncomeDayAxios = async function (data, success, fail) {
   await local.put(`/account/income-day/${data}`).then(success).catch(fail);
 };
+
