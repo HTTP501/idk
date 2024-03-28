@@ -1,5 +1,6 @@
 package com.ssafy.idk.domain.account.service;
 
+import com.ssafy.idk.domain.account.dto.response.ReadyTransferResponseDto;
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.account.entity.Category;
 import com.ssafy.idk.domain.account.entity.Transaction;
@@ -8,6 +9,7 @@ import com.ssafy.idk.domain.account.dto.response.AccountCreateResponseDto;
 import com.ssafy.idk.domain.account.dto.response.AccountResponseDto;
 import com.ssafy.idk.domain.account.dto.response.TransferResponseDto;
 import com.ssafy.idk.domain.account.exception.AccountException;
+import com.ssafy.idk.domain.account.exception.TransferException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.member.entity.Member;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -166,6 +169,27 @@ public class AccountService {
         updateAccount(member.getMemberId());
     }
 
+    public ReadyTransferResponseDto readyTransfer(ReadyTransferRequestDto requestDto) {
+        if (requestDto.getBankName().equals("IDK은행")) {
+            List<Member> memberList = memberRepository.findAll();
+            for(Member member : memberList) {
+                Account account = accountRepository.findByMember(member)
+                        .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+                // 개인키로 계좌번호 복호화
+                String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
+                String accountNumber = RSAUtil.decode(privateKey, account.getNumber());
+                // 이체할 사용자를 찾았을 경우
+                if(accountNumber.equals(requestDto.getAccountNumber())) {
+                    return ReadyTransferResponseDto.of(member.getMemberId(), member.getName());
+                }
+            }
+        } else { // 마이데이터 조회
+            
+        }
+        // 해당 은행에 해당 유저가 없는 경우
+        throw new TransferException(ErrorCode.TRANSFER_USER_NOT_FOUND);
+    }
+
     @Transactional
     public void updateAccount(Long memberId) {
         Member member = memberRepository.findById(memberId).get();
@@ -181,7 +205,7 @@ public class AccountService {
 
         if (requestDto.getTransferBank().equals("IDK은행")) { // 받는사람이 IDK은행인 경우
             if(!accountNumberVerity(requestDto.getReceiverId()))
-                throw new AccountException(ErrorCode.ACCOUNT_TRANSFER_RECEIVER_FAIL);
+                throw new AccountException(ErrorCode.TRANSFER_RECEIVER_FAIL);
 
             deposit(requestDto.getReceiverId(), requestDto.getTransferAmount());
         }
