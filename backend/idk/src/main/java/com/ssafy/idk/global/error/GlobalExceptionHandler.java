@@ -2,6 +2,7 @@ package com.ssafy.idk.global.error;
 
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.exception.RSAKeyException;
+import com.ssafy.idk.domain.autotransfer.exception.AutoTransferException;
 import com.ssafy.idk.domain.piggybank.exception.PiggyBankException;
 import com.ssafy.idk.domain.shop.exception.ItemException;
 import com.ssafy.idk.domain.member.exception.MemberException;
@@ -63,6 +64,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TargetSavingException.class)
     protected ResponseEntity<ErrorResponse> handleTargetSavingException(TargetSavingException ex) {
         log.error("handleTargetSavingException", ex);
+        final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(AutoTransferException.class)
+    protected ResponseEntity<ErrorResponse> handleAutoTransferException(AutoTransferException ex) {
+        log.error("handleAutoTransferException", ex);
         final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }

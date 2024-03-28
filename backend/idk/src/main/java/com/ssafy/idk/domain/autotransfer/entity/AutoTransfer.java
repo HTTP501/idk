@@ -1,6 +1,7 @@
 package com.ssafy.idk.domain.autotransfer.entity;
 
 import com.ssafy.idk.domain.account.entity.Account;
+import com.ssafy.idk.domain.member.repository.MemberRepository;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -55,6 +56,11 @@ public class AutoTransfer {
     @Column(length = 10, name = "show_my_bank_account") @NotNull
     private String showMyBankAccount;
 
-
+    @PrePersist
+    public void prePresist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.showRecipientBankAccount = account.getMember().getName();
+    }
 
 }
