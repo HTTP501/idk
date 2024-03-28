@@ -80,6 +80,7 @@ const RegistGoalSaving = ({ navigation, route }) => {
     const numberTerm = Number(term);
     if ((term !== " ") & (numberTerm * goalAmount !== 0)) {
       setMonthlyAmount(String(Math.ceil(goalAmount / numberTerm / 100) * 100));
+      
     }
   }, [term, goalAmount]);
 
@@ -126,7 +127,7 @@ const RegistGoalSaving = ({ navigation, route }) => {
         date: date,
         term: term,
         monthlyAmount: monthlyAmount,
-        goalAmount: goalAmount,
+        goalAmount: term * monthlyAmount,
         itemId: itemId,
       };
       joinTargetSavingAxios(
@@ -135,6 +136,8 @@ const RegistGoalSaving = ({ navigation, route }) => {
           setShowModal(true);
         },
         err => {
+          console.log(err);
+          console.log(err.response);
         }
       )
     } else {
@@ -226,8 +229,11 @@ const RegistGoalSaving = ({ navigation, route }) => {
               <Text className="text-2xl font-bold mb-8">
                 목표 저축을 생성했습니다!
               </Text>
-              <Text className="text-zinc-500 text-lg font-bold mb-8">
-                {goalName}
+              <Text className="text-zinc-500 text-lg font-bold mb-4">
+                {goalName} 목표를 위해
+              </Text>
+              <Text className="text-zinc-500 text-lg font-bold mb-12">
+                {formattedNumber(Number(term * monthlyAmount))}원 만큼 모을게요!
               </Text>
 
               <TouchableOpacity

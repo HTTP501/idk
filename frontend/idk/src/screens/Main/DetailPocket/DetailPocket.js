@@ -34,11 +34,10 @@ const DetailPocket = ({ navigation, route }) => {
     if (pocketType === '목표저축') {
       setDonPocketId(route.params.pocketData.targetSavingId)
     } else if (pocketType === '자동이체') {
-      setDonPocketId(route.params.autoTransferId)
+      setDonPocketId(route.params.pocketData.autoTransferId)
     } else {
-      setDonPocketId(route.params.AutoDebitId)
+      setDonPocketId(route.params.pocketData.AutoDebitId)
     }
-  
     setTimeout(() => {
       setLoading(true);
     }, 1000);
