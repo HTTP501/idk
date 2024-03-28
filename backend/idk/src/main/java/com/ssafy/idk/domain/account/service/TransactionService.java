@@ -56,8 +56,6 @@ public class TransactionService {
     @Transactional
     public void atmDeposit(AmountRequestDto requestDto) {
         Member member = authenticationService.getMemberByAuthentication();
-        Account account = accountRepository.findByMember(member)
-                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
         Account savedAccount = accountService.deposit(member.getMemberId(), requestDto.getAmount());
 
         Transaction transaction = Transaction.builder()
@@ -74,13 +72,10 @@ public class TransactionService {
     @Transactional
     public void atmWithdraw(AmountRequestDto requestDto) {
         Member member = authenticationService.getMemberByAuthentication();
-        Account account = accountRepository.findByMember(member)
-                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
-        
         Account savedAccount = accountService.withdraw(member.getMemberId(), requestDto.getAmount());
 
         Transaction transaction = Transaction.builder()
-                .category(Category.입금)
+                .category(Category.출금)
                 .content(member.getName())
                 .amount(requestDto.getAmount())
                 .balance(savedAccount.getBalance())
