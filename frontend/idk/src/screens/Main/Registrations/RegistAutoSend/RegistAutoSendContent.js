@@ -1,5 +1,11 @@
 import { Dropdown } from "react-native-element-dropdown";
 import React, { useEffect, useState } from "react";
+import { registAutoTransferAxios } from "../../../../API/AutoTransfer";
+import theme from "../../../../style";
+import BankToggle from "../../../../components/BankToggle";
+import { getAccountAxios } from "../../../../API/Account";
+import formattedNumber from "../../../../components/moneyFormatter";
+const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
 import {
   Text,
@@ -9,6 +15,7 @@ import {
   StyleSheet,
   TextInput,
   ScrollView,
+  Alert,
   Image,
 } from "react-native";
 // 년, 월 데이터
@@ -33,6 +40,7 @@ const monthData = [
   { label: "11", value: 10 },
   { label: "12", value: 11 },
 ];
+
 // 오늘의 년도와 달
 const getCurrentYear = () => {
   const date = new Date();
@@ -43,31 +51,33 @@ const getCurrentMonth = () => {
   const date = new Date();
   return date.getMonth() + 1;
 };
-import theme from "../../../../style";
-import BankToggle from "../../../../components/BankToggle";
-import { getAccountAxios } from "../../../../API/Account";
-import formattedNumber from "../../../../components/moneyFormatter";
-const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
+const getCurrentDate = () => {
+  const date = new Date();
+  return date.getDate();
+};
+// let [isLateThanToday, setIsLateThanToday] = useState(false)
+
 // 자동이체 페이지
 const RegistAutoSendContent = ({ navigation }) => {
   let [bankName, setBankName] = useState("IDK은행");
   let [accountId, setAccountId] = useState("");
   let [date, setDate] = useState(15);
   let [amount, setAmount] = useState(5000);
-  const today = new Date();
 
   // 시작 년월, 종료 년월
   const [startYear, setStartYear] = useState(getCurrentYear());
-  const [startMonth, setStartMonth] = useState(getCurrentMonth());
+  const [startMonth, setStartMonth] = useState(getCurrentMonth() + 1);
   const [endYear, setEndYear] = useState(getCurrentYear() + 1);
   const [endMonth, setEndMonth] = useState(getCurrentMonth());
-  let [showMyAccountName, setShowMyAccountName] = useState("내이름");
-  let [showOtherAccountName, setShowOtherAccountName] =
-    useState("자동이체 제목");
-  console.log(startYear,startMonth,endYear,endMonth)
-  let [settingStart, setSettingStart] = useState(false);
-  let [settingEnd, setSettingEnd] = useState(false);
+  let [showMyAccountName, setShowMyAccountName] = useState("");
+  let [showOtherAccountName, setShowOtherAccountName] = useState("");
+  let [myAccount, setMyAccount] = useState({});
 
+  // '등록' 버튼 활성화 여부
+  const isRegistButtonEnabled = showMyAccountName !== "" &&
+    showOtherAccountName !== "" &&
+    accountId !== "" &&
+    amount > 0;
   // 이체 금액 필터링을 통해 저장
   const changeAmount = (text) => {
     if (text.length === 0) {
@@ -77,12 +87,20 @@ const RegistAutoSendContent = ({ navigation }) => {
       setAmount(number);
     }
   };
-  let [myAccount, setMyAccount] = useState({});
+
+  useEffect(() => {
+    if (date > 28 || date < 1) {
+      Alert.alert("이체일은 1일에서 28일 사이만 가능합니다", "", [
+        { text: "확인" },
+      ]);
+      setDate(1);
+    }
+  }, [date]);
   // 내 계좌 데이터 가져오기
   useEffect(() => {
     getAccountAxios(
       (res) => {
-        console.log(res);
+        // console.log(res);
         setMyAccount(res.data.data);
       },
       (err) => {
@@ -91,6 +109,38 @@ const RegistAutoSendContent = ({ navigation }) => {
     );
   }, []);
 
+  // 자동이체 등록
+  const registAutoSend = async () => {
+    const payload = {
+      accountId: myAccount.accountId,
+      toAccount: accountId,
+      toAccountBank: bankName,
+      amount: amount,
+      date: date,
+      startYearMonth: `${startYear}-${startMonth.toString().padStart(2, "0")}`,
+      endYearMonth: `${endYear}-${endMonth.toString().padStart(2, "0")}`,
+      showRecipientBankAccount: showMyAccountName,
+      showMyBankAccount: showOtherAccountName,
+    };
+    console.log(payload);
+    await registAutoTransferAxios(
+      payload,
+      (res) => console.log(res.data.message),
+      (err) => console.log(err)
+    );
+    navigation.navigate("RegistAutoSendFinish", {
+      bankName,
+      accountId,
+      date,
+      amount,
+      startYear,
+      startMonth,
+      endYear,
+      endMonth,
+      showMyAccountName,
+      showOtherAccountName,
+    });
+  };
   return (
     <View style={styles.container}>
       <View style={styles.box} className="mb-16">
@@ -118,7 +168,7 @@ const RegistAutoSendContent = ({ navigation }) => {
             onChangeText={(text) => setAccountId(text)}
             keyboardType="numeric"
             style={styles.input}
-            placeholder="계좌번호"
+            placeholder="ex) 110-357-123456"
           />
         </View>
         <View style={styles.box}>
@@ -161,47 +211,35 @@ const RegistAutoSendContent = ({ navigation }) => {
           <Text className="text-lg font-bold">자동 이체 기간</Text>
           <View className="flex-row items-center my-3">
             {/* 시작 년월 */}
-            <TouchableOpacity
-              onPress={() => setSettingStart(!settingStart)}
-              className="border border-gray-300 rounded px-3 py-1 my-1"
-            >
-              <Text>시작일 설정</Text>
-            </TouchableOpacity>
-            {settingStart ? (
-              <Picker
-                defaultData={[0, 2]}
-                onChangePick={(year, month, type) => {
-                  if (type==="start"){
-                    setStartYear(year)
-                    setStartMonth(month)
-                  }
-                }}
-                type="start"
-                otherData={[endYear,endMonth]}
-              />
-            ) : null}
+            <Text>시작일 설정</Text>
+            <Picker
+              defaultData={[0, getCurrentMonth()]}
+              date={date}
+              onChangePick={(year, month, type) => {
+                if (type === "start") {
+                  setStartYear(year);
+                  setStartMonth(month);
+                }
+              }}
+              type="start"
+              otherData={[endYear, endMonth]}
+            />
           </View>
           {/* 종료 년월 */}
           <View className="flex-row items-center">
-            <TouchableOpacity
-              onPress={() => setSettingEnd(!settingEnd)}
-              className="border border-gray-300 rounded px-3 py-1 my-1"
-            >
-              <Text>종료일 설정</Text>
-            </TouchableOpacity>
-            {settingEnd ? (
-              <Picker
-                defaultData={[1, 2]}
-                onChangePick={(year, month, type) => {
-                  if (type==="end"){
-                    setEndYear(year)
-                    setEndMonth(month)
-                  }
-                }}
-                type="end"
-                otherData={[startYear,startMonth]}
-              />
-            ) : null}
+            <Text>종료일 설정</Text>
+            <Picker
+              defaultData={[1, getCurrentMonth() - 1]}
+              date={date}
+              onChangePick={(year, month, type) => {
+                if (type === "end") {
+                  setEndYear(year);
+                  setEndMonth(month);
+                }
+              }}
+              type="end"
+              otherData={[startYear, startMonth]}
+            />
           </View>
         </View>
 
@@ -214,7 +252,7 @@ const RegistAutoSendContent = ({ navigation }) => {
               setShowMyAccountName(text);
             }}
             style={styles.input}
-            placeholder="내 이름"
+            placeholder="ex) 홍길동"
           />
         </View>
         <View style={styles.box}>
@@ -225,38 +263,28 @@ const RegistAutoSendContent = ({ navigation }) => {
               setShowOtherAccountName(text);
             }}
             style={styles.input}
-            placeholder="아이들과 미래재단 정기후원"
+            placeholder="ex) 아이들과 미래재단 정기후원"
           />
         </View>
       </ScrollView>
       <TouchableOpacity
-        style={styles.button}
+        style={[styles.button,{ backgroundColor: isRegistButtonEnabled ? theme["sky-basic"] : theme["sky-bright-4"] }]}
         onPress={() => {
-          // 종료일 설정을 안해두고 시작보다 늦는다면 경고 띄우기
-          if (settingEnd === true && (startYear > endYear
-            || startYear==endYear && startMonth >endMonth
-            ) ){
-            alert('종료일이 시작일보다 빠를 수 없습니다')
-            setEndYear(startYear)
-            setEndMonth(startMonth)
+          // 종료일이 시작보다 늦는다면 경고 띄우기
+          if (
+            startYear > endYear ||
+            (startYear == endYear && startMonth > endMonth)
+          ) {
+            Alert.alert("종료일이 시작일보다 빠를 수 없습니다", "", [
+              { text: "확인" },
+            ]);
+            setEndYear(startYear);
+            setEndMonth(startMonth);
           } else {
-            navigation.navigate("RegistAutoSendFinish", {
-              bankName,
-              accountId,
-              date,
-              amount,
-              startYear,
-              startMonth,
-              settingStart,
-              settingEnd,
-              endYear,
-              endMonth,
-              showMyAccountName,
-              showOtherAccountName,
-            });
-            
+            registAutoSend();
           }
         }}
+        disabled={!isRegistButtonEnabled}
       >
         <Text className="text-white text-lg font-bold">등록하기</Text>
       </TouchableOpacity>
@@ -264,30 +292,35 @@ const RegistAutoSendContent = ({ navigation }) => {
   );
 };
 // 기간 픽커
-const Picker = ({ defaultData, onChangePick,type, otherData }) => {
+const Picker = ({ defaultData, onChangePick, type, otherData, date }) => {
   const [yearValue, setYearValue] = useState(defaultData[0]);
   const [yearIsFocus, setYearIsFocus] = useState(false);
   const [monthvalue, setMonthValue] = useState(defaultData[1]);
   const [monthIsFocus, setMonthIsFocus] = useState(false);
 
-  // 시작 년월이 맞는가?
+  // 시작 년월이 과거가 아닌가?
   const isStartRight = function (yearvalue, monthvalue) {
     const year = Number(yearData[yearvalue].label);
     const month = Number(monthData[monthvalue].label);
     if (
-      (year === getCurrentYear() && month >= getCurrentMonth()) ||
+      (year === getCurrentYear() &&
+        month === getCurrentMonth() &&
+        date > getCurrentDate()) ||
+      (year === getCurrentYear() && month > getCurrentMonth()) ||
       year > getCurrentYear()
     ) {
       setYearValue(yearvalue);
       setMonthValue(monthvalue);
-      onChangePick(year, month,type);
+      onChangePick(year, month, type);
     } else {
-      alert("시작일을 과거로 설정할 수 없습니다.");
+      Alert.alert("시작일을 과거로 설정할 수 없습니다.", "", [
+        { text: "확인" },
+      ]);
       setYearValue(defaultData[0]);
       setMonthValue(defaultData[1]);
     }
   };
-  
+
   const yearRenderItem = (item) => {
     return (
       <View style={styles.item} className="flex-row gap-3 p-3 items-center">
