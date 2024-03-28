@@ -133,6 +133,7 @@ public class PiggyBankService {
                 piggyBankRepository.findByPiggyBankId(piggyBankId)
                         .orElseThrow(() -> new PiggyBankException(ErrorCode.PIGGY_BANK_NOT_FOUND)));
 
+        // 배열 생성
         List<PiggyBankTransactionResponseDto> arrayTransactionResponseDto = new ArrayList<>();
         for (PiggyBankTransaction transaction : arrayPiggyBankTransaction) {
             arrayTransactionResponseDto.add(
