@@ -46,7 +46,7 @@ public class AccountServiceTest {
         for (int i = 0; i < 10; i++) {
             executor.execute(() -> {
                 try {
-                    accountService.withdrawTest(member.getMemberId(), 5000L);
+                    accountService.withdraw(member.getMemberId(), 5000L);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

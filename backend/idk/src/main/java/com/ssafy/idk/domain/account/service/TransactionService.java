@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -37,12 +39,17 @@ public class TransactionService {
 
         List<Transaction> transactionList = transactionRepository.findAllByAccount(account);
 
+        // 최신순 정렬
+        Comparator<Transaction> comparator = Comparator.comparing(Transaction::getCreatedAt).reversed();
+        Collections.sort(transactionList, comparator);
+
         List<TransactionResponseDto> transactionResponseDtoList = new ArrayList<>();
         for(Transaction transaction : transactionList) {
             Boolean isDeposit = false;
             if(transaction.getCategory() == Category.입금) isDeposit = true;
             transactionResponseDtoList.add(TransactionResponseDto.of(transaction.getTransactionId(), transaction.getContent(), transaction.getAmount(), transaction.getBalance(), isDeposit, transaction.getCreatedAt()));
         }
+
         return transactionResponseDtoList;
     }
 
@@ -51,7 +58,7 @@ public class TransactionService {
         Member member = authenticationService.getMemberByAuthentication();
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
-        Account savedAccount = accountService.deposit(requestDto.getAmount());
+        Account savedAccount = accountService.deposit(member.getMemberId(), requestDto.getAmount());
 
         Transaction transaction = Transaction.builder()
                 .category(Category.입금)
@@ -70,7 +77,7 @@ public class TransactionService {
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
         
-        Account savedAccount = accountService.withdraw(requestDto.getAmount());
+        Account savedAccount = accountService.withdraw(member.getMemberId(), requestDto.getAmount());
 
         Transaction transaction = Transaction.builder()
                 .category(Category.입금)
