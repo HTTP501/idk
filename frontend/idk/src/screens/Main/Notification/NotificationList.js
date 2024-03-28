@@ -1,5 +1,6 @@
-import { View, FlatList, Text } from "react-native";
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import theme from "../../../style";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const Notification = () => {
   const notification = [
@@ -13,7 +14,8 @@ const Notification = () => {
     {
       id: 2,
       type: "입출금 알림",
-      message: "삼성 소프트...님이 보낸 1,000,000원이 전재산 통장에 입금되었어요.",
+      message:
+        "삼성 소프트...님이 보낸 1,000,000원이 전재산 통장에 입금되었어요.",
       date: new Date(),
       isRead: true,
     },
@@ -38,22 +40,28 @@ const Notification = () => {
       color = theme["light-grey"];
     }
     return (
-      <View className="p-5" style={{ backgroundColor: color }}>
-        <Text>{item.type}</Text>
-        <Text>{item.message}</Text>
-        <View className="flex-row gap-1">
-        <Text>
-            {item.date.getMonth()+1}월
-        </Text>
-        <Text>
-            {item.date.getDate()}일
-        </Text>
+      <View className="px-5 pt-3 pb-5" style={{ backgroundColor: color }}>
+        <View className="flex-row justify-between mb-3">
+          <Text>{item.type}</Text>
+          <View className="flex-row gap-1">
+            <Text>{item.date.getMonth() + 1}월</Text>
+            <Text>{item.date.getDate()}일</Text>
+          </View>
         </View>
+        <Text>{item.message}</Text>
       </View>
     );
   };
   return (
     <View style={{ paddingTop: 120, backgroundColor: "white", height: "100%" }}>
+      {/* 알림 서비스 할시 조건 걸어두기 */}
+      <View className="rounded-3xl flex-row items-center flex p-3 px-5 bg-gray-100 mx-5 mb-5">
+        <MaterialCommunityIcons name="bell-off" size={15} color="gray" />
+        <Text className="grow ml-3">앱의 알림이 꺼져있어요</Text>
+        <TouchableOpacity>
+          <Text className="text-blue-500">알림 켜기</Text>
+        </TouchableOpacity>
+      </View>
       <FlatList
         data={notification}
         renderItem={renderItem}
