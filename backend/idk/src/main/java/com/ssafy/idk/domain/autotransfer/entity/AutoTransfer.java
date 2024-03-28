@@ -26,6 +26,9 @@ public class AutoTransfer {
     @JoinColumn(name = "account_id") @NotNull
     private Account account;
 
+    @Column(length = 20, name = "name") @NotNull
+    private String name;
+
     @Column(length = 14, name = "to_account") @NotNull
     private String toAccount;
 
@@ -60,7 +63,6 @@ public class AutoTransfer {
     public void prePresist() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.showRecipientBankAccount = account.getMember().getName();
     }
 
 }
