@@ -1,12 +1,13 @@
 package com.ssafy.idk.domain.pocket.entity;
 
 import com.ssafy.idk.domain.account.entity.Account;
-import com.ssafy.idk.domain.piggybank.entity.PiggyBankTransaction;
+import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
+import com.ssafy.idk.domain.autodebit.entity.AutoDebit;
+import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,20 +27,26 @@ public class Pocket {
     @JoinColumn(name = "account_id") @NotNull
     private Account account;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "target_saving_id")
-    private Account targetSavingId;
+    private TargetSaving targetSaving;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "auto_transfer_id")
-    private Account autoTransferId;
+    private AutoTransfer autoTransfer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "auto_debit_id")
-    private Account autoDebitId;
+    private AutoDebit autoDebit;
 
     @Column(name = "name") @NotNull
     private String name;
+
+    @Column(name = "balance") @NotNull
+    private Long balance;
+
+    @Column(name = "expected_date") @NotNull
+    private Integer expectedDate;
 
     @Column(name = "target") @NotNull
     private Long target;
@@ -53,10 +60,25 @@ public class Pocket {
     @Column(name = "is_paid") @NotNull
     private boolean isPaid;
 
-    @Column(name = "order") @NotNull
-    private Integer order;
+    @Column(name = "order_number") @NotNull
+    private Integer orderNumber;
 
     @OneToMany(mappedBy = "pocket", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<PocketTransaction> arrayPocketTranscation = new ArrayList<>();
+    private List<PocketTransaction> arrayPocketTranscation;
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setActivated(boolean activated) {
+        isActivated = activated;
+    }
+
+    @PrePersist
+    public void prePresist() {
+        this.balance = 0L;
+        this.isActivated = false;
+        this.isDeposited = false;
+        this.isPaid = false;
+    }
 }
