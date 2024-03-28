@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -49,9 +50,10 @@ public class AccountService {
         rsaKeyService.saveRSAKey(member.getMemberId(), privateKey);
 
         // 계좌번호 생성
+        String accountNumber = generateAccountNumber();
 
         Account account = Account.builder()
-                .number(RSAUtil.encode(publicKey,"1234567891010"))
+                .number(RSAUtil.encode(publicKey,accountNumber))
                 .password(passwordEncryptUtil.encrypt(requestDto.getAccountPassword()))
                 .name(requestDto.getAccountName())
                 .payDate(requestDto.getAccountPayDate())
@@ -63,6 +65,29 @@ public class AccountService {
         Account savedAccount = accountRepository.save(account);
         updateAccount(member.getMemberId());
         return AccountCreateResponseDto.of(RSAUtil.decode(privateKey, savedAccount.getNumber()), savedAccount.getCreatedAt());
+    }
+
+    public String generateAccountNumber() {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("501"); // 은행 식별 번호
+        sb.append("10"); // 계좌 유형 번호 (10은 예금)
+
+        // 고객 계좌 식별 번호 (랜덤 생성)
+        for(int i = 0; i < 6; i++) {
+            sb.append(random.nextInt(10));
+        }
+        
+        // 검증용 숫자 계산
+        int[] weights = {2, 3, 4, 5, 6, 7, 8, 9, 2, 3};
+        int sum = 0;
+        for (int i = 0; i < 10; i++) {
+            sum += (sb.charAt(i) - '0') * weights[i];
+        }
+        int checksum = (11 - (sum % 11)) % 10;
+        sb.append(checksum);
+        return sb.toString();
     }
 
     public AccountResponseDto getAccount() {
