@@ -22,6 +22,7 @@ public class AutoTransferGetResponseDto {
     private Integer date;
     private String showRecipientBankAccount;
     private String showMyBankAccount;
+    private Long pocketId;
 
     public static AutoTransferGetResponseDto of(
             Long autoTransferId,
@@ -33,7 +34,8 @@ public class AutoTransferGetResponseDto {
             Long amount,
             Integer date,
             String showRecipientBankAccount,
-            String showMyBankAccount
+            String showMyBankAccount,
+            Long pocketId
     ) {
         return AutoTransferGetResponseDto.builder()
                 .autoTransferId(autoTransferId)
@@ -46,6 +48,7 @@ public class AutoTransferGetResponseDto {
                 .date(date)
                 .showRecipientBankAccount(showRecipientBankAccount)
                 .showMyBankAccount(showMyBankAccount)
+                .pocketId(pocketId)
                 .build();
     }
 }
