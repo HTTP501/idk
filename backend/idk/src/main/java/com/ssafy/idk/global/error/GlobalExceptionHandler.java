@@ -2,10 +2,13 @@ package com.ssafy.idk.global.error;
 
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.exception.RSAKeyException;
+import com.ssafy.idk.domain.autotransfer.exception.AutoTransferException;
 import com.ssafy.idk.domain.piggybank.exception.PiggyBankException;
+import com.ssafy.idk.domain.pocket.exception.PocketException;
 import com.ssafy.idk.domain.shop.exception.ItemException;
 import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.shop.exception.PaymentException;
+import com.ssafy.idk.domain.targetsaving.exception.TargetSavingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +58,27 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PiggyBankException.class)
     protected ResponseEntity<ErrorResponse> handlePiggyBankException(PiggyBankException ex) {
         log.error("handlePiggyBankException", ex);
+        final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(TargetSavingException.class)
+    protected ResponseEntity<ErrorResponse> handleTargetSavingException(TargetSavingException ex) {
+        log.error("handleTargetSavingException", ex);
+        final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(AutoTransferException.class)
+    protected ResponseEntity<ErrorResponse> handleAutoTransferException(AutoTransferException ex) {
+        log.error("handleAutoTransferException", ex);
+        final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(PocketException.class)
+    protected ResponseEntity<ErrorResponse> handlePocketException(PocketException ex) {
+        log.error("handleAutoPocketException", ex);
         final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }

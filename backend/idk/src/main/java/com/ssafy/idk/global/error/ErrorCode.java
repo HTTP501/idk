@@ -22,7 +22,10 @@ public enum ErrorCode {
     ACCOUNT_PWD_NOT_SAME(400, "A404", "계좌 비밀번호와 다릅니다"),
     ACCOUNT_BALANCE_LACK(400, "A405", "계좌의 잔액이 부족합니다"),
     ACCOUNT_EXISTS(404, "A406", "계좌가 존재합니다"),
-
+    ACCOUNT_MIN_AMOUNT_MINUS(404, "A409", "최소보유금액은 0보다 커야합니다"),
+    ACCOUNT_TRANSFER_FAIL(404, "A410", "송금가능금액이 부족합니다"),
+    ACCOUNT_TRANSFER_RECEIVER_FAIL(400, "A411", "받는사람 계좌수단검증에 실패했습니다"),
+    
     // TRANSACTION
 
     // MEMBER
@@ -53,12 +56,15 @@ public enum ErrorCode {
 
     // TARGET_SAVING
     TARGET_SAVING_NOT_FOUND(404, "TS401", "해당 목표저축이 존재하지 않습니다."),
+    TARGET_SAVING_INVALID_DATE(409, "TS402", "유효하지 않은 이체날짜입니다."),
+    TARGET_SAVING_INVALID_TERM(409, "TS403", "유효하지 않은 이체기간입니다."),
+    TARGET_SAVING_INCORRECT_AMOUNT(409, "TS404", "유효하지 않은 목표기간, 월납입액 및 목표금액입니다."),
 
     // AUTO_TRANSFER
     AUTO_TRANSFER_MY_ACCOUNT_NOT_FOUND(404, "AT401", "출금 계좌가 유효하지 않습니다."),
     AUTO_TRANSFER_INVALID_ACCOUNT(404, "AT402", "자동이체 계좌가 유효하지 않습니다."),
     AUTO_TRANSFER_AMOUNT_NEED_TO_EXCEED_ZERO(409, "AT403", "자동이체 금액은 0원 이하로 등록할 수 없습니다."),
-    AUTO_TRANSFER_IMPOSSIBLE_STARTDATE(409, "AT404", "자동이체 기간이 유효하지 않습니다."),
+    AUTO_TRANSFER_INVALID_TERM(409, "AT404", "자동이체 기간이 유효하지 않습니다."),
     AUTO_TRANSFER_NOT_FOUND(404, "AT405", "해당 자동이체 정보가 존재하지 않습니다."),
 
     // AUTO_DEBIT
@@ -71,10 +77,13 @@ public enum ErrorCode {
     POCKET_NOT_FOUND(404, "P404", "해당 돈 포켓이 존재하지 않습니다."),
     POCKET_IMPOSSIBLE_DEPOSIT(409, "P405", "해당 돈 포켓에 돈을 입금할 수 없습니다."),
     POCKET_IMPOSSIBLE_WITHDRAWAL(409, "P406", "해당 돈 포켓의 돈을 출금할 수 없습니다."),
+    POCKET_TRANSACTION_NOT_FOUND(404, "P407", "해당 돈 포켓 입출금 내역이 존재하지 않습니다."),
+    POCKET_AUTO_TRANSFER_EXISTS(409, "P408", "해당 자동이체의 돈 포켓이 존재합니다."),
 
     // PAYMENT
     PAYMENT_VERIFY_FAIL(400, "P401", "결제수단 검증에 실패했습니다"),
-    PAYMENT_INFORMATION_NOT_FOUND(404, "P402", "결제 요청 정보를 찾을 수 없습니다")
+    PAYMENT_INFORMATION_NOT_FOUND(404, "P402", "결제 요청 정보를 찾을 수 없습니다"),
+    PAYMENT_BALANCE_FAIL(400, "P403", "결제가능금액이 부족합니다")
     ;
 
     private final int status;

@@ -1,7 +1,7 @@
 package com.ssafy.idk.domain.piggybank.repository;
 
-import com.ssafy.idk.domain.account.domain.Account;
-import com.ssafy.idk.domain.piggybank.domain.PiggyBank;
+import com.ssafy.idk.domain.account.entity.Account;
+import com.ssafy.idk.domain.piggybank.entity.PiggyBank;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
