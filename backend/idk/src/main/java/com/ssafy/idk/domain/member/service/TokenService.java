@@ -1,6 +1,6 @@
 package com.ssafy.idk.domain.member.service;
 
-import com.ssafy.idk.domain.member.domain.Member;
+import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.jwt.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;

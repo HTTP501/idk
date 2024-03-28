@@ -1,6 +1,6 @@
 package com.ssafy.idk.domain.shop.repository;
 
-import com.ssafy.idk.domain.shop.domain.Item;
+import com.ssafy.idk.domain.shop.entity.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReadyPaymentRequestDto {
 
-    private int payType;
-    private Long paymentId;
     private Long itemId;
+    private Long accountId;
 }

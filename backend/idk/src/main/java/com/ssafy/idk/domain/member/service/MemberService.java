@@ -1,7 +1,7 @@
 package com.ssafy.idk.domain.member.service;
 
 import com.ssafy.idk.domain.account.service.RSAKeyService;
-import com.ssafy.idk.domain.member.domain.Member;
+import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.dto.request.*;
 import com.ssafy.idk.domain.member.dto.response.*;
 import com.ssafy.idk.domain.member.exception.MemberException;
