@@ -24,7 +24,8 @@ public enum ErrorCode {
     ACCOUNT_EXISTS(404, "A406", "계좌가 존재합니다"),
     ACCOUNT_MIN_AMOUNT_MINUS(404, "A409", "최소보유금액은 0보다 커야합니다"),
     ACCOUNT_TRANSFER_FAIL(404, "A410", "송금가능금액이 부족합니다"),
-
+    ACCOUNT_TRANSFER_RECEIVER_FAIL(400, "A411", "받는사람 계좌수단검증에 실패했습니다"),
+    
     // TRANSACTION
 
     // MEMBER
