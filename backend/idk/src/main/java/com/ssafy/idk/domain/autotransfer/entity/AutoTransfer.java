@@ -2,6 +2,7 @@ package com.ssafy.idk.domain.autotransfer.entity;
 
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
+import com.ssafy.idk.domain.pocket.entity.Pocket;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -58,6 +59,10 @@ public class AutoTransfer {
 
     @Column(length = 10, name = "show_my_bank_account") @NotNull
     private String showMyBankAccount;
+
+    @OneToOne(mappedBy = "", cascade = CascadeType.ALL)
+    @JoinColumn(name = "pocket_id")
+    private Pocket pocket;
 
     @PrePersist
     public void prePresist() {
