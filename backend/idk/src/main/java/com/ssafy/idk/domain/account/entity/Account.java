@@ -1,5 +1,6 @@
 package com.ssafy.idk.domain.account.entity;
 
+import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.pocket.entity.Pocket;
 import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
@@ -57,6 +58,9 @@ public class Account {
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<TargetSaving> arrayTargetSaving;
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<AutoTransfer> arrayAutoTransfer;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     List<Pocket> arrayPocketOrders;
