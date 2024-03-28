@@ -9,5 +9,4 @@ public class ReadyPaymentRequestDto {
 
     private Long itemId;
     private Long accountId;
-
 }

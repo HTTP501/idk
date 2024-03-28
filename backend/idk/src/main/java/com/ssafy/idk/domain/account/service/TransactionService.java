@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -37,12 +39,17 @@ public class TransactionService {
 
         List<Transaction> transactionList = transactionRepository.findAllByAccount(account);
 
+        // 최신순 정렬
+        Comparator<Transaction> comparator = Comparator.comparing(Transaction::getCreatedAt).reversed();
+        Collections.sort(transactionList, comparator);
+
         List<TransactionResponseDto> transactionResponseDtoList = new ArrayList<>();
         for(Transaction transaction : transactionList) {
             Boolean isDeposit = false;
             if(transaction.getCategory() == Category.입금) isDeposit = true;
             transactionResponseDtoList.add(TransactionResponseDto.of(transaction.getTransactionId(), transaction.getContent(), transaction.getAmount(), transaction.getBalance(), isDeposit, transaction.getCreatedAt()));
         }
+
         return transactionResponseDtoList;
     }
 
