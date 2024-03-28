@@ -11,6 +11,12 @@ export const getAutoTransferAxios = async function (data, success, fail) {
         .then(success)
         .catch(fail)
 };
+// 자동이체 등록
+export const registAutoTransferAxios = async function (data, success, fail) {
+  await local.post('/auto-transfer', data)
+        .then(success)
+        .catch(fail)
+};
 
 
 
