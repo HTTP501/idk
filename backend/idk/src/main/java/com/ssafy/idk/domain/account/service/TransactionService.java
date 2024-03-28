@@ -80,7 +80,7 @@ public class TransactionService {
         Account savedAccount = accountService.withdraw(member.getMemberId(), requestDto.getAmount());
 
         Transaction transaction = Transaction.builder()
-                .category(Category.입금)
+                .category(Category.출금)
                 .content(member.getName())
                 .amount(requestDto.getAmount())
                 .balance(savedAccount.getBalance())
