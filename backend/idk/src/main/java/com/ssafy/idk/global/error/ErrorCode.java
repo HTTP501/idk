@@ -25,7 +25,7 @@ public enum ErrorCode {
     ACCOUNT_MIN_AMOUNT_MINUS(404, "A409", "최소보유금액은 0보다 커야합니다"),
     ACCOUNT_TRANSFER_FAIL(404, "A410", "송금가능금액이 부족합니다"),
     ACCOUNT_TRANSFER_RECEIVER_FAIL(400, "A411", "받는사람 계좌수단검증에 실패했습니다"),
-    
+
     // TRANSACTION
 
     // MEMBER
@@ -84,7 +84,7 @@ public enum ErrorCode {
     // PAYMENT
     PAYMENT_VERIFY_FAIL(400, "P401", "결제수단 검증에 실패했습니다"),
     PAYMENT_INFORMATION_NOT_FOUND(404, "P402", "결제 요청 정보를 찾을 수 없습니다"),
-    PAYMENT_BALANCE_FAIL(400, "P403", "결제가능금액이 부족합니다")
+    PAYMENT_BALANCE_FAIL(400, "P403", "결제가능금액이 부족합니다"),
 
     // MYDATA
     MYDATA_FAILED(400, "MD400", "마이데이터 요청을 실패했습니다."),
@@ -94,4 +94,4 @@ public enum ErrorCode {
     private final int status;
     private final String code;
     private final String message;
-}
+    }
