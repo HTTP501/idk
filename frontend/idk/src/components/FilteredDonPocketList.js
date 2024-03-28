@@ -18,7 +18,7 @@ const FilteredDonPocketList = function ({ navigation, filteredPocketData }) {
       <TouchableOpacity
         onPress={() => {
           console.log("상세 페이지 이동");
-          navigation.navigate("DetailPocket", { pocketId, pocketType });
+          navigation.navigate("DetailPocket", { pocketData: data });
         }}
         activeOpacity={1}
         style={[styles.donpocketlist]}
