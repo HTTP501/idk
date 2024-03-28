@@ -1,6 +1,7 @@
 package com.ssafy.idk.domain.pocket.controller;
 
 import com.ssafy.idk.domain.pocket.dto.request.PocketCreateAutoTransferRequestDto;
+import com.ssafy.idk.domain.pocket.dto.request.PocketUpdateNameRequestDto;
 import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;
@@ -42,5 +43,11 @@ public class PocketController {
     @DeleteMapping(value = "/auto-transfer/{pocketId}")
     public ResponseEntity<ResultResponse> deletePocketAutoTransfer(@PathVariable(name = "pocketId") Long pocketId) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_AUTO_TRANSFER_DELETE_SUCCESS, pocketService.deletePocketAutoTransfer(pocketId)));
+    }
+
+    @Operation(summary = "돈 포켓 이름 수정")
+    @PatchMapping(value = "/{pocketId}/name")
+    public ResponseEntity<ResultResponse> updatePocketName(@RequestBody PocketUpdateNameRequestDto requestDto, @PathVariable(name = "pocketId") Long pocketId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_UPDATE_NAME_SUCCESS, pocketService.updatePocketName(requestDto, pocketId)));
     }
 }
