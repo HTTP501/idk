@@ -38,10 +38,10 @@ public class RSAUtil {
         }
     }
 
-    public static String decode(String publicKey, String encodedText) {
+    public static String decode(String privateKey, String encodedText) {
         try {
             Cipher cipher = Cipher.getInstance("RSA");
-            cipher.init(Cipher.DECRYPT_MODE, generatePrivateKey(publicKey));
+            cipher.init(Cipher.DECRYPT_MODE, generatePrivateKey(privateKey));
             return new String(cipher.doFinal(Base64.getDecoder().decode(encodedText.getBytes())));
         } catch (Exception e) {
             throw new IllegalStateException(e);
