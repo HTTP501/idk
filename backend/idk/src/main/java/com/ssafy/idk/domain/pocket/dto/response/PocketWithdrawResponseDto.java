@@ -7,20 +7,20 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor
-public class PocketDepositResponseDto {
+public class PocketWithdrawResponseDto {
 
     private Long pocketId;
     private Long pocketBalance;
     private Long accountBalance;
     private boolean isDeposited;
 
-    public static PocketDepositResponseDto of(
+    public static PocketWithdrawResponseDto of(
             Long pocketId,
             Long pocketBalance,
             Long accountBalance,
             boolean isDeposited
     ) {
-        return PocketDepositResponseDto.builder()
+        return PocketWithdrawResponseDto.builder()
                 .pocketId(pocketId)
                 .pocketBalance(pocketBalance)
                 .accountBalance(accountBalance)

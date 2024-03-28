@@ -34,7 +34,7 @@ public class PocketController {
     }
 
     @Operation(summary = "돈 포켓 입출금 내역 상세 조회")
-    @GetMapping(value = "/{pocketId}/transaction/{transaction}")
+    @GetMapping(value = "/{pocketId}/transaction/{transactionId}")
     public ResponseEntity<ResultResponse> getPocketTransactionDetail(@PathVariable(name = "pocketId") Long pocketId, @PathVariable(name = "transactionId") Long transactionId) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_GET_TRANSACTION_DETAIL_SUCCESS, pocketService.getPocketTransactionDetail(pocketId, transactionId)));
     }
@@ -61,5 +61,11 @@ public class PocketController {
     @PatchMapping(value = "/{pocketId}/deposit")
     public ResponseEntity<ResultResponse> depositPocket(@PathVariable(name = "pocketId") Long pocketId) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_DEPOSIT_SUCCESS, pocketService.depositPocket(pocketId)));
+    }
+
+    @Operation(summary = "돈 포켓 출금")
+    @PatchMapping(value = "/{pocketId}/withdrawal")
+    public ResponseEntity<ResultResponse> withdrawalPocket(@PathVariable(name = "pocketId") Long pocketId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_WITHDRAWAL_SUCCESS, pocketService.withdrawPocket(pocketId)));
     }
 }

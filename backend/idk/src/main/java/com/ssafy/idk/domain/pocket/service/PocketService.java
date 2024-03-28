@@ -265,7 +265,7 @@ public class PocketService {
 
         // 계좌 출금
         account.withdraw(pocket.getTarget());
-        accountRepository.save(account);
+        Account savedAccount = accountRepository.save(account);
 
         // 계좌 입출금 내역 저장
         Transaction transaction = Transaction.builder()
@@ -295,6 +295,62 @@ public class PocketService {
         return PocketDepositResponseDto.of(
                 savedPocket.getPocketId(),
                 savedPocket.getBalance(),
+                savedAccount.getBalance(),
+                savedPocket.isDeposited()
+        );
+    }
+
+    @Transactional
+    public PocketWithdrawResponseDto withdrawPocket(Long pocketId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        // 포켓 유무 확인
+        Pocket pocket = pocketRepository.findById(pocketId)
+                .orElseThrow(() -> new PocketException(ErrorCode.POCKET_NOT_FOUND));
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        Account account = pocket.getAccount();
+        if (member != account.getMember())
+            throw new PocketException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        // 해당 돈 포켓에서 출금할 수 없을 때
+        if (pocket.getBalance() == 0)
+            throw new PocketException(ErrorCode.POCKET_IMPOSSIBLE_WITHDRAWAL);
+
+        // 계좌 입금
+        account.deposit(pocket.getBalance());
+        Account savedAccount = accountRepository.save(account);
+
+        // 계좌 입출금 내역 저장
+        Transaction transaction = Transaction.builder()
+                .category(Category.돈포켓)
+                .content("돈 포켓에서 입금")
+                .amount(pocket.getBalance())
+                .balance(account.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(account)
+                .build();
+        transactionRepository.save(transaction);
+
+        // 돈 포켓 출금
+        pocket.withdraw();
+        Pocket savedPocket = pocketRepository.save(pocket);
+
+        // 돈 포켓 입출금 내역 저장
+        PocketTransaction pocketTransaction = PocketTransaction.builder()
+                .pocket(pocket)
+                .createdAt(LocalDateTime.now())
+                .amount(pocket.getTarget())
+                .balance(pocket.getBalance())
+                .content("출금")
+                .build();
+        pocketTransactionRepository.save(pocketTransaction);
+
+        return PocketWithdrawResponseDto.of(
+                savedPocket.getPocketId(),
+                savedPocket.getBalance(),
+                savedAccount.getBalance(),
                 savedPocket.isDeposited()
         );
     }
