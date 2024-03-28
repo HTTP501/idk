@@ -71,7 +71,7 @@ public enum ResultCode {
     POCKET_GET_DETAIL_SUCCESS(200, "P204", "해당 돈 포켓을 조회했습니다."),
     POCKET_UPDATE_NAME_SUCCESS(200, "P205", "해당 돈 포켓의 이름을 수정했습니다."),
     POCKET_UPDATE_IS_ACTIVATED_SUCCESS(200, "P206", "해당 돈 포켓의 활성화 여부를 수정했습니다."),
-    POCKET_DELETE_SUCCESS(204, "P207", "해당 돈 포켓을 해지했습니다."),
+    POCKET_AUTO_TRANSFER_DELETE_SUCCESS(204, "P207", "해당 자동이체 돈 포켓을 해지했습니다."),
     POCKET_DEPOSIT_SUCCESS(200, "P208", "해당 돈 포켓에 목표금액을 입금했습니다."),
     POCKET_WITHDRAWAL_SUCCESS(200, "P209", "해당 돈 포켓의 입금금액을 출금했습니다."),
     POCKET_GET_TRANSACTION_DETAIL_SUCCESS(200, "P210", "해당 돈 포켓 입출금 내역을 조회했습니다."),

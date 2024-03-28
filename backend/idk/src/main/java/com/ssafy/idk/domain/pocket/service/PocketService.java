@@ -1,12 +1,14 @@
 package com.ssafy.idk.domain.pocket.service;
 
 import com.ssafy.idk.domain.account.entity.Account;
+import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
 import com.ssafy.idk.domain.autotransfer.exception.AutoTransferException;
 import com.ssafy.idk.domain.autotransfer.repository.AutoTransferRepository;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.pocket.dto.request.PocketCreateAutoTransferRequestDto;
+import com.ssafy.idk.domain.pocket.dto.response.PocketAutoTransferDeleteResponseDto;
 import com.ssafy.idk.domain.pocket.dto.response.PocketCreateAutoTransferResponseDto;
 import com.ssafy.idk.domain.pocket.dto.response.PocketGetDetailResponseDto;
 import com.ssafy.idk.domain.pocket.dto.response.PocketTransactionResponseDto;
@@ -33,6 +35,7 @@ public class PocketService {
     private final PocketTransactionRepository pocketTransactionRepository;
     private final AuthenticationService authenticationService;
     private final AutoTransferRepository autoTransferRepository;
+    private final AccountRepository accountRepository;
     @Transactional
     public Pocket createByTargetSaving(TargetSaving targetSaving, Account account) {
 
@@ -154,6 +157,31 @@ public class PocketService {
                 pocketTransaction.getAmount(),
                 pocketTransaction.getBalance(),
                 pocketTransaction.getContent()
+        );
+    }
+
+    public PocketAutoTransferDeleteResponseDto deletePocketAutoTransfer(Long pocketId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        // 포켓 유무 확인
+        Pocket pocket = pocketRepository.findById(pocketId)
+                .orElseThrow(() -> new PocketException(ErrorCode.POCKET_NOT_FOUND));
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        Account account = pocket.getAccount();
+        if (member != account.getMember())
+            throw new AutoTransferException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        // 돈 포켓 납입액 계좌로 이동
+        if (pocket.getBalance() != 0) account.deposit(pocket.getBalance());
+        accountRepository.save(account);
+
+        pocketRepository.delete(pocket);
+
+        return PocketAutoTransferDeleteResponseDto.of(
+                account.getAccountId(),
+                account.getBalance()
         );
     }
 }

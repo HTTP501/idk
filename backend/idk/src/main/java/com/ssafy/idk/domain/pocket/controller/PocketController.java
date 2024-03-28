@@ -38,7 +38,9 @@ public class PocketController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_GET_TRANSACTION_DETAIL_SUCCESS, pocketService.getPocketTransactionDetail(pocketId, transactionId)));
     }
 
-//    @Operation(summary = "돈 포켓 자동이체 해지")
-//    @DeleteMapping(value = "/auto-transfer/{pocketId}")
-//    public ResponseEntity<ResultResponse>
+    @Operation(summary = "돈 포켓 자동이체 해지")
+    @DeleteMapping(value = "/auto-transfer/{pocketId}")
+    public ResponseEntity<ResultResponse> deletePocketAutoTransfer(@PathVariable(name = "pocketId") Long pocketId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_AUTO_TRANSFER_DELETE_SUCCESS, pocketService.deletePocketAutoTransfer(pocketId)));
+    }
 }
