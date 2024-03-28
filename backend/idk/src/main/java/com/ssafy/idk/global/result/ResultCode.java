@@ -88,6 +88,15 @@ public enum ResultCode {
     PAYMENT_READY_SUCCESS(200, "P001", "결제 요청을 성공했습니다"),
     PAYMENT_APPROVAL_SUCCESS(200, "P002", "결제 승인을 성공했습니다"),
 
+    // IDK_MYDATA
+    IDK_MYDATA_AGREE_SUCCESS(200, "IM001", "마이데이터 동의 성공했습니다."),
+    IDK_MYDATA_CONNECT_SUCCESS(200, "IM002", "마이데이터 자산 연결을 성공했습니다."),
+    IDK_MYDATA_GET_SUCCESS(200, "IM003", "마이데이터 조회 성공했습니다."),
+
+    // MYDATA
+    MYDATA_AGREE_SUCCESS(200, "MD001", "마이데이터 동의 성공했습니다."),
+
+
     // TRANSACTION
     TRANSACTION_ATM_DEPOSIT_SUCCESS(201, "TR001", "ATM으로 입금했습니다"),
     TRANSACTION_ATM_WITHDRAW_SUCCESS(201, "TR002", "ATM으로 출금했습니다")
