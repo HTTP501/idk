@@ -74,4 +74,5 @@ public class PocketController {
     public ResponseEntity<ResultResponse> withdrawalPocket(@PathVariable(name = "pocketId") Long pocketId) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_WITHDRAWAL_SUCCESS, pocketService.withdrawPocket(pocketId)));
     }
+
 }
