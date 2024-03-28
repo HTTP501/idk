@@ -10,6 +10,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons'; // Import Ionicons from Expo
 import DetailTransaction from '../screens/Main/DetailMyaccount/DetailTransaction';
+import Notification from '../screens/Main/Notification/NotificationList';
 const Stack = createNativeStackNavigator();
 
 function MainStack({ navigation }) {
@@ -55,6 +56,9 @@ function MainStack({ navigation }) {
         <Stack.Screen name="MinusSavingBox" component={MinusSavingBox} options={{ headerShown: false}} />
         <Stack.Screen name="DetailTransaction" component={DetailTransaction} options={{ headerShown: true, title:"" }} />
         <Stack.Screen name="RegistDonPocket" component={RegistDonPocket} options={{ headerShown: true, title:"" }} />
+        <Stack.Screen name="Notification" component={Notification} options={{ headerShown: true, title:"알림" , headerTitleStyle: {
+            fontWeight: 'bold',
+          }}} />
       </Stack.Navigator>
   );
 }
