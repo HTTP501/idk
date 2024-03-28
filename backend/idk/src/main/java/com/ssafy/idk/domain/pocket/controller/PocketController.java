@@ -56,4 +56,10 @@ public class PocketController {
     public ResponseEntity<ResultResponse> updatePocketIsActivated(@PathVariable(name = "pocketId") Long pocketId) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_UPDATE_IS_ACTIVATED_SUCCESS, pocketService.updatePocketIsActivated(pocketId)));
     }
+
+    @Operation(summary = "돈 포켓 입금")
+    @PatchMapping(value = "/{pocketId}/deposit")
+    public ResponseEntity<ResultResponse> depositPocket(@PathVariable(name = "pocketId") Long pocketId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_DEPOSIT_SUCCESS, pocketService.depositPocket(pocketId)));
+    }
 }

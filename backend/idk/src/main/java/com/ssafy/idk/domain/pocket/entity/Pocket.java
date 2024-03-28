@@ -74,6 +74,16 @@ public class Pocket {
         isActivated = activated;
     }
 
+    public void deposit() {
+        this.balance = this.target;
+        this.isDeposited = !this.isDeposited;
+    }
+
+    public void withdraw() {
+        this.balance = 0L;
+        this.isDeposited = !this.isDeposited;
+    }
+
     @PrePersist
     public void prePresist() {
         this.balance = 0L;

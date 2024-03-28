@@ -1,12 +1,15 @@
 package com.ssafy.idk.domain.pocket.service;
 
 import com.ssafy.idk.domain.account.entity.Account;
+import com.ssafy.idk.domain.account.entity.Category;
+import com.ssafy.idk.domain.account.entity.Transaction;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
+import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
-import com.ssafy.idk.domain.autotransfer.exception.AutoTransferException;
 import com.ssafy.idk.domain.autotransfer.repository.AutoTransferRepository;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
+import com.ssafy.idk.domain.piggybank.entity.PiggyBankTransaction;
 import com.ssafy.idk.domain.pocket.dto.request.PocketCreateAutoTransferRequestDto;
 import com.ssafy.idk.domain.pocket.dto.request.PocketUpdateNameRequestDto;
 import com.ssafy.idk.domain.pocket.dto.response.*;
@@ -22,8 +25,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +39,8 @@ public class PocketService {
     private final AuthenticationService authenticationService;
     private final AutoTransferRepository autoTransferRepository;
     private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
+
     @Transactional
     public Pocket createByTargetSaving(TargetSaving targetSaving, Account account) {
 
@@ -227,6 +234,68 @@ public class PocketService {
         return PocketUpdateIsActivatedResponseDto.of(
                 savedPocket.getPocketId(),
                 savedPocket.isActivated()
+        );
+    }
+
+    @Transactional
+    public PocketDepositResponseDto depositPocket(Long pocketId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        // 포켓 유무 확인
+        Pocket pocket = pocketRepository.findById(pocketId)
+                .orElseThrow(() -> new PocketException(ErrorCode.POCKET_NOT_FOUND));
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        Account account = pocket.getAccount();
+        if (member != account.getMember())
+            throw new PocketException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        // 해당 돈 포켓에 입금할 수 없을 때
+        if (
+                // 1. 이미 돈이 입금되어 있을 때
+                Objects.equals(pocket.getBalance(), pocket.getTarget())
+                // 2. 이미 당월 출금이 완료된 돈 포켓일 때
+                || pocket.isPaid()
+                // 3. 계좌 잔고가 부족할 때
+                || account.getBalance() < pocket.getTarget()
+        ) {
+            throw new PocketException(ErrorCode.POCKET_IMPOSSIBLE_DEPOSIT);
+        }
+
+        // 계좌 출금
+        account.withdraw(pocket.getTarget());
+        accountRepository.save(account);
+
+        // 계좌 입출금 내역 저장
+        Transaction transaction = Transaction.builder()
+                .category(Category.돈포켓)
+                .content("돈 포켓으로 출금")
+                .amount(pocket.getTarget())
+                .balance(account.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(account)
+                .build();
+        transactionRepository.save(transaction);
+
+        // 돈 포켓 입금
+        pocket.deposit();
+        Pocket savedPocket = pocketRepository.save(pocket);
+
+        // 돈 포켓 입출금 내역 저장
+        PocketTransaction pocketTransaction = PocketTransaction.builder()
+                .pocket(pocket)
+                .createdAt(LocalDateTime.now())
+                .amount(pocket.getTarget())
+                .balance(pocket.getBalance())
+                .content("입금")
+                .build();
+        pocketTransactionRepository.save(pocketTransaction);
+
+        return PocketDepositResponseDto.of(
+                savedPocket.getPocketId(),
+                savedPocket.getBalance(),
+                savedPocket.isDeposited()
         );
     }
 }
