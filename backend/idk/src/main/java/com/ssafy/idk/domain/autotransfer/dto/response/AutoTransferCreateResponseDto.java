@@ -13,6 +13,7 @@ import java.time.LocalDate;
 public class AutoTransferCreateResponseDto {
 
     private Long autoTransferId;
+    private String name;
     private String toAccount;
     private String toAccountBank;
     private Long amount;
@@ -22,6 +23,7 @@ public class AutoTransferCreateResponseDto {
 
     public static AutoTransferCreateResponseDto of(
             Long autoTransferId,
+            String name,
             String toAccount,
             String toAccountBank,
             Long amount,
@@ -31,6 +33,7 @@ public class AutoTransferCreateResponseDto {
     ) {
         return AutoTransferCreateResponseDto.builder()
                 .autoTransferId(autoTransferId)
+                .name(name)
                 .toAccount(toAccount)
                 .toAccountBank(toAccountBank)
                 .amount(amount)
