@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { useState, useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
+import DonPocketDepositList from "../../../components/DonPocketDepositList";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   ScrollView,
@@ -23,10 +24,21 @@ import { useIsFocused } from "@react-navigation/native";
 import Loading from "../../../components/Loading";
 
 const DetailPocket = ({ navigation, route }) => {
-  const pocketId = route.params.pocketId
-  const pocketType = route.params.pocketType
+  const pocketId = route.params.pocketData.pocketId
+  const pocketType = route.params.pocketData.pocketType
+  const pocketBalance = route.params.pocketData.balance
+  const [donPocketId, setDonPocketId] = useState(null)
+
   let [loading, setLoading] = useState(false);
   useEffect(() => {
+    if (pocketType === '목표저축') {
+      setDonPocketId(route.params.pocketData.targetSavingId)
+    } else if (pocketType === '자동이체') {
+      setDonPocketId(route.params.autoTransferId)
+    } else {
+      setDonPocketId(route.params.AutoDebitId)
+    }
+  
     setTimeout(() => {
       setLoading(true);
     }, 1000);
@@ -35,43 +47,8 @@ const DetailPocket = ({ navigation, route }) => {
   const date = new Date()
 
     // 이체 데이터
-    let [deposit, setDeposit] = useState([
-      {
-        transactionId: 1,
-        transactionContent: "SSAFY",
-        transactionAmount: 1000000,
-        transactionBalance: 1283600,
-        type: "입금",
-        depositType: "월급",
-        transactionCreatedAt: "2024-03-03 12:00:01",
-      },
-      {
-        transactionId: 2,
-        transactionContent: "조용훈",
-        transactionAmount: 50000,
-        transactionBalance: 333600,
-        type: "출금",
-        depositType: "계좌이체",
-        transactionCreatedAt: "2024-03-01 12:00:01",
-      },
-      {
-        transactionId: 3,
-        transactionContent: "윤예빈",
-        transactionAmount: 50000,
-        transactionBalance: 383600,
-        type: "출금",
-        depositType: "계좌이체",
-        transactionCreatedAt: "2024-02-29 12:00:01",
-      },
-      {
-        transactionId: 4,
-        transactionContent: "최현기",
-        transactionAmount: 10000,
-        transactionBalance: 393600,
-        type: "출금",
-        depositType: "계좌이체",
-        transactionCreatedAt: "2024-03-03 12:00:01",
-      },
+    let [arrayTransaction, setArrayTransaction] = useState([
+      {"amount": 1000, "balance": 2000, "content": "입금", "createdAt": "2024-03-28T10:29:11.773054", "piggyBankTransactionId": 18}, {"amount": 1000, "balance": 3000, "content": "입금", "createdAt": "2024-03-28T10:29:21.199936", "piggyBankTransactionId": 19},
     ]);
 
   return (
@@ -91,7 +68,7 @@ const DetailPocket = ({ navigation, route }) => {
               <Text className='mt-2 ml-2'>{date.getMonth() + 1}월 {date.getDay()}일에</Text>
               <Image style={styles.lock} source={require('../../../../assets/icons/close.png')}/>
               <View className='flex-row mt-5 items-end'>
-                <Text className='text-2xl font-bold'>50,000원</Text>
+                <Text className='text-2xl font-bold'>{formattedNumber(pocketBalance)}원</Text>
                 <Text>이 이체될 예정이에요.</Text>
               </View>
               <Text style={{color: theme["sky-basic"], marginTop: 20,}}>잘 보관 중이에요.</Text>
@@ -99,11 +76,11 @@ const DetailPocket = ({ navigation, route }) => {
                 style={styles.setting}
                 onPress={() => {
                   if (pocketType === '목표저축') {
-                    navigation.navigate('SettingTargetSaving', { pocketId })
+                    navigation.navigate('SettingTargetSaving', { pocketId, donPocketId })
                   } else if (pocketType === '자동결제') {
-                    navigation.navigate("SettingAutoDebit", { pocketId });
+                    navigation.navigate("SettingAutoDebit", { pocketId, donPocketId });
                   } else if (pocketType === '자동이체') {
-                    navigation.navigate('SettingAutoTransfer', { pocketId })
+                    navigation.navigate('SettingAutoTransfer', { pocketId, donPocketId })
                   }
                 }}
               >
@@ -114,7 +91,7 @@ const DetailPocket = ({ navigation, route }) => {
 
 
           {/* 이체내역 */}
-          <DepositList deposit={deposit} navigation={navigation} />
+          <DonPocketDepositList arrayTransaction={arrayTransaction} />
           <StatusBar style="auto" />
         </ScrollView>
       ) : <Loading/>}
