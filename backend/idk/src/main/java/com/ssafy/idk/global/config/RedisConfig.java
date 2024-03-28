@@ -1,6 +1,6 @@
 package com.ssafy.idk.global.config;
 
-import com.ssafy.idk.domain.shop.domain.OrderInfo;
+import com.ssafy.idk.domain.shop.entity.OrderInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -68,7 +68,7 @@ public class AccountController {
 
     @Operation(summary = "최소보유금액 설정")
     @PutMapping("/minimum")
-    public ResponseEntity<ResultResponse> updateMinAmount(@RequestBody AccountAmountRequestDto requestDto){
+    public ResponseEntity<ResultResponse> updateMinAmount(@RequestBody AmountRequestDto requestDto){
         accountService.updateMinAmount(requestDto);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.ACCOUNT_UPDATE_MIN_AMOUNT_SUCCESS));
     }

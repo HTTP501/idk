@@ -1,7 +1,7 @@
 package com.ssafy.idk.domain.member.service;
 
-import com.ssafy.idk.domain.member.domain.CustomUserDetails;
-import com.ssafy.idk.domain.member.domain.Member;
+import com.ssafy.idk.domain.member.entity.CustomUserDetails;
+import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.global.error.ErrorCode;

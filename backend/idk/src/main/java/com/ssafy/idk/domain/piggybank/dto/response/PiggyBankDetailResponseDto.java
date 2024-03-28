@@ -1,12 +1,10 @@
 package com.ssafy.idk.domain.piggybank.dto.response;
 
 
-import com.ssafy.idk.domain.piggybank.domain.PiggyBankTransaction;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Builder
