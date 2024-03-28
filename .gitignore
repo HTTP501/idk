@@ -520,3 +520,6 @@ obj/
 docker-compose.yml
 backend/idk/src/main/resources/
 db/
+
+*.key
+*.pem

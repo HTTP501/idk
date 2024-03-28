@@ -37,6 +37,6 @@ out/
 .vscode/
 
 ### secret file ###
-application.yml
+*.yml
 *.key
 *.pem
