@@ -16,11 +16,10 @@ const RegistAutoSendFinish = ({ navigation,route }) => {
   const endMonth = route.params.endMonth
   const showMyAccountName = route.params.showMyAccountName
   const showOtherAccountName = route.params.showOtherAccountName
-  const settingStart = route.params.settingStart
-  const settingEnd = route.params.settingEnd
+  
   
   const payload = {
-    bankName,accountId,date,amount,startYear,startMonth,endYear,endMonth,showMyAccountName,showOtherAccountName,settingEnd
+    bankName,accountId,date,amount,startYear,startMonth,endYear,endMonth,showMyAccountName,showOtherAccountName
   }
   
 
@@ -44,7 +43,7 @@ const RegistAutoSendFinish = ({ navigation,route }) => {
       </View>
       <View style={styles.box}>
         <Text>자동이체 기간</Text>
-        <Text>{startYear}.{startMonth} ~ {settingEnd ? <Text>{endYear}.{endMonth}</Text>: <Text>종료일 없음</Text>}</Text>
+        <Text>{startYear}년 {startMonth}월 ~ {endYear}년 {endMonth}월</Text>
       </View>
       </View>
       <TouchableOpacity style={theme.bottomButton} 

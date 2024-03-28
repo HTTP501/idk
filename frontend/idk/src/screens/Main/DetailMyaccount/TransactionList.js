@@ -70,7 +70,7 @@ const TransactionList = ({ navigation }) => {
     );
     await getAccountTransactionAxios(
       (res) => {
-        console.log("계좌 입출금 내역", res.data.data);
+        
         setDeposit(res.data.data)
       },
       (err) => {
