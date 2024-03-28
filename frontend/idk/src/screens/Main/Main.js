@@ -51,7 +51,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     // 계좌 조회 Axios
     await getAccountAxios(
       (res) => {
-        console.log(res.data.data);
+        // console.log(res.data.data);
         setAccount(res.data.data);
         // 스토리지에 계좌정보만 저장해주기
         const data = JSON.stringify({
