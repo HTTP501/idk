@@ -2,6 +2,7 @@ package com.ssafy.idk.domain.autotransfer.entity;
 
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
+import com.ssafy.idk.domain.pocket.entity.Pocket;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -25,6 +26,9 @@ public class AutoTransfer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id") @NotNull
     private Account account;
+
+    @Column(length = 20, name = "name") @NotNull
+    private String name;
 
     @Column(length = 14, name = "to_account") @NotNull
     private String toAccount;
@@ -56,11 +60,14 @@ public class AutoTransfer {
     @Column(length = 10, name = "show_my_bank_account") @NotNull
     private String showMyBankAccount;
 
+    @OneToOne(mappedBy = "autoTransfer", cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "pocket_id")
+    private Pocket pocket;
+
     @PrePersist
     public void prePresist() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.showRecipientBankAccount = account.getMember().getName();
     }
 
 }
