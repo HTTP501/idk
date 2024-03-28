@@ -23,7 +23,10 @@ public class Organization {
     @Column(name = "org_code")
     private String orgCode;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @Column(name = "org_type")
+    private OrganizationType orgType;
+
+    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Mydata> mydataList;
 
 }

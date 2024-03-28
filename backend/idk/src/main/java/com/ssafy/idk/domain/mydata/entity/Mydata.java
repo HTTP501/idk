@@ -4,6 +4,8 @@ import com.ssafy.idk.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,6 +25,9 @@ public class Mydata {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "org_id")
     private Organization organization;
+
+    @OneToMany(mappedBy = "mydata", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Asset> assetList;
 
     public void setMember(Member member) {
         this.member = member;

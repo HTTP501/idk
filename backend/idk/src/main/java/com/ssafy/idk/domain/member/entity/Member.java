@@ -30,14 +30,17 @@ public class Member {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Column(name = "connection_information")
+    private String connectionInformation;
+
     @Column(name = "has_biometric")
-    private Boolean hasBiometric;
+    private Boolean hasBiometric = false;
 
     @Column(name = "transaction_push_enabled")
-    private Boolean transactionPushEnabled;
+    private Boolean transactionPushEnabled = false;
 
     @Column(name = "auto_transfer_push_enabled")
-    private Boolean autoTransferPushEnabled;
+    private Boolean autoTransferPushEnabled = false;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -45,13 +48,13 @@ public class Member {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "mydata_agreement_terms")
-    private String MydataAgreementTerms;
+    @Column(name = "mydata_agreed")
+    private Boolean mydataAgreed = false;
 
-    @Column(name = "digital_signature")
+    @Column(name = "digital_signature", length = 10000)
     private String digitalSignature;
 
-    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Mydata> mydataList;
 
     @PrePersist
@@ -72,5 +75,13 @@ public class Member {
 
     public void updateTransactionPushEnabled() {
         this.transactionPushEnabled = !this.transactionPushEnabled;
+    }
+
+    public void updateDigitalSignature(String digitalSignature) {
+        this.digitalSignature = digitalSignature;
+    }
+
+    public void updateMydataAgreed() {
+        this.mydataAgreed = true;
     }
 }

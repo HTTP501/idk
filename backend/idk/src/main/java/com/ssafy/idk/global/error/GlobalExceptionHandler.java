@@ -2,6 +2,7 @@ package com.ssafy.idk.global.error;
 
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.exception.RSAKeyException;
+import com.ssafy.idk.domain.mydata.exception.MydataException;
 import com.ssafy.idk.domain.piggybank.exception.PiggyBankException;
 import com.ssafy.idk.domain.shop.exception.ItemException;
 import com.ssafy.idk.domain.member.exception.MemberException;
@@ -35,6 +36,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MemberException.class)
     protected ResponseEntity<ErrorResponse> handleMemberException(MemberException ex) {
         log.error("handleMemberException", ex);
+        final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(MydataException.class)
+    protected ResponseEntity<ErrorResponse> handleMydataException(MydataException ex) {
+        log.error("handleMydataException", ex);
         final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }
