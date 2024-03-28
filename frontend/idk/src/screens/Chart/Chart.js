@@ -35,13 +35,17 @@ const Chart = () => {
   const [maxAmount, setMaxAmount] = useState(null);
   const [nowCategory, setNowCategory] = useState("total");
   const [callOver, setCallOver] = useState(false);
+  // 화면 사이즈 인식
+  const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 
+  // 모든 상태가 세팅이 되면 로딩 해제
   useEffect(() => {
     if (callOver === true) {
       setIsLoading(false);
     }
   }, [callOver]);
 
+  // 맨 처음 들어왔을때, 데이터 호출
   useEffect(() => {
     const getResponse = (response) => {
       setNowData(response.data.data.amountList);
@@ -52,18 +56,21 @@ const Chart = () => {
     callAnalystDataAxios("total", getResponse, fail);
   }, []);
 
+  // Axios 요청으로 Data가 들어왔다면 상태를 변경할 changeData를 호출
   useEffect(() => {
     if (nowData !== null) {
       changeData();
     }
   }, [nowData]);
 
+  // changeData에서 모든 계산이 끝나고 상태를 설정했다면 로딩을 끝내기위해 callOver를 true로
   useEffect(() => {
     if (average !== null && maxAmount !== null && nowAmount !== null) {
       setCallOver(true);
     }
   }, [average, maxAmount, nowAmount]);
 
+  // Axios 요청으로 받은 데이터를 계산하여 상태로 바꾸어주는 함수
   const changeData = async () => {
     const nowDate = new Date();
     const nowYear = nowDate.getFullYear();
@@ -249,6 +256,7 @@ const Chart = () => {
     callAnalystDataAxios(nowCategory, getResponse, fail);
   }, [nowCategory]);
 
+  // 바 차트 상단에서 항목을 바꾸어줄 버튼 바 컴포넌트
   const categoryBar = () => {
     return (
       <View style={{ ...ChartStyle.categoryMainBox }}>
@@ -264,6 +272,7 @@ const Chart = () => {
     );
   };
 
+  // 바 차트 컴포넌트
   const totalAverageChart = () => {
     return (
       // 평균보다 높으면 더 사용했고, 낮으면 적게 사용했다고 얘기해줘야함
@@ -414,6 +423,30 @@ const Chart = () => {
             </Svg>
           </ScrollView>
         </View>
+      </View>
+    );
+  };
+
+  const donutData = [];
+
+  // 도넛 차트 컴포넌트
+  const donutChart = () => {
+    // const dountChartWidth = windowWidth * 0.8
+    return (
+      <View
+        style={{
+          width: "auto",
+          borderWidth: 1,
+          borderRadius: 20,
+          borderColor: "grey",
+          paddingHorizontal: 20,
+          marginTop: 20,
+        }}
+      >
+        <Text></Text>
+        <Svg width={windowWidth * 0.5} height={windowHeight * 0.3}>
+          <G></G>
+        </Svg>
       </View>
     );
   };
