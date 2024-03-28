@@ -6,6 +6,7 @@ import com.ssafy.idk.domain.client.dto.response.CertifyResponseFromMydataDto;
 import com.ssafy.idk.domain.mydata.exception.MydataException;
 import com.ssafy.idk.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,15 @@ public class ClientMydataService {
 
     private final RestTemplate restTemplate;
 
+    @Value("${spring.mydata.mydata-url}")
+    private String mydataUrl;
+
+
     // 유저 마이데이터 이용 동의 요청 (POST)
     public void agreeMydata(String name, String connectionInformation) {
 
         // MYDATA 서버에 사용자가 동의했음을 알리기
-        String mydataServerUrl = "http://localhost:8082/api/mydata/agree";
+        String mydataServerUrl = mydataUrl.concat("/api/mydata/agree");
 
         // 요청 본문 생성
         AgreeRequestToMydataDto agreeToMydataRequestDto = AgreeRequestToMydataDto.of(name, connectionInformation);
@@ -40,8 +45,7 @@ public class ClientMydataService {
 
     // idk -> mydata 통합인증요청 (POST)
     public List<Map<String, String>> certify() {
-
-        String mydataServerUrl = "http://localhost:8082/api/mydata/certify";
+        String mydataServerUrl = mydataUrl.concat("/api/mydata/certify");
 
         CertifyRequestToMydataDto certifyRequestToMydataDto = CertifyRequestToMydataDto.of();
 
@@ -59,9 +63,7 @@ public class ClientMydataService {
 
     // idk -> mydata 정보 조회 요청 (GET)
     public void getData() {
-
-        String mydataServerUrl = "http://localhost/api/mydata/data";
-
+        String mydataServerUrl = mydataUrl.concat("/api/mydata/data");
     }
 
 }
