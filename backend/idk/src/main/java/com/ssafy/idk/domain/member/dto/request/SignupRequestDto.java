@@ -12,6 +12,4 @@ public class SignupRequestDto {
     private String pin;
     private String phoneNumber;
     private Boolean hasBiometric;
-    private Boolean transactionPushEnabled;
-    private Boolean autoTransferPushEnabled;
 }

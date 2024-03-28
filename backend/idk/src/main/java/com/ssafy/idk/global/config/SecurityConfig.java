@@ -64,7 +64,8 @@ public class SecurityConfig {
                                         "/api/member/phone/code",
                                         "/api/member/reissue",
                                         "/swagger-ui/**",
-                                        "/v3/**").permitAll()
+                                        "/v3/**",
+                                        "/api/mydata/test").permitAll()
                                 .anyRequest().authenticated());
          http
                  .addFilterBefore(new JwtFilter(jwtTokenProvider, memberRepository), UsernamePasswordAuthenticationFilter.class);

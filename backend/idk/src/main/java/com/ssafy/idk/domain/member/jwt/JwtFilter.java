@@ -86,6 +86,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 requestURI.startsWith("/api/member/phone/code") ||
                 requestURI.startsWith("/swagger-ui") ||
                 requestURI.startsWith("/v3") ||
-                requestURI.startsWith("/api/member/reissue");
+                requestURI.startsWith("/api/member/reissue")
+                || requestURI.startsWith("/api/idk/mydata/test") // 테스트용
+
+                ;
     }
 }
