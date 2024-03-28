@@ -14,7 +14,6 @@ public class AccountResponseDto {
     private String accountName;
     private Long accountBalance;
     private Long accountMinAmount;
-    private Long accountAvailableAmount;
     private int accountPayDate;
 
     public static AccountResponseDto of(
@@ -23,7 +22,6 @@ public class AccountResponseDto {
             final String accountName,
             final Long accountBalance,
             final Long accountMinAmount,
-            final Long accountAvailableAmount,
             final int accountPayDate
     ) {
         return AccountResponseDto.builder()
@@ -32,7 +30,6 @@ public class AccountResponseDto {
                 .accountName(accountName)
                 .accountBalance(accountBalance)
                 .accountMinAmount(accountMinAmount)
-                .accountAvailableAmount(accountAvailableAmount)
                 .accountPayDate(accountPayDate)
                 .build();
     }
