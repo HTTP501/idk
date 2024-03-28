@@ -14,6 +14,11 @@ import { Fontisto, MaterialIcons } from "@expo/vector-icons";
 import theme from "../../style";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
+import Loading from "../../components/Loading.js";
+import {
+  callProductsDataAxios,
+  callProductsDetailDataAxios,
+} from "../../API/ShoppingMallData.js";
 
 const ShoppingMall = ({ navigation }) => {
   // 기믹에 이용될 상태들 선언
@@ -27,6 +32,8 @@ const ShoppingMall = ({ navigation }) => {
   const [isSelectAdd, setIsSelectAdd] = useState(false);
   const [isSelectProduct, setIsSelectProduct] = useState(false);
   const [isPushBtn, setIsPushBtn] = useState(false);
+  const [nowData, setNowData] = useState(false);
+  const [nowDetailData, setNowDetailData] = useState(false);
 
   // 화면 사이즈 찾기
   const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
@@ -34,6 +41,17 @@ const ShoppingMall = ({ navigation }) => {
   const menuHeight = windowHeight * 0.4;
   const imgSize = menuWidth * 0.8;
   const modalHeight = windowHeight * 0.35;
+
+  // useEffect(() => {
+  //   const catchData = (response) => {
+  //     setNowData(response.data.data)
+  //   }
+
+  //   const fail = (error) => {
+  //     console.log(error);
+  //   }
+  //   callProductsDataAxios(, catchData, fail)
+  // }, [])
 
   // 스타일 선언!
   const ShoppingMallStyles = StyleSheet.create({
@@ -63,7 +81,6 @@ const ShoppingMall = ({ navigation }) => {
     selectedCategory: {
       width: 60,
       height: 60,
-      // backgroundColor: "white",
       borderRadius: 30,
       justifyContent: "center",
       alignItems: "center",
@@ -90,7 +107,6 @@ const ShoppingMall = ({ navigation }) => {
     },
     menuText: {
       fontWeight: "bold",
-      // fontFamily: "PretendardVariable",
     },
     modalContainer: {
       backgroundColor: "white",
@@ -140,63 +156,84 @@ const ShoppingMall = ({ navigation }) => {
     category: "임의",
   };
 
-  const tmp_data = {
-    식품: [
-      { name: "음식1", price: 10000, shop: "슈퍼", category: "음식" },
-      { name: "음식2", price: 10000, shop: "슈퍼", category: "음식" },
-      { name: "음식3", price: 10000, shop: "슈퍼", category: "음식" },
-      { name: "음식4", price: 10000, shop: "슈퍼", category: "음식" },
-    ],
-    전자제품: [
-      {
-        name: "전자제품1",
-        price: 10000,
-        shop: "삼성전자",
-        category: "전자제품",
-      },
-      {
-        name: "전자제품2",
-        price: 10000,
-        shop: "삼성전자",
-        category: "전자제품",
-      },
-      {
-        name: "전자제품3",
-        price: 10000,
-        shop: "삼성전자",
-        category: "전자제품",
-      },
-      {
-        name: "전자제품4",
-        price: 10000,
-        shop: "삼성전자",
-        category: "전자제품",
-      },
-    ],
-    뷰티: [
-      { name: "뷰티1", price: 10000, shop: "올리브영", category: "뷰티" },
-      { name: "뷰티2", price: 10000, shop: "올리브영", category: "뷰티" },
-      { name: "뷰티3", price: 10000, shop: "올리브영", category: "뷰티" },
-      { name: "뷰티4", price: 10000, shop: "올리브영", category: "뷰티" },
-    ],
-    의류: [
-      { name: "의류1", price: 10000, shop: "무신사", category: "의류" },
-      { name: "의류2", price: 10000, shop: "무신사", category: "의류" },
-      { name: "의류3", price: 10000, shop: "무신사", category: "의류" },
-      { name: "의류4", price: 10000, shop: "무신사", category: "의류" },
-    ],
-    기타: [
-      { name: "기타1", price: 10000, shop: "쿠팡", category: "기타" },
-      { name: "기타2", price: 10000, shop: "쿠팡", category: "기타" },
-      { name: "기타3", price: 10000, shop: "쿠팡", category: "기타" },
-      { name: "기타4", price: 10000, shop: "쿠팡", category: "기타" },
-    ],
-  };
+  // const tmp_data = {
+  //   식품: [
+  //     { name: "음식1", price: 10000, shop: "슈퍼", category: "음식" },
+  //     { name: "음식2", price: 10000, shop: "슈퍼", category: "음식" },
+  //     { name: "음식3", price: 10000, shop: "슈퍼", category: "음식" },
+  //     { name: "음식4", price: 10000, shop: "슈퍼", category: "음식" },
+  //   ],
+  //   전자제품: [
+  //     {
+  //       name: "전자제품1",
+  //       price: 10000,
+  //       shop: "삼성전자",
+  //       category: "전자제품",
+  //     },
+  //     {
+  //       name: "전자제품2",
+  //       price: 10000,
+  //       shop: "삼성전자",
+  //       category: "전자제품",
+  //     },
+  //     {
+  //       name: "전자제품3",
+  //       price: 10000,
+  //       shop: "삼성전자",
+  //       category: "전자제품",
+  //     },
+  //     {
+  //       name: "전자제품4",
+  //       price: 10000,
+  //       shop: "삼성전자",
+  //       category: "전자제품",
+  //     },
+  //   ],
+  //   뷰티: [
+  //     { name: "뷰티1", price: 10000, shop: "올리브영", category: "뷰티" },
+  //     { name: "뷰티2", price: 10000, shop: "올리브영", category: "뷰티" },
+  //     { name: "뷰티3", price: 10000, shop: "올리브영", category: "뷰티" },
+  //     { name: "뷰티4", price: 10000, shop: "올리브영", category: "뷰티" },
+  //   ],
+  //   의류: [
+  //     { name: "의류1", price: 10000, shop: "무신사", category: "의류" },
+  //     { name: "의류2", price: 10000, shop: "무신사", category: "의류" },
+  //     { name: "의류3", price: 10000, shop: "무신사", category: "의류" },
+  //     { name: "의류4", price: 10000, shop: "무신사", category: "의류" },
+  //   ],
+  //   기타: [
+  //     { name: "기타1", price: 10000, shop: "쿠팡", category: "기타" },
+  //     { name: "기타2", price: 10000, shop: "쿠팡", category: "기타" },
+  //     { name: "기타3", price: 10000, shop: "쿠팡", category: "기타" },
+  //     { name: "기타4", price: 10000, shop: "쿠팡", category: "기타" },
+  //   ],
+  // };
   const menuImage = {
-    음식1: require("../../../assets/categoryItems/food1.jpg"),
-    음식2: require("../../../assets/categoryItems/food2.jpg"),
-    음식3: require("../../../assets/categoryItems/food3.jpg"),
-    음식4: require("../../../assets/categoryItems/food4.jpg"),
+    1: require("../../../assets/categoryItems/1.webp"),
+    2: require("../../../assets/categoryItems/2.webp"),
+    3: require("../../../assets/categoryItems/3.webp"),
+    4: require("../../../assets/categoryItems/4.webp"),
+    5: require("../../../assets/categoryItems/5.webp"),
+    6: require("../../../assets/categoryItems/6.webp"),
+    7: require("../../../assets/categoryItems/7.webp"),
+    8: require("../../../assets/categoryItems/8.webp"),
+    9: require("../../../assets/categoryItems/9.webp"),
+    10: require("../../../assets/categoryItems/10.webp"),
+    11: require("../../../assets/categoryItems/11.webp"),
+    12: require("../../../assets/categoryItems/12.webp"),
+    13: require("../../../assets/categoryItems/13.webp"),
+    14: require("../../../assets/categoryItems/14.webp"),
+    15: require("../../../assets/categoryItems/15.webp"),
+    16: require("../../../assets/categoryItems/16.webp"),
+    17: require("../../../assets/categoryItems/17.webp"),
+    18: require("../../../assets/categoryItems/18.webp"),
+    19: require("../../../assets/categoryItems/19.webp"),
+    20: require("../../../assets/categoryItems/20.webp"),
+    21: require("../../../assets/categoryItems/21.webp"),
+    22: require("../../../assets/categoryItems/22.webp"),
+    23: require("../../../assets/categoryItems/23.webp"),
+    24: require("../../../assets/categoryItems/24.webp"),
+    25: require("../../../assets/categoryItems/25.webp"),
     추가: require("../../../assets/categoryItems/add.png"),
   };
   // 액수에 쉼표 찍는 함수
@@ -206,6 +243,15 @@ const ShoppingMall = ({ navigation }) => {
 
   // 메뉴 선택 시, 해당 메뉴의 정보를 상태로 가져줄 함수
   const choiceMenu = async (item) => {
+    //   const catchDetailData = (response) => {
+    //     setNowDetailData(response.data.data)
+    //   }
+
+    //   const fail = (error) => {
+    //     console.log(error);
+    //   }
+    // callProductsDetailDataAxios("아이템 id 넣으세요", catchDetailData, fail)
+
     const newNum = formattedNumber(item.price);
     setChoiceName(item.name);
     setChoicePrice(item.price);
@@ -303,6 +349,7 @@ const ShoppingMall = ({ navigation }) => {
   // 코드 시작
   return (
     <View style={ShoppingMallStyles.container}>
+      {/* {isLoading ? (<Loading/>) : ()} */}
       {/* 모달 부분 */}
       <Modal
         animationType="fade"
