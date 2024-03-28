@@ -1,7 +1,10 @@
 package com.ssafy.idk.domain.targetsaving.service;
 
 import com.ssafy.idk.domain.account.entity.Account;
+import com.ssafy.idk.domain.account.entity.Category;
+import com.ssafy.idk.domain.account.entity.Transaction;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
+import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.pocket.entity.Pocket;
@@ -31,6 +34,7 @@ public class TargetSavingService {
     private final TargetSavingRepository targetSavingRepository;
     private final AccountRepository accountRepository;
     private final PocketService pocketService;
+    private final TransactionRepository transactionRepository;
 
     @Transactional
     public TargetSavingCreateResponseDto createTargetSaving(TargetSavingCreateRequestDto requestDto) {
@@ -98,7 +102,23 @@ public class TargetSavingService {
         if (member != account.getMember())
             throw new TargetSavingException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
+        // 목표저축 납입액 계좌로 이동
+        Long amount = targetSaving.getCount() * targetSaving.getMonthlyAmount();
         targetSavingRepository.deleteById(targetSavingId);
+
+        account.deposit(amount);
+        accountRepository.save(account);
+
+        // 계좌 입출금 내역 저장
+        Transaction transaction = Transaction.builder()
+                .category(Category.목표저축)
+                .content("목표저축 해지")
+                .amount(amount)
+                .balance(account.getBalance() + amount)
+                .createdAt(LocalDateTime.now())
+                .account(account)
+                .build();
+        transactionRepository.save(transaction);
 
         return TargetSavingDeleteResponseDto.of(account.getBalance());
     }

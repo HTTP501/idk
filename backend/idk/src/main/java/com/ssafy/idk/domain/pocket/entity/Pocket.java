@@ -31,16 +31,22 @@ public class Pocket {
     @JoinColumn(name = "target_saving_id")
     private TargetSaving targetSaving;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "auto_transfer_id")
     private AutoTransfer autoTransfer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "auto_debit_id")
     private AutoDebit autoDebit;
 
     @Column(name = "name") @NotNull
     private String name;
+
+    @Column(name = "balance") @NotNull
+    private Long balance;
+
+    @Column(name = "expected_date") @NotNull
+    private Integer expectedDate;
 
     @Column(name = "target") @NotNull
     private Long target;
@@ -62,6 +68,7 @@ public class Pocket {
 
     @PrePersist
     public void prePresist() {
+        this.balance = 0L;
         this.isActivated = false;
         this.isDeposited = false;
         this.isPaid = false;

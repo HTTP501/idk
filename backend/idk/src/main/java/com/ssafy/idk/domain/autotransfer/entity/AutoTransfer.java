@@ -60,7 +60,7 @@ public class AutoTransfer {
     @Column(length = 10, name = "show_my_bank_account") @NotNull
     private String showMyBankAccount;
 
-    @OneToOne(mappedBy = "", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "autoTransfer", cascade = CascadeType.REMOVE)
     @JoinColumn(name = "pocket_id")
     private Pocket pocket;
 
