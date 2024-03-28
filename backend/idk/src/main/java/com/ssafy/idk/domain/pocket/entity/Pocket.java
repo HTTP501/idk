@@ -27,6 +27,9 @@ public class Pocket {
     @JoinColumn(name = "account_id") @NotNull
     private Account account;
 
+    @Column(name = "pocket_type") @NotNull
+    private PocketType pocketType;
+
     @OneToOne
     @JoinColumn(name = "target_saving_id")
     private TargetSaving targetSaving;
@@ -72,6 +75,16 @@ public class Pocket {
 
     public void setActivated(boolean activated) {
         isActivated = activated;
+    }
+
+    public void deposit() {
+        this.balance = this.target;
+        this.isDeposited = !this.isDeposited;
+    }
+
+    public void withdraw() {
+        this.balance = 0L;
+        this.isDeposited = !this.isDeposited;
     }
 
     @PrePersist
