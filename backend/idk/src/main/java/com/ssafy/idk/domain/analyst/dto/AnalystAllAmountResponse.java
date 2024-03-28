@@ -3,6 +3,7 @@ package com.ssafy.idk.domain.analyst.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
 import java.util.List;
 
 @Builder
