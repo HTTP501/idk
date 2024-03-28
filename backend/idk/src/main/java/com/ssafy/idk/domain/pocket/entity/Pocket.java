@@ -66,6 +66,14 @@ public class Pocket {
     @OneToMany(mappedBy = "pocket", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<PocketTransaction> arrayPocketTranscation;
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setActivated(boolean activated) {
+        isActivated = activated;
+    }
+
     @PrePersist
     public void prePresist() {
         this.balance = 0L;
