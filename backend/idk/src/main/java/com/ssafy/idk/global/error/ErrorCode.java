@@ -30,6 +30,7 @@ public enum ErrorCode {
 
     // MEMBER
     MEMBER_PHONE_ALREADY_VERIFIED(409, "M401", "이미 인증된 휴대폰 번호입니다."),
+    MEMBER_SIGNUP_FAILED(400, "M400", "회원가입에 실패했습니다."),
     MEMBER_NOT_FOUND(404, "M402", "존재하지 않는 회원입니다."),
     MEMBER_INVALID_PIN(400, "M403", "유효하지 않은 비밀번호입니다."),
     MEMBER_SMS_SEND_FAILED(400, "M404", "문자 전송 요청에 실패했습니다."),
@@ -83,10 +84,14 @@ public enum ErrorCode {
     // PAYMENT
     PAYMENT_VERIFY_FAIL(400, "P401", "결제수단 검증에 실패했습니다"),
     PAYMENT_INFORMATION_NOT_FOUND(404, "P402", "결제 요청 정보를 찾을 수 없습니다"),
-    PAYMENT_BALANCE_FAIL(400, "P403", "결제가능금액이 부족합니다")
-    ;
+    PAYMENT_BALANCE_FAIL(400, "P403", "결제가능금액이 부족합니다"),
+
+    // MYDATA
+    MYDATA_FAILED(400, "MD400", "마이데이터 요청을 실패했습니다."),
+    MYDATA_SIGN_TRANSFORM_FAILED(400, "MD400", "전자서명 변환에 실패했습니다."),
+    MYDATA_ORG_NOT_FOUND(404, "MD404", "기관을 찾을 수 없습니다.");
 
     private final int status;
     private final String code;
     private final String message;
-}
+    }
