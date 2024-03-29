@@ -169,9 +169,9 @@ const Header = ({ navigation }) => {
       >
         <Image source={logo} style={{ width: 90, resizeMode: "contain" }} />
       </TouchableOpacity>
-      <TouchableOpacity>
+      {/* <TouchableOpacity>
         <MaterialCommunityIcons name="bell" size={24} color="white" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

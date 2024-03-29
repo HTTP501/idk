@@ -15,7 +15,7 @@ import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState, useRef } from "react";
 import { Fontisto, MaterialIcons, AntDesign } from "@expo/vector-icons";
 import theme from "../../style";
-
+import MoneySendAnimation from "../../components/MoneySendAnimation.js";
 const PayResult = ({ route, navigation }) => {
   useEffect(() => {
     console.log(route.params.finalData.price);
@@ -69,14 +69,17 @@ const PayResult = ({ route, navigation }) => {
   const newNum = formattedNumber(route.params.finalData.price)
 
   return (
-    <View style={{ ...PayResultStyle.mainContainer }}>
+    <View style={{ ...PayResultStyle.mainContainer,backgroundColor:'white' }}>
       {/* 체크표시와 결제완료 */}
       <View style={{ ...PayResultStyle.iconArea }}>
-        <AntDesign
+        {/* <AntDesign
           name="checkcircle"
           size={80}
           style={{ color: theme["sky-bright-1"], marginTop: "40%" }}
-        />
+        /> */}
+        <View style={{ marginTop: "30%",marginBottom:-60 }} >
+        <MoneySendAnimation/>
+        </View>
         <Text style={{ fontWeight: "bold", fontSize: 25, marginTop: "10%" }}>
           결제 완료
         </Text>
@@ -124,8 +127,8 @@ const PayResult = ({ route, navigation }) => {
             }}
             style={{
               ...PayResultStyle.moveBtn,
-              backgroundColor: theme["sky-bright-2"],
-              borderColor: theme["sky-bright-2"],
+              backgroundColor: theme["sky-bright-4"],
+              borderColor: theme["sky-bright-4"],
             }}
           >
             <Text style={{ ...PayResultStyle.btnText }}>메인 페이지로</Text>
@@ -136,8 +139,8 @@ const PayResult = ({ route, navigation }) => {
             }}
             style={{
               ...PayResultStyle.moveBtn,
-              backgroundColor: theme["sky-bright-6"],
-              borderColor: theme["sky-bright-6"],
+              backgroundColor: theme["sky-basic"],
+              borderColor: theme["sky-basic"],
             }}
           >
             <Text style={{ ...PayResultStyle.btnText }}>쇼핑몰로</Text>

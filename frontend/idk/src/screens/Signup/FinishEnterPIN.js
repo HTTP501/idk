@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const AUTH_KEY = '@auth'
 const SIGNUP_KEY = '@signup'
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
-
+  
 const FinishEnterPIN = ({ route, navigation }) => {
   const [showModal, setShowModal] = useState(false);
 

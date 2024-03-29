@@ -20,6 +20,7 @@ const AuthPW = ({ navigation, route }) => {
   const data = route?.params?.data;
 
   useEffect(() => {
+
     if (isPassed === true) {
       data.isChecked = true
       console.log(data);
@@ -29,6 +30,7 @@ const AuthPW = ({ navigation, route }) => {
       });
     }
   }, [isPassed]);
+
   // 숫자 입력 시 호출되는 함수
   const handlePWChange = (text) => {
     // 입력값이 숫자가 아니면 무시
@@ -53,12 +55,12 @@ const AuthPW = ({ navigation, route }) => {
       },
       async (res) => {
         console.log(res.data.message);
-        setIsPassed(true)
+        
         Alert.alert("인증이 완료되었습니다.", "", [
           {
             text: "확인",
             onPress: () => {
-              console.log("onPressed 속",data)
+              setIsPassed(true)
             },
           },
         ]);

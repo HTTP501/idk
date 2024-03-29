@@ -231,7 +231,7 @@ const SettingTargetSaving = ({ navigation, route }) => {
             style={{...styles.button}}
             onPress={handleSetting}
           >
-            <Text className="text-white text-lg">이름 수정</Text>
+            <Text className="text-white text-lg font-bold">이름 수정</Text>
           </TouchableOpacity>
         </ScrollView>
 

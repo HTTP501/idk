@@ -246,6 +246,7 @@ const FinishPayment = ({ route, navigation }) => {
           ...FinishPaymentStyle.resultStyle,
           marginTop: 20,
           marginHorizontal: 5,
+          backgroundColor:'white'
         }}
       >
         <Text style={{ ...FinishPaymentStyle.addressText, fontSize: 18 }}>
