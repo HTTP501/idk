@@ -25,7 +25,7 @@ const DepositList = function ({ deposit,navigation }) {
     if (!dateMap.has(date)) {
       dateMap.set(date, []);
     }
-    dateMap.get(date).unshift(item);
+    dateMap.get(date).push(item);
   }
 
   // 2. 맵을 리스트로 변환

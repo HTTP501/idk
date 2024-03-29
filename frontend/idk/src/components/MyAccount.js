@@ -70,7 +70,7 @@ const Account = ({ account, navigation }) => {
         {/* 계좌 사용금액 + 안내 문구 */}
         <View className="flex-row items-end">
           <Text className="font-bold text-2xl mr-1">
-            {formattedNumber(account.accountAvailableAmount)}원
+            {formattedNumber(account.accountBalance)}원
           </Text>
           <Text className="font-bold">사용할 수 있어요</Text>
         </View>

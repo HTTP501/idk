@@ -14,6 +14,17 @@ export const getAccountAxios = async function (success, fail) {
   await local.get("/account/").then(success).catch(fail);
 };
 
+// 계좌비밀번호 확인
+export const passwordAxios = async function (data, success, fail) {
+  await local.post('/account/pwd', data)
+        .then(success)
+        .catch(fail)
+}
+// 계좌 해지
+export const deleteAccountAxios = async function (success, fail) {
+  await local.delete("/account/").then(success).catch(fail);
+};
+
 // 이체내역 조회
 export const getAccountTransactionAxios = async function (success, fail) {
   await local.get("/transaction/").then(success).catch(fail);
