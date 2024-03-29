@@ -1,3 +1,4 @@
+import React from "react";
 import {
   View,
   Text,
@@ -9,23 +10,66 @@ import {
   Keyboard 
 } from "react-native";
 import theme from "../../../style";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 import formattedNumber from "../../../components/moneyFormatter";
-
+import { DepositOtherAccountAxios } from "../../../API/Account";
+import { useFocusEffect } from "@react-navigation/native";
 // 송금 확인 페이지
 const CheckSendMoneyInfo = ({ navigation, route }) => {
-
-
-  const money = route.params.money;
-  const myAccount = route.params.myAccount;
-  const otherAccount = route.params.otherAccount;
-  const otherName = otherAccount.name;
+  const transferAmount = route.params.data.transferAmount;
+  const myAccount = route.params.data.myAccount;
+  const accountNumber = route.params.data.accountNumber;
+  const transferBank = route.params.data.transferBank;
+  const memberName = route.params.data.memberName;
+  const memberId = route.params.data.memberId;
+  const otherName = memberName;
   let [focusOppentIndication, setFocusOppentIndication] = useState(false);
   let [focusMyIndication, setFocusMyIndication] = useState(false);
-  let [opponent, setOpponent] = useState(otherName);
-  let [myName, setMyName] = useState("김대원");
+  let [receiverPaymentContent, setReceiverPaymentContent] = useState(otherName);
+  let [myPaymentContent, setMyPaymentContent] = useState("");
+  // 계좌 비밀번호 확인
+  const checkPW = ()=>{
+    navigation.navigate("AuthStack",{screen:'AuthPW',params:{data:route.params.data, destination:{stack:'MainStack',screen:"CheckSendMoneyInfo"}}})
+  }
+  // 이체 
+  const transferMoney = async()=>{
+    // 이체 axios
+    await DepositOtherAccountAxios(
+      data={
+          "receiverId": memberId,
+          "accountNumber": accountNumber,
+          "transferBank": transferBank,
+          "transferAmount": transferAmount,
+          "receiverPaymentContent": receiverPaymentContent,
+          "myPaymentContent": myPaymentContent
+      },
+      res =>{
+        console.log(res.data.message)
+      },
+      err=>{
+        console.log(err)
+      }
+    )
+      // // 송금 완료 페이지로 이동
+      navigation.navigate("FinishSendMoney", {
+        transferAmount,
+        myAccount,
+        otherName:memberName,
+      });
+    
+  }
 
+  // 다시 네비게이트 되었을때 인증확인하고 이체 요청 보내주기
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('계좌 비번 인증 성공했음 ')
+      console.log(route.params)
+      if (route.params?.data.isChecked){
+        transferMoney()
+      }
+    }, [])
+  );
   return (
     <View style={styles.container}>
 
@@ -36,10 +80,10 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
         {focusOppentIndication || focusMyIndication ? null : (
           <View>
             <Text className="text-3xl font-bold mb-3 ">
-              {otherAccount.name}님
+              {memberName}님
             </Text>
             <Text>
-              {otherAccount.bankName} {otherAccount.accountId}
+              {transferBank} {accountNumber}
             </Text>
           </View>
         )}
@@ -52,7 +96,7 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
       {focusOppentIndication || focusMyIndication ? null :
         <View className="items-center">
           <Text className="text-3xl font-bold mb-3">
-            {formattedNumber(money)}원
+            {formattedNumber(transferAmount)}원
           </Text>
           <Text>잔액 {formattedNumber(myAccount)}원</Text>
         </View>}
@@ -67,8 +111,8 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
             onFocus={() => setFocusOppentIndication(true)}
             onBlur={() => setFocusOppentIndication(false)}
             style={styles.input}
-            onChangeText={(text) => setMyName(text)}
-            value={myName}
+            onChangeText={(text) => setMyPaymentContent(text)}
+            value={myPaymentContent}
             className="text-2xl"
             returnKeyType="next"
             placeholder="받는 분 통장 표시"
@@ -80,8 +124,8 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
             onFocus={() => setFocusMyIndication(true)}
             onBlur={() => setFocusMyIndication(false)}
             style={styles.input}
-            onChangeText={(text) => setOpponent(text)}
-            value={opponent}
+            onChangeText={(text) => setReceiverPaymentContent(text)}
+            value={receiverPaymentContent}
             className="text-2xl"
             returnKeyType="next"
             placeholder="내 통장 표시"
@@ -95,12 +139,7 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
         style={theme.bottomButton}
         className="self-center"
         onPress={() => {
-          // 송금 완료 페이지로 이동
-          navigation.navigate("FinishSendMoney", {
-            money,
-            myAccount,
-            otherName,
-          });
+          checkPW()
         }}>
         <Text className="text-xl font-bold text-white">다음</Text>
       </TouchableOpacity>
