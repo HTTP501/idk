@@ -52,26 +52,23 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     await getAccountAxios(
       (res) => {
         console.log(res.data.data);
-        setAccount(res.data.data);
         // 스토리지에 계좌정보만 저장해주기
         const data = JSON.stringify({
           accountNumber: res.data.data.accountNumber,
           accountId: res.data.data.accountId
         });
-        AsyncStorage.setItem(ACCOUNT_KEY, data);
-
-        
+        AsyncStorage.setItem(ACCOUNT_KEY, data)
         // 돈포켓 조회 Axios
-        // getPocketListAxios(
-        //   {accountId: res.data.data.accountId},
-        //   res => {
-        //     console.log(res);
-        //   },
-        //   err => {
-        //     console.log(err);
-        //   }
-        // )
-      },
+        getPocketListAxios(
+          res.data.data.accountId,
+          res => {
+            setPocketData(res.data.data.arrayPocket)
+          },
+          err => {
+          }
+        )
+        setAccount(res.data.data);
+        },
       (err) => {
         // 계좌 번호가 있는지 판단해서 없으면 계좌 생성페이지로 이동
         if (err.response.data.code === "A401") {
@@ -114,54 +111,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   // 계좌 데이터 - 더미
   const [account, setAccount] = useState({"accountAvailableAmount": 0, "accountBalance": 0, "accountId": 4, "accountMinAmount": 0, "accountName": "IDK 우리나라 국민우대통장", "accountNumber": "1234567891010", "accountPayDate": 1});
   // 돈포켓 데이터
-  const [pocketData, setPocketData] = useState([
-    {
-      pocketId: "1",
-      pocketType: "목표저축",
-      totalPaymentCnt: 1,
-      targetSavingId: 2198211,
-      pocketName: "돈포켓이름1",
-      balance: 60200,
-      paymentDate: "15",
-      isDeposited: true,
-      isPaid: false,
-      order: 1,
-    },
-    {
-      pocketId: "2",
-      pocketType: "자동이체",
-      autoTransferId: 1241,
-      pocketName: "돈포켓이름2",
-      balance: 12567000,
-      paymentDate: "15",
-      isDeposited: false,
-      isPaid: false,
-      order: 2,
-    },
-    {
-      pocketId: "3",
-      pocketType: "자동결제",
-      autoDebitId: 12451,
-      pocketName: "돈포켓이름3",
-      balance: 12000,
-      paymentDate: "23",
-      isDeposited: false,
-      isPaid: true,
-      order: 3,
-    },
-    {
-      pocketId: "4",
-      pocketType: "목표저축",
-      totalPaymentCnt: 10,
-      savingId: 12513,
-      pocketName: "돈포켓이름4",
-      balance: 920200,
-      paymentDate: "14",
-      isDeposited: false,
-      isPaid: false,
-      order: 4,
-    },
-  ]);
+  const [pocketData, setPocketData] = useState([]);
 
   let [pocketType, setPocketType] = useState("total");
 
@@ -213,6 +163,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
                   navigation={navigation}
                   pocketData={pocketData}
                   changePocketOrder={(data) => setPocketData(data)}
+                  fetchData={fetchData}
                 />
                 {piggyBankData 
                   ? <PiggyBank piggyBankData={piggyBankData} navigation={navigation}/>
@@ -224,18 +175,21 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
               <FilteredDonPocketList
                 navigation={navigation}
                 filteredPocketData={savingPocketData}
+                fetchData={fetchData}
               />
             ) : pocketType === "자동이체" ? (
               // 자동이체 돈포켓
               <FilteredDonPocketList
                 navigation={navigation}
                 filteredPocketData={autoTransferPocketData}
+                fetchData={fetchData}
               />
             ) : (
               // 자동 결제 돈포켓
               <FilteredDonPocketList
                 navigation={navigation}
                 filteredPocketData={autoDebitPocketData}
+                fetchData={fetchData}
               />
             )}
 

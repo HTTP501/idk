@@ -43,8 +43,7 @@ export default function localAxios() {
     },
     // 만약 요청을 보내서 에러가 왔다면,
     async (error) => {
-      
-      console.log("response",error.response.data)
+      // console.log("response",error.response.data)
       // 해당 에러의 코드를 가져온다.
       const status = error.response.data.status;
 
@@ -72,7 +71,8 @@ export default function localAxios() {
           );
           // 받은 요청에서 accessToken을 꺼내서 저장하자!
           // 저번 회의의 결과로 refreshToken도 같이 갱신해주기로 했다면 이쪽에서 갱신해주면 된다!
-          const a = JSON.stringify({ accessToken: res.data.data.accessToken });
+          console.log(data);
+          const a = JSON.stringify({ accessToken: data.data.accessToken });
           await AsyncStorage.setItem("@auth", a);
           const newAccessToken = data.data.accessToken;
           // 에러났던 요청 설정을 가져온다!

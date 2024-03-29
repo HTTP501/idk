@@ -56,7 +56,7 @@ const Account = ({ account, navigation }) => {
 
         {/* 계좌 번호 + copy 아이콘 */}
         <View className="flex-row items-center">
-          <Text className="mr-1">{account.accountNumber}</Text>
+          <Text className="mr-1">{account?.accountNumber}</Text>
           <TouchableOpacity
             // 클립보드 복사
             onPress={() => {
