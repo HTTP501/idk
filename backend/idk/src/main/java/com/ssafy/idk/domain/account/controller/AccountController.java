@@ -79,7 +79,7 @@ public class AccountController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.TRANSFER_READY_SUCCESS, accountService.readyTransfer(requestDto)));
     }
 
-    @Operation(summary = "송금(이체)")
+    @Operation(summary = "송금")
     @PostMapping("/transfer")
     public ResponseEntity<ResultResponse> transfer(@RequestBody TransferRequestDto requestDto) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.TRANSFER_SUCCESS, accountService.transfer(requestDto)));
