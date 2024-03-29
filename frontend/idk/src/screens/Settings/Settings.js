@@ -111,17 +111,11 @@ const Settings = ({ navigation, route }) => {
   }, []);
 
   return (
-    // <View className="flex flex-1">
-    //   {
-    //     isChecking ?
-    //       // 체크한 결과 올려서 저장
-    //       <AuthPW changeResult={(res) => {
-    //         deleteAccount(res)
 
-    //       }} /> :
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={{
+          marginTop:30,
           paddingBottom: 50,
           flexGrow: 1,
           alignItems: "center",
@@ -268,15 +262,10 @@ const Settings = ({ navigation, route }) => {
         </View>
       </Modal>
     </View>
-    // }
-    // </View>
+
   );
 };
 
-// Settings.screenOptions = {
-//   tabBatStyle: "none",
-//   headerShown: false,
-// };
 
 export default Settings;
 

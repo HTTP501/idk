@@ -102,9 +102,9 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     React.useCallback(() => {
       setLoading(false)
       fetchData();
-      setTimeout(() => {
-        setLoading(true);
-      }, 700);
+      // setTimeout(() => {
+      //   setLoading(true);
+      // }, 15000);
     }, [])
   );
 
@@ -267,14 +267,14 @@ const Header = ({navigation}) => {
       <View>
         <Image source={logo} style={{ width: 90, resizeMode: "contain" }} />
       </View>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={() => {
           navigation.navigate("Notification")
           console.log("알람페이지로 가기");
         }}
       >
         <MaterialCommunityIcons name="bell" size={24} color="white" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

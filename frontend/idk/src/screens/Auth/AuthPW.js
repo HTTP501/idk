@@ -19,10 +19,9 @@ const AuthPW = ({ navigation, route }) => {
   const data = route?.params?.data;
   useEffect(() => {
     if (data === undefined || data===null) {
-      data[isChecked]=true 
+      data={isChecked:false}
     }
-    data.isChecked = true
-    console.log("AuthPW", data);
+    // console.log("AuthPW", data);
   }, []);
   // 숫자 입력 시 호출되는 함수
   const handlePWChange = (text) => {
@@ -53,6 +52,7 @@ const AuthPW = ({ navigation, route }) => {
             text: "확인",
             onPress: () => {
               console.log("onPressed 속",data)
+              data.isChecked=true
               navigation.navigate(destination.stack, {
                 screen: destination.screen,
                 params: { data },
