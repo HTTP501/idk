@@ -17,6 +17,10 @@ import { Fontisto, MaterialIcons, AntDesign } from "@expo/vector-icons";
 import theme from "../../style";
 
 const PayResult = ({ route, navigation }) => {
+  useEffect(() => {
+    console.log(route.params.finalData.price);
+  })
+
   const PayResultStyle = StyleSheet.create({
     mainContainer: {
       flex: 1,
@@ -62,7 +66,7 @@ const PayResult = ({ route, navigation }) => {
     return number.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
   };
 
-  const newNum = formattedNumber(route.params.sendData.price);
+  const newNum = formattedNumber(route.params.finalData.price)
 
   return (
     <View style={{ ...PayResultStyle.mainContainer }}>
@@ -87,8 +91,11 @@ const PayResult = ({ route, navigation }) => {
             marginTop: 20,
           }}
         >
-          <Text style={{ ...PayResultStyle.bigFont }}>계좌번호</Text>
-          <Text style={{ fontSize: 15 }}>받아온 계좌번호를 출력할거에요.</Text>
+          <Text style={{ ...PayResultStyle.bigFont }}>계좌 정보</Text>
+          <View style={{marginTop:15,}}>
+            <Text style={{ fontSize: 15 }}>{route.params.finalData.accountName}</Text>
+            <Text style={{ fontSize: 15 }}>{route.params.finalData.accountNumber}</Text>
+          </View>
         </View>
         <View
           style={{
@@ -99,7 +106,7 @@ const PayResult = ({ route, navigation }) => {
           }}
         >
           <Text style={{ ...PayResultStyle.bigFont }}>결제금액</Text>
-          <Text style={{ fontSize: 15 }}>{newNum}원</Text>
+          <Text style={{ fontSize: 15, marginLeft:5, }}>{newNum}원</Text>
         </View>
       </View>
       {/* 버튼들 */}
