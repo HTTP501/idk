@@ -68,7 +68,7 @@ const Notification = () => {
         contentContainerStyle={{
           display: "flex",
         }}
-        keyExtractor={data.id}
+        // keyExtractor={data.id}
       />
     </View>
   );

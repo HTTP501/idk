@@ -30,10 +30,27 @@ export const getAccountTransactionAxios = async function (success, fail) {
   await local.get("/transaction/").then(success).catch(fail);
 };
 
+// 이체
+export const DepositOtherAccountAxios = async function (data, success, fail) {
+  await local.post("/account/transfer", data).then(success).catch(fail);
+};
+
+// 이체 사용자 조회
+export const getUserAccountAxios = async function (data, success, fail) {
+  console.log(data)
+  console.log(data.accountNumber,typeof(data.accountNumber))
+  console.log(data.bankName,typeof(data.bankName))
+  await local.post("/account/transfer/ready", data).then(success).catch(fail);
+};
+
+
 // 계좌 입금
 export const DepositMyAccountAxios = async function (data, success, fail) {
   await local.post("/transaction/deposit", data).then(success).catch(fail);
 };
+
+
+
 // 계좌 출금
 export const WithdrawMyAccountAxios = async function (data, success, fail) {
   await local.post("/transaction/withdraw", data).then(success).catch(fail);
