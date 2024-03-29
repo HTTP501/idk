@@ -18,7 +18,7 @@ import DonPocket from "./DonPocketItem";
 
 
 // 돈포켓 리스트
-const DonPocketList = function ({ navigation, pocketData, changePocketOrder }) {
+const DonPocketList = function ({ navigation, pocketData, changePocketOrder, fetchData }) {
 
   const ref = useRef();
   const data = pocketData;
@@ -41,7 +41,7 @@ const DonPocketList = function ({ navigation, pocketData, changePocketOrder }) {
               activeOpacity={1}
               style={[styles.donpocketlist]}
             >
-              <DonPocket item={item} isActive={isActive} isFiltered={false}/>
+              <DonPocket item={item} isActive={isActive} isFiltered={false} fetchData={fetchData}/>
             </TouchableOpacity>
           </ShadowDecorator>
         </OpacityDecorator>

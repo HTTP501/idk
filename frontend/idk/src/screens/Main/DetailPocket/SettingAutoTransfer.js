@@ -11,331 +11,244 @@ import {
   ScrollView,
   Image,
   Alert,
+  Modal,
+  Switch
 } from "react-native";
-// 년, 월 데이터
-const yearData = [
-  { label: "2024", value: 0 },
-  { label: "2025", value: 1 },
-  { label: "2026", value: 2 },
-  { label: "2027", value: 3 },
-  { label: "2028", value: 4 },
-];
-const monthData = [
-  { label: "1", value: 0 },
-  { label: "2", value: 1 },
-  { label: "3", value: 2 },
-  { label: "4", value: 3 },
-  { label: "5", value: 4 },
-  { label: "6", value: 5 },
-  { label: "7", value: 6 },
-  { label: "8", value: 7 },
-  { label: "9", value: 8 },
-  { label: "10", value: 9 },
-  { label: "11", value: 10 },
-  { label: "12", value: 11 },
-];
-// 오늘의 년도와 달
-const getCurrentYear = () => {
-  const date = new Date();
-  return date.getFullYear();
-};
 
-const getCurrentMonth = () => {
-  const date = new Date();
-  return date.getMonth() + 1;
-};
+const imgMatch = {
+  'IDK은행': require("../../../../assets/logo/app_icon.png"),
+  'KB국민은행': require("../../../../assets/banks/KBBank.png"),
+  '카카오뱅크': require("../../../../assets/banks/KakaoBank.png"),
+  '신한은행': require("../../../../assets/banks/ShinhanBank.png"),
+  'NH농협은행': require("../../../../assets/banks/NHBank.png"),
+  '하나은행': require("../../../../assets/banks/HanaBank.png"),
+  '우리은행': require("../../../../assets/banks/WooriBank.png"),
+  'IBK기업은행': require("../../../../assets/banks/IBKBank.png"),
+  '케이뱅크': require("../../../../assets/banks/KBank.png"),
+  'KB국민카드': require("../../../../assets/banks/KBCard.png"),
+  '신한카드': require("../../../../assets/banks/ShinhanCard.png"),
+  '현대카드': require("../../../../assets/banks/HyundaiCard.png"),
+  '카카오뱅크카드': require("../../../../assets/banks/KakaoCard.png"),
+  'NH농협카드': require("../../../../assets/banks/NHCard.png"),
+  '삼성카드': require("../../../../assets/banks/SamsungCard.png"),
+  '하나카드': require("../../../../assets/banks/HanaCard.png"),
+  '우리카드': require("../../../../assets/banks/WooriCard.png"),
+}
+
 import theme from "../../../style";
 import BankToggle from "../../../components/BankToggle";
 import { getAccountAxios } from "../../../API/Account";
+import { getDetailAutoTransferAxios } from '../../../API/AutoTransfer'
+import { changeDonPocketNameAxios, 
+  deleteDonPocketAutoTransferAxios,
+  changeDonPocketActivateAxios  } from '../../../API/DonPocket'
 import formattedNumber from "../../../components/moneyFormatter";
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 // 자동이체 설정 페이지
-const SettingAutoTransfer = ({ navigation }) => {
-  let [bankName, setBankName] = useState("IDK은행");
-  let [accountId, setAccountId] = useState("");
-  let [date, setDate] = useState(15);
-  let [amount, setAmount] = useState(5000);
-  const today = new Date();
+const SettingAutoTransfer = ({ navigation, route }) => {
+  const [showModal, setShowModal] = useState(false);
+  const [name, setName] = useState(route.params.name)
+  const [isActivated, setIsActivated] = useState(route.params.activated);
+  const donPocketId = route.params.donPocketId
+  const pocketId = route.params.pocketId
+  const [data, setData] = useState(null)
 
-  // 시작 년월, 종료 년월
-  const [startYear, setStartYear] = useState(getCurrentYear());
-  const [startMonth, setStartMonth] = useState(getCurrentMonth());
-  const [endYear, setEndYear] = useState(getCurrentYear() + 1);
-  const [endMonth, setEndMonth] = useState(getCurrentMonth());
-  let [showMyAccountName, setShowMyAccountName] = useState("내이름");
-  let [showOtherAccountName, setShowOtherAccountName] =
-    useState("자동이체 제목");
-  console.log(startYear,startMonth,endYear,endMonth)
-  let [settingStart, setSettingStart] = useState(false);
-  let [settingEnd, setSettingEnd] = useState(false);
-
-  // 이체 금액 필터링을 통해 저장
-  const changeAmount = (text) => {
-    if (text.length === 0) {
-      setAmount(0);
-    } else {
-      const number = Number(text.replace(/[^0-9]/g, ""));
-      setAmount(number);
-    }
-  };
-  let [myAccount, setMyAccount] = useState({});
+  const [myAccount, setMyAccount] = useState({});
   // 내 계좌 데이터 가져오기
   useEffect(() => {
     getAccountAxios(
       (res) => {
-        console.log(res);
         setMyAccount(res.data.data);
       },
       (err) => {
-        console.log(err);
       }
     );
+    getDetailAutoTransferAxios(
+      donPocketId,
+      res => {
+        setData(res.data.data)
+      },
+      err => {
+        if (err.response.data.code === 'C401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'AT405') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])  
+        }
+      }
+    )
   }, []);
 
   // 수정 Axios
   const handleSetting = () => {
-    Alert.alert('수정이 완료되었습니다.', '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+    changeDonPocketNameAxios(
+      pocketId,
+      {name: name},
+      res => {
+        console.log(res);
+        Alert.alert('수정이 완료되었습니다.', '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+      },
+      err => {
+        if (err.response.data.code === 'C401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'P404') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])  
+        }
+      }
+    )
   }
   
+  // 돈포켓 해지 Axios
+  const deleteDonPocket = () => {
+    deleteDonPocketAutoTransferAxios(
+      pocketId,
+      res => {
+        Alert.alert('해지가 완료되었습니다.', '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+      },
+      err => {
+        if (err.response.data.code === 'C401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'P404') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])  
+        }
+      }
+    )
+    setShowModal(false)
+  }
+
+  // 돈 포켓 자동 넣기 Axios
+  const HandleIsActivated = () => {
+    changeDonPocketActivateAxios(
+      pocketId,
+      res => {
+      },
+      err => {
+        if (err.response.data.code === 'C401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'P404') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])  
+        }
+      }
+    )
+    setIsActivated(previousState => !previousState)
+  }
+
 
   return (
     <View style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: "center", alignItems: 'center' }}
       >
-        <View style={styles.box}>
-          <Text className="text-lg font-bold ">출금 계좌</Text>
-          <View className="border p-2 mt-2 rounded border-gray-300">
-            <Text className="mb-2">{myAccount?.accountName}</Text>
-            <Text>{myAccount?.accountNumber}</Text>
-          </View>
-        </View>
-        <View style={styles.box}>
-          <Text className="text-lg font-bold mb-3">받는 분</Text>
-          {/* 은행 토글 */}
-          <BankToggle changeBank={(bankName) => setBankName(bankName)} />
-          {/* 계좌 번호 */}
-          <TextInput
-            className="text-lg mt-3"
-            value={accountId}
-            onChangeText={(text) => setAccountId(text)}
-            keyboardType="numeric"
-            style={styles.input}
-            placeholder="계좌번호"
+        <View style={styles.upbox}>
+          <Text className='text-xl font-bold'>돈 포켓 자동 넣기</Text>
+          <Switch
+            trackColor={{ false: "#767577", true: "#81b0ff" }}
+            thumbColor={isActivated ? "#f4f3f4" : "#f4f3f4"}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={HandleIsActivated}
+            value={isActivated}
           />
         </View>
-        <View style={styles.box}>
-          <Text className="text-lg font-bold">이체 금액</Text>
-          <View
-            style={styles.input}
-            className="flex-row items-center align-center justify-end gap-3 p-2"
+        <View style={[styles.box, styles.input]}>
+          <Text className='text-xl font-bold mb-1'>돈포켓 이름</Text>
+          <TextInput
+            placeholder={data?.name}
+            className='text-lg'
+            value={name}
+            onChangeText={(text) => setName(text)}
           >
-            <TextInput
-              className="text-lg"
-              placeholder="5,000"
-              value={formattedNumber(amount)}
-              keyboardType="numeric"
-              onChangeText={(text) => changeAmount(text)}
-            />
-            <Text className="text-lg font-bold">원</Text>
+          </TextInput>
+        </View>
+        <View style={styles.box}>
+          <Text className="text-xl font-bold mb-3">출금 계좌</Text>
+          <View className="flex-row items-center">
+            <Image source={imgMatch['IDK은행']} style={{width: 50, height:50, marginRight: 10}}/>
+            <View>
+              <Text className='text-lg'>{myAccount?.accountName}</Text>
+              <Text className='text-lg'>{myAccount?.accountNumber}</Text>
+            </View>
           </View>
+        </View>
+        <View style={styles.box}>
+          <Text className="text-xl font-bold mb-3">받는 분</Text>
+          <View className='flex-row items-center'>
+            <Image source={imgMatch[data?.toAccountBank]} style={{width: 50, height:50, marginRight: 10}}/>
+            <View className=''>
+              <Text className='text-lg'>{data?.toAccountBank}</Text>
+              <Text className='text-lg'>{data?.toAccount}</Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.box}>
+          <Text className="text-xl font-bold mb-1">이체 금액</Text>
+          <Text className="text-lg">{data?.amount} 원</Text>
         </View>
         {/* 자동이체 주기 */}
         <View style={styles.box}>
-          <Text className="text-lg font-bold">자동 이체 주기</Text>
-          <View
-            style={styles.input}
-            className="flex-row items-center align-center justify-end gap-3 p-2"
-          >
-            <Text className="text-lg font-bold">매월</Text>
-            <TextInput
-              className="text-lg"
-              placeholder="15"
-              value={String(date)}
-              onChangeText={(text) => setDate(text)}
-              keyboardType="numeric"
-            />
-            <Text className="text-lg font-bold">일</Text>
-          </View>
+          <Text className="text-xl font-bold mb-1">자동 이체 주기</Text>
+          <Text className="text-lg">매월 {data?.date} 일</Text>
         </View>
 
         {/* 자동이체 기간 */}
         <View style={styles.box}>
-          <Text className="text-lg font-bold">자동 이체 기간</Text>
-          <View className="flex-row items-center my-3">
-            {/* 시작 년월 */}
-            <Text className="border border-gray-300 rounded px-3 py-1 my-1">    시작일    </Text>
-            {settingStart ? (
-              <Picker
-                defaultData={[0, 2]}
-                onChangePick={(year, month, type) => {
-                  if (type==="start"){
-                    setStartYear(year)
-                    setStartMonth(month)
-                  }
-                }}
-                type="start"
-                otherData={[endYear,endMonth]}
-              />
-            ) : null}
-          </View>
-          {/* 종료 년월 */}
+          <Text className="text-xl font-bold mb-1">자동 이체 기간</Text>
           <View className="flex-row items-center">
-            <TouchableOpacity
-              onPress={() => setSettingEnd(!settingEnd)}
-              className="border border-gray-300 rounded px-3 py-1 my-1"
-            >
-              <Text>종료일 설정</Text>
-            </TouchableOpacity>
-            {settingEnd ? (
-              <Picker
-                defaultData={[1, 2]}
-                onChangePick={(year, month, type) => {
-                  if (type==="end"){
-                    setEndYear(year)
-                    setEndMonth(month)
-                  }
-                }}
-                type="end"
-                otherData={[startYear,startMonth]}
-              />
-            ) : null}
+            <Text className='text-lg'>시작일 : </Text>
+            <Text className='text-lg'>{data?.startYearMonth}</Text>
+          </View>
+          <View className="flex-row items-center">
+              <Text className='text-lg'>종료일 : </Text>
+              <Text className='text-lg'>{data?.endYearMonth}</Text>
           </View>
         </View>
 
         {/* 통장 표시 */}
         <View style={styles.box}>
-          <Text className="text-lg font-bold">받는 분 통장 표시</Text>
-          <TextInput
-            value={showMyAccountName}
-            onChangeText={(text) => {
-              setShowMyAccountName(text);
-            }}
-            style={styles.input}
-            placeholder="내 이름"
-          />
+          <Text className="text-xl font-bold">받는 분 통장 표시</Text>
+          <Text className='text-lg'>{data?.showRecipientBankAccount}</Text>
         </View>
         <View style={styles.box}>
-          <Text className="text-lg font-bold">내 통장 표시</Text>
-          <TextInput
-            value={showOtherAccountName}
-            onChangeText={(text) => {
-              setShowOtherAccountName(text);
-            }}
-            style={styles.input}
-            placeholder="아이들과 미래재단 정기후원"
-          />
+          <Text className="text-xl font-bold">내 통장 표시</Text>
+          <Text className='text-lg'>{data?.showMyBankAccount}</Text>
         </View>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => setShowModal(true)}
+        >
+          <Text className="text-zinc-500 text-lg">돈포켓 해지하기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSetting}
+        >
+          <Text className="text-white text-lg font-bold">이름 수정</Text>
+        </TouchableOpacity>
       </ScrollView>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleSetting}
+
+      <Modal
+        visible={showModal}
+        transparent={true}
+        animationType="slide"
       >
-        <Text className="text-white text-lg font-bold">수정</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-// 기간 픽커
-const Picker = ({ defaultData, onChangePick,type, otherData }) => {
-  const [yearValue, setYearValue] = useState(defaultData[0]);
-  const [yearIsFocus, setYearIsFocus] = useState(false);
-  const [monthvalue, setMonthValue] = useState(defaultData[1]);
-  const [monthIsFocus, setMonthIsFocus] = useState(false);
-
-  // 시작 년월이 맞는가?
-  const isStartRight = function (yearvalue, monthvalue) {
-    const year = Number(yearData[yearvalue].label);
-    const month = Number(monthData[monthvalue].label);
-    if (
-      (year === getCurrentYear() && month >= getCurrentMonth()) ||
-      year > getCurrentYear()
-    ) {
-      setYearValue(yearvalue);
-      setMonthValue(monthvalue);
-      onChangePick(year, month,type);
-    } else {
-      alert("시작일을 과거로 설정할 수 없습니다.");
-      setYearValue(defaultData[0]);
-      setMonthValue(defaultData[1]);
-    }
-  };
-  
-  const yearRenderItem = (item) => {
-    return (
-      <View style={styles.item} className="flex-row gap-3 p-3 items-center">
-        <Text style={styles.textItem}>{item?.label}</Text>
-      </View>
-    );
-  };
-
-  const monthRenderItem = (item) => {
-    return (
-      <View style={styles.item} className="flex-row gap-3 p-3 items-center">
-        <Text style={styles.textItem}>{item?.label}</Text>
-      </View>
-    );
-  };
-
-  return (
-    <View className="flex-row">
-      <View style={styles.dropdowncontainer}>
-        {/* 년 고르기 */}
-        <Dropdown
-          style={[yearIsFocus && { borderColor: "blue" }]}
-          selectedTextStyle={styles.selectedTextStyle}
-          mode={"auto"}
-          placeholder={""}
-          data={yearData}
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          value={yearValue}
-          onFocus={() => setYearIsFocus(true)}
-          onBlur={() => setYearIsFocus(false)}
-          activeColor={theme["sky-bright-5"]}
-          onChange={(item) => {
-            // 값 바꿔주기
-            isStartRight(item.value, monthvalue);
-            setYearIsFocus(false);
-          }}
-          renderItem={yearRenderItem}
-          renderLeftIcon={() => (
-            <View className="flex-row gap-3 items-center ml-1">
-              <Text>{yearData[yearValue]?.label}</Text>
-            </View>
-          )}
-        />
-      </View>
-      {/* 월 피커 */}
-      <View style={styles.dropdowncontainer}>
-        <Dropdown
-          style={[monthIsFocus && { borderColor: "blue" }]}
-          selectedTextStyle={styles.selectedTextStyle}
-          mode={"auto"}
-          placeholder={""}
-          data={monthData}
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          value={monthvalue}
-          onFocus={() => setMonthIsFocus(true)}
-          onBlur={() => setMonthIsFocus(false)}
-          activeColor={theme["sky-bright-5"]}
-          onChange={(item) => {
-            // 값 바꿔주기
-            isStartRight(yearValue, item.value);
-            setMonthIsFocus(false);
-          }}
-          renderItem={monthRenderItem}
-          renderLeftIcon={() => (
-            <View className="flex-row gap-3 items-center ml-1">
-              <Text>{monthData[monthvalue]?.label}</Text>
-            </View>
-          )}
-        />
-      </View>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text className='text-xl font-bold mb-1'>'{route.params.name}' 자동이체 돈포켓을</Text>
+            <Text className='text-xl font-bold mb-1'>해지하시겠습니까?</Text>
+            <TouchableOpacity
+              style={styles.modalButton1}
+              onPress={deleteDonPocket}
+            >
+              <Text className='text-lg font-bold'>돈포켓 해지하기</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton2}
+              onPress={() => {setShowModal(false)}}
+            >
+              <Text className='text-lg font-bold'>유지하기</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -354,6 +267,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "white",
     paddingTop: 120,
+  },
+  upbox : {
+    width: SCREEN_WIDTH * (8/10),
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    marginBottom: 30,
+    alignItems: 'center',
   },
   box: {
     width: SCREEN_WIDTH * (4 / 5),
@@ -374,9 +294,55 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     // position: 'absolute',
-    bottom: 20, // 화면 하단과의 간격
+    // bottom: 20, // 화면 하단과의 간격
     alignSelf: "center",
     borderRadius: 10,
+    marginBottom: 10
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: theme['sky-basic'],
+    width: 350,
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: 350,
+    marginTop: 20,
+  },
+  modalButton1: {
+    width: 290,
+    height: 60,
+    backgroundColor: theme['sky-bright-6'],
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    marginBottom: 10
+  },
+  modalButton2: {
+    width: 290,
+    height: 60,
+    backgroundColor: theme['sky-bright-2'],
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10
+  },
+  deleteButton: {
+    width: SCREEN_WIDTH*(9/10),
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    marginVertical: 20,
+    marginBottom: 10
   },
 });
 

@@ -4,13 +4,17 @@ import theme from '../../../style';
 import { AntDesign } from '@expo/vector-icons'; // Import Ionicons from Expo
 import { autoTransferAxios, transactionAxios } from '../../../API/Member'
 import { ChangeAccountNameAxios } from '../../../API/Account'
+import { changeDonPocketNameAxios, 
+  deleteDonPocketAutoTransferAxios,
+  changeDonPocketActivateAxios  } from '../../../API/DonPocket'
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const SettingAutoDebit = ({ navigation, route }) => {
   const pocketId = route.params.pocketId
   const [showModal, setShowModal] = useState(false);
-  const [isActivated, setIsActivated] = useState(false);
+  const [isActivated, setIsActivated] = useState(route.params.activated);
+  const donPocketId = route.params.donPocketId
 
   // 돈 포켓 자동 넣기 Axios
   const HandleIsActivated = () => {
