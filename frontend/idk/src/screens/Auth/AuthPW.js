@@ -5,11 +5,11 @@ import { passwordAxios } from '../../API/Account';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 
-const AuthPW = ({ navigation, changeResult }) => {
+const AuthPW = ({ navigation,route }) => {
   
   const [password, setPassword] = useState('');
-
-  
+  const destination = route?.params
+  console.log(route?.params)
   // 숫자 입력 시 호출되는 함수
   const handlePWChange = (text) => {
     // 입력값이 숫자가 아니면 무시
@@ -36,7 +36,7 @@ const AuthPW = ({ navigation, changeResult }) => {
         console.log(res.data.message)
         Alert.alert('간편 인증이 완료되었습니다.','',[{text:'확인',
         onPress:()=>{
-          changeResult(true)
+          navigation.navigate(destination.stack,{screen:destination.screens,params:{isChecked:true}})
         }}])
         // navigation.reset({routes: [{name: destination, params:{result:true}}]})
 
