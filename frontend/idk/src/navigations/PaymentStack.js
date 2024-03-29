@@ -6,6 +6,8 @@ import {
   PayResult,
 } from "../screens/Payment";
 import Main from "../screens/Main/Main";
+import AuthPW from "../screens/Auth/AuthPW"
+import RegistGoalSaving from "../screens/Main/Registrations/RegistGoalSaving";
 import { View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -38,6 +40,16 @@ function ShopStack() {
       <Stack.Screen
         name="Main"
         component={Main}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="RegistGoalSaving"
+        component={RegistGoalSaving}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AuthPW"
+        component={AuthPW}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
