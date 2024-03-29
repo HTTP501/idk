@@ -54,6 +54,9 @@ public class Member {
     @Column(name = "digital_signature", length = 10000)
     private String digitalSignature;
 
+    @Column(name = "fcm_token")
+    private String fcmToken;
+
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Mydata> mydataList;
 
@@ -83,5 +86,13 @@ public class Member {
 
     public void updateMydataAgreed() {
         this.mydataAgreed = true;
+    }
+
+    public void updateToken(String token) {
+        this.fcmToken = token;
+    }
+
+    public void deleteToken() {
+        this.fcmToken = null;
     }
 }
