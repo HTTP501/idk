@@ -3,11 +3,11 @@ package com.ssafy.idk.domain.fcm.service;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.fcm.dto.request.FcmTokenRequestDto;
 import com.ssafy.idk.domain.fcm.dto.response.FcmResponseDto;
 import com.ssafy.idk.domain.fcm.exception.FcmException;
 import com.ssafy.idk.domain.member.entity.Member;
-import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.global.error.ErrorCode;
 import com.ssafy.idk.global.util.FCMUtil;
@@ -33,6 +33,28 @@ public class FcmService {
         member.deleteToken();
     }
 
+    public void depositAlarm(Account account, Long amount, String content) {
+        if(!account.getMember().getTransactionPushEnabled()) return;
+
+        FcmResponseDto fcmResponseDto = FcmResponseDto.of(
+                account.getMember().getFcmToken(),
+                "입금 "+amount+"원",
+                content+" -> "+account.getName()
+        );
+        sendNotification(fcmResponseDto);
+    }
+
+    public void withdrawAlarm(Account account, Long amount, String content) {
+        if(!account.getMember().getTransactionPushEnabled()) return;
+
+        FcmResponseDto fcmResponseDto = FcmResponseDto.of(
+                account.getMember().getFcmToken(),
+                "출금 "+amount+"원",
+                account.getName()+" -> "+content
+        );
+        sendNotification(fcmResponseDto);
+    }
+
     public void sendNotification(FcmResponseDto fcmResponseDto) {
         if(fcmResponseDto.getToken() != null) {
             try {
@@ -46,7 +68,7 @@ public class FcmService {
                                 .build())
                         .build();
 
-                FirebaseMessaging.getInstance().sendAsync(message);
+                FirebaseMessaging.getInstance().send(message);
 
             } catch (Exception e) {
                 throw new FcmException(ErrorCode.FCM_SEND_FAIL);
