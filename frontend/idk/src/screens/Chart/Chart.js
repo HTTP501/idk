@@ -48,17 +48,18 @@ const Chart = ({ navigation }) => {
   const [maxAmount, setMaxAmount] = useState(null);
   const [nowCategory, setNowCategory] = useState("total");
   const [callOver, setCallOver] = useState(false);
+  const [chartOver, setChartOver] = useState(false);
   // 화면 사이즈 인식
   const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
 
   // 시작하자마자 이번달 정보를 보여주기 위해 스크롤 참조
-  const ScrollViewRef = useRef();
+  const myScrollViewRef = useRef();
 
   useEffect(() => {
-    if (ScrollViewRef !== null) {
-      ScrollViewRef.current.scrollToEnd({ animated: false });
+    if (myScrollViewRef.current !== undefined) {
+      myScrollViewRef.current.scrollToEnd({ animated: true });
     }
-  }, [ScrollViewRef]);
+  }, [myScrollViewRef.current]);
 
   // 모든 상태가 세팅이 되면 로딩 해제 및 스크롤이동
   useEffect(() => {
@@ -371,7 +372,7 @@ const Chart = ({ navigation }) => {
           <ScrollView
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            ref={ScrollViewRef}
+            ref={myScrollViewRef}
           >
             <Svg height={height + 50} width={width} id="barChart">
               <Line
@@ -675,8 +676,11 @@ const Chart = ({ navigation }) => {
             {totalAverageChart()}
           </View>
           <View>
+            <Text style={{fontSize: 25, fontWeight:"bold", marginTop: 20,}}>{selectedYear}년 {selectedMonth}월 지출</Text>
+          </View>
+          <View>
             {isDonutLoading ? (
-              <ActivityIndicator size={"large"} color={theme["sky-basic"]} />
+              <ActivityIndicator size={"large"} color={theme["sky-basic"]} style={{marginVertical: 25,}} />
             ) : (
               <View>
                 {donutChart(
@@ -689,7 +693,7 @@ const Chart = ({ navigation }) => {
           </View>
           <View style={{ marginBottom: 40 }}>
             {isDonutLoading ? (
-              <ActivityIndicator size={"large"} color={theme["sky-basic"]} />
+              <ActivityIndicator size={"large"} color={theme["sky-basic"]} style={{marginVertical: 25,}} />
             ) : (
               <View>
                 {donutChart(

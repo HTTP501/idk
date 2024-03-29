@@ -10,6 +10,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  ActivityIndicator
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
@@ -19,6 +20,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import CheckBox from "expo-checkbox";
 import { payRequestAxios, approvalPayAxios } from "../../API/PayRequest.js";
+import { getAccountAxios } from "../../API/Account.js";
 
 const FinishPayment = ({ route, navigation }) => {
   const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
@@ -31,7 +33,37 @@ const FinishPayment = ({ route, navigation }) => {
   const [myPrice, setMyPrice] = useState("");
   const [myPlz, setMyPlz] = useState("");
   // 네비게이터에 껴서 보낼 계좌 정보 상태로 저장
-  // const [myAccount,setMyAccount] = useState("");
+  const [myAccount,setMyAccount] = useState(null);
+  const [isGetAccount,setisGetAccount] = useState(true);
+  const [orderId, setOrderId] = useState(null);
+
+  // 입장시 계좌 정보 호출
+  useEffect(() => {
+    const getAccountData = (response) => {
+      setMyAccount(response.data.data)
+    }
+
+    const fail = (error) => {
+      console.log(error);
+    }
+
+    getAccountAxios(getAccountData, fail)
+  }, [])
+
+  // 계좌 정보를 받기 전까지 로딩 화면을 보여주기 위해서 useEffect 사용
+  useEffect(() => {
+    if (myAccount !== null) {
+      setisGetAccount(false)
+    }
+  }, [myAccount])
+
+  // 결제 요청을 보내서 orderId를 받으면 계좌 비밀번호 입력으로 이동
+  // useEffect(() => {
+  //   if (orderId !== null) {
+  //     navigation.navigate()
+  //   }
+  // }, [orderId])
+
 
   const FinishPaymentStyle = StyleSheet.create({
     container: {
@@ -44,7 +76,7 @@ const FinishPayment = ({ route, navigation }) => {
     },
     productsInfoBox: {
       flex: 2.5,
-      paddingHorizontal: 20,
+      paddingHorizontal: 10,
     },
     payMethodBox: {
       flex: 2.5,
@@ -111,16 +143,38 @@ const FinishPayment = ({ route, navigation }) => {
     },
   });
 
-  const menuImage = {
-    음식1: require("../../../assets/categoryItems/food1.jpg"),
-    음식2: require("../../../assets/categoryItems/food2.jpg"),
-    음식3: require("../../../assets/categoryItems/food3.jpg"),
-    음식4: require("../../../assets/categoryItems/food4.jpg"),
+  const   menuImage = {
     식품: require("../../../assets/categoryIcons/foods.png"),
     뷰티: require("../../../assets/categoryIcons/beauty.png"),
     전자제품: require("../../../assets/categoryIcons/electronics.png"),
     의류: require("../../../assets/categoryIcons/clothes.png"),
     기타: require("../../../assets/categoryIcons/etc.png"),
+    1: require("../../../assets/categoryItems/1.webp"),
+    2: require("../../../assets/categoryItems/2.webp"),
+    3: require("../../../assets/categoryItems/3.webp"),
+    4: require("../../../assets/categoryItems/4.webp"),
+    5: require("../../../assets/categoryItems/5.webp"),
+    6: require("../../../assets/categoryItems/6.webp"),
+    7: require("../../../assets/categoryItems/7.webp"),
+    8: require("../../../assets/categoryItems/8.webp"),
+    9: require("../../../assets/categoryItems/9.webp"),
+    10: require("../../../assets/categoryItems/10.webp"),
+    11: require("../../../assets/categoryItems/11.webp"),
+    12: require("../../../assets/categoryItems/12.webp"),
+    13: require("../../../assets/categoryItems/13.webp"),
+    14: require("../../../assets/categoryItems/14.webp"),
+    15: require("../../../assets/categoryItems/15.webp"),
+    16: require("../../../assets/categoryItems/16.webp"),
+    17: require("../../../assets/categoryItems/17.webp"),
+    18: require("../../../assets/categoryItems/18.webp"),
+    19: require("../../../assets/categoryItems/19.webp"),
+    20: require("../../../assets/categoryItems/20.webp"),
+    21: require("../../../assets/categoryItems/21.webp"),
+    22: require("../../../assets/categoryItems/22.webp"),
+    23: require("../../../assets/categoryItems/23.webp"),
+    24: require("../../../assets/categoryItems/24.webp"),
+    25: require("../../../assets/categoryItems/25.webp"),
+    26: require("../../../assets/categoryItems/add.png"),
   };
 
   const formattedNumber = function (number) {
@@ -194,10 +248,10 @@ const FinishPayment = ({ route, navigation }) => {
           주문상품 1건
         </Text>
         <View style={{ flexDirection: "row" }}>
-          <Image
-            source={menuImage[route.params.sendData.name]}
-            style={{ width: 80, height: 80 }}
-          />
+            <Image
+              source={menuImage[route.params.sendData.itemId]}
+              style={{ width: 80, height: 80 }}
+            />
           <View>
             <Text style={{ ...FinishPaymentStyle.addressText, marginLeft: 15 }}>
               {route.params.sendData.shop}
@@ -239,7 +293,7 @@ const FinishPayment = ({ route, navigation }) => {
         <View style={{ flexDirection: "row", flex: 1 }}>
           <Image
             source={menuImage[route.params.sendData.category]}
-            style={{ width: 60, height: 60, marginRight: 20 }}
+            style={{ width: 60, height: 60, marginRight: 20 , marginTop: 5}}
           />
           <View>
             <View
@@ -382,8 +436,8 @@ const FinishPayment = ({ route, navigation }) => {
       {/* 주문 상품 정보 부분 */}
       <View style={FinishPaymentStyle.productsInfoBox}>
         {route.params.sendData.name === "추가"
-          ? selectedAdd()
-          : selectProducts()}
+          ? (selectedAdd())
+          : (selectProducts())}
       </View>
 
       <View style={FinishPaymentStyle.sparateLine}></View>
@@ -406,23 +460,27 @@ const FinishPayment = ({ route, navigation }) => {
             alignItems: "center",
           }}
         >
-          <View style={{ marginLeft: "5%" }}>
-            <Text style={{ fontWeight: "bold", fontSize: 15 }}>
-              계좌이름이 나올자리
-            </Text>
-            <Text>계좌번호가 나올자리</Text>
-          </View>
-          <View>
-            <Text
-              style={{
-                fontWeight: "bold",
-                fontSize: 15,
-                marginRight: 20,
-              }}
-            >
-              계좌잔액
-            </Text>
-          </View>
+          {isGetAccount ? (<ActivityIndicator size={"large"} color={theme["sky-basic"]} style={{marginVertical: 25,}} />) : (
+            <React.Fragment>
+              <View style={{ marginLeft: "5%" }}>
+                <Text style={{ fontWeight: "bold", fontSize: 15 }}>
+                  {myAccount.accountName}
+                </Text>
+                <Text>{myAccount.accountNumber}</Text>
+              </View>
+              <View>
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: 15,
+                    marginRight: 20,
+                  }}
+                >
+                  {formattedNumber(myAccount.accountBalance)} 원
+                </Text>
+              </View>
+            </React.Fragment>
+          )}
         </View>
       </View>
 
@@ -440,8 +498,15 @@ const FinishPayment = ({ route, navigation }) => {
           onPress={() => {
             if (isChecked == true) {
               // 결제 완료 API 보내기
-              // 그리고 결제완료 페이지로 ㄱㄱ?
-              navigation.replace("PayPassword", { sendData });
+              const catchData = (response) => {
+                setOrderId(response.data.data)
+              }
+          
+              const fail = (error) => {
+                console.log(error);
+              }
+              payRequestAxios(route.params.sendData.itemId, catchData, fail)
+              // navigation.replace("PayPassword", { sendData });
             } else {
               // 동의 체크하라고 alert 보내기!
               plzCheckAlert();
