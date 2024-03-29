@@ -184,7 +184,7 @@ public class AccountService {
                 if(account.isEmpty()) continue;
                 // 개인키로 계좌번호 복호화
                 String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
-                String accountNumber = RSAUtil.decode(privateKey, account.getNumber());
+                String accountNumber = RSAUtil.decode(privateKey, account.get().getNumber());
                 // 이체할 사용자를 찾았을 경우
                 if(accountNumber.equals(requestDto.getAccountNumber())) {
                     return ReadyTransferResponseDto.of(member.getMemberId(), member.getName());
