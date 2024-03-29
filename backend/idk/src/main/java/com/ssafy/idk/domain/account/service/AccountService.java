@@ -110,6 +110,7 @@ public class AccountService {
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
+        rsaKeyService.deleteRSAKey(member.getMemberId());
         accountRepository.deleteById(account.getAccountId());
     }
 
