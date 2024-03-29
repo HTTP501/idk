@@ -37,17 +37,17 @@ const Settings = ({ navigation, route }) => {
   const [isPasswordChecked, setIsPasswordChecked] = useState(false);
   
   // 다시 돌아올때 route 체크를 확인하고 해지한다
-  useFocusEffect(
-    React.useCallback(() => {
-    if (route?.params?.isChecked){
+  useEffect(()=>{
+    console.log(route)
+    if (route?.params?.data?.isChecked){
       deleteAccount()
     }
-    }, [])
-  );
+    }, [navigation])
+  
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
-  const destination = {stack:"SettingStack",screens:"Settings"}
+  const destination = {stack:"SettingStack",screen:"Settings"}
   // 계좌 별명 변경 Axios
   const handleNicknameChange = () => {
     setIsModalVisible(false);
@@ -253,7 +253,7 @@ const Settings = ({ navigation, route }) => {
                   setIsDeleteModalVisible(false);
                   navigation.navigate(
                     "AuthStack",
-                    { screen: "AuthPW",params:destination },
+                    { screen: "AuthPW",params:{data:{isChecked:false},destination} },
                     
                   );
                   // setIsChecking(true)

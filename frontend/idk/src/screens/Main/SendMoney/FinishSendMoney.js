@@ -4,7 +4,7 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
+  Dimensions,Image
 } from "react-native";
 import theme from "../../../style";
 import { useRef, useState } from "react";
@@ -13,7 +13,7 @@ const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
 // 송금 완료 페이지
 const FinishSendMoney = ({ navigation, route }) => {
-  const money = route.params.money;
+  const money = route.params.transferAmount;
   const myAccount = route.params.myAccount;
   const opponent = route.params.otherName;
 
@@ -22,12 +22,12 @@ const FinishSendMoney = ({ navigation, route }) => {
       <View className="flex-grow justify-center gap-10 items-center">
         {/*메세지 아이콘 */}
         <View>
-          <Text>메세지 아이콘</Text>
+          <Image source={require("../../../../assets/check.png")}/>
         </View>
         {/* 송금 정보 */}
         <View className="items-center">
           <Text className="font-bold text-2xl">{opponent}님에게</Text>
-          <Text className="font-bold text-2xl">{money}원을</Text>
+          <Text className="font-bold text-2xl">{formattedNumber(money)}원을</Text>
           <Text className="font-bold text-2xl">보냈어요</Text>
         </View>
         {/* 정보 */}
