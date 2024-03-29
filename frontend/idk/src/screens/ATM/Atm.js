@@ -303,7 +303,7 @@ const ATM = function ({ navigation }) {
                   )}
                 </View>
                 <View className="my-10 mx-3">
-                  <Text className="text-3xl font-bold">윤예빈님</Text>
+                  <Text className="text-3xl font-bold">내 계좌</Text>
                   <Text className="text-lg font-bold">
                     IDK 은행 {myAccountNumber}
                   </Text>

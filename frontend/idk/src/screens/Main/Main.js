@@ -34,10 +34,10 @@ import { getPiggyBankAxios } from "../../API/Saving";
 import { getPocketListAxios } from '../../API/DonPocket'
 import FilteredDonPocketList from "../../components/FilteredDonPocketList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Loading from "../../components/Loading";
 import PiggyBank from "../../components/PiggyBankItem";
 
 import { useFocusEffect } from "@react-navigation/native";
+import Loading from "../../components/Loading";
 
 // 메인 페이지
 const Main = gestureHandlerRootHOC(({ navigation }) => {
