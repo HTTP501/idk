@@ -24,7 +24,10 @@ public enum ResultCode {
     ACCOUNT_UPDATE_PWD_SUCCESS(201, "A006", "계좌 비밀번호를 변경했습니다"),
     ACCOUNT_UPDATE_INCOME_DAY_SUCCESS(201, "A007", "월급일을 변경했습니다"),
     ACCOUNT_UPDATE_MIN_AMOUNT_SUCCESS(201, "A008", "계좌의 최소보유금액을 변경했습니다"),
-    ACCOUNT_TRANSFER_SUCCESS(201, "A009", "해당 계좌로 송금했습니다"),
+
+    // TRANSFER
+    TRANSFER_SUCCESS(201, "TR001", "해당 계좌로 송금했습니다"),
+    TRANSFER_READY_SUCCESS(200, "TR002", "이체할 사용자를 조회했습니다"),
 
     // MEMBER
     MEMBER_SIGNUP_SUCCESS(201, "M001", "회원가입에 성공했습니다."),
@@ -75,6 +78,7 @@ public enum ResultCode {
     POCKET_DEPOSIT_SUCCESS(200, "P208", "해당 돈 포켓에 목표금액을 입금했습니다."),
     POCKET_WITHDRAWAL_SUCCESS(200, "P209", "해당 돈 포켓의 입금금액을 출금했습니다."),
     POCKET_GET_TRANSACTION_DETAIL_SUCCESS(200, "P210", "해당 돈 포켓 입출금 내역을 조회했습니다."),
+    POCKET_GET_LIST_SUCCESS(200, "P201", "돈 포켓 목록을 조회했습니다."),
 
     // Analyst
     ANALYST_GET_TOTAL_AMOUNT_SUCCESS(200, "AN001", "총 지출 금액을 조회했습니다."),
