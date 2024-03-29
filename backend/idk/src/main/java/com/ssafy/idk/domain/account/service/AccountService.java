@@ -253,6 +253,38 @@ public class AccountService {
     }
 
     @Transactional
+    public void atmDeposit(AmountRequestDto requestDto) {
+        Member member = authenticationService.getMemberByAuthentication();
+        Account savedAccount = deposit(member.getMemberId(), requestDto.getAmount());
+
+        Transaction transaction = Transaction.builder()
+                .category(Category.입금)
+                .content(member.getName())
+                .amount(requestDto.getAmount())
+                .balance(savedAccount.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(savedAccount)
+                .build();
+        transactionService.saveTransaction(transaction);
+    }
+
+    @Transactional
+    public void atmWithdraw(AmountRequestDto requestDto) {
+        Member member = authenticationService.getMemberByAuthentication();
+        Account savedAccount = withdraw(member.getMemberId(), requestDto.getAmount());
+
+        Transaction transaction = Transaction.builder()
+                .category(Category.출금)
+                .content(member.getName())
+                .amount(requestDto.getAmount())
+                .balance(savedAccount.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(savedAccount)
+                .build();
+        transactionService.saveTransaction(transaction);
+    }
+
+    @Transactional
     public Account withdraw(Long memberId, Long amount) { // 출금
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));

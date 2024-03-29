@@ -24,18 +24,4 @@ public class TransactionController {
     public ResponseEntity<ResultResponse> getAccount(){
         return ResponseEntity.ok(ResultResponse.of(ResultCode.ACCOUNT_GET_SUCCESS, transactionService.getTransaction()));
     }
-
-    @Operation(summary = "ATM 입금")
-    @PostMapping(value="/deposit", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResultResponse> atmDeposit(@RequestBody AmountRequestDto requestDto){
-        transactionService.atmDeposit(requestDto);
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.TRANSACTION_ATM_DEPOSIT_SUCCESS));
-    }
-
-    @Operation(summary = "ATM 출금")
-    @PostMapping(value="/withdraw", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResultResponse> atmWithdraw(@RequestBody AmountRequestDto requestDto){
-        transactionService.atmWithdraw(requestDto);
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.TRANSACTION_ATM_WITHDRAW_SUCCESS));
-    }
 }

@@ -40,4 +40,7 @@ out/
 *.yml
 *.key
 *.pem
+*.json
+*.html
 idkbank-3054b-firebase-adminsdk-by0z7-7a47c9b31d.json
+index.html

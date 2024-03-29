@@ -84,4 +84,18 @@ public class AccountController {
     public ResponseEntity<ResultResponse> transfer(@RequestBody TransferRequestDto requestDto) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.TRANSFER_SUCCESS, accountService.transfer(requestDto)));
     }
+
+    @Operation(summary = "ATM 입금")
+    @PostMapping(value="/deposit", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResultResponse> atmDeposit(@RequestBody AmountRequestDto requestDto){
+        accountService.atmDeposit(requestDto);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.TRANSACTION_ATM_DEPOSIT_SUCCESS));
+    }
+
+    @Operation(summary = "ATM 출금")
+    @PostMapping(value="/withdraw", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResultResponse> atmWithdraw(@RequestBody AmountRequestDto requestDto){
+        accountService.atmWithdraw(requestDto);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.TRANSACTION_ATM_WITHDRAW_SUCCESS));
+    }
 }

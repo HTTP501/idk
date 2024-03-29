@@ -31,7 +31,6 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final AuthenticationService authenticationService;
-    private final AccountService accountService;
     private final FcmService fcmService;
 
     public List<TransactionResponseDto> getTransaction() {
@@ -53,38 +52,6 @@ public class TransactionService {
         }
 
         return transactionResponseDtoList;
-    }
-
-    @Transactional
-    public void atmDeposit(AmountRequestDto requestDto) {
-        Member member = authenticationService.getMemberByAuthentication();
-        Account savedAccount = accountService.deposit(member.getMemberId(), requestDto.getAmount());
-
-        Transaction transaction = Transaction.builder()
-                .category(Category.입금)
-                .content(member.getName())
-                .amount(requestDto.getAmount())
-                .balance(savedAccount.getBalance())
-                .createdAt(LocalDateTime.now())
-                .account(savedAccount)
-                .build();
-        saveTransaction(transaction);
-    }
-
-    @Transactional
-    public void atmWithdraw(AmountRequestDto requestDto) {
-        Member member = authenticationService.getMemberByAuthentication();
-        Account savedAccount = accountService.withdraw(member.getMemberId(), requestDto.getAmount());
-
-        Transaction transaction = Transaction.builder()
-                .category(Category.출금)
-                .content(member.getName())
-                .amount(requestDto.getAmount())
-                .balance(savedAccount.getBalance())
-                .createdAt(LocalDateTime.now())
-                .account(savedAccount)
-                .build();
-        saveTransaction(transaction);
     }
 
     @Transactional
