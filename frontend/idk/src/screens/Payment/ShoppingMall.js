@@ -298,12 +298,13 @@ const ShoppingMall = ({ navigation }) => {
     setProducts(choice);
   };
 
-  const sendData = {
+  const data = {
     itemId: choiceId,
     name: choiceName,
     price: choicePrice,
     shop: choiceShop,
     category: products,
+    isChecked: false
   };
 
   const item = {
@@ -315,11 +316,11 @@ const ShoppingMall = ({ navigation }) => {
   useEffect(() => {
     if (isSelectAdd) {
       setIsSelectAdd(false);
-      navigation.navigate("FinishPayment", { sendData });
+      navigation.navigate("FinishPayment", { data });
     } else if (isSelectProduct && isPushBtn) {
       setIsSelectProduct(false);
       setIsPushBtn(false);
-      navigation.navigate("FinishPayment", { sendData });
+      navigation.navigate("FinishPayment", { data });
     }
   });
 
@@ -403,7 +404,7 @@ const ShoppingMall = ({ navigation }) => {
                   onPress={() => {
                     setModalVisiable(false);
                     setIsPushBtn(true);
-                    // navigation.navigate("FinishPayment", { sendData });
+                    // navigation.navigate("FinishPayment", { data });
                   }}
                 >
                   <Text style={ShoppingMallStyles.modalFont}>결제하기</Text>

@@ -33,9 +33,10 @@ const FinishPayment = ({ route, navigation }) => {
   const [myPrice, setMyPrice] = useState("");
   const [myPlz, setMyPlz] = useState("");
   // 네비게이터에 껴서 보낼 계좌 정보 상태로 저장
-  const [myAccount,setMyAccount] = useState(null);
+  const [myAccount, setMyAccount] = useState(null);
   const [isGetAccount,setisGetAccount] = useState(true);
   const [orderId, setOrderId] = useState(null);
+  const [showModalState, setShowModalState] = useState(false);
 
   // 입장시 계좌 정보 호출
   useEffect(() => {
@@ -58,12 +59,36 @@ const FinishPayment = ({ route, navigation }) => {
   }, [myAccount])
 
   // 결제 요청을 보내서 orderId를 받으면 계좌 비밀번호 입력으로 이동
-  // useEffect(() => {
-  //   if (orderId !== null) {
-  //     navigation.navigate()
-  //   }
-  // }, [orderId])
+  useEffect(() => {
+    if (orderId !== null) {
+      const destination = {stack: "PaymentStack", screen: "FinishPayment"}
+      const data = route.params.data
+      navigation.navigate("AuthPW", { data , destination })
+    }
+  }, [orderId])
 
+  // 결제 요청에서 비밀번호 인증을 받고 돌아왔다면,
+  useEffect(() => {
+    if (route.params.data.isChecked === true) {
+      const successRequest = (response) => {
+        console.log(response.data);
+        navigation.replace("PayResult", { finalData });
+      }
+
+      const fail = (error) => {
+        console.log(error);
+      }
+
+      approvalPayAxios(finishData, successRequest, fail)
+    }
+  }, [route.params.data.isChecked])
+
+  const finalData = myAccount === null ? (null) : (
+    {accountNumber: myAccount.accountNumber,
+    accountName: myAccount.accountName,
+    price: route.params.data.price})
+    
+  const modalHeight = windowHeight * 0.35;
 
   const FinishPaymentStyle = StyleSheet.create({
     container: {
@@ -141,6 +166,36 @@ const FinishPayment = ({ route, navigation }) => {
       fontWeight: "bold",
       fontSize: 23,
     },
+    backgroundModal: {
+      backgroundColor: "rgba(192, 192, 192, 0.7)",
+      width: windowWidth,
+      windowHeight: windowHeight,
+      padding: windowHeight,
+      paddingTop: "100%",
+      position: "absolute"
+    },
+    modalContainer: {
+      backgroundColor: "white",
+      height: modalHeight,
+      justifyContent: "center",
+      alignItems: "center",
+      marginHorizontal: "8%",
+      marginVertical: "50%",
+      borderRadius: 20,
+    },
+    modalFont: {
+      fontSize: 18,
+      fontWeight: "bold",
+    },
+    moveBtn: {
+      borderWidth: 1,
+      width: 300,
+      height: 50,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 5,
+      marginTop: 10,
+    },
   });
 
   const   menuImage = {
@@ -181,7 +236,7 @@ const FinishPayment = ({ route, navigation }) => {
     return number.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
   };
 
-  const newNum = formattedNumber(route.params.sendData.price);
+  const newNum = formattedNumber(route.params.data.price);
   const changeNum = formattedNumber(Number(myPrice));
 
   const showPrice = (price, format) => {
@@ -249,15 +304,15 @@ const FinishPayment = ({ route, navigation }) => {
         </Text>
         <View style={{ flexDirection: "row" }}>
             <Image
-              source={menuImage[route.params.sendData.itemId]}
+              source={menuImage[route.params.data.itemId]}
               style={{ width: 80, height: 80 }}
             />
           <View>
             <Text style={{ ...FinishPaymentStyle.addressText, marginLeft: 15 }}>
-              {route.params.sendData.shop}
+              {route.params.data.shop}
             </Text>
             <Text style={{ ...FinishPaymentStyle.addressText, marginLeft: 15 }}>
-              {route.params.sendData.name}
+              {route.params.data.name}
             </Text>
             <Text style={{ ...FinishPaymentStyle.addressText, marginLeft: 15 }}>
               {newNum}원
@@ -292,7 +347,7 @@ const FinishPayment = ({ route, navigation }) => {
         </Text>
         <View style={{ flexDirection: "row", flex: 1 }}>
           <Image
-            source={menuImage[route.params.sendData.category]}
+            source={menuImage[route.params.data.category]}
             style={{ width: 60, height: 60, marginRight: 20 , marginTop: 5}}
           />
           <View>
@@ -367,161 +422,205 @@ const FinishPayment = ({ route, navigation }) => {
   // 어떤 것을 누르고 들어왔는지에 따라 상태 설정하기
   useEffect(() => {
     setChecking(false);
-    if (route.params.sendData.name === "추가") {
+    if (route.params.data.name === "추가") {
       setProducts(null);
       setMyPrice(null);
     } else {
-      setProducts(route.params.sendData.name);
-      setMyPrice(route.params.sendData.price);
+      setProducts(route.params.data.name);
+      setMyPrice(route.params.data.price);
     }
   }, []);
 
   // 네비게이터에 같이 보낼 데이터
-  const sendData = {
-    price: myPrice,
-    // 추후에 계좌 정보 껴줘야 함!
-    // account: myAccount,
+  const finishData = {
+    orderId: orderId,
   };
+
+  // 클릭 시 모달을 종료 시킬 함수
+  const turnOffModal = () => {
+    setShowModalState(false)
+  }
 
   // 화면 출력 부분! //
   return (
-    <ScrollView style={FinishPaymentStyle.container}>
-      {/* 주소 및 받는 이 정보 부분 */}
-      <View style={FinishPaymentStyle.backBtn}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack();
-          }}
-        >
-          <MaterialIcons name="arrow-back-ios-new" size={36} color="black" />
-        </TouchableOpacity>
-        <Text style={{ marginTop: 20 }}>
+    <View style={{flex: 1}}>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={showModalState}
+        onRequestClose={() => {
+          setShowModalState(false)
+        }} 
+      >      
+        <View style={{...FinishPaymentStyle.backgroundModal}}></View>
+        <View style={{...FinishPaymentStyle.modalContainer}}>
+        
+            <Text style={{...FinishPaymentStyle.modalFont}}>
+              계좌에 남은 잔고가 모자라서 
+            </Text>
+            <Text style={{...FinishPaymentStyle.modalFont}}>
+              결제에 실패하였습니다.
+            </Text>
+            <TouchableOpacity
+              style={{
+                ...FinishPaymentStyle.moveBtn,
+                backgroundColor: theme["sky-bright-6"],
+                borderColor: theme["sky-bright-6"],
+                marginTop: 30,
+              }}
+              onPress={() => {
+                setShowModalState(false)
+              }}
+            >
+              <Text style={FinishPaymentStyle.modalFont}>
+                확인
+              </Text>
+            </TouchableOpacity>
+
+    
+        </View>
+      </Modal> 
+
+      <ScrollView style={FinishPaymentStyle.container}>
+        {/* 주소 및 받는 이 정보 부분 */}
+        <View style={FinishPaymentStyle.backBtn}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
+            }}
+          >
+            <MaterialIcons name="arrow-back-ios-new" size={36} color="black" />
+          </TouchableOpacity>
+          <Text style={{ marginTop: 20 }}>
+            <Text
+              style={{
+                ...FinishPaymentStyle.addressText,
+                color: theme["sky-bright-1"],
+                fontSize: 22,
+              }}
+            >
+              SSAFY
+            </Text>{" "}
+            <Text style={{ ...FinishPaymentStyle.addressText, fontSize: 22 }}>
+              로 받기
+            </Text>
+          </Text>
+          <Text style={FinishPaymentStyle.addressText}>
+            로컬에서 나의 이름을 가져올게요
+          </Text>
+          <Text style={FinishPaymentStyle.addressText}>
+            로컬에서 나의 전화번호를 가져올게요
+          </Text>
+          <Text style={FinishPaymentStyle.addressText}>
+            서울특별시 강남구 테헤란로 212 (역삼동 718-5번지)
+          </Text>
+          <TextInput
+            onChangeText={onChangePlz}
+            placeholder={"배송 시 요청사항"}
+            value={myPlz}
+            style={{
+              ...FinishPaymentStyle.requestInput,
+              fontWeight: "bold",
+              paddingHorizontal: 20,
+            }}
+          ></TextInput>
+        </View>
+        <View style={FinishPaymentStyle.sparateLine}>
+          <Text></Text>
+        </View>
+
+        {/* 주문 상품 정보 부분 */}
+        <View style={FinishPaymentStyle.productsInfoBox}>
+          {route.params.data.name === "추가"
+            ? (selectedAdd())
+            : (selectProducts())}
+        </View>
+
+        <View style={FinishPaymentStyle.sparateLine}></View>
+
+        {/* 결제 수단 정보 부분 */}
+        <View style={FinishPaymentStyle.payMethodBox}>
           <Text
             style={{
               ...FinishPaymentStyle.addressText,
-              color: theme["sky-bright-1"],
-              fontSize: 22,
+              fontSize: 18,
+              marginBottom: 20,
             }}
           >
-            SSAFY
-          </Text>{" "}
-          <Text style={{ ...FinishPaymentStyle.addressText, fontSize: 22 }}>
-            로 받기
+            결제수단
           </Text>
-        </Text>
-        <Text style={FinishPaymentStyle.addressText}>
-          로컬에서 나의 이름을 가져올게요
-        </Text>
-        <Text style={FinishPaymentStyle.addressText}>
-          로컬에서 나의 전화번호를 가져올게요
-        </Text>
-        <Text style={FinishPaymentStyle.addressText}>
-          서울특별시 강남구 테헤란로 212 (역삼동 718-5번지)
-        </Text>
-        <TextInput
-          onChangeText={onChangePlz}
-          placeholder={"배송 시 요청사항"}
-          value={myPlz}
-          style={{
-            ...FinishPaymentStyle.requestInput,
-            fontWeight: "bold",
-            paddingHorizontal: 20,
-          }}
-        ></TextInput>
-      </View>
-      <View style={FinishPaymentStyle.sparateLine}>
-        <Text></Text>
-      </View>
-
-      {/* 주문 상품 정보 부분 */}
-      <View style={FinishPaymentStyle.productsInfoBox}>
-        {route.params.sendData.name === "추가"
-          ? (selectedAdd())
-          : (selectProducts())}
-      </View>
-
-      <View style={FinishPaymentStyle.sparateLine}></View>
-
-      {/* 결제 수단 정보 부분 */}
-      <View style={FinishPaymentStyle.payMethodBox}>
-        <Text
-          style={{
-            ...FinishPaymentStyle.addressText,
-            fontSize: 18,
-            marginBottom: 20,
-          }}
-        >
-          결제수단
-        </Text>
-        <View
-          style={{
-            ...FinishPaymentStyle.payMethodStyle,
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          {isGetAccount ? (<ActivityIndicator size={"large"} color={theme["sky-basic"]} style={{marginVertical: 25,}} />) : (
-            <React.Fragment>
-              <View style={{ marginLeft: "5%" }}>
-                <Text style={{ fontWeight: "bold", fontSize: 15 }}>
-                  {myAccount.accountName}
-                </Text>
-                <Text>{myAccount.accountNumber}</Text>
-              </View>
-              <View>
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: 15,
-                    marginRight: 20,
-                  }}
-                >
-                  {formattedNumber(myAccount.accountBalance)} 원
-                </Text>
-              </View>
-            </React.Fragment>
-          )}
-        </View>
-      </View>
-
-      <View style={FinishPaymentStyle.sparateLine}></View>
-
-      {/* 결제 결과 정보 부분 */}
-      <View style={FinishPaymentStyle.resultBox}>
-        {showPrice(newNum, "상품금액")}
-        {showPrice(0, "할인가")}
-        {/* 경계선 */}
-        <View style={FinishPaymentStyle.makeLine}></View>
-        {showPrice(newNum, "총 결제금액")}
-        {/* 버튼 부분 */}
-        <TouchableOpacity
-          onPress={() => {
-            if (isChecked == true) {
-              // 결제 완료 API 보내기
-              const catchData = (response) => {
-                setOrderId(response.data.data)
-              }
-          
-              const fail = (error) => {
-                console.log(error);
-              }
-              payRequestAxios(route.params.sendData.itemId, catchData, fail)
-              // navigation.replace("PayPassword", { sendData });
-            } else {
-              // 동의 체크하라고 alert 보내기!
-              plzCheckAlert();
-            }
-          }}
-        >
-          <View style={{ ...FinishPaymentStyle.purchaseBtn }}>
-            <Text style={{ ...FinishPaymentStyle.btnFont }}>
-              동의하고 결제하기
-            </Text>
+          <View
+            style={{
+              ...FinishPaymentStyle.payMethodStyle,
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            {isGetAccount ? (<ActivityIndicator size={"large"} color={theme["sky-basic"]} style={{marginVertical: 25,}} />) : (
+              <React.Fragment>
+                <View style={{ marginLeft: "5%" }}>
+                  <Text style={{ fontWeight: "bold", fontSize: 15 }}>
+                    {myAccount.accountName}
+                  </Text>
+                  <Text>{myAccount.accountNumber}</Text>
+                </View>
+                <View>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: 15,
+                      marginRight: 20,
+                    }}
+                  >
+                    {formattedNumber(myAccount.accountBalance)} 원
+                  </Text>
+                </View>
+              </React.Fragment>
+            )}
           </View>
-        </TouchableOpacity>
-        {checkPart()}
-      </View>
-    </ScrollView>
+        </View>
+
+        <View style={FinishPaymentStyle.sparateLine}></View>
+
+        {/* 결제 결과 정보 부분 */}
+        <View style={FinishPaymentStyle.resultBox}>
+          {showPrice(newNum, "상품금액")}
+          {showPrice(0, "할인가")}
+          {/* 경계선 */}
+          <View style={FinishPaymentStyle.makeLine}></View>
+          {showPrice(newNum, "총 결제금액")}
+          {/* 버튼 부분 */}
+          <TouchableOpacity
+            onPress={() => {
+              if (isChecked == true) {
+                // 결제 완료 API 보내기
+                const catchData = (response) => {
+                  setOrderId(response.data.data)
+                }
+            
+                const fail = (error) => {
+                  console.log(error);
+                  if (error.response.data.code === "P403") {
+                    setShowModalState(true)
+                  }
+                }
+                payRequestAxios(route.params.data.itemId, catchData, fail)
+              } else {
+                // 동의 체크하라고 alert 보내기!
+                plzCheckAlert();
+              }
+            }}
+          >
+            <View style={{ ...FinishPaymentStyle.purchaseBtn }}>
+              <Text style={{ ...FinishPaymentStyle.btnFont }}>
+                동의하고 결제하기
+              </Text>
+            </View>
+          </TouchableOpacity>
+          {checkPart()}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
