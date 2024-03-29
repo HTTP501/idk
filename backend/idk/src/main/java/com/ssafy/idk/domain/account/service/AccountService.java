@@ -180,9 +180,8 @@ public class AccountService {
         if (requestDto.getBankName().equals("IDK은행")) {
             List<Member> memberList = memberRepository.findAll();
             for(Member member : memberList) {
-                Account account = accountRepository.findByMember(member).get();
-                // 계좌없는 회원 처리
-                if(account == null) continue;
+                Optional<Account> account = accountRepository.findByMember(member);
+                if(account.isEmpty()) continue;
                 // 개인키로 계좌번호 복호화
                 String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
                 String accountNumber = RSAUtil.decode(privateKey, account.getNumber());
