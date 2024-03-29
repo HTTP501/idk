@@ -21,6 +21,12 @@ public class PocketController {
 
     private final PocketService pocketService;
 
+    @Operation(summary = "돈 포켓 목록 조회")
+    @GetMapping(value = "/account/{accountId}")
+    public ResponseEntity<ResultResponse> getArrayPocket(@PathVariable(name = "accountId") Long accountId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_GET_LIST_SUCCESS, pocketService.getArrayPocket(accountId)));
+    }
+
     @Operation(summary = "자동이체 돈 포켓 가입")
     @PostMapping(value = "/auto-transfer")
     public ResponseEntity<ResultResponse> createPocketAutoTransfer(@RequestBody PocketCreateAutoTransferRequestDto requestDto) {
@@ -34,7 +40,7 @@ public class PocketController {
     }
 
     @Operation(summary = "돈 포켓 입출금 내역 상세 조회")
-    @GetMapping(value = "/{pocketId}/transaction/{transaction}")
+    @GetMapping(value = "/{pocketId}/transaction/{transactionId}")
     public ResponseEntity<ResultResponse> getPocketTransactionDetail(@PathVariable(name = "pocketId") Long pocketId, @PathVariable(name = "transactionId") Long transactionId) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_GET_TRANSACTION_DETAIL_SUCCESS, pocketService.getPocketTransactionDetail(pocketId, transactionId)));
     }
@@ -56,4 +62,17 @@ public class PocketController {
     public ResponseEntity<ResultResponse> updatePocketIsActivated(@PathVariable(name = "pocketId") Long pocketId) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_UPDATE_IS_ACTIVATED_SUCCESS, pocketService.updatePocketIsActivated(pocketId)));
     }
+
+    @Operation(summary = "돈 포켓 입금")
+    @PatchMapping(value = "/{pocketId}/deposit")
+    public ResponseEntity<ResultResponse> depositPocket(@PathVariable(name = "pocketId") Long pocketId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_DEPOSIT_SUCCESS, pocketService.depositPocket(pocketId)));
+    }
+
+    @Operation(summary = "돈 포켓 출금")
+    @PatchMapping(value = "/{pocketId}/withdrawal")
+    public ResponseEntity<ResultResponse> withdrawalPocket(@PathVariable(name = "pocketId") Long pocketId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_WITHDRAWAL_SUCCESS, pocketService.withdrawPocket(pocketId)));
+    }
+
 }
