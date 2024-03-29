@@ -1,6 +1,5 @@
 package com.ssafy.idk.domain.mydata.controller;
 
-import com.ssafy.idk.domain.mydata.dto.request.MydataAgreeRequestDto;
 import com.ssafy.idk.domain.mydata.dto.request.MydataConnectRequestDto;
 import com.ssafy.idk.domain.mydata.service.MydataService;
 import com.ssafy.idk.global.result.ResultCode;
@@ -24,9 +23,9 @@ public class MydataController {
 
     @Operation(summary = "마이데이터 동의")
     @PostMapping("/agree")
-    public ResponseEntity<ResultResponse> agreeMydata(@Valid @RequestBody MydataAgreeRequestDto requestDto) {
+    public ResponseEntity<ResultResponse> agreeMydata() {
 
-        mydataService.agreeMydata(requestDto.getName(), requestDto.getConnectionInformation());
+        mydataService.agreeMydata();
         return ResponseEntity.ok(ResultResponse.of(ResultCode.IDK_MYDATA_AGREE_SUCCESS));
     }
     @Operation(summary = "마이데이터 자산 연결")
@@ -39,7 +38,7 @@ public class MydataController {
 
     @Operation(summary = "마이데이터 조회")
     @GetMapping("/")
-    public ResponseEntity<ResultResponse> getMydata(@RequestParam("orgList") List<String> orgList) {
+    public ResponseEntity<ResultResponse> getMydata() {
 
         mydataService.getMydata();
         return ResponseEntity.ok(ResultResponse.of(ResultCode.IDK_MYDATA_GET_SUCCESS));

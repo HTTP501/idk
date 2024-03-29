@@ -51,11 +51,11 @@ public class Member {
     @Column(name = "mydata_agreed")
     private Boolean mydataAgreed;
 
-    @Column(name = "digital_signature", length = 10000)
-    private String digitalSignature;
-
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Mydata> mydataList;
+
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Signature signature;
 
     @PrePersist
     public void prePersist() {
@@ -75,10 +75,6 @@ public class Member {
 
     public void updateTransactionPushEnabled() {
         this.transactionPushEnabled = !this.transactionPushEnabled;
-    }
-
-    public void updateDigitalSignature(String digitalSignature) {
-        this.digitalSignature = digitalSignature;
     }
 
     public void updateMydataAgreed() {

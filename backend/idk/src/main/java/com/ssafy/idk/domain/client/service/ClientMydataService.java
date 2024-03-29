@@ -24,15 +24,20 @@ public class ClientMydataService {
     @Value("${spring.mydata.mydata-url}")
     private String mydataUrl;
 
+    @Value("${spring.mydata.client-id}")
+    private String clientId;
+
+    @Value("${spring.mydata.client-secret}")
+    private String clientSecret;
 
     // 유저 마이데이터 이용 동의 요청 (POST)
-    public void agreeMydata(String name, String connectionInformation) {
+    public void agreeMydata(String name, String phoneNumber, String connectionInformation) {
 
         // MYDATA 서버에 사용자가 동의했음을 알리기
         String mydataServerUrl = mydataUrl.concat("/api/mydata/agree");
 
         // 요청 본문 생성
-        AgreeRequestToMydataDto agreeToMydataRequestDto = AgreeRequestToMydataDto.of(name, connectionInformation);
+        AgreeRequestToMydataDto agreeToMydataRequestDto = AgreeRequestToMydataDto.of(name, phoneNumber, connectionInformation);
 
         // MYDATA 서버에 요청, 응답
         ResponseEntity<Void> responseEntity = restTemplate.postForEntity(mydataServerUrl, agreeToMydataRequestDto, Void.class);
@@ -44,10 +49,11 @@ public class ClientMydataService {
     }
 
     // idk -> mydata 통합인증요청 (POST)
-    public List<Map<String, String>> certify() {
+    public List<Map<String, String>> certify(String connectionInformation, String consentInformation, String digitalSignature) {
         String mydataServerUrl = mydataUrl.concat("/api/mydata/certify");
 
-        CertifyRequestToMydataDto certifyRequestToMydataDto = CertifyRequestToMydataDto.of();
+        // CertifyRequestToMydataDto 객체 생성
+        CertifyRequestToMydataDto certifyRequestToMydataDto = CertifyRequestToMydataDto.of(clientId, clientSecret, connectionInformation, consentInformation, digitalSignature)
 
         ResponseEntity<CertifyResponseFromMydataDto> responseEntity = restTemplate.postForEntity(mydataServerUrl, certifyRequestToMydataDto, CertifyResponseFromMydataDto.class);
 

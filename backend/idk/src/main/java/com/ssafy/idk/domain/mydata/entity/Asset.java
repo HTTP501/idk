@@ -18,8 +18,20 @@ public class  Asset {
     @Column(name = "account_number")
     private String accountNumber;
 
-    @Column(name = "payment_receiver")
-    private String paymentReceiver;
+    @Column(name = "designated_org_name")
+    private String designatedOrgName;
+
+    @Column(name = "designated_org_code")
+    private String designatedOrgCode;
+
+    @Column(name = "scheduled_amount")
+    private Long scheduledAmount;
+
+    @Column(name = "scheduled_date")
+    private Integer scheduledDate;
+
+    @Column(name = "is_linked")
+    private Boolean isLinked;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mydata_id")

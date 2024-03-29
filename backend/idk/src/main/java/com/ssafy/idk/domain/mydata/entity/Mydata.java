@@ -26,6 +26,9 @@ public class Mydata {
     @JoinColumn(name = "org_id")
     private Organization organization;
 
+    @Column(name = "token")
+    private String token;
+
     @OneToMany(mappedBy = "mydata", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Asset> assetList;
 
