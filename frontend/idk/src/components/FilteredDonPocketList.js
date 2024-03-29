@@ -8,7 +8,7 @@ import formattedNumber from "./moneyFormatter";
 import theme from "../style";
 
 // 돈포켓 리스트
-const FilteredDonPocketList = function ({ navigation, filteredPocketData }) {
+const FilteredDonPocketList = function ({ navigation, filteredPocketData, fetchData }) {
   // 필터된 돈포켓 데이터
   const data = filteredPocketData;
   const RenderItem = ({ data }) => {
@@ -17,13 +17,12 @@ const FilteredDonPocketList = function ({ navigation, filteredPocketData }) {
     return (
       <TouchableOpacity
         onPress={() => {
-          console.log("상세 페이지 이동");
           navigation.navigate("DetailPocket", { pocketData: data });
         }}
         activeOpacity={1}
         style={[styles.donpocketlist]}
       >
-        <DonPocket item={data} isActive={null} isFiltered={true}/>
+        <DonPocket item={data} isActive={null} isFiltered={true} fetchData={fetchData}/>
       </TouchableOpacity>
     );
   };
