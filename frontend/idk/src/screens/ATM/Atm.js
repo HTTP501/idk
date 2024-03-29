@@ -61,7 +61,7 @@ const ATM = function ({ navigation }) {
   let [enterMoney, setEnterMoney] = useState(false);
   let [outMoney, setOutMoney] = useState(false);
   let [money, setMoney] = useState(0);
-  let [myAccountAmount,setMyAccountAmount] = useState(0)
+  let [myAccountAmount, setMyAccountAmount] = useState(0)
   const getAccount = async () => {
     // 계좌 조회 Axios
     await getAccountAxios(
@@ -85,28 +85,52 @@ const ATM = function ({ navigation }) {
       }
     );
   };
-  
+
   // 입금
   const DepositMyAccount = function () {
     DepositMyAccountAxios(
       (data = { amount: Number(money) }),
       (res) => {
         console.log("성공", res);
+        setEnterMoney(false)
+        setOutMoney(false)
+        Alert.alert(
+          "입금을 완료하였습니다.",
+          "메인 페이지로 이동합니다.",
+          [
+            {
+              text: "확인",
+              onPress: () => navigation.navigate("Main"),
+            },
+          ]
+        );
       },
       (err) => {
         console.log("실패", err);
       }
     );
   };
-  useEffect(()=>{
+  useEffect(() => {
     getAccount()
-  },[])
-  // 입금
+  }, [])
+  // 출금
   const WithdrawMyAccount = function () {
     WithdrawMyAccountAxios(
       (data = { amount: Number(money) }),
       (res) => {
         console.log("성공", res);
+        setEnterMoney(false)
+        setOutMoney(false)
+        Alert.alert(
+          "출금을 완료하였습니다.",
+          "메인 페이지로 이동합니다.",
+          [
+            {
+              text: "확인",
+              onPress: () => navigation.navigate("Main"),
+            },
+          ]
+        );
       },
       (err) => {
         console.log("실패", err);
@@ -138,7 +162,7 @@ const ATM = function ({ navigation }) {
     if (item.text === "정정") {
       bgColor = theme.red;
     } else {
-      bgColor = theme.grey;
+      bgColor = theme["sky-bright-6"];
     }
 
     return (
@@ -148,36 +172,37 @@ const ATM = function ({ navigation }) {
           changeMoney(item.text);
         }}
       >
-        <LinearGradient
-          colors={["#e3e3e3", "#969696"]}
-          className="py-1 items-center rounded-lg"
+        <View
+          className="items-center rounded-lg"
           style={{
             width: SCREEN_WIDTH * (1 / 4),
-            //   backgroundColor: bgColor,
+            // backgroundColor:theme["sky-bright-2"]
+            backgroundColor: bgColor,
             margin: 3,
-            borderWidth: 3,
-            borderColor: "#444444",
+            borderWidth: 2,
+            borderColor: theme["sky-darkness-2"],
           }}
         >
-          <Text className="text-2xl font-bold">{item.text}</Text>
-        </LinearGradient>
+          <Text className="text-xl py-1 font-bold">{item.text}</Text>
+        </View>
       </TouchableOpacity>
     );
   };
   return (
     <View className="flex">
-      <LinearGradient
-        colors={["#e3e3e3", "#969696"]}
+      <View
+        style={{ backgroundColor: theme["sky-bright-4"] }}
         className="h-full w-full "
       >
         <View
           className="mx-10 mt-20 flex"
           style={[
-            styles.darkblue,
+            // styles.darkblue,
             {
+              backgroundColor: theme["sky-bright-6"],
               height: SCREEN_HEIGHT * 0.56,
               borderWidth: 3,
-              borderColor: "#444444",
+              borderColor: theme["sky-darkness-2"],
               borderRadius: 10,
             },
           ]}
@@ -187,8 +212,9 @@ const ATM = function ({ navigation }) {
           <View>
             {/* 온라인 ATM 제목 */}
 
-            <View className="flex items-center m-5 border border-white py-2">
-              <Text className="text-2xl font-bold text-white">온라인 ATM</Text>
+            <View style={{ borderWidth: 2, borderColor: theme["sky-darkness-2"] }}
+              className="flex items-center m-5 py-2 rounded-lg">
+              <Text className="text-2xl font-bold" style={{ color: theme["sky-darkness-2"] }}>온라인 ATM</Text>
             </View>
             {enterMoney === false && outMoney === false ? (
               <View>
@@ -207,12 +233,12 @@ const ATM = function ({ navigation }) {
                       setOutMoney(false);
                     }}
                   >
-                    <LinearGradient
+                    <View
                       className="items-center rounded-lg w-full py-5 mb-5"
-                      colors={["#e3e3e3", "#969696"]}
+                      style={{ backgroundColor: theme["sky-bright-3"] }}
                     >
                       <Text className="text-2xl font-bold">입금</Text>
-                    </LinearGradient>
+                    </View>
                   </TouchableOpacity>
                   <TouchableOpacity
                     activeOpacity={0.6}
@@ -222,12 +248,12 @@ const ATM = function ({ navigation }) {
                       setEnterMoney(false);
                     }}
                   >
-                    <LinearGradient
+                    <View
                       className="items-center rounded-lg w-full py-5"
-                      colors={["#e3e3e3", "#969696"]}
+                      style={{ backgroundColor: theme["sky-basic"] }}
                     >
                       <Text className="text-2xl font-bold">출금</Text>
-                    </LinearGradient>
+                    </View>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -255,16 +281,7 @@ const ATM = function ({ navigation }) {
                       onPress={() => {
                         DepositMyAccount();
 
-                        Alert.alert(
-                          "입금을 완료하였습니다.",
-                          "메인 페이지로 이동합니다.",
-                          [
-                            {
-                              text: "확인",
-                              onPress: () => navigation.navigate("Main"),
-                            },
-                          ]
-                        );
+
                       }}
                     >
                       <Text className="text-lg font-bold">입금</Text>
@@ -275,16 +292,7 @@ const ATM = function ({ navigation }) {
                       style={{ backgroundColor: theme.grey }}
                       onPress={() => {
                         WithdrawMyAccount();
-                        Alert.alert(
-                          "출금을 완료하였습니다.",
-                          "메인 페이지로 이동합니다.",
-                          [
-                            {
-                              text: "확인",
-                              onPress: () => navigation.navigate("Main"),
-                            },
-                          ]
-                        );
+
                       }}
                     >
                       <Text className="text-lg font-bold">출금</Text>
@@ -321,7 +329,7 @@ const ATM = function ({ navigation }) {
             numColumns={3}
             // className="justify-between"
             contentContainerStyle={{
-              height: SCREEN_HEIGHT * 0.44,
+              // height: SCREEN_HEIGHT * 0.35,
               marginTop: 10,
               marginBottom: 30,
               display: "flex",
@@ -330,13 +338,13 @@ const ATM = function ({ navigation }) {
           />
         ) : (
           <Text
-            className="text-center font-bold mt-10"
+            className="text-center font-bold mt-10 text-white"
             style={{ fontSize: 80 }}
           >
             ATM
           </Text>
         )}
-      </LinearGradient>
+      </View>
     </View>
   );
 };
