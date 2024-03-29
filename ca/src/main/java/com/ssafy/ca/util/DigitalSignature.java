@@ -1,5 +1,6 @@
 package com.ssafy.ca.util;
 
+import com.ssafy.ca.domain.Member;
 import com.ssafy.ca.exception.CaException;
 import com.ssafy.ca.global.error.ErrorCode;
 import org.springframework.core.io.ClassPathResource;

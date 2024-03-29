@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum ErrorCode {
 
     CA_REQUEST_INVALID(400, "C400", "유효하지 않은 요청입니다."),
+    CA_TRANSFOMR_FAILED(400, "C400", "데이터 변환을 실패했습니다."),
     CA_CI_CREATE_FAILED(500, "C500", "CI 생성에 실패했습니다."),
     CA_CI_NOT_EXIST(404, "C404", "CI가 존재하지 않습니다."),
     CA_MEMBER_DUPLICATED(409, "C409", "이미 존재하는 사용자입니다."),

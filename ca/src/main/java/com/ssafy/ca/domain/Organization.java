@@ -21,13 +21,12 @@ public class Organization {
     @Column(name = "org_code")
     private String orgCode;
 
+    @Column(name = "org_name")
+    private String orgName;
+
     @Column(name = "org_type")
     private OrganizationType orgType;
 
     @Column(name = "token")
     private String token;
-
-    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<OrganizationMember> organizationMembers;
-
 }

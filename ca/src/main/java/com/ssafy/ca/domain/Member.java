@@ -30,14 +30,4 @@ public class Member {
 
     @Column(name = "connection_information")
     private String connectionInformation;
-
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<OrganizationMember> organizationMembers;
-
-//    @Column(name = "digital_signature", length = 1000, unique = true)
-//    private String digitalSignature;
-//
-//    public void updateDigitalSignature(String digitalSignature) {
-//        this.digitalSignature = digitalSignature;
-//    }
 }

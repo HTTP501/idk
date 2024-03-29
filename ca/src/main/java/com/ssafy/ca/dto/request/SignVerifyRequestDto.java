@@ -1,4 +1,4 @@
-package com.ssafy.ca.dto;
+package com.ssafy.ca.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +7,6 @@ import lombok.Setter;
 @Setter
 public class SignVerifyRequestDto {
 
-    private String connectionInformation;
+    private String consentInfo;
     private String digitalSignature;
-    private String orgCode;
 }
