@@ -10,54 +10,83 @@ import {
   Dimensions,
 } from "react-native";
 import formattedNumber from "../../../components/moneyFormatter";
-
+import { getAccountAxios } from "../../../API/Account";
 // 입금액 수정 페이지
-const EnterMoney = ({ navigation,route }) => {
-  let [money, setMoney] = useState(0);
-  const originAccount = 1000000;
-  let [myAccount, setMyAccount] = useState(originAccount);
-  const otherAccount = { name:'김영준', bankName: route.params.bankName, accountId: route.params.accountId };
-  
+const EnterMoney = ({ navigation, route }) => {
+  // 들어오자마자 계좌 조회 -> 잔액 확인
+  useEffect(() => {
+    getMyAccount();
+  }, []);
+
+  // 계좌 조회
+  const getMyAccount = async () => {
+    await getAccountAxios(
+      (res) => {
+        console.log(res.data.data.accountBalance);
+        setMyAccount(res.data.data.accountBalance);
+        setOriginAccount(res.data.data.accountBalance);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
+  let [transferAmount, setTransferAmount] = useState(0);
+  let [originAccount,setOriginAccount] = useState(0)
+  let [myAccount, setMyAccount] = useState(0);
+
+  const accountNumber = route.params.data.accountNumber;
+  const transferBank = route.params.data.transferBank;
+  const memberName = route.params.data.memberName;
+  const memberId = route.params.data.memberId;
+  // params data
+  const data = {
+    accountNumber: accountNumber,
+    transferBank: transferBank,
+    memberName: memberName,
+    memberId: memberId,
+    transferAmount: transferAmount,
+    myAccount: myAccount,
+    isChecked:false,
+  };
   // 입금액 변경 함수
-  const changeMoney = function (number) {
+  const changeTransferAmount = function (number) {
     if (number == "00") {
-      setMoney(money * 100);
+      setTransferAmount(transferAmount * 100);
     } else if (number == "D") {
-      const last = money % 10;
-      setMoney((money - last) / 10);
+      const last = transferAmount % 10;
+      setTransferAmount((transferAmount - last) / 10);
     } else {
-      setMoney(money * 10 + Number(number));
+      setTransferAmount(transferAmount * 10 + Number(number));
     }
   };
-  
+
   // 입력한 돈이 변경될때마다 잔액 업데이트
-  useEffect(()=>{
-    if (money > originAccount) {
-      
+  useEffect(() => {
+    if (transferAmount > originAccount) {
       alert("잔액보다 큰 금액 인출 못함");
-      setMoney(0);
-      setMyAccount(originAccount)
+      setTransferAmount(0);
+      setMyAccount(originAccount);
     } else {
-      setMyAccount(originAccount-money)
+      setMyAccount(originAccount - transferAmount);
     }
-  },[money])
+  }, [transferAmount]);
 
   return (
     <View style={styles.container}>
-
       {/* 상대방 정보 */}
       <View style={styles.topView}>
-        <Text className="text-3xl font-bold mb-3 ">{otherAccount.name}님</Text>
+        <Text className="text-3xl font-bold mb-3 ">{memberName}님</Text>
         <Text>
-          {otherAccount.bankName} {otherAccount.accountId}
+          {transferBank} {accountNumber}
         </Text>
       </View>
-      
+
       {/* 금액 정보 */}
       <View style={styles.middleView}>
         <View className="items-center">
           <Text className="text-3xl font-bold mb-3">
-            {formattedNumber(money)}원
+            {formattedNumber(transferAmount)}원
           </Text>
           <Text>잔액 {formattedNumber(myAccount)}원</Text>
         </View>
@@ -67,17 +96,19 @@ const EnterMoney = ({ navigation,route }) => {
       <View style={styles.bottomView}>
         {/* 다음 버튼 */}
         <TouchableOpacity
-          style={styles.button}
+          disabled={!transferAmount>0}
+          style={[styles.button,{ backgroundColor: transferAmount>0 ? theme["sky-basic"] : theme["sky-bright-4"] }]}
+          
           className="bg-blue-400"
           onPress={() => {
             // 확인 페이지 이동
-            navigation.navigate("CheckSendMoneyInfo",{otherAccount,money, myAccount});
+            navigation.navigate("CheckSendMoneyInfo", { data });
           }}
         >
           <Text className="text-xl font-bold text-white">다음</Text>
         </TouchableOpacity>
         {/* 키보드 */}
-        <KeyBoard changeMoney={(num) => changeMoney(num)} />
+        <KeyBoard changeTransferAmount={(num) => changeTransferAmount(num)} />
       </View>
     </View>
   );
@@ -91,7 +122,7 @@ const KeyBoard = function (props) {
         <TouchableOpacity
           className="px-10 py-5"
           onPress={() => {
-            props.changeMoney(1);
+            props.changeTransferAmount(1);
           }}
         >
           <Text className="text-3xl text-center">1</Text>
@@ -99,7 +130,7 @@ const KeyBoard = function (props) {
         <TouchableOpacity
           className="px-10 py-5"
           onPress={() => {
-            props.changeMoney(2);
+            props.changeTransferAmount(2);
           }}
         >
           <Text className="text-3xl text-center">2</Text>
@@ -107,7 +138,7 @@ const KeyBoard = function (props) {
         <TouchableOpacity
           className="px-10 py-5"
           onPress={() => {
-            props.changeMoney(3);
+            props.changeTransferAmount(3);
           }}
         >
           <Text className="text-3xl text-center">3</Text>
@@ -117,7 +148,7 @@ const KeyBoard = function (props) {
         <TouchableOpacity
           className="px-10 py-5"
           onPress={() => {
-            props.changeMoney(4);
+            props.changeTransferAmount(4);
           }}
         >
           <Text className="text-3xl text-center">4</Text>
@@ -125,7 +156,7 @@ const KeyBoard = function (props) {
         <TouchableOpacity
           className="px-10 py-5"
           onPress={() => {
-            props.changeMoney(5);
+            props.changeTransferAmount(5);
           }}
         >
           <Text className="text-3xl text-center">5</Text>
@@ -133,7 +164,7 @@ const KeyBoard = function (props) {
         <TouchableOpacity
           className="px-10 py-5"
           onPress={() => {
-            props.changeMoney(6);
+            props.changeTransferAmount(6);
           }}
         >
           <Text className="text-3xl text-center">6</Text>
@@ -143,7 +174,7 @@ const KeyBoard = function (props) {
         <TouchableOpacity
           className="px-10 py-5"
           onPress={() => {
-            props.changeMoney(7);
+            props.changeTransferAmount(7);
           }}
         >
           <Text className="text-3xl text-center">7</Text>
@@ -151,7 +182,7 @@ const KeyBoard = function (props) {
         <TouchableOpacity
           className="px-10 py-5"
           onPress={() => {
-            props.changeMoney(8);
+            props.changeTransferAmount(8);
           }}
         >
           <Text className="text-3xl text-center">8</Text>
@@ -159,7 +190,7 @@ const KeyBoard = function (props) {
         <TouchableOpacity
           className="px-10 py-5"
           onPress={() => {
-            props.changeMoney(9);
+            props.changeTransferAmount(9);
           }}
         >
           <Text className="text-3xl text-center">9</Text>
@@ -169,7 +200,7 @@ const KeyBoard = function (props) {
         <TouchableOpacity
           className="px-10 py-5"
           onPress={() => {
-            props.changeMoney("00");
+            props.changeTransferAmount("00");
           }}
         >
           <Text className="text-3xl text-center">00</Text>
@@ -177,7 +208,7 @@ const KeyBoard = function (props) {
         <TouchableOpacity
           className="px-10 py-5"
           onPress={() => {
-            props.changeMoney(0);
+            props.changeTransferAmount(0);
           }}
         >
           <Text className="text-3xl text-center">0</Text>
@@ -185,7 +216,7 @@ const KeyBoard = function (props) {
         <TouchableOpacity
           className="px-10 py-5"
           onPress={() => {
-            props.changeMoney("D");
+            props.changeTransferAmount("D");
           }}
         >
           <Text className="text-3xl text-center">D</Text>
@@ -213,7 +244,7 @@ const styles = StyleSheet.create({
   },
   middleView: {
     flex: 1.5,
-    justifyContent:'center',
+    justifyContent: "center",
   },
   bottomView: {
     flex: 2,
