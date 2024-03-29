@@ -30,7 +30,7 @@ function SettingStack({ navigation }) {
         screenOptions={{ 
           headerTransparent: true, 
         }}>
-        <Stack.Screen name="Settings" component={Settings} options={{ headerLeft: () => renderBackButton('Settings'), title: '설정' }} />
+        <Stack.Screen name="Settings" component={Settings} options={{ headerLeft: () => renderBackButton('Settings'), title: '설정'}} />
         <Stack.Screen name="ChangeAccountName" component={ChangeAccountName} options={{ title: '설정' }} />
         <Stack.Screen name="ChangeAccountPW" component={ChangeAccountPW} options={{ headerLeft: () => renderBackButton(), title: '설정' }} />
         <Stack.Screen name="ChangeLeastHoldMoney" component={ChangeLeastHoldMoney} options={{ headerLeft: () => renderBackButton(), title: '설정' }} />
