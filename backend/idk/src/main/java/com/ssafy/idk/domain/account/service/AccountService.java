@@ -11,7 +11,6 @@ import com.ssafy.idk.domain.account.dto.response.TransferResponseDto;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.exception.TransferException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
-import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
@@ -39,7 +38,7 @@ public class AccountService {
     private final MemberRepository memberRepository;
     private final PasswordEncryptUtil passwordEncryptUtil;
     private final RSAKeyService rsaKeyService;
-    private final TransactionRepository transactionRepository;
+    private final TransactionService transactionService;
     private final AuthenticationService authenticationService;
 
     @Transactional
@@ -217,21 +216,20 @@ public class AccountService {
                     .createdAt(LocalDateTime.now())
                     .account(receiveAccount)
                     .build();
-            transactionRepository.save(transaction);
+            transactionService.saveTransaction(transaction);
         }
         
         // 보낸사람 출금
         Account savedAccount = withdraw(member.getMemberId(), requestDto.getTransferAmount());
         Transaction transaction = Transaction.builder()
-                .category(Category.송금)
+                .category(Category.출금)
                 .content(requestDto.getMyPaymentContent())
                 .amount(requestDto.getTransferAmount())
                 .balance(savedAccount.getBalance())
                 .createdAt(LocalDateTime.now())
                 .account(savedAccount)
                 .build();
-        Transaction savedTransaction = transactionRepository.save(transaction);
-
+        Transaction savedTransaction = transactionService.saveTransaction(transaction);
         return TransferResponseDto.of(savedTransaction.getAmount(), savedTransaction.getBalance());
     }
 
@@ -252,6 +250,38 @@ public class AccountService {
         }
         int checksum = (11 - (sum % 11)) % 10;
         return checksum == Integer.parseInt(String.valueOf(accountNumber.charAt(11)));
+    }
+
+    @Transactional
+    public void atmDeposit(AmountRequestDto requestDto) {
+        Member member = authenticationService.getMemberByAuthentication();
+        Account savedAccount = deposit(member.getMemberId(), requestDto.getAmount());
+
+        Transaction transaction = Transaction.builder()
+                .category(Category.입금)
+                .content(member.getName())
+                .amount(requestDto.getAmount())
+                .balance(savedAccount.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(savedAccount)
+                .build();
+        transactionService.saveTransaction(transaction);
+    }
+
+    @Transactional
+    public void atmWithdraw(AmountRequestDto requestDto) {
+        Member member = authenticationService.getMemberByAuthentication();
+        Account savedAccount = withdraw(member.getMemberId(), requestDto.getAmount());
+
+        Transaction transaction = Transaction.builder()
+                .category(Category.출금)
+                .content(member.getName())
+                .amount(requestDto.getAmount())
+                .balance(savedAccount.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(savedAccount)
+                .build();
+        transactionService.saveTransaction(transaction);
     }
 
     @Transactional

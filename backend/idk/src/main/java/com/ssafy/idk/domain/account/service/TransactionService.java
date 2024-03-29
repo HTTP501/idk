@@ -8,6 +8,7 @@ import com.ssafy.idk.domain.account.dto.response.TransactionResponseDto;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
+import com.ssafy.idk.domain.fcm.service.FcmService;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.global.error.ErrorCode;
@@ -30,7 +31,7 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final AuthenticationService authenticationService;
-    private final AccountService accountService;
+    private final FcmService fcmService;
 
     public List<TransactionResponseDto> getTransaction() {
         Member member = authenticationService.getMemberByAuthentication();
@@ -54,35 +55,19 @@ public class TransactionService {
     }
 
     @Transactional
-    public void atmDeposit(AmountRequestDto requestDto) {
-        Member member = authenticationService.getMemberByAuthentication();
-        Account savedAccount = accountService.deposit(member.getMemberId(), requestDto.getAmount());
+    public Transaction saveTransaction(Transaction transaction) {
+        if(transaction.getCategory() == Category.입금)
+            fcmService.depositAlarm(transaction.getAccount(),
+                    transaction.getAmount(),
+                    transaction.getContent()
+            );
+        if(transaction.getCategory() == Category.출금)
+            fcmService.withdrawAlarm(transaction.getAccount(),
+                    transaction.getAmount(),
+                    transaction.getContent()
+            );
 
-        Transaction transaction = Transaction.builder()
-                .category(Category.입금)
-                .content(member.getName())
-                .amount(requestDto.getAmount())
-                .balance(savedAccount.getBalance())
-                .createdAt(LocalDateTime.now())
-                .account(savedAccount)
-                .build();
-        transactionRepository.save(transaction);
-    }
-
-    @Transactional
-    public void atmWithdraw(AmountRequestDto requestDto) {
-        Member member = authenticationService.getMemberByAuthentication();
-        Account savedAccount = accountService.withdraw(member.getMemberId(), requestDto.getAmount());
-
-        Transaction transaction = Transaction.builder()
-                .category(Category.출금)
-                .content(member.getName())
-                .amount(requestDto.getAmount())
-                .balance(savedAccount.getBalance())
-                .createdAt(LocalDateTime.now())
-                .account(savedAccount)
-                .build();
-        transactionRepository.save(transaction);
+        return transactionRepository.save(transaction);
     }
 
 

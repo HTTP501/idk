@@ -10,7 +10,6 @@ import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -67,7 +66,7 @@ public class Account {
     @OrderBy("orderNumber asc")
     List<Pocket> arrayPocketOrders;
 
-    @OneToOne(mappedBy = "account", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "account",  fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private PiggyBank piggyBank;
 
     public void updateName(String name) {
