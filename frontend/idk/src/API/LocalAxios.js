@@ -93,7 +93,7 @@ export default function localAxios() {
               {
                 text: "확인",
                 onPress: () => {
-                  navigate("AuthStack");
+                  navigate("AuthStack",{screen:'AuthPIN'});
                 },
               },
             ]

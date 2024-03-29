@@ -4,28 +4,30 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,Image
+  Dimensions, Image
 } from "react-native";
 import theme from "../../../style";
 import { useRef, useState } from "react";
 import formattedNumber from "../../../components/moneyFormatter";
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
-
+import LottieView from "lottie-react-native";
+import MessageSendAnimation from "../../../components/MessageSendAnimation";
 // 송금 완료 페이지
 const FinishSendMoney = ({ navigation, route }) => {
   const money = route.params.transferAmount;
   const myAccount = route.params.myAccount;
   const opponent = route.params.otherName;
-
+  const messageAnimation = useRef(null);
   return (
     <View style={styles.container}>
-      <View className="flex-grow justify-center gap-10 items-center">
+      <View className="flex-grow justify-center items-center">
         {/*메세지 아이콘 */}
         <View>
-          <Image source={require("../../../../assets/check.png")}/>
+          <MessageSendAnimation/>
+          {/* <Image source={require("../../../../assets/check.png")} /> */}
         </View>
         {/* 송금 정보 */}
-        <View className="items-center">
+        <View className="items-center mb-10">
           <Text className="font-bold text-2xl">{opponent}님에게</Text>
           <Text className="font-bold text-2xl">{formattedNumber(money)}원을</Text>
           <Text className="font-bold text-2xl">보냈어요</Text>
@@ -36,7 +38,7 @@ const FinishSendMoney = ({ navigation, route }) => {
       {/* 버튼 */}
       <View className="flex-row">
         <TouchableOpacity
-        style={{backgroundColor:theme["light-grey"], height:50, justifyContent:'center'}}
+          style={{ backgroundColor: theme["light-grey"], height: 50, justifyContent: 'center' }}
           className="flex-1 items-center"
           onPress={() => {
             // 송금 페이지 이동
@@ -46,7 +48,7 @@ const FinishSendMoney = ({ navigation, route }) => {
           <Text className="text-xl font-bold">다른 이체</Text>
         </TouchableOpacity>
         <TouchableOpacity
-        style={{backgroundColor:theme["sky-basic"], height:50, justifyContent:'center'}}
+          style={{ backgroundColor: theme["sky-basic"], height: 50, justifyContent: 'center' }}
           className="flex-1 items-center "
           onPress={() => {
             // 메인 페이지 이동

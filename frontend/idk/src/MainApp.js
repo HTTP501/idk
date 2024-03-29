@@ -14,6 +14,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
+import theme from "./style";
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -64,25 +65,27 @@ export default function MainApp() {
         <Image
           source={require("../assets/logo/white_idk_logo_big.png")}
           style={{
-            width: 120,
-            height: 120,
-            marginVertical: SCREEN_HEIGHT * (1 / 10),
+            width: 100,
+            height: 100,
+            marginTop: SCREEN_HEIGHT * (1 / 10),
+            marginBottom: SCREEN_HEIGHT*(1/20)
           }}
         />
         <View>
           <Text
             style={{
-              fontSize: 20,
+              fontSize: 25,
               fontWeight: "bold",
               textAlign: "center",
               color: "white",
-              marginBottom: 20,
+              marginBottom: 30,
             }}
           >
-            매달 고정 지출 관리가 어렵다면?
+            나의 지출관리 도우미, IDK
           </Text>
         </View>
         <ScrollView
+        overScrollMode={'auto'}
           pagingEnabled
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -111,17 +114,18 @@ export default function MainApp() {
               style={{
                 alignItems: "center",
                 justifyContent: "center",
-                borderWidth: 0.5,
-                height: 50,
+                borderWidth: 5,
+                height: 80,
                 borderColor: "white",
-                borderRadius: 10,
+                borderRadius: 20,
+                backgroundColor:theme["sky-bright-1"]
               }}
               onPress={() => {
                 // 회원가입 페이지로 이동
                 navigation.navigate("SignupStack");
               }}
             >
-              <Text className="text-white">IDK 은행 회원가입</Text>
+              <Text className="text-white text-2xl font-bold">IDK 은행 회원가입</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

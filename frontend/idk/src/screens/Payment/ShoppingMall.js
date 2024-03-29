@@ -333,7 +333,7 @@ const ShoppingMall = ({ navigation }) => {
 
   // 코드 시작
   return (
-    <View style={ShoppingMallStyles.container}>
+    <View style={[ShoppingMallStyles.container]}>
       {isCallDataLoading ? (<Loading/>) : (
         <React.Fragment>
           {/* 모달 부분 */}

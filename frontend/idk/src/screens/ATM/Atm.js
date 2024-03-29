@@ -62,11 +62,14 @@ const ATM = function ({ navigation }) {
   let [outMoney, setOutMoney] = useState(false);
   let [money, setMoney] = useState(0);
   let [myAccountAmount, setMyAccountAmount] = useState(0)
+  let [myAccountNumber, setMyAccountNumber] = useState("")
+
   const getAccount = async () => {
     // 계좌 조회 Axios
     await getAccountAxios(
       (res) => {
         setMyAccountAmount(res.data.data.accountAvailableAmount);
+        setMyAccountNumber(res.data.data.accountNumber);
       },
       (err) => {
         // 계좌 번호가 있는지 판단해서 없으면 계좌 생성페이지로 이동
@@ -300,9 +303,9 @@ const ATM = function ({ navigation }) {
                   )}
                 </View>
                 <View className="my-10 mx-3">
-                  <Text className="text-3xl font-bold">윤예빈님</Text>
+                  <Text className="text-3xl font-bold">내 계좌</Text>
                   <Text className="text-lg font-bold">
-                    IDK 은행 1234567891010
+                    IDK 은행 {myAccountNumber}
                   </Text>
                 </View>
                 <View className="flex-row flex items-center mx-3">

@@ -58,7 +58,7 @@ const getCurrentDate = () => {
 // let [isLateThanToday, setIsLateThanToday] = useState(false)
 
 // 자동이체 페이지
-const RegistAutoSendContent = ({ navigation }) => {
+const RegistAutoSendContent = ({ navigation,route }) => {
   let [bankName, setBankName] = useState("IDK은행");
   let [accountId, setAccountId] = useState("");
   let [date, setDate] = useState(15);
@@ -72,7 +72,22 @@ const RegistAutoSendContent = ({ navigation }) => {
   let [showMyAccountName, setShowMyAccountName] = useState("");
   let [showOtherAccountName, setShowOtherAccountName] = useState("");
   let [myAccount, setMyAccount] = useState({});
-
+  const data = {
+    bankName,
+    accountId,
+    date,
+    amount,
+    startYear,
+    startMonth,
+    endYear,
+    endMonth,
+    myAccount,
+    isChecked:false
+  }
+  const destination = {
+    stack:"MainStack",
+    screen:"RegistAutoSendContent"
+  }
   // '등록' 버튼 활성화 여부
   const isRegistButtonEnabled = showMyAccountName !== "" &&
     showOtherAccountName !== "" &&
@@ -87,7 +102,21 @@ const RegistAutoSendContent = ({ navigation }) => {
       setAmount(number);
     }
   };
-
+  // params 받기
+  useEffect(()=>{
+    if (route?.params?.data?.isChecked){
+      setBankName(route.params.data.bankName)
+      setAccountId(route.params.data.accountId)
+      setDate(route.params.data.date)
+      setAmount(route.params.data.amount)
+      setStartYear(route.params.data.startYear)
+      setStartMonth(route.params.data.startMonth)
+      setEndYear(route.params.data.endYear)
+      setEndMonth(route.params.data.endMonth)
+      setMyAccount(route.params.data.myAccount)
+      registAutoSend()
+    }
+  },[route.params])
   useEffect(() => {
     if (date > 28 || date < 1) {
       Alert.alert("이체일은 1일에서 28일 사이만 가능합니다", "", [
@@ -144,7 +173,7 @@ const RegistAutoSendContent = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.box} className="mb-16">
-        <Text className="text-3xl font-bold pl-3">자동이체</Text>
+        <Text className="text-3xl font-bold">자동이체</Text>
       </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -281,7 +310,7 @@ const RegistAutoSendContent = ({ navigation }) => {
             setEndYear(startYear);
             setEndMonth(startMonth);
           } else {
-            registAutoSend();
+            navigation.navigate("AuthStack",{screen:"AuthPW",params:{data,destination}})
           }
         }}
         disabled={!isRegistButtonEnabled}
