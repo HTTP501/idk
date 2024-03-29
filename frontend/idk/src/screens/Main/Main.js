@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: "center",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: 'space-around',
     alignItems: "center",
     padding: 12,
   },

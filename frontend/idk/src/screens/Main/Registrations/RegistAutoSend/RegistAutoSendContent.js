@@ -58,11 +58,13 @@ const getCurrentDate = () => {
 // let [isLateThanToday, setIsLateThanToday] = useState(false)
 
 // 자동이체 페이지
-const RegistAutoSendContent = ({ navigation }) => {
+const RegistAutoSendContent = ({ navigation, route }) => {
   let [bankName, setBankName] = useState("IDK은행");
   let [accountId, setAccountId] = useState("");
   let [date, setDate] = useState(15);
   let [amount, setAmount] = useState(5000);
+  const myDataInfo = route.params.myDataInfo
+  console.log(myDataInfo);
 
   // 시작 년월, 종료 년월
   const [startYear, setStartYear] = useState(getCurrentYear());

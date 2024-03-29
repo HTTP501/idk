@@ -8,7 +8,7 @@ const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window')
 const assets = [
    'KB국민은행', '카카오뱅크', '신한은행', 'NH농협은행', '하나은행', '우리은행',
    'IBK기업은행', '케이뱅크', 'KB국민카드', '신한카드', 'NH농협카드', '현대카드',
-   '카카오뱅크카드', '삼성카드', '하나카드', '우리카드'
+   '삼성카드', '하나카드', '우리카드'
 ]
 
 const imgMatch = {

@@ -1,40 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View, ScrollView, TouchableOpacity, StyleSheet, Image, Dimensions, Modal } from 'react-native';
 import Checkbox from 'expo-checkbox'; // Importing Checkbox from Expo
 import { AntDesign } from '@expo/vector-icons';
 import theme from '../../../style'
 import RoundCheckbox from 'rn-round-checkbox';
+import { getMyDataAxios } from '../../../API/MyData'
+import { useFocusEffect } from '@react-navigation/native';
+import Loading from '../../../components/Loading';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window')
 
-
-const MyData = [
-  {
-    "financialCompany": "IDK은행",
-    "data": [
-      {"name": "하나카드 트래블로그 신용카드", "account": "IDK은행 123-123123-123", "isLink": true},
-    ]
-  },
-  {
-    "financialCompany": "농협은행",
-    "data": [
-      {"name": "휴대폰비", "account": "농협은행 123-11123-123", "isLink": false},
-      {"name": "수도세", "account": "농협은행 123-11123-123", "isLink": true},
-    ]
-  }
-];
-
 const imgMatch = {
-  'IDK은행': require("../../../../assets/logo/app_icon.png"),
-  '농협은행': require("../../../../assets/banks/NHBank.png"),
-  '하나카드 트래블로그 신용카드': require('../../../../assets/icons/pig.png'),
-  '휴대폰비': require('../../../../assets/icons/pig.png'),
-  '수도세': require('../../../../assets/icons/pig.png'),
+  'KB국민은행': require("../../../../assets/banks/KBBank.png"),
+  '카카오뱅크': require("../../../../assets/banks/KakaoBank.png"),
+  '신한은행': require("../../../../assets/banks/ShinhanBank.png"),
+  'NH농협은행': require("../../../../assets/banks/NHBank.png"),
+  '하나은행': require("../../../../assets/banks/HanaBank.png"),
+  '우리은행': require("../../../../assets/banks/WooriBank.png"),
+  'IBK기업은행': require("../../../../assets/banks/IBKBank.png"),
+  '케이뱅크': require("../../../../assets/banks/KBank.png"),
+  'KB국민카드': require("../../../../assets/banks/KBCard.png"),
+  '신한카드': require("../../../../assets/banks/ShinhanCard.png"),
+  '현대카드': require("../../../../assets/banks/HyundaiCard.png"),
+  '카카오뱅크카드': require("../../../../assets/banks/KakaoCard.png"),
+  'NH농협카드': require("../../../../assets/banks/NHCard.png"),
+  '삼성카드': require("../../../../assets/banks/SamsungCard.png"),
+  '하나카드': require("../../../../assets/banks/HanaCard.png"),
+  '우리카드': require("../../../../assets/banks/WooriCard.png"),
 }
 
 
 // 마이데이터 리스트
-const FinancialCompany = ({ item, CheckItem, changeCheckItem }) => {
+const FinancialCompany = ({ item, checkItem, changeCheckItem }) => {
   const [showData, setShowData] = useState(false);
 
   return (
@@ -59,7 +56,7 @@ const FinancialCompany = ({ item, CheckItem, changeCheckItem }) => {
           {item.data.map((dataItem, dataIndex) => (
             <View key={dataIndex} style={styles.dataItem}>
               <View className='flex-row'>
-                <Image source={imgMatch[dataItem.name]} style={{ width: 50, height: 50}}/>
+                <Image source={require('../../../../assets/icons/money.png')} style={{ width: 50, height: 50}}/>
                 <View className='ml-3'>
                   <Text className='font-bold'>{dataItem.name}</Text>
                   {!dataItem.isLink && (<Text className=''>{dataItem.account}</Text>)}
@@ -70,8 +67,8 @@ const FinancialCompany = ({ item, CheckItem, changeCheckItem }) => {
                 icon=''
                 size={30}
                 backgroundColor={theme['sky-basic']}
-                checked={CheckItem.name===dataItem.name && CheckItem.account===dataItem.account}
-                onValueChange={() => {changeCheckItem({name:dataItem.name, account:dataItem.account})}}
+                checked={checkItem.name===dataItem.name && checkItem.account===dataItem.account}
+                onValueChange={() => {changeCheckItem(dataItem)}}
               />
             </View>
           ))}
@@ -82,12 +79,56 @@ const FinancialCompany = ({ item, CheckItem, changeCheckItem }) => {
 };
 
 const CheckMyData = ({ navigation }) => {
-  const [CheckItem, setCheckItem] = useState({})
+  const [checkItem, setCheckItem] = useState({})
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [MyData, setMyData] = useState([
+    {
+      "financialCompany": "KB국민은행",
+      "data": [
+        {"name": "하나카드 트래블로그 신용카드", "account": "IDK은행 123-123123-123", "isLink": true},
+      ]
+    },
+    {
+      "financialCompany": "NH농협은행",
+      "data": [
+        {"name": "휴대폰비", "account": "농협은행 123-11123-123", "isLink": false},
+        {"name": "수도세", "account": "농협은행 123-11123-123", "isLink": true},
+      ]
+    }
+  ])
+
+  const getMyData = () => {
+    // getMyDataAxios(
+    //   res => {
+    //     console.log(res);
+    //   },
+    //   err => {
+    //     console.log(err);
+    //   }
+    // )
+  }
+
+  useEffect(() => {
+    getMyData()
+    setTimeout(() => {
+      setLoading(true);
+    }, 700);
+  }, [])
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getMyData();
+      setTimeout(() => {
+        setLoading(true);
+      }, 700);
+    }, [])
+  );
+  
 
   const changeCheckItem = (payload) => {
     // 똑같은거 누르면 꺼라
-    if (CheckItem.name===payload.name && CheckItem.account===payload.account) {
+    if (checkItem.name===payload.name && checkItem.account===payload.account) {
       setCheckItem({})
     } else {
       setCheckItem(payload)
@@ -95,12 +136,14 @@ const CheckMyData = ({ navigation }) => {
   }
 
   const handleConnectAutomaticTransfer = () => {
-    if (Object.keys(CheckItem).length!==0) {
+    if (Object.keys(checkItem).length!==0) {
       setShowModal(true);
     }
   };
 
   return (
+    <>
+      {loading ? 
     <View style={styles.container}>
       <ScrollView 
         contentContainerStyle={{ paddingBottom: 50, flexGrow:1, alignItems:'center',}}
@@ -111,14 +154,14 @@ const CheckMyData = ({ navigation }) => {
             key={index} 
             item={item} 
             changeCheckItem={changeCheckItem}
-            CheckItem={CheckItem}
+            checkItem={checkItem}
           />
         ))}
       </ScrollView>
       <TouchableOpacity
-        style={[styles.button, {opacity: Object.keys(CheckItem).length===0 ? 0.5 : 1}]}
+        style={[styles.button, {opacity: Object.keys(checkItem).length===0 ? 0.5 : 1}]}
         onPress={handleConnectAutomaticTransfer}
-        disabled={Object.keys(CheckItem).length===0}
+        disabled={Object.keys(checkItem).length===0}
       >
         <Text className="text-white text-lg">자동 이체 연결</Text>
       </TouchableOpacity>
@@ -136,18 +179,20 @@ const CheckMyData = ({ navigation }) => {
             >
               <AntDesign name="close" size={24} color="black" />
             </TouchableOpacity>
-            <Text className='text-2xl font-bold mb-3'>{CheckItem.name}</Text>
-            <Text className='text-zinc-500 mb-8 font-bold'>{CheckItem.account}</Text>
+            <Text className='text-2xl font-bold mb-3'>{checkItem.name}</Text>
+            <Text className='text-zinc-500 mb-8 font-bold'>{checkItem.account}</Text>
             <TouchableOpacity
               style={styles.modalButton1}
-              onPress={() => setShowModal(false)}
+              onPress={() => {setShowModal(false)
+                              navigation.navigate({name: 'RegistAutoSendAgree', params: checkItem})
+                              }}
             >
               <Text className='text-lg font-bold'>이 계좌로 자동이체 하기</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton2}
               onPress={() => {setShowModal(false)
-                              navigation.navigate({name: 'OutSidePage', params: CheckItem})}}
+                              navigation.navigate({name: 'OutSidePage', params: checkItem})}}
             >
               <Text className='text-lg font-bold'>자동이체 내 계좌로 변경하기</Text>
             </TouchableOpacity>
@@ -155,6 +200,8 @@ const CheckMyData = ({ navigation }) => {
         </View>
       </Modal>
     </View>
+    : <Loading/>}
+    </>
   );
 };
 
