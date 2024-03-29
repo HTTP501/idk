@@ -34,6 +34,7 @@ import {
   callAnalystMonthDataAxios,
 } from "../../API/ChartData.js";
 import Loading from "../../components/Loading.js";
+// import ChartLoading from "../../components/chartLoading.js";
 import { useFocusEffect } from "@react-navigation/native";
 
 const Chart = ({ navigation }) => {
@@ -664,7 +665,7 @@ const Chart = ({ navigation }) => {
   return (
     <View style={{ ...ChartStyle.mainContainer, backgroundColor: "white" }}>
       {isLoading ? (
-        <Loading />
+        <Loading/>
       ) : (
         <ScrollView
           style={{ backgroundColor: "white" }}
