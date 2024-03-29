@@ -1,7 +1,9 @@
 package com.ssafy.card.domain.company.entity;
 
 import com.ssafy.card.domain.credit.entity.Credit;
+import com.ssafy.card.domain.organization.entity.Organization;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -16,14 +18,15 @@ public class Company {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "company_id")
+    @Column(name = "company_id") @NotNull
     private Long companyId;
 
-    @Column(length = 10, name = "name")
+    @Column(length = 10, name = "name") @NotNull
     private String name;
 
-    @Column(length = 20, name = "org_code")
-    private String orgCode;
+    @JoinColumn(name = "org_code") @NotNull
+    @OneToOne(fetch = FetchType.LAZY)
+    private Organization organization;
 
     @Column(length = 20, name = "client_id")
     private String clientId;

@@ -1,10 +1,8 @@
 package com.ssafy.card.domain.organization.entity;
 
-import com.ssafy.card.domain.credit.entity.Credit;
+import com.ssafy.card.domain.company.entity.Company;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -15,20 +13,19 @@ import java.util.List;
 public class Organization {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "org_code")
-    private Long orgCode;
+    private String orgCode;
 
     @Column(length = 10, name = "org_name")
     private String orgName;
 
-    @Column(name = "org_type")
-    private OrgType orgType;
+    @Column(length = 4, name = "org_type")
+    private String orgType;
 
     @Column(name = "access_token")
     private String accessToken;
 
-    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<Credit> arrayCredit;
+    @OneToOne(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private Company company;
 
 }

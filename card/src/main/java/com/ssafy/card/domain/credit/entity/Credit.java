@@ -3,11 +3,11 @@ package com.ssafy.card.domain.credit.entity;
 import com.ssafy.card.domain.bill.entity.Bill;
 import com.ssafy.card.domain.company.entity.Company;
 import com.ssafy.card.domain.member.entity.Member;
-import com.ssafy.card.domain.organization.entity.Organization;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -20,40 +20,46 @@ public class Credit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "credit_id")
+    @Column(name = "credit_id") @NotNull
     private Long creditId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id")
-    private Company company;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id") @NotNull
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "org_code")
-    private Organization organization;
+    @JoinColumn(name = "company_id") @NotNull
+    private Company company;
 
-    @Column(length = 16, name = "card_number")
+    @Column(length = 16, name = "card_number") @NotNull
     private String cardNumber;
 
-    @Column(length = 20, name = "account_num")
+    @Column(length = 20, name = "account_num") @NotNull
     private String accountNum;
 
-    @Column(length = 20, name = "payer_number")
+    @Column(length = 10, name = "account_org_code") @NotNull
+    private String accountOrgCode;
+
+    @Column(length = 20, name = "payer_number") @NotNull
     private String payerNumber;
 
-    @Column(length = 2, name = "charge_day")
+    @Column(length = 2, name = "charge_day") @NotNull
     private String chargeDay;
 
-    @Column(name = "charge_month")
-    private String chargeMonth;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    @Column(name = "pay_due_date")
-    private LocalDate payDueDate;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
 
     @OneToMany(mappedBy = "credit", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Bill> arrayBill;
+
+    @PrePersist
+    public void prePresist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 
 }

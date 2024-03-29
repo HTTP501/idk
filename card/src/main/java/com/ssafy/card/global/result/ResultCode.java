@@ -13,6 +13,8 @@ public enum ResultCode {
     // MEMBER
     MEMBER_SIGNUP_SUCCESS(201, "CARD-M201", "CARD SERVER 회원가입이 완료되었습니다."),
 
+    // CREDIT
+    CREDIT_CREATE_SUCCESS(201, "CARD_C201", "CARD SERVER 신용카드를 생성했습니다."),
     ;
 
 
