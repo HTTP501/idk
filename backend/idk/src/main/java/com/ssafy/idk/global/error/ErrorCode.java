@@ -89,7 +89,11 @@ public enum ErrorCode {
     // MYDATA
     MYDATA_FAILED(400, "MD400", "마이데이터 요청을 실패했습니다."),
     MYDATA_SIGN_TRANSFORM_FAILED(400, "MD400", "전자서명 변환에 실패했습니다."),
-    MYDATA_ORG_NOT_FOUND(404, "MD404", "기관을 찾을 수 없습니다.");
+    MYDATA_ORG_NOT_FOUND(404, "MD404", "기관을 찾을 수 없습니다."),
+
+    // FCM
+    FCM_SEND_FAIL(400, "F401", "FCM 알림 전송을 실패했습니다")
+    ;
 
     private final int status;
     private final String code;
