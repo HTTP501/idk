@@ -19,6 +19,11 @@ public class RSAKeyService {
         rsaKeyRepository.save(RSAKey.of(memberId, privateKey));
     }
 
+    @Transactional
+    public void deleteRSAKey(Long memberId) {
+        rsaKeyRepository.deleteById(memberId);
+    }
+
     public String findPrivateKey(Long memberId) {
         RSAKey rsaKey = rsaKeyRepository.findById(memberId)
                 .orElseThrow(() -> new RSAKeyException(ErrorCode.RSAKEY_NOT_FOUND));
