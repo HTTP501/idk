@@ -515,3 +515,11 @@ obj/
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,intellij+all,androidstudio,reactnative,java
+
+# local private files
+docker-compose.yml
+backend/idk/src/main/resources/
+db/
+
+*.key
+*.pem
