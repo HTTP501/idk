@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Text, View, Dimensions, TouchableOpacity, StyleSheet, TextInput, ScrollView, Animated, Image, Alert, Modal } from 'react-native';
+import { Text, View, Dimensions, TouchableOpacity, Switch, StyleSheet, TextInput, ScrollView, Animated, Image, Alert, Modal } from 'react-native';
 import theme from '../../../style';
 import { MaterialIcons } from '@expo/vector-icons';
 import { autoTransferAxios, transactionAxios } from '../../../API/Member'
@@ -7,6 +7,9 @@ import { ChangeAccountNameAxios } from '../../../API/Account'
 import Loading from "../../../components/Loading";
 import { FontAwesome } from '@expo/vector-icons';
 import { deleteTargetSavingAxios, getTargetSavingAxios} from '../../../API/TargetSaving'
+import { changeDonPocketNameAxios, 
+  deleteDonPocketAutoTransferAxios,
+  changeDonPocketActivateAxios  } from '../../../API/DonPocket'
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -14,6 +17,7 @@ const SettingTargetSaving = ({ navigation, route }) => {
   const [showModal, setShowModal] = useState(false);
   const [presentPrice, setPresentPrice] = useState(0)
   const [targetPrice, setTargetPrice] = useState(1)
+  const [isActivated, setIsActivated] = useState(route.params.activated);
   const [data, setData] = useState(null)
   const [name, setName] = useState(null)
 
@@ -25,16 +29,12 @@ const SettingTargetSaving = ({ navigation, route }) => {
     getTargetSavingAxios(
       donPocketId,
       res => {
-        console.log(res);
-        console.log(res.data);
         setData(res.data.data)
         setName(res.data.data.name)
         setPresentPrice(res.data.data.count * res.data.data.monthlyAmount)
         setTargetPrice(res.data.data.goalAmount)
       },
       err => {
-        console.log(err);
-        console.log(err.response);
         if (err.response.data.code === 'C401') {
           Alert.alert('해당 목표저축 사용자와 해당 요청 사용자가 일치하지 않습니다.', '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
         } else if (err.response.data.code === 'TS401') {
@@ -49,23 +49,56 @@ const SettingTargetSaving = ({ navigation, route }) => {
 
   // 수정 Axios
   const handleSetting = () => {
-    Alert.alert('수정이 완료되었습니다.', '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
-  }
+    changeDonPocketNameAxios(
+      pocketId,
+      {name: name},
+      res => {
+        console.log(res);
+        Alert.alert('수정이 완료되었습니다.', '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+      },
+      err => {
+        if (err.response.data.code === 'C401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'P404') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])  
+        }
+      }
+    )  }
 
   // 돈포켓 해지 Axios
   const deleteDonPocket = () => {
     deleteTargetSavingAxios(
       donPocketId,
       res => {
-        console.log(res);
         Alert.alert('해지가 완료되었습니다.', '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
       },
       err => {
-        console.log(err);
-        console.log(err.response);
+        if (err.response.data.code === 'C401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'P404') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])  
+        }
       }
     )
     setShowModal(false)
+  }
+
+  
+  // 돈 포켓 자동 넣기 Axios
+  const HandleIsActivated = () => {
+    changeDonPocketActivateAxios(
+      pocketId,
+      res => {
+      },
+      err => {
+        if (err.response.data.code === 'C401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'P404') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])  
+        }
+      }
+    )
+    setIsActivated(previousState => !previousState)
   }
 
   
@@ -127,6 +160,16 @@ const SettingTargetSaving = ({ navigation, route }) => {
           contentContainerStyle={{ paddingBottom: 50, flexGrow:1, alignItems:'center'}}
           showsVerticalScrollIndicator={false}  
         >
+          <View style={styles.upbox}>
+            <Text className='text-base font-bold'>돈 포켓 자동 넣기</Text>
+            <Switch
+              trackColor={{ false: "#767577", true: "#81b0ff" }}
+              thumbColor={isActivated ? "#f4f3f4" : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={HandleIsActivated}
+              value={isActivated}
+            />
+          </View>
           <View style={{paddingHorizontal: SCREEN_WIDTH * (1/10)}}>
             <View className='flex-row items-end self-start mb-8'>
               <Text className='text-2xl font-bold'>{data.term}개월</Text>
@@ -188,7 +231,7 @@ const SettingTargetSaving = ({ navigation, route }) => {
             style={{...styles.button}}
             onPress={handleSetting}
           >
-            <Text className="text-white text-lg">수정</Text>
+            <Text className="text-white text-lg">이름 수정</Text>
           </TouchableOpacity>
         </ScrollView>
 
@@ -199,7 +242,7 @@ const SettingTargetSaving = ({ navigation, route }) => {
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Text className='text-xl font-bold mb-1'>'{name}' 목표저축을</Text>
+              <Text className='text-xl font-bold mb-1'>'{route.params.name}' 목표저축을</Text>
               <Text className='text-xl font-bold mb-1'>해지하시겠습니까?</Text>
               <Text className='text-sm mb-3'>모은 금액은 모두 계좌로 돌아갑니다.</Text>
               <TouchableOpacity
