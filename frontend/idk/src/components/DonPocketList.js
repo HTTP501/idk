@@ -29,7 +29,7 @@ const DonPocketList = function ({ navigation, pocketData, changePocketOrder, fet
     const { isActive } = useOnCellActiveAnimation();
     return (
       <ScaleDecorator>
-        <OpacityDecorator activeOpacity={0.1}>
+        <OpacityDecorator activeOpacity={0.6}>
           <ShadowDecorator>
             <TouchableOpacity
               key={pocketId} // 고유한 키 추가
