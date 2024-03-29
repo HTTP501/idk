@@ -28,10 +28,7 @@ public class Organization {
     @Column(name = "access_token")
     private String accessToken;
 
-    @Column(name = "refresh_token")
-    private String refreshToken;
-
-    @OneToMany(mappedBy = "orgCode", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Credit> arrayCredit;
 
 }
