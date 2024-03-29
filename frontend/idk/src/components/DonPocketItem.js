@@ -1,10 +1,12 @@
 import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Dimensions } from "react-native";
 import formattedNumber from "./moneyFormatter";
+import theme from "../style";
+import { depositDonPocketAxios, withdrawalDonPocketAxios} from '../API/DonPocket'
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 // 돈포켓
-const DonPocket = ({ item, isActive, isFiltered }) => {
+const DonPocket = ({ item, isActive, isFiltered, fetchData }) => {
   let today = new Date();
   const donPocket = item;
   const menuIcon = require("../../assets/icons/menu.png");
@@ -14,6 +16,46 @@ const DonPocket = ({ item, isActive, isFiltered }) => {
   const pigIcon = require("../../assets/icons/pig.png");
   // 꾹 누르면 그림자 없에기
   const shadow = isActive ? null : styles.shadow;
+
+  const stringDate = new Date(donPocket.expectedDate)
+
+  // 돈포켓 입금 Axios
+  const handleDepositDonPocket = () => {
+    depositDonPocketAxios(
+      donPocket.pocketId,
+      res => {
+        fetchData()
+      },
+      err => {
+        if (err.response.data.code === 'C401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인'}])
+        } else if (err.response.data.code === 'P404') {
+          Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+        } else if (err.response.data.code === 'P405') {
+          Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+        }
+      }
+    )
+  }
+
+  // 돈포켓 출금 Axios
+  const handleWithdrawalDonPocket = () => {
+    withdrawalDonPocketAxios(
+      donPocket.pocketId,
+      res => {
+        fetchData()
+      },
+      err => {
+        if (err.response.data.code === 'C401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인'}])
+        } else if (err.response.data.code === 'P404') {
+          Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+        } else if (err.response.data.code === 'P405') {
+          Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+        }
+      }
+    )
+  }
 
   return (
     <View
@@ -26,14 +68,14 @@ const DonPocket = ({ item, isActive, isFiltered }) => {
           source={pigIcon}
           style={{ width: 30, height: 50, resizeMode: "contain" }}
         />
-      ) : donPocket.isPaid === true ? (
+      ) : donPocket.paid === true ? (
         <Image
           source={checkIcon}
           style={{ width: 30, height: 50, resizeMode: "contain" }}
         />
-      ) : donPocket.isDeposited === true ? (
+      ) : donPocket.deposited === true ? (
         <TouchableOpacity
-        onPress={()=>{console.log('돈포켓해제')}}>
+        onPress={handleWithdrawalDonPocket}>
           <Image
             source={closeIcon}
             style={{ width: 30, height: 50, resizeMode: "contain" }}
@@ -41,7 +83,7 @@ const DonPocket = ({ item, isActive, isFiltered }) => {
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
-        onPress={()=>{console.log('돈포켓잠금')}}>
+        onPress={handleDepositDonPocket}>
           <Image
             source={openIcon}
             style={{ width: 30, height: 50, resizeMode: "contain" }}
@@ -50,15 +92,15 @@ const DonPocket = ({ item, isActive, isFiltered }) => {
       )}
 
       {/* 돈포켓 내용 */}
-      <View className="flex-grow items-start ml-3">
+      <View className="flex-grow items-start ml-3" >
         <View className="flex-row items-center">
-          <Text className="font-bold text-lg mr-3">{donPocket.pocketName}</Text>
-          <Text className="">
-            {today.getMonth()}월 {donPocket.paymentDate}일
+          <Text className="font-bold text-lg mr-3" style={donPocket.paid ? styles.notPaidColor : null}>{donPocket.name}</Text>
+          <Text className="" style={[donPocket.paid ? styles.notPaidColor : null, donPocket.deposited ? {color:theme["sky-basic"]} : {color:theme.red}]}>
+            {donPocket.expectedDate.substring(5, 7)}월 {donPocket.expectedDate.substring(8, 10)}일
           </Text>
         </View>
 
-        <Text className="">{formattedNumber(donPocket.balance)}원</Text>
+        <Text className="text-lg" style={donPocket.paid ? styles.notPaidColor : null}>{formattedNumber(donPocket.balance)}원</Text>
       </View>
       {/* 돈포켓 순서 정렬 */}
       {isFiltered ? null : <Image source={menuIcon} />}
@@ -84,5 +126,8 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
   },
+  notPaidColor: {
+    color: theme["grey"]
+  }
 });
 export default DonPocket;
