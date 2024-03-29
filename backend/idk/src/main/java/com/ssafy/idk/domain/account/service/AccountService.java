@@ -206,10 +206,21 @@ public class AccountService {
         if (requestDto.getTransferBank().equals("IDK은행")) { // 받는사람이 IDK은행인 경우
             if(!accountNumberVerity(requestDto.getReceiverId()))
                 throw new AccountException(ErrorCode.TRANSFER_RECEIVER_FAIL);
-
-            deposit(requestDto.getReceiverId(), requestDto.getTransferAmount());
+            
+            // 받는사람 입금
+            Account receiveAccount = deposit(requestDto.getReceiverId(), requestDto.getTransferAmount());
+            Transaction transaction = Transaction.builder()
+                    .category(Category.입금)
+                    .content(requestDto.getReceiverPaymentContent())
+                    .amount(requestDto.getTransferAmount())
+                    .balance(receiveAccount.getBalance())
+                    .createdAt(LocalDateTime.now())
+                    .account(receiveAccount)
+                    .build();
+            transactionRepository.save(transaction);
         }
-
+        
+        // 보낸사람 출금
         Account savedAccount = withdraw(member.getMemberId(), requestDto.getTransferAmount());
         Transaction transaction = Transaction.builder()
                 .category(Category.송금)
