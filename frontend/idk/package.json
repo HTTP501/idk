@@ -46,7 +46,8 @@
     "react-native-screens": "~3.29.0",
     "react-native-svg": "14.1.0",
     "react-native-web": "~0.19.6",
-    "rn-round-checkbox": "^1.0.0"
+    "rn-round-checkbox": "^1.0.0",
+    "lottie-react-native": "6.5.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
