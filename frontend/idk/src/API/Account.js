@@ -44,14 +44,15 @@ export const getUserAccountAxios = async function (data, success, fail) {
 
 // 계좌 입금
 export const DepositMyAccountAxios = async function (data, success, fail) {
-  await local.post("/transaction/deposit", data).then(success).catch(fail);
+  // console.log(data)
+  await local.post("/account/deposit", data).then(success).catch(fail);
 };
 
 
 
 // 계좌 출금
 export const WithdrawMyAccountAxios = async function (data, success, fail) {
-  await local.post("/transaction/withdraw", data).then(success).catch(fail);
+  await local.post("/account/withdraw", data).then(success).catch(fail);
 };
 
 // 계좌 이름 변경

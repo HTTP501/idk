@@ -64,7 +64,7 @@ const Agreement = ({navigation}) => {
         style={[styles.button, { opacity: isAllChecked() ? 1 : 0.5 }]}
         disabled={!isAllChecked()}
         onPress={() => navigation.navigate('EnterName')}>
-        <Text className="text-white text-lg">다음</Text>
+        <Text className="text-white text-lg font-bold">다음</Text>
       </TouchableOpacity>
     </View>
   )

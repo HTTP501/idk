@@ -3,7 +3,7 @@ import { Button, StyleSheet, View,Text } from "react-native";
 import LottieView from "lottie-react-native";
 import theme from "../style";
 
-export default function App() {
+export default function LoadingMyData() {
   let [number, setNumber] = useState(0);
   // 1초마다 실행되는 함수
   const data = [
@@ -33,7 +33,7 @@ export default function App() {
     
     setTimeout(()=>{
       setNumber(2)
-    },4500)
+    },4000)
     setTimeout(()=>{
       setNumber(3)
     },7000)

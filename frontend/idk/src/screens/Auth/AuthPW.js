@@ -18,6 +18,7 @@ const AuthPW = ({ navigation, route }) => {
   const destination = route?.params.destination;
   const data = route?.params?.data;
   useEffect(() => {
+    console.log(route)
     if (data === undefined || data===null) {
       data={isChecked:false}
     }

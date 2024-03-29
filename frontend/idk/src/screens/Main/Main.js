@@ -102,9 +102,9 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     React.useCallback(() => {
       setLoading(false)
       fetchData();
-      // setTimeout(() => {
-      //   setLoading(true);
-      // }, 15000);
+      setTimeout(() => {
+        setLoading(true);
+      }, 700);
     }, [])
   );
 
@@ -380,6 +380,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 12,
+    paddingHorizontal:20
   },
   text: {
     fontSize: 28,

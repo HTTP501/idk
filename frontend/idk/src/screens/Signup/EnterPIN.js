@@ -59,7 +59,7 @@ const EnterPIN = ({ route, navigation }) => {
         disabled={!pin.every(value => value !== '')}
         style={[styles.button, { opacity: pin.every(value => value !== '') ? 1 : 0.5 }]}
         onPress={() => navigation.navigate('EnterPINCheck', sendData)}>
-        <Text className='text-white text-lg'>다음</Text>
+        <Text className='text-white text-lg font-bold'>다음</Text>
       </TouchableOpacity>
     </View>
   );
