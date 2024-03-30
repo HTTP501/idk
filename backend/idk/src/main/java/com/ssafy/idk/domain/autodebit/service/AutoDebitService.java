@@ -94,6 +94,11 @@ public class AutoDebitService {
         AutoDebit autoDebit = autoDebitRepository.findById(autoDebitId)
                 .orElseThrow(() -> new AutoDebitException(ErrorCode.AUTO_DEBIT_NOT_FOUND));
 
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        Account account = autoDebit.getAccount();
+        if (member != account.getMember())
+            throw new AutoTransferException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
         autoDebitRepository.delete(autoDebit);
         
         // CARD 서버에 등록되어 있는 계좌번호 수정 요청 필요
