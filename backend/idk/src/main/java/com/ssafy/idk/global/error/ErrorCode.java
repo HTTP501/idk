@@ -81,6 +81,7 @@ public enum ErrorCode {
     POCKET_IMPOSSIBLE_WITHDRAWAL(409, "P406", "해당 돈 포켓의 돈을 출금할 수 없습니다."),
     POCKET_TRANSACTION_NOT_FOUND(404, "P407", "해당 돈 포켓 입출금 내역이 존재하지 않습니다."),
     POCKET_AUTO_TRANSFER_EXISTS(409, "P408", "해당 자동이체의 돈 포켓이 존재합니다."),
+    POCKET_AUTO_DEBIT_EXISTS(409, "AD402", "해당 자동결제의 돈 포켓이 존재합니다."),
 
     // PAYMENT
     PAYMENT_VERIFY_FAIL(400, "P401", "결제수단 검증에 실패했습니다"),

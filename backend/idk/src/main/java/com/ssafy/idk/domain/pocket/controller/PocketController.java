@@ -1,5 +1,6 @@
 package com.ssafy.idk.domain.pocket.controller;
 
+import com.ssafy.idk.domain.pocket.dto.request.PocketCreateAutoDebitRequestDto;
 import com.ssafy.idk.domain.pocket.dto.request.PocketCreateAutoTransferRequestDto;
 import com.ssafy.idk.domain.pocket.dto.request.PocketUpdateNameRequestDto;
 import com.ssafy.idk.domain.pocket.service.PocketService;
@@ -31,6 +32,12 @@ public class PocketController {
     @PostMapping(value = "/auto-transfer")
     public ResponseEntity<ResultResponse> createPocketAutoTransfer(@RequestBody PocketCreateAutoTransferRequestDto requestDto) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_CREATE_BY_AUTO_TRANSFER_SUCCESS, pocketService.createByAutoTransfer(requestDto)));
+    }
+
+    @Operation(summary = "자동결제 돈 포켓 가입")
+    @PostMapping(value = "/auto-debit")
+    public ResponseEntity<ResultResponse> createPocketAutoDebit(@RequestBody PocketCreateAutoDebitRequestDto requestDto) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_CREATE_BY_AUTO_TRANSFER_SUCCESS, pocketService.createByAutoDebit(requestDto)));
     }
 
     @Operation(summary = "돈 포켓 상세 조회(입출금내역)")
