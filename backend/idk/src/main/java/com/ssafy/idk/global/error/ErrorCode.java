@@ -70,7 +70,6 @@ public enum ErrorCode {
 
     // AUTO_DEBIT
     AUTO_DEBIT_NOT_FOUND(404, "AD401", "해당 자동납부가 존재하지 않습니다."),
-    AUTO_DEBIT_INVALID_ACCOUNT(409, "AD402", "유효하지 않은 계좌번호입니다."),
     AUTO_DEBIT_PAYER_NUMBER_EXISTS(409, "AD403", "이미 존재하는 납부자번호입니다."),
 
     // POCKET

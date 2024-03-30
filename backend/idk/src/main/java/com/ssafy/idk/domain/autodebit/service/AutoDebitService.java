@@ -46,7 +46,7 @@ public class AutoDebitService {
         String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
         String accountNumberOfMember = RSAUtil.decode(privateKey, account.getNumber());
         if (!accountNumberOfMember.equals(requestDto.getAccountNumber()))
-            throw new AutoDebitException(ErrorCode.AUTO_DEBIT_INVALID_ACCOUNT);
+            throw new AutoDebitException(ErrorCode.ACCOUNT_NOT_FOUND);
 
         // 기관 코드 검증
         Organization organization = organizationRepository.findByOrgCode(requestDto.getOrgCode())
