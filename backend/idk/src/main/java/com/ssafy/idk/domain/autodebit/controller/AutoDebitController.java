@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,6 +24,12 @@ public class AutoDebitController {
     public ResponseEntity<ResultResponse> createAutoDebit(@RequestBody AutoDebitCreateRequestDto requestDto) {
         autoDebitService.createAutoDebit(requestDto);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_DEBIT_CREATE_SUCCESS));
+    }
+
+    @Operation(summary = "자동결제 상세 조회")
+    @GetMapping("/{autoDebitId}")
+    public ResponseEntity<ResultResponse> getDetailAutoDebit(@PathVariable(name = "autoDebitId") Long autoDebitId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_DEBIT_GET_SUCCESS, autoDebitService.getDetailAutoDebit()));
     }
 
 }

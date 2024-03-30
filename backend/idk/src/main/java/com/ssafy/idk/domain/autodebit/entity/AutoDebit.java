@@ -30,7 +30,7 @@ public class AutoDebit {
     @Column(length = 20, name = "org_code") @NotNull
     private String orgCode;
 
-    @Column(length = 20, name = "payer_number") @NotNull
+    @Column(length = 20, name = "payer_number", unique = true) @NotNull
     private String payerNumber;
 
     @Column(name = "created_at") @NotNull

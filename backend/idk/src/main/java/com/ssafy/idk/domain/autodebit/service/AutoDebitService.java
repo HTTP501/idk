@@ -5,6 +5,7 @@ import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.service.RSAKeyService;
 import com.ssafy.idk.domain.autodebit.dto.request.AutoDebitCreateRequestDto;
+import com.ssafy.idk.domain.autodebit.dto.response.AutoDebitGetDetailResponseDto;
 import com.ssafy.idk.domain.autodebit.entity.AutoDebit;
 import com.ssafy.idk.domain.autodebit.exception.AutoDebitException;
 import com.ssafy.idk.domain.autodebit.repository.AutoDebitRepository;
@@ -48,6 +49,10 @@ public class AutoDebitService {
         Organization organization = organizationRepository.findByOrgCode(requestDto.getOrgCode())
                 .orElseThrow(() -> new MydataException(ErrorCode.MYDATA_ORG_NOT_FOUND));
 
+        // 납부자 번호 검증
+        autoDebitRepository.findByPayerNumber(requestDto.getPayerNumber())
+                .orElseThrow(() -> new AutoDebitException(ErrorCode.AUTO_DEBIT_PAYER_NUMBER_EXISTS));
+
         // 자동결제 저장
         AutoDebit autoDebit = AutoDebit.builder()
                 .account(account)
@@ -57,5 +62,9 @@ public class AutoDebitService {
                 .build();
         autoDebitRepository.save(autoDebit);
 
+    }
+
+    public AutoDebitGetDetailResponseDto getDetailAutoDebit() {
+        return null;
     }
 }
