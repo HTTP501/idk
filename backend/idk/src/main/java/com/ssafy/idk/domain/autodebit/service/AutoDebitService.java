@@ -5,7 +5,9 @@ import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.service.RSAKeyService;
 import com.ssafy.idk.domain.autodebit.dto.request.AutoDebitCreateRequestDto;
+import com.ssafy.idk.domain.autodebit.dto.response.AutoDebitCreateResponseDto;
 import com.ssafy.idk.domain.autodebit.dto.response.AutoDebitGetDetailResponseDto;
+import com.ssafy.idk.domain.autodebit.dto.response.AutoDebitGetListResponseDto;
 import com.ssafy.idk.domain.autodebit.entity.AutoDebit;
 import com.ssafy.idk.domain.autodebit.exception.AutoDebitException;
 import com.ssafy.idk.domain.autodebit.repository.AutoDebitRepository;
@@ -22,6 +24,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AutoDebitService {
@@ -34,7 +39,7 @@ public class AutoDebitService {
     private final AuthenticationService authenticationService;
 
     @Transactional
-    public void createAutoDebit(AutoDebitCreateRequestDto requestDto) {
+    public AutoDebitCreateResponseDto createAutoDebit(AutoDebitCreateRequestDto requestDto) {
 
         // 유저 정보 확인
         Member member = memberRepository.findByConnectionInformation(requestDto.getConnectionInformation())
@@ -63,8 +68,9 @@ public class AutoDebitService {
                 .orgCode(requestDto.getOrgCode())
                 .payerNumber(requestDto.getPayerNumber())
                 .build();
-        autoDebitRepository.save(autoDebit);
+        AutoDebit savedAutoDebit = autoDebitRepository.save(autoDebit);
 
+        return AutoDebitCreateResponseDto.of(savedAutoDebit.getAutoDebitId());
     }
 
     public AutoDebitGetDetailResponseDto getDetailAutoDebit(Long autoDebitId) {
@@ -80,6 +86,7 @@ public class AutoDebitService {
             throw new AutoTransferException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
         return AutoDebitGetDetailResponseDto.of(
+                autoDebit.getAutoDebitId(),
                 autoDebit.getFinanceAgency(),
                 autoDebit.getOrgCode(),
                 autoDebit.getPayerNumber()
@@ -102,6 +109,33 @@ public class AutoDebitService {
         autoDebitRepository.delete(autoDebit);
         
         // CARD 서버에 등록되어 있는 계좌번호 수정 요청 필요
+
+    }
+
+    public AutoDebitGetListResponseDto getArrayAutoDebit(Long accountId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+        if (member != account.getMember())
+            throw new AutoTransferException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        List<AutoDebit> arrayAutoDebit = account.getArrayAutoDebit();
+        List<AutoDebitGetDetailResponseDto> arrayAutoDebitResponseDto = new ArrayList<>();
+        for (AutoDebit autoDebit : arrayAutoDebit) {
+            arrayAutoDebitResponseDto.add(
+                    AutoDebitGetDetailResponseDto.of(
+                            autoDebit.getAutoDebitId(),
+                            autoDebit.getFinanceAgency(),
+                            autoDebit.getOrgCode(),
+                            autoDebit.getPayerNumber()
+                    )
+            );
+        }
+
+        return AutoDebitGetListResponseDto.of( arrayAutoDebitResponseDto );
 
     }
 }

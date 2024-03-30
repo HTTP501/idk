@@ -22,8 +22,7 @@ public class AutoDebitController {
     @Operation(summary = "자동결제 등록")
     @PostMapping("")
     public ResponseEntity<ResultResponse> createAutoDebit(@RequestBody AutoDebitCreateRequestDto requestDto) {
-        autoDebitService.createAutoDebit(requestDto);
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_DEBIT_CREATE_SUCCESS));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_DEBIT_CREATE_SUCCESS, autoDebitService.createAutoDebit(requestDto)));
     }
 
     @Operation(summary = "자동결제 상세 조회")
@@ -37,5 +36,11 @@ public class AutoDebitController {
     public ResponseEntity<ResultResponse> deleteAutoDebit(@PathVariable(name = "autoDebitId") Long autoDebitId) {
         autoDebitService.deleteAutoDebit(autoDebitId);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_DEBIT_DELETE_SUCCESS));
+    }
+
+    @Operation(summary = "자동결제 목록 조회")
+    @GetMapping("/list/{accountId}")
+    public ResponseEntity<ResultResponse> getArrayAutoDebit(@PathVariable(name = "accountId") Long accountId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_DEBIT_LIST_GET_SUCCESS, autoDebitService.getArrayAutoDebit(accountId)));
     }
 }

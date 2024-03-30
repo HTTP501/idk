@@ -1,5 +1,6 @@
 package com.ssafy.idk.domain.member.entity;
 
+import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.mydata.entity.Mydata;
 import jakarta.persistence.*;
 import lombok.*;
@@ -59,6 +60,9 @@ public class Member {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Mydata> mydataList;
+
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private Account account;
 
     @PrePersist
     public void prePersist() {
