@@ -1,6 +1,7 @@
 package com.ssafy.idk.domain.member.service;
 
 import com.ssafy.idk.domain.account.service.RSAKeyService;
+import com.ssafy.idk.domain.client.service.ClientCaService;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.dto.request.*;
 import com.ssafy.idk.domain.member.dto.response.*;
@@ -14,14 +15,20 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.logging.Logger;
+
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
+
+    private static final Logger LOGGER = Logger.getLogger(MemberService.class.getName());
 
     private final SMSService smsService;
     private final MemberRepository memberRepository;
@@ -31,9 +38,21 @@ public class MemberService {
     private final TokenService tokenService;
     private final AuthenticationService authenticationService;
     private final RSAKeyService rsaKeyService;
+    private final ClientCaService clientCaService;
+    private final RestTemplate restTemplate;
 
     // 회원가입
+    @Transactional
     public SignupResponseDto signup(SignupRequestDto requestDto, HttpServletResponse response) {
+
+        // 중복 회원 검증
+        Optional<Member> existingMember = memberRepository.findByPhoneNumber(requestDto.getPhoneNumber());
+        if (existingMember.isPresent()) {
+            throw new MemberException(ErrorCode.MEMBER_PHONE_ALREADY_VERIFIED);
+        }
+
+        // Ca 서버로 ci 생성 요청
+        String connectionInformation = clientCaService.createCiRequest(requestDto.getName(), requestDto.getBirthDate(), requestDto.getPhoneNumber());
 
         // RSAKey 생성
         HashMap<String, String> keyPair = RSAUtil.generateKeyPair();
@@ -45,16 +64,13 @@ public class MemberService {
                 .birthDate(RSAUtil.encode(publicKey, requestDto.getBirthDate()))
                 .pin(bCryptPasswordEncoder.encode(requestDto.getPin()))
                 .phoneNumber(requestDto.getPhoneNumber())
+                .connectionInformation(connectionInformation)
                 .hasBiometric(requestDto.getHasBiometric())
-                .transactionPushEnabled(false)
                 .autoTransferPushEnabled(false)
+                .transactionPushEnabled(false)
+                .mydataAgreed(false)
                 .build();
 
-        // 중복 회원 검증
-        Optional<Member> existingMember = memberRepository.findByPhoneNumber(member.getPhoneNumber());
-        if (existingMember.isPresent()) {
-            throw new MemberException(ErrorCode.MEMBER_PHONE_ALREADY_VERIFIED);
-        }
 
         Member savedMember = memberRepository.save(member);
         rsaKeyService.saveRSAKey(savedMember.getMemberId(), privateKey);
@@ -190,6 +206,4 @@ public class MemberService {
         Member member = authenticationService.getMemberByAuthentication();
         return MemberInfoResponseDto.of(member.getTransactionPushEnabled(), member.getAutoTransferPushEnabled());
     }
-
-
 }

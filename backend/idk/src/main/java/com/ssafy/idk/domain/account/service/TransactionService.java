@@ -8,6 +8,7 @@ import com.ssafy.idk.domain.account.dto.response.TransactionResponseDto;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
+import com.ssafy.idk.domain.fcm.service.FcmService;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.global.error.ErrorCode;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -28,7 +31,7 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final AuthenticationService authenticationService;
-    private final AccountService accountService;
+    private final FcmService fcmService;
 
     public List<TransactionResponseDto> getTransaction() {
         Member member = authenticationService.getMemberByAuthentication();
@@ -37,50 +40,34 @@ public class TransactionService {
 
         List<Transaction> transactionList = transactionRepository.findAllByAccount(account);
 
+        // 최신순 정렬
+        Comparator<Transaction> comparator = Comparator.comparing(Transaction::getCreatedAt).reversed();
+        Collections.sort(transactionList, comparator);
+
         List<TransactionResponseDto> transactionResponseDtoList = new ArrayList<>();
         for(Transaction transaction : transactionList) {
             Boolean isDeposit = false;
             if(transaction.getCategory() == Category.입금) isDeposit = true;
             transactionResponseDtoList.add(TransactionResponseDto.of(transaction.getTransactionId(), transaction.getContent(), transaction.getAmount(), transaction.getBalance(), isDeposit, transaction.getCreatedAt()));
         }
+
         return transactionResponseDtoList;
     }
 
     @Transactional
-    public void atmDeposit(AmountRequestDto requestDto) {
-        Member member = authenticationService.getMemberByAuthentication();
-        Account account = accountRepository.findByMember(member)
-                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
-        Account savedAccount = accountService.deposit(requestDto.getAmount());
+    public Transaction saveTransaction(Transaction transaction) {
+        if(transaction.getCategory() == Category.입금)
+            fcmService.depositAlarm(transaction.getAccount(),
+                    transaction.getAmount(),
+                    transaction.getContent()
+            );
+        if(transaction.getCategory() == Category.출금)
+            fcmService.withdrawAlarm(transaction.getAccount(),
+                    transaction.getAmount(),
+                    transaction.getContent()
+            );
 
-        Transaction transaction = Transaction.builder()
-                .category(Category.입금)
-                .content(member.getName())
-                .amount(requestDto.getAmount())
-                .balance(savedAccount.getBalance())
-                .createdAt(LocalDateTime.now())
-                .account(savedAccount)
-                .build();
-        transactionRepository.save(transaction);
-    }
-
-    @Transactional
-    public void atmWithdraw(AmountRequestDto requestDto) {
-        Member member = authenticationService.getMemberByAuthentication();
-        Account account = accountRepository.findByMember(member)
-                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
-        
-        Account savedAccount = accountService.withdraw(requestDto.getAmount());
-
-        Transaction transaction = Transaction.builder()
-                .category(Category.입금)
-                .content(member.getName())
-                .amount(requestDto.getAmount())
-                .balance(savedAccount.getBalance())
-                .createdAt(LocalDateTime.now())
-                .account(savedAccount)
-                .build();
-        transactionRepository.save(transaction);
+        return transactionRepository.save(transaction);
     }
 
 

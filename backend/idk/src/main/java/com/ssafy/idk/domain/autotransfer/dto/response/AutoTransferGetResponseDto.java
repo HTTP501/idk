@@ -13,6 +13,7 @@ import java.time.LocalDate;
 public class AutoTransferGetResponseDto {
 
     private Long autoTransferId;
+    private String name;
     private String toAccount;
     private String toAccountBank;
     private LocalDate startYearMonth;
@@ -21,9 +22,11 @@ public class AutoTransferGetResponseDto {
     private Integer date;
     private String showRecipientBankAccount;
     private String showMyBankAccount;
+    private Long pocketId;
 
     public static AutoTransferGetResponseDto of(
             Long autoTransferId,
+            String name,
             String toAccount,
             String toAccountBank,
             LocalDate startYearMonth,
@@ -31,10 +34,12 @@ public class AutoTransferGetResponseDto {
             Long amount,
             Integer date,
             String showRecipientBankAccount,
-            String showMyBankAccount
+            String showMyBankAccount,
+            Long pocketId
     ) {
         return AutoTransferGetResponseDto.builder()
                 .autoTransferId(autoTransferId)
+                .name(name)
                 .toAccount(toAccount)
                 .toAccountBank(toAccountBank)
                 .startYearMonth(startYearMonth)
@@ -43,6 +48,7 @@ public class AutoTransferGetResponseDto {
                 .date(date)
                 .showRecipientBankAccount(showRecipientBankAccount)
                 .showMyBankAccount(showMyBankAccount)
+                .pocketId(pocketId)
                 .build();
     }
 }

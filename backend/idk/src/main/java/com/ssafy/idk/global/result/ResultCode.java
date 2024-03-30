@@ -2,7 +2,6 @@ package com.ssafy.idk.global.result;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @AllArgsConstructor
@@ -25,7 +24,10 @@ public enum ResultCode {
     ACCOUNT_UPDATE_PWD_SUCCESS(201, "A006", "계좌 비밀번호를 변경했습니다"),
     ACCOUNT_UPDATE_INCOME_DAY_SUCCESS(201, "A007", "월급일을 변경했습니다"),
     ACCOUNT_UPDATE_MIN_AMOUNT_SUCCESS(201, "A008", "계좌의 최소보유금액을 변경했습니다"),
-    ACCOUNT_TRANSFER_SUCCESS(201, "A009", "해당 계좌로 송금했습니다"),
+
+    // TRANSFER
+    TRANSFER_SUCCESS(201, "TR001", "해당 계좌로 송금했습니다"),
+    TRANSFER_READY_SUCCESS(200, "TR002", "이체할 사용자를 조회했습니다"),
 
     // MEMBER
     MEMBER_SIGNUP_SUCCESS(201, "M001", "회원가입에 성공했습니다."),
@@ -69,12 +71,14 @@ public enum ResultCode {
     POCKET_CREATE_BY_TARGET_SAVING_SUCCESS(201, "P201", "목표저축을 통해 돈 포켓을 생성했습니다."),
     POCKET_CREATE_BY_AUTO_TRANSFER_SUCCESS(201, "P202", "자동이체를 통해 돈 포켓을 생성했습니다."),
     POCKET_CREATE_BY_AUTO_DEBIT_SUCCESS(201, "P203", "자동결제를 통해 돈 포켓을 생성했습니다."),
-    POCKET_GET_SUCCESS(200, "P204", "해당 돈 포켓을 조회했습니다."),
+    POCKET_GET_DETAIL_SUCCESS(200, "P204", "해당 돈 포켓을 조회했습니다."),
     POCKET_UPDATE_NAME_SUCCESS(200, "P205", "해당 돈 포켓의 이름을 수정했습니다."),
     POCKET_UPDATE_IS_ACTIVATED_SUCCESS(200, "P206", "해당 돈 포켓의 활성화 여부를 수정했습니다."),
-    POCKET_DELETE_SUCCESS(204, "P207", "해당 돈 포켓을 해지했습니다."),
+    POCKET_AUTO_TRANSFER_DELETE_SUCCESS(204, "P207", "해당 자동이체 돈 포켓을 해지했습니다."),
     POCKET_DEPOSIT_SUCCESS(200, "P208", "해당 돈 포켓에 목표금액을 입금했습니다."),
     POCKET_WITHDRAWAL_SUCCESS(200, "P209", "해당 돈 포켓의 입금금액을 출금했습니다."),
+    POCKET_GET_TRANSACTION_DETAIL_SUCCESS(200, "P210", "해당 돈 포켓 입출금 내역을 조회했습니다."),
+    POCKET_GET_LIST_SUCCESS(200, "P201", "돈 포켓 목록을 조회했습니다."),
 
     // Analyst
     ANALYST_GET_TOTAL_AMOUNT_SUCCESS(200, "AN001", "총 지출 금액을 조회했습니다."),
@@ -88,9 +92,22 @@ public enum ResultCode {
     PAYMENT_READY_SUCCESS(200, "P001", "결제 요청을 성공했습니다"),
     PAYMENT_APPROVAL_SUCCESS(200, "P002", "결제 승인을 성공했습니다"),
 
+    // IDK_MYDATA
+    IDK_MYDATA_AGREE_SUCCESS(200, "IM001", "마이데이터 동의 성공했습니다."),
+    IDK_MYDATA_CONNECT_SUCCESS(200, "IM002", "마이데이터 자산 연결을 성공했습니다."),
+    IDK_MYDATA_GET_SUCCESS(200, "IM003", "마이데이터 조회 성공했습니다."),
+
+    // MYDATA
+    MYDATA_AGREE_SUCCESS(200, "MD001", "마이데이터 동의 성공했습니다."),
+
+
     // TRANSACTION
     TRANSACTION_ATM_DEPOSIT_SUCCESS(201, "TR001", "ATM으로 입금했습니다"),
-    TRANSACTION_ATM_WITHDRAW_SUCCESS(201, "TR002", "ATM으로 출금했습니다")
+    TRANSACTION_ATM_WITHDRAW_SUCCESS(201, "TR002", "ATM으로 출금했습니다"),
+
+    // FCM
+    FCM_SAVE_SUCCESS(201, "F001", "FCM 토큰을 저장했습니다"),
+    FCM_DELETE_SUCCESS(201, "F002", "FCM 토큰을 삭제했습니다")
     ;
 
     private final int status;

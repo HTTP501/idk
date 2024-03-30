@@ -1,8 +1,10 @@
 package com.ssafy.idk.domain.member.entity;
 
+import com.ssafy.idk.domain.mydata.entity.Mydata;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,6 +30,9 @@ public class Member {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Column(name = "connection_information")
+    private String connectionInformation;
+
     @Column(name = "has_biometric")
     private Boolean hasBiometric;
 
@@ -42,6 +47,18 @@ public class Member {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "mydata_agreed")
+    private Boolean mydataAgreed;
+
+    @Column(name = "digital_signature", length = 10000)
+    private String digitalSignature;
+
+    @Column(name = "fcm_token")
+    private String fcmToken;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Mydata> mydataList;
 
     @PrePersist
     public void prePersist() {
@@ -61,5 +78,21 @@ public class Member {
 
     public void updateTransactionPushEnabled() {
         this.transactionPushEnabled = !this.transactionPushEnabled;
+    }
+
+    public void updateDigitalSignature(String digitalSignature) {
+        this.digitalSignature = digitalSignature;
+    }
+
+    public void updateMydataAgreed() {
+        this.mydataAgreed = true;
+    }
+
+    public void updateToken(String token) {
+        this.fcmToken = token;
+    }
+
+    public void deleteToken() {
+        this.fcmToken = null;
     }
 }

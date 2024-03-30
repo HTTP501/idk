@@ -27,20 +27,29 @@ public class Pocket {
     @JoinColumn(name = "account_id") @NotNull
     private Account account;
 
+    @Column(name = "pocket_type") @NotNull
+    private PocketType pocketType;
+
     @OneToOne
     @JoinColumn(name = "target_saving_id")
     private TargetSaving targetSaving;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "auto_transfer_id")
     private AutoTransfer autoTransfer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "auto_debit_id")
     private AutoDebit autoDebit;
 
     @Column(name = "name") @NotNull
     private String name;
+
+    @Column(name = "balance") @NotNull
+    private Long balance;
+
+    @Column(name = "expected_date") @NotNull
+    private Integer expectedDate;
 
     @Column(name = "target") @NotNull
     private Long target;
@@ -60,8 +69,27 @@ public class Pocket {
     @OneToMany(mappedBy = "pocket", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<PocketTransaction> arrayPocketTranscation;
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setActivated(boolean activated) {
+        isActivated = activated;
+    }
+
+    public void deposit() {
+        this.balance = this.target;
+        this.isDeposited = !this.isDeposited;
+    }
+
+    public void withdraw() {
+        this.balance = 0L;
+        this.isDeposited = !this.isDeposited;
+    }
+
     @PrePersist
     public void prePresist() {
+        this.balance = 0L;
         this.isActivated = false;
         this.isDeposited = false;
         this.isPaid = false;

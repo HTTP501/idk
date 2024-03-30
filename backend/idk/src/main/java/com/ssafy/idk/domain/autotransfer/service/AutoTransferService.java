@@ -44,7 +44,7 @@ public class AutoTransferService {
         if (member != account.getMember())
             throw new AutoTransferException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
-        // 자동이체 계좌가 유효하지 않을 때
+        // 자동이체 계좌가 유효하지 않을 때 (추후 적용)
 
         // 자동이체 금액을 0원 이하로 등록할 때
         if (requestDto.getAmount() <= 0)
@@ -62,6 +62,7 @@ public class AutoTransferService {
 
         AutoTransfer autoTransfer = AutoTransfer.builder()
                 .account(account)
+                .name(requestDto.getName())
                 .toAccount(requestDto.getToAccount())
                 .toAccountBank(requestDto.getToAccountBank())
                 .startYearMonth(startYearMonth)
@@ -75,6 +76,7 @@ public class AutoTransferService {
 
         return AutoTransferCreateResponseDto.of(
                 savedAutoTransfer.getAutoTransferId(),
+                savedAutoTransfer.getName(),
                 savedAutoTransfer.getToAccount(),
                 savedAutoTransfer.getToAccountBank(),
                 savedAutoTransfer.getAmount(),
@@ -116,6 +118,7 @@ public class AutoTransferService {
 
         return AutoTransferGetResponseDto.of(
                 autoTransfer.getAutoTransferId(),
+                autoTransfer.getName(),
                 autoTransfer.getToAccount(),
                 autoTransfer.getToAccountBank(),
                 autoTransfer.getStartYearMonth(),
@@ -123,7 +126,8 @@ public class AutoTransferService {
                 autoTransfer.getAmount(),
                 autoTransfer.getDate(),
                 autoTransfer.getShowRecipientBankAccount(),
-                autoTransfer.getShowMyBankAccount()
+                autoTransfer.getShowMyBankAccount(),
+                (autoTransfer.getPocket() == null ? null : autoTransfer.getPocket().getPocketId())
         );
     }
 
@@ -143,6 +147,7 @@ public class AutoTransferService {
             arrayAutoTransferResponseDto.add(
                     AutoTransferGetResponseDto.of(
                             autoTransfer.getAutoTransferId(),
+                            autoTransfer.getName(),
                             autoTransfer.getToAccount(),
                             autoTransfer.getToAccountBank(),
                             autoTransfer.getStartYearMonth(),
@@ -150,7 +155,8 @@ public class AutoTransferService {
                             autoTransfer.getAmount(),
                             autoTransfer.getDate(),
                             autoTransfer.getShowRecipientBankAccount(),
-                            autoTransfer.getShowMyBankAccount()
+                            autoTransfer.getShowMyBankAccount(),
+                            (autoTransfer.getPocket() == null ? null : autoTransfer.getPocket().getPocketId())
                     )
             );
         }

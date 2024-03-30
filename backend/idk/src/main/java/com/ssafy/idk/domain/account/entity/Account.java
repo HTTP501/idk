@@ -2,6 +2,7 @@ package com.ssafy.idk.domain.account.entity;
 
 import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
 import com.ssafy.idk.domain.member.entity.Member;
+import com.ssafy.idk.domain.piggybank.entity.PiggyBank;
 import com.ssafy.idk.domain.pocket.entity.Pocket;
 import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
 import jakarta.persistence.*;
@@ -9,7 +10,6 @@ import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -63,7 +63,11 @@ public class Account {
     private List<AutoTransfer> arrayAutoTransfer;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OrderBy("orderNumber asc")
     List<Pocket> arrayPocketOrders;
+
+    @OneToOne(mappedBy = "account",  fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private PiggyBank piggyBank;
 
     public void updateName(String name) {
         this.name = name;
