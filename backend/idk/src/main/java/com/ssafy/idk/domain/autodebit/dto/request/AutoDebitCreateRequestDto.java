@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AutoDebitCreateRequestDto {
 
+    private String connectionInformation;
     private String accountNumber;
     private String orgCode;
     private String payerNumber;

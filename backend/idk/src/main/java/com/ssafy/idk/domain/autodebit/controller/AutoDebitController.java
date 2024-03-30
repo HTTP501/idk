@@ -29,11 +29,4 @@ public class AutoDebitController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_DEBIT_CREATE_SUCCESS));
     }
 
-
-//    @Operation(summary = "자동이체 가입")
-//    @PostMapping(value = "")
-//    public ResponseEntity<ResultResponse> createAutoTransfer(@RequestBody AutoTransferCreateRequestDto requestDto) {
-//        return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_TRANSFER_CREATE_SUCCESS, autoTransferService.createAutoTransfer(requestDto)));
-//    }
-
 }

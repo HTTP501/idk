@@ -39,4 +39,10 @@ public class AutoDebit {
     @Column(name = "updated_at") @NotNull
     private LocalDateTime updatedAt;
 
+    @PrePersist
+    public void prePresist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }
