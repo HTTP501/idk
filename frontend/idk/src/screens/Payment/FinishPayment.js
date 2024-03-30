@@ -21,6 +21,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import CheckBox from "expo-checkbox";
 import { payRequestAxios, approvalPayAxios } from "../../API/PayRequest.js";
 import { getAccountAxios } from "../../API/Account.js";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { json } from "d3";
 
 const FinishPayment = ({ route, navigation }) => {
   const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
@@ -28,12 +30,14 @@ const FinishPayment = ({ route, navigation }) => {
   const orderPriceSize = windowWidth * 0.45;
 
   // 각종 상태들 선언
-  const [isChecked, setChecking] = useState(false);
+  const [isCheckBoxed, setCheckBoxing] = useState(false);
   const [myProducts, setProducts] = useState("");
   const [myPrice, setMyPrice] = useState("");
   const [myPlz, setMyPlz] = useState("");
   // 네비게이터에 껴서 보낼 계좌 정보 상태로 저장
   const [myAccount, setMyAccount] = useState(null);
+  const [myPhone, setMyPhone] = useState(null);
+  const [myFormedPhone, setMyFormedPhone] = useState(null);
   const [isGetAccount,setisGetAccount] = useState(true);
   const [orderId, setOrderId] = useState(null);
   const [showModalState, setShowModalState] = useState(false);
@@ -49,7 +53,31 @@ const FinishPayment = ({ route, navigation }) => {
     }
 
     getAccountAxios(getAccountData, fail)
+
+    const callPhone = async () => {
+      const myPhoneNumber = await AsyncStorage.getItem("@signup");
+      setMyPhone(myPhoneNumber)
+
+    }
+    callPhone()
   }, [])
+
+  useEffect(() => {
+    if (myPhone !== null) {
+      const formatPhoneNumber = (phoneNumber) => {
+        // 숫자만 남기고 모든 문자 제거
+        const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+        
+        // 핸드폰 번호 형식에 맞게 - 추가
+        const formatted = cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+        
+        return formatted;
+      };
+      const formattedPhoneNumber = formatPhoneNumber(JSON.parse(myPhone).phoneNumber);
+      setMyFormedPhone(formattedPhoneNumber)
+    }
+  }, [myPhone])
+
 
   // 계좌 정보를 받기 전까지 로딩 화면을 보여주기 위해서 useEffect 사용
   useEffect(() => {
@@ -91,12 +119,21 @@ const FinishPayment = ({ route, navigation }) => {
   const modalHeight = windowHeight * 0.35;
 
   const FinishPaymentStyle = StyleSheet.create({
+    mainContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignContent: "center",
+      backgroundColor: "white",
+    },
     container: {
       flex: 1,
+      width: windowWidth * 0.8,
+      backgroundColor: "white",
+      alignSelf: "center"
     },
     backBtn: {
       flex: 3.5,
-      marginTop: 60,
+
       paddingHorizontal: 20,
     },
     productsInfoBox: {
@@ -126,7 +163,7 @@ const FinishPayment = ({ route, navigation }) => {
     },
     sparateLine: {
       width: windowWidth,
-      backgroundColor: theme["grey"],
+      backgroundColor: theme["light-grey"],
       height: 5,
       marginTop: "5%",
       marginBottom: "3%",
@@ -135,10 +172,10 @@ const FinishPayment = ({ route, navigation }) => {
     payMethodStyle: {
       borderWidth: 1,
       flexDirection: "row",
-      marginHorizontal: "2%",
-      padding: "2%",
+      // marginHorizontal: "2%",
       borderRadius: 10,
-      paddingVertical: "4%",
+      paddingVertical: "6%",
+      
     },
     resultStyle: {
       flexDirection: "row",
@@ -152,8 +189,6 @@ const FinishPayment = ({ route, navigation }) => {
     },
     purchaseBtn: {
       borderWidth: 1,
-      borderColor: theme["sky-bright-2"],
-      backgroundColor: theme["sky-bright-2"],
       width: "100%",
       height: 50,
       borderRadius: 10,
@@ -275,8 +310,8 @@ const FinishPayment = ({ route, navigation }) => {
         }}
       >
         <CheckBox
-          value={isChecked}
-          onValueChange={() => setChecking(!isChecked)}
+          value={isCheckBoxed}
+          onValueChange={() => setCheckBoxing(!isCheckBoxed)}
         />
         <Text style={{ marginHorizontal: 5, fontWeight: "bold" }}>
           개인정보 제3자 제공 내용 및 결제에 동의합니다.
@@ -312,7 +347,10 @@ const FinishPayment = ({ route, navigation }) => {
             <Text style={{ ...FinishPaymentStyle.addressText, marginLeft: 15 }}>
               {route.params.data.shop}
             </Text>
-            <Text style={{ ...FinishPaymentStyle.addressText, marginLeft: 15 }}>
+            <Text style={{ ...FinishPaymentStyle.addressText, marginLeft: 15, maxWidth: windowWidth * 0.5 }}
+              numberOfLines={2}
+              
+            >
               {route.params.data.name}
             </Text>
             <Text style={{ ...FinishPaymentStyle.addressText, marginLeft: 15 }}>
@@ -422,7 +460,7 @@ const FinishPayment = ({ route, navigation }) => {
 
   // 어떤 것을 누르고 들어왔는지에 따라 상태 설정하기
   useEffect(() => {
-    setChecking(false);
+    setCheckBoxing(false);
     if (route.params.data.name === "추가") {
       setProducts(null);
       setMyPrice(null);
@@ -444,7 +482,16 @@ const FinishPayment = ({ route, navigation }) => {
 
   // 화면 출력 부분! //
   return (
-    <View style={{flex: 1}}>
+    <View style={{...FinishPaymentStyle.mainContainer}}>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.goBack();
+        }}
+        style={{      marginTop: 60,
+          paddingHorizontal: 20, marginBottom: 0,}}
+      >
+        <MaterialIcons name="arrow-back-ios-new" size={36} color="black" />
+      </TouchableOpacity>
       <Modal
         animationType="fade"
         transparent={true}
@@ -482,17 +529,10 @@ const FinishPayment = ({ route, navigation }) => {
         </View>
       </Modal> 
 
-      <ScrollView style={FinishPaymentStyle.container}>
+      <ScrollView style={FinishPaymentStyle.container} showsVerticalScrollIndicator={false}>
         {/* 주소 및 받는 이 정보 부분 */}
         <View style={FinishPaymentStyle.backBtn}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
-            }}
-          >
-            <MaterialIcons name="arrow-back-ios-new" size={36} color="black" />
-          </TouchableOpacity>
-          <Text style={{ marginTop: 20 }}>
+          <Text style={{ marginTop: 20, marginBottom: 20, }}>
             <Text
               style={{
                 ...FinishPaymentStyle.addressText,
@@ -510,7 +550,7 @@ const FinishPayment = ({ route, navigation }) => {
             로컬에서 나의 이름을 가져올게요
           </Text>
           <Text style={FinishPaymentStyle.addressText}>
-            로컬에서 나의 전화번호를 가져올게요
+            {myFormedPhone}
           </Text>
           <Text style={FinishPaymentStyle.addressText}>
             서울특별시 강남구 테헤란로 212 (역삼동 718-5번지)
@@ -560,8 +600,8 @@ const FinishPayment = ({ route, navigation }) => {
             {isGetAccount ? (<ActivityIndicator size={"large"} color={theme["sky-basic"]} style={{marginVertical: 25,}} />) : (
               <React.Fragment>
                 <View style={{ marginLeft: "5%" }}>
-                  <Text style={{ fontWeight: "bold", fontSize: 15 }}>
-                    {myAccount.accountName}
+                  <Text style={{ fontWeight: "bold", fontSize: 14 }}>
+                    {myAccount.accountName}{"    "}
                   </Text>
                   <Text>{myAccount.accountNumber}</Text>
                 </View>
@@ -592,8 +632,9 @@ const FinishPayment = ({ route, navigation }) => {
           {showPrice(newNum, "총 결제금액")}
           {/* 버튼 부분 */}
           <TouchableOpacity
+          disabled = {!isCheckBoxed}
             onPress={() => {
-              if (isChecked == true) {
+              if (isCheckBoxed == true) {
                 // 결제 완료 API 보내기
                 const catchData = (response) => {
                   setOrderId(response.data.data)
@@ -612,7 +653,10 @@ const FinishPayment = ({ route, navigation }) => {
               }
             }}
           >
-            <View style={{ ...FinishPaymentStyle.purchaseBtn }}>
+            <View style={{ ...FinishPaymentStyle.purchaseBtn, 
+              backgroundColor: isCheckBoxed ? (theme["sky-bright-2"]) : (theme.grey), 
+              borderColor: isCheckBoxed ? (theme["sky-bright-2"]) : (theme.grey), }}
+            >
               <Text style={{ ...FinishPaymentStyle.btnFont }}>
                 동의하고 결제하기
               </Text>

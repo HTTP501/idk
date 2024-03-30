@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { Fontisto, MaterialIcons } from "@expo/vector-icons";
+import { Fontisto, MaterialIcons, Entypo } from "@expo/vector-icons";
 import theme from "../../style";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer, useFocusEffect } from "@react-navigation/native";
@@ -81,18 +81,27 @@ const ShoppingMall = ({ navigation }) => {
     container: {
       flex: 1,
       paddingHorizontal: 20,
+      backgroundColor: "white"
+    },
+    toptitle: {
+      flex: 0.6,
+      marginTop: 60,
     },
     backBtn: {
       flex: 1,
-      marginTop: 60,
+      marginTop: windowHeight * 0.07,
+      marginLeft: windowWidth * 0.05,
+      position: "absolute"
     },
     pageTitle: {
-      fontSize: 25,
+      fontSize: 30,
       marginTop: 10,
       fontWeight: "bold",
+      textAlign: "center",
+      
     },
     categorys: {
-      flex: 1,
+      flex: 0.8,
       flexDirection: "row",
       justifyContent: "space-between",
       marginTop: 10,
@@ -327,6 +336,9 @@ const ShoppingMall = ({ navigation }) => {
   // 목표저축으로 가는걸 감지해서 보내주는 useEffect
   useEffect(() => {
     if (wantGoGoal !== false) {
+      if (item.name.length > 25) {
+        item.name = item.name.substring(0, 20)
+      }
       navigation.navigate("RegistGoalSaving", { item })
     }
   }, [wantGoGoal])
@@ -413,7 +425,12 @@ const ShoppingMall = ({ navigation }) => {
             </View>
           </Modal>
           {/* 상단 부분 (뒤로가기, 카테고리 텍스트) */}
-          <View style={ShoppingMallStyles.backBtn}>
+          <View style={{...ShoppingMallStyles.toptitle}}>
+            <Text style={ShoppingMallStyles.pageTitle}>IDK 몰</Text>
+          </View>
+
+          {/* 뒤로가기 버튼 부분 */}
+          {/* <View style={{...ShoppingMallStyles.backBtn}}>
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
@@ -421,8 +438,8 @@ const ShoppingMall = ({ navigation }) => {
             >
               <MaterialIcons name="arrow-back-ios-new" size={36} color="black" />
             </TouchableOpacity>
-            <Text style={ShoppingMallStyles.pageTitle}>카테고리</Text>
-          </View>
+            
+          </View> */}
 
           {/* 카테고리 바 부분 */}
           <View style={ShoppingMallStyles.categorys}>
@@ -437,7 +454,7 @@ const ShoppingMall = ({ navigation }) => {
                   >
                     <Image
                       source={imgMatch[cate]}
-                      style={{ width: 45, height: 45 }}
+                      style={{ width: 35, height: 35 }}
                     />
                   </View>
                 </TouchableOpacity>
