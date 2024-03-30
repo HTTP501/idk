@@ -32,4 +32,10 @@ public class AutoDebitController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_DEBIT_GET_SUCCESS, autoDebitService.getDetailAutoDebit(autoDebitId)));
     }
 
+    @Operation(summary = "자동결제 삭제")
+    @DeleteMapping("/{autoDebitId}")
+    public ResponseEntity<ResultResponse> deleteAutoDebit(@PathVariable(name = "autoDebitId") Long autoDebitId) {
+        autoDebitService.deleteAutoDebit(autoDebitId);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_DEBIT_DELETE_SUCCESS));
+    }
 }

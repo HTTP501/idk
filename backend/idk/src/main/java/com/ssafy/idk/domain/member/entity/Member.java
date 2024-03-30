@@ -27,7 +27,7 @@ public class Member {
     @Column(name = "pin")
     private String pin;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
     @Column(name = "connection_information")

@@ -85,4 +85,18 @@ public class AutoDebitService {
                 autoDebit.getPayerNumber()
         );
     }
+
+    @Transactional
+    public void deleteAutoDebit(Long autoDebitId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        AutoDebit autoDebit = autoDebitRepository.findById(autoDebitId)
+                .orElseThrow(() -> new AutoDebitException(ErrorCode.AUTO_DEBIT_NOT_FOUND));
+
+        autoDebitRepository.delete(autoDebit);
+        
+        // CARD 서버에 등록되어 있는 계좌번호 수정 요청 필요
+
+    }
 }
