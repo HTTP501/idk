@@ -1,3 +1,4 @@
+import React from "react";
 import {
   StyleSheet,
   View,
@@ -18,6 +19,7 @@ import {
   WithdrawMyAccountAxios,
   getAccountAxios,
 } from "../../API/Account";
+import { useFocusEffect } from "@react-navigation/native";
 
 const keyboard = [
   {
@@ -57,18 +59,38 @@ const keyboard = [
     text: "정정",
   },
 ];
-const ATM = function ({ navigation }) {
+const ATM = function ({ navigation, route }) {
   let [enterMoney, setEnterMoney] = useState(false);
   let [outMoney, setOutMoney] = useState(false);
   let [money, setMoney] = useState(0);
   let [myAccountAmount, setMyAccountAmount] = useState(0)
   let [myAccountNumber, setMyAccountNumber] = useState("")
+  const destination = { stack: "ATM", screen: "ATM" };
+  // 다시 돌아올때 route 체크를 확인하고 해지한다
+  useEffect(() => {
 
+    console.log("ATM 입장", route);
+    if (route?.params?.params?.data?.isChecked) {
+      setMoney(route?.params?.params?.data?.money)
+      if (route?.params?.params?.data?.type === "입금") {
+        DepositMyAccount()
+      } else if (route?.params?.params?.data?.type === "출금") {
+        WithdrawMyAccount()
+      }
+    }
+  }, [route?.params]);
+  useFocusEffect(
+    React.useCallback(() => {
+      // 계좌 조회
+    getAccount()
+    }, [])
+  );
+  
   const getAccount = async () => {
     // 계좌 조회 Axios
     await getAccountAxios(
       (res) => {
-        setMyAccountAmount(res.data.data.accountAvailableAmount);
+        setMyAccountAmount(res.data.data.accountBalance);
         setMyAccountNumber(res.data.data.accountNumber);
       },
       (err) => {
@@ -94,9 +116,10 @@ const ATM = function ({ navigation }) {
     DepositMyAccountAxios(
       (data = { amount: Number(money) }),
       (res) => {
-        console.log("성공", res);
+        console.log("성공", res.data.message);
         setEnterMoney(false)
         setOutMoney(false)
+        setMoney(0)
         Alert.alert(
           "입금을 완료하였습니다.",
           "메인 페이지로 이동합니다.",
@@ -113,17 +136,16 @@ const ATM = function ({ navigation }) {
       }
     );
   };
-  useEffect(() => {
-    getAccount()
-  }, [])
+
   // 출금
   const WithdrawMyAccount = function () {
     WithdrawMyAccountAxios(
       (data = { amount: Number(money) }),
       (res) => {
-        console.log("성공", res);
+        console.log("성공", res.data.message);
         setEnterMoney(false)
         setOutMoney(false)
+        setMoney(0)
         Alert.alert(
           "출금을 완료하였습니다.",
           "메인 페이지로 이동합니다.",
@@ -282,8 +304,11 @@ const ATM = function ({ navigation }) {
                       className="p-1 px-5 rounded"
                       style={{ backgroundColor: theme.grey }}
                       onPress={() => {
-                        DepositMyAccount();
 
+                        navigation.navigate("AuthStack", {
+                          screen: "AuthPW",
+                          params: { data: { isChecked: false, type: "입금", money: money }, destination },
+                        });
 
                       }}
                     >
@@ -294,8 +319,11 @@ const ATM = function ({ navigation }) {
                       className="p-1 px-5 rounded"
                       style={{ backgroundColor: theme.grey }}
                       onPress={() => {
-                        WithdrawMyAccount();
 
+                        navigation.navigate("AuthStack", {
+                          screen: "AuthPW",
+                          params: { data: { isChecked: false, type: "출금", money: money }, destination },
+                        });
                       }}
                     >
                       <Text className="text-lg font-bold">출금</Text>
