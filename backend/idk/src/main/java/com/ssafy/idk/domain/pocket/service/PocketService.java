@@ -6,10 +6,13 @@ import com.ssafy.idk.domain.account.entity.Transaction;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
+import com.ssafy.idk.domain.autodebit.entity.AutoDebit;
+import com.ssafy.idk.domain.autodebit.repository.AutoDebitRepository;
 import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
 import com.ssafy.idk.domain.autotransfer.repository.AutoTransferRepository;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
+import com.ssafy.idk.domain.pocket.dto.request.PocketCreateAutoDebitRequestDto;
 import com.ssafy.idk.domain.pocket.dto.request.PocketCreateAutoTransferRequestDto;
 import com.ssafy.idk.domain.pocket.dto.request.PocketUpdateNameRequestDto;
 import com.ssafy.idk.domain.pocket.dto.response.*;
@@ -41,6 +44,7 @@ public class PocketService {
     private final AutoTransferRepository autoTransferRepository;
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
+    private final AutoDebitRepository autoDebitRepository;
 
     @Transactional
     public Pocket createByTargetSaving(TargetSaving targetSaving, Account account) {
@@ -89,6 +93,41 @@ public class PocketService {
         Pocket savedPocket = pocketRepository.save(pocket);
 
         return PocketCreateAutoTransferResponseDto.of(
+                savedPocket.getPocketId(),
+                savedPocket.getName(),
+                savedPocket.getTarget()
+        );
+    }
+
+    public PocketCreateAutoDebitResponseDto createByAutoDebit(PocketCreateAutoDebitRequestDto requestDto) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        // 자동결제 여부 확인
+        AutoDebit autoDebit = autoDebitRepository.findById(requestDto.getAutoDebitId())
+                .orElseThrow(() -> new PocketException(ErrorCode.POCKET_AUTO_TRANSFER_NOT_FOUND));
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        Account account = autoDebit.getAccount();
+        if (member != account.getMember())
+            throw new PocketException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        // 해당 자동이체의 돈 포켓이 이미 존재할 때
+        if (pocketRepository.findByAutoDebit(autoDebit).isPresent())
+            throw new PocketException(ErrorCode.POCKET_AUTO_DEBIT_EXISTS);
+
+        Pocket pocket = Pocket.builder()
+                .account(account)
+                .pocketType(PocketType.자동결제)
+                .autoDebit(autoDebit)
+                .name(autoDebit.getFinanceAgency() + " 자동결제의 돈포켓")
+//                .target(0L)                               // 금액과
+//                .expectedDate(autoTransfer.getDate())     // 날짜 조회 때문에 잠깐 미뤄둠
+                .orderNumber(account.getArrayPocketOrders().size())
+                .build();
+        Pocket savedPocket = pocketRepository.save(pocket);
+
+        return PocketCreateAutoDebitResponseDto.of(
                 savedPocket.getPocketId(),
                 savedPocket.getName(),
                 savedPocket.getTarget()
