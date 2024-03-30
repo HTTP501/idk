@@ -1,5 +1,6 @@
 package com.ssafy.idk.domain.account.entity;
 
+import com.ssafy.idk.domain.autodebit.entity.AutoDebit;
 import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.piggybank.entity.PiggyBank;
@@ -61,6 +62,9 @@ public class Account {
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<AutoTransfer> arrayAutoTransfer;
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<AutoDebit> arrayAutoDebit;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @OrderBy("orderNumber asc")

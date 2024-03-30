@@ -17,6 +17,7 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Optional<Account> findByMember(Member member);
+    Optional<Account> findByNumber(String number);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT a FROM Account a JOIN FETCH a.member m WHERE m = :member")
