@@ -27,8 +27,8 @@ public class AutoDebit {
     @Column(length = 20, name = "finance_agency") @NotNull
     private String financeAgency;
 
-    @Column(length = 20, name = "agency_number") @NotNull
-    private String agencyNumber;
+    @Column(length = 20, name = "org_code") @NotNull
+    private String orgCode;
 
     @Column(length = 20, name = "payer_number") @NotNull
     private String payerNumber;
