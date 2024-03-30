@@ -9,8 +9,10 @@ import com.ssafy.idk.domain.autodebit.dto.response.AutoDebitGetDetailResponseDto
 import com.ssafy.idk.domain.autodebit.entity.AutoDebit;
 import com.ssafy.idk.domain.autodebit.exception.AutoDebitException;
 import com.ssafy.idk.domain.autodebit.repository.AutoDebitRepository;
+import com.ssafy.idk.domain.autotransfer.exception.AutoTransferException;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
+import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.mydata.entity.Organization;
 import com.ssafy.idk.domain.mydata.exception.MydataException;
 import com.ssafy.idk.domain.mydata.repository.OrganizationRepository;
@@ -29,6 +31,7 @@ public class AutoDebitService {
     private final RSAKeyService rsaKeyService;
     private final OrganizationRepository organizationRepository;
     private final AutoDebitRepository autoDebitRepository;
+    private final AuthenticationService authenticationService;
 
     @Transactional
     public void createAutoDebit(AutoDebitCreateRequestDto requestDto) {
@@ -50,8 +53,8 @@ public class AutoDebitService {
                 .orElseThrow(() -> new MydataException(ErrorCode.MYDATA_ORG_NOT_FOUND));
 
         // 납부자 번호 검증
-        autoDebitRepository.findByPayerNumber(requestDto.getPayerNumber())
-                .orElseThrow(() -> new AutoDebitException(ErrorCode.AUTO_DEBIT_PAYER_NUMBER_EXISTS));
+        if (autoDebitRepository.findByPayerNumber(requestDto.getPayerNumber()).isPresent())
+            throw new AutoTransferException(ErrorCode.AUTO_DEBIT_PAYER_NUMBER_EXISTS);
 
         // 자동결제 저장
         AutoDebit autoDebit = AutoDebit.builder()
@@ -64,7 +67,22 @@ public class AutoDebitService {
 
     }
 
-    public AutoDebitGetDetailResponseDto getDetailAutoDebit() {
-        return null;
+    public AutoDebitGetDetailResponseDto getDetailAutoDebit(Long autoDebitId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        AutoDebit autoDebit = autoDebitRepository.findById(autoDebitId)
+                .orElseThrow(() -> new AutoDebitException(ErrorCode.AUTO_DEBIT_NOT_FOUND));
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        Account account = autoDebit.getAccount();
+        if (member != account.getMember())
+            throw new AutoTransferException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        return AutoDebitGetDetailResponseDto.of(
+                autoDebit.getFinanceAgency(),
+                autoDebit.getOrgCode(),
+                autoDebit.getPayerNumber()
+        );
     }
 }

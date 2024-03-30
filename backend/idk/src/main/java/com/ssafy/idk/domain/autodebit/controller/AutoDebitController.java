@@ -29,7 +29,7 @@ public class AutoDebitController {
     @Operation(summary = "자동결제 상세 조회")
     @GetMapping("/{autoDebitId}")
     public ResponseEntity<ResultResponse> getDetailAutoDebit(@PathVariable(name = "autoDebitId") Long autoDebitId) {
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_DEBIT_GET_SUCCESS, autoDebitService.getDetailAutoDebit()));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_DEBIT_GET_SUCCESS, autoDebitService.getDetailAutoDebit(autoDebitId)));
     }
 
 }
