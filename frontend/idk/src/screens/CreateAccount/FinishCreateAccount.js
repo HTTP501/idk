@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Text, View, Dimensions, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import theme from '../../style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import MoneySendAnimation from '../../components/MoneySendAnimation';
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 const ACCOUNT_KEY = '@account'
 
@@ -21,7 +21,7 @@ const FinishCreateAccount = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../../assets/check.png')} />
+      <MoneySendAnimation/>
       <Text className='text-3xl font-bold mb-10 mt-10'>계좌 생성 완료</Text>
       <View className='flex-row items-center mb-8' style={{ width: 200 }}>
         <Text className='text-lg font-bold mr-5'>계좌번호 </Text>
