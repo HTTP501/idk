@@ -16,6 +16,9 @@ public enum ResultCode {
     // CREDIT
     CREDIT_CREATE_SUCCESS(201, "CARD-C201", "CARD SERVER 신용카드를 생성했습니다."),
     CREDIT_UPDATE_SUCCESS(200, "CARD-C202", "CARD SERVER 신용카드 정보를 수정했습니다."),
+    CREDIT_GET_ARRAY_SUCCESS(200, "CARD-C203", "CARD SERVER 신용카드 목록을 조회했습니다."),
+    CREDIT_GET_DETAIL_SUCCESS(200, "CARD-C204", "CARD SERVER 해당 신용카드 정보를 조회했습니다."),
+    CREDIT_GET_PAYMENT_SUCCESS(200, "CARD-C205", "CARD SERVER 해당 신용카드 회사 결제 정보를 조회했습니다."),
     ;
 
 

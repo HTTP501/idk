@@ -52,7 +52,6 @@ public class Credit {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-
     @OneToMany(mappedBy = "credit", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Bill> arrayBill;
 

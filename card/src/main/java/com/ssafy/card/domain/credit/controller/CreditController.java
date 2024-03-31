@@ -2,6 +2,7 @@ package com.ssafy.card.domain.credit.controller;
 
 
 import com.ssafy.card.domain.credit.dto.request.CreditCreateRequestDto;
+import com.ssafy.card.domain.credit.dto.request.CreditRequestDto;
 import com.ssafy.card.domain.credit.dto.request.CreditUpdateRequestDto;
 import com.ssafy.card.domain.credit.service.CreditService;
 import com.ssafy.card.global.result.ResultCode;
@@ -33,4 +34,15 @@ public class CreditController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.CREDIT_UPDATE_SUCCESS, creditService.updateAccountNum(requestDto, creditId)));
     }
 
+    @Operation(summary = "[마이데이터] 카드 목록 조회")
+    @GetMapping("")
+    public ResponseEntity<ResultResponse> getArrayCredit(@RequestBody CreditRequestDto requestDto) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.CREDIT_GET_ARRAY_SUCCESS, creditService.getArrayCredit(requestDto)));
+    }
+
+    @Operation(summary = "[마이데이터] 카드 기본정보 조회")
+    @GetMapping("/{creditId}")
+    public ResponseEntity<ResultResponse> getCreditDetail(@RequestBody CreditRequestDto requestDto, @PathVariable(name = "creditId") Long creditId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.CREDIT_GET_DETAIL_SUCCESS, creditService.getCreditDetail(requestDto, creditId)));
+    }
 }

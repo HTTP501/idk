@@ -21,9 +21,13 @@ public enum ErrorCode {
 
     // ORGANIZATION
     ORGANIZATION_NOT_FOUND(404, "CARD-ORG401", "해당 기관 정보를 찾을 수 없습니다."),
+    ORGANIZATION_INCORRECT(409, "CARD-ORG402", "해당 신용카드와 기관 정보가 일치하지 않습니다."),
 
     // CREDIT
     CREDIT_NOT_FOUND(404, "CARD-CRDT401", "해당 신용카드를 찾을 수 없습니다."),
+
+    // PAYMENT
+    PAYMENT_NOT_FOUND(404, "CARD-PM401", "해당 결제 정보를 찾을 수 없습니다."),
 
     ;
 
