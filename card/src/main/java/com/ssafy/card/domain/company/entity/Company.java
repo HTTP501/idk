@@ -1,6 +1,7 @@
 package com.ssafy.card.domain.company.entity;
 
 import com.ssafy.card.domain.credit.entity.Credit;
+import com.ssafy.card.domain.digitalsigniture.entity.DigitalSigniture;
 import com.ssafy.card.domain.organization.entity.Organization;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -36,5 +37,8 @@ public class Company {
 
     @OneToMany(mappedBy = "company", fetch=FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Credit> arrayCredit;
+
+    @OneToOne(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private DigitalSigniture digitalSigniture;
 
 }
