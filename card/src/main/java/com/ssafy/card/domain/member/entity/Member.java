@@ -1,7 +1,11 @@
 package com.ssafy.card.domain.member.entity;
 
+import com.ssafy.card.domain.bill.entity.Bill;
+import com.ssafy.card.domain.digitalsigniture.entity.DigitalSigniture;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,5 +31,11 @@ public class Member {
 
     @Column(name = "connection_information", unique = true)     // 통합인증수단(CI)
     private String connectionInformation;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Bill> arrayBill;
+
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private DigitalSigniture digitalSigniture;
 
 }
