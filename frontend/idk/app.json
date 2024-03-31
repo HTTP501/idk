@@ -22,7 +22,7 @@
         "foregroundImage": "./assets/logo/app_icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ssafy.idk",
+      "package": "com.yunyebeen.idk",
       "googleServicesFile": "./google-services.json"
     },
     "web": {
