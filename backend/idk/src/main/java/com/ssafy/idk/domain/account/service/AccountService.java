@@ -100,7 +100,7 @@ public class AccountService {
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
-        return AccountResponseDto.of(account.getAccountId(), RSAUtil.decode(privateKey, account.getNumber()), account.getName(), account.getBalance(), account.getMinAmount(), account.getPayDate());
+        return AccountResponseDto.of(account.getAccountId(), member.getName(), RSAUtil.decode(privateKey, account.getNumber()), account.getName(), account.getBalance(), account.getMinAmount(), account.getPayDate());
     }
 
     @Transactional
