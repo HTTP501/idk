@@ -5,20 +5,17 @@ import com.ssafy.idk.domain.account.entity.Category;
 import com.ssafy.idk.domain.account.entity.Transaction;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
-import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.account.service.AccountService;
-import com.ssafy.idk.domain.account.service.RSAKeyService;
+import com.ssafy.idk.domain.account.service.TransactionService;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.shop.entity.Item;
 import com.ssafy.idk.domain.shop.entity.OrderInfo;
 import com.ssafy.idk.domain.shop.dto.request.ApprovalPaymentRequestDto;
-import com.ssafy.idk.domain.shop.dto.request.ReadyPaymentRequestDto;
 import com.ssafy.idk.domain.shop.exception.ItemException;
 import com.ssafy.idk.domain.shop.exception.PaymentException;
 import com.ssafy.idk.domain.shop.repository.ItemRepository;
 import com.ssafy.idk.global.error.ErrorCode;
-import com.ssafy.idk.global.util.RSAUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +35,7 @@ public class PaymentService {
     private final AuthenticationService authenticationService;
     private final AccountService accountService;
     private final ItemRepository itemRepository;
-    private final TransactionRepository transactionRepository;
+    private final TransactionService transactionService;
     private final AccountRepository accountRepository;
     private final RedisTemplate<String, OrderInfo> orderRedisTemplate;
     
@@ -89,7 +86,7 @@ public class PaymentService {
                 .createdAt(LocalDateTime.now())
                 .account(account)
                 .build();
-        transactionRepository.save(transaction);
+        transactionService.saveTransaction(transaction);
     }
 
     public static String generateOrderId() {

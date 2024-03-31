@@ -11,7 +11,6 @@ import com.ssafy.idk.domain.account.dto.response.TransferResponseDto;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.exception.TransferException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
-import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
@@ -27,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -38,7 +38,7 @@ public class AccountService {
     private final MemberRepository memberRepository;
     private final PasswordEncryptUtil passwordEncryptUtil;
     private final RSAKeyService rsaKeyService;
-    private final TransactionRepository transactionRepository;
+    private final TransactionService transactionService;
     private final AuthenticationService authenticationService;
 
     @Transactional
@@ -109,6 +109,7 @@ public class AccountService {
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
+        rsaKeyService.deleteRSAKey(member.getMemberId());
         accountRepository.deleteById(account.getAccountId());
     }
 
@@ -180,11 +181,11 @@ public class AccountService {
         if (requestDto.getBankName().equals("IDK은행")) {
             List<Member> memberList = memberRepository.findAll();
             for(Member member : memberList) {
-                Account account = accountRepository.findByMember(member)
-                        .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+                Optional<Account> account = accountRepository.findByMember(member);
+                if(account.isEmpty()) continue;
                 // 개인키로 계좌번호 복호화
                 String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
-                String accountNumber = RSAUtil.decode(privateKey, account.getNumber());
+                String accountNumber = RSAUtil.decode(privateKey, account.get().getNumber());
                 // 이체할 사용자를 찾았을 경우
                 if(accountNumber.equals(requestDto.getAccountNumber())) {
                     return ReadyTransferResponseDto.of(member.getMemberId(), member.getName());
@@ -204,21 +205,31 @@ public class AccountService {
         if (requestDto.getTransferBank().equals("IDK은행")) { // 받는사람이 IDK은행인 경우
             if(!accountNumberVerity(requestDto.getReceiverId()))
                 throw new AccountException(ErrorCode.TRANSFER_RECEIVER_FAIL);
-
-            deposit(requestDto.getReceiverId(), requestDto.getTransferAmount());
+            
+            // 받는사람 입금
+            Account receiveAccount = deposit(requestDto.getReceiverId(), requestDto.getTransferAmount());
+            Transaction transaction = Transaction.builder()
+                    .category(Category.입금)
+                    .content(requestDto.getReceiverPaymentContent())
+                    .amount(requestDto.getTransferAmount())
+                    .balance(receiveAccount.getBalance())
+                    .createdAt(LocalDateTime.now())
+                    .account(receiveAccount)
+                    .build();
+            transactionService.saveTransaction(transaction);
         }
-
+        
+        // 보낸사람 출금
         Account savedAccount = withdraw(member.getMemberId(), requestDto.getTransferAmount());
         Transaction transaction = Transaction.builder()
-                .category(Category.송금)
+                .category(Category.출금)
                 .content(requestDto.getMyPaymentContent())
                 .amount(requestDto.getTransferAmount())
                 .balance(savedAccount.getBalance())
                 .createdAt(LocalDateTime.now())
                 .account(savedAccount)
                 .build();
-        Transaction savedTransaction = transactionRepository.save(transaction);
-
+        Transaction savedTransaction = transactionService.saveTransaction(transaction);
         return TransferResponseDto.of(savedTransaction.getAmount(), savedTransaction.getBalance());
     }
 
@@ -239,6 +250,38 @@ public class AccountService {
         }
         int checksum = (11 - (sum % 11)) % 10;
         return checksum == Integer.parseInt(String.valueOf(accountNumber.charAt(11)));
+    }
+
+    @Transactional
+    public void atmDeposit(AmountRequestDto requestDto) {
+        Member member = authenticationService.getMemberByAuthentication();
+        Account savedAccount = deposit(member.getMemberId(), requestDto.getAmount());
+
+        Transaction transaction = Transaction.builder()
+                .category(Category.입금)
+                .content(member.getName())
+                .amount(requestDto.getAmount())
+                .balance(savedAccount.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(savedAccount)
+                .build();
+        transactionService.saveTransaction(transaction);
+    }
+
+    @Transactional
+    public void atmWithdraw(AmountRequestDto requestDto) {
+        Member member = authenticationService.getMemberByAuthentication();
+        Account savedAccount = withdraw(member.getMemberId(), requestDto.getAmount());
+
+        Transaction transaction = Transaction.builder()
+                .category(Category.출금)
+                .content(member.getName())
+                .amount(requestDto.getAmount())
+                .balance(savedAccount.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(savedAccount)
+                .build();
+        transactionService.saveTransaction(transaction);
     }
 
     @Transactional

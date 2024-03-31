@@ -70,6 +70,7 @@ public enum ErrorCode {
 
     // AUTO_DEBIT
     AUTO_DEBIT_NOT_FOUND(404, "AD401", "해당 자동납부가 존재하지 않습니다."),
+    AUTO_DEBIT_PAYER_NUMBER_EXISTS(409, "AD403", "이미 존재하는 납부자번호입니다."),
 
     // POCKET
     POCKET_TARGET_SAVING_NOT_FOUND(404, "P401", "해당 목표저축이 존재하지 않습니다."),
@@ -80,6 +81,7 @@ public enum ErrorCode {
     POCKET_IMPOSSIBLE_WITHDRAWAL(409, "P406", "해당 돈 포켓의 돈을 출금할 수 없습니다."),
     POCKET_TRANSACTION_NOT_FOUND(404, "P407", "해당 돈 포켓 입출금 내역이 존재하지 않습니다."),
     POCKET_AUTO_TRANSFER_EXISTS(409, "P408", "해당 자동이체의 돈 포켓이 존재합니다."),
+    POCKET_AUTO_DEBIT_EXISTS(409, "AD402", "해당 자동결제의 돈 포켓이 존재합니다."),
 
     // PAYMENT
     PAYMENT_VERIFY_FAIL(400, "P401", "결제수단 검증에 실패했습니다"),
@@ -89,7 +91,11 @@ public enum ErrorCode {
     // MYDATA
     MYDATA_FAILED(400, "MD400", "마이데이터 요청을 실패했습니다."),
     MYDATA_SIGN_TRANSFORM_FAILED(400, "MD400", "전자서명 변환에 실패했습니다."),
-    MYDATA_ORG_NOT_FOUND(404, "MD404", "기관을 찾을 수 없습니다.");
+    MYDATA_ORG_NOT_FOUND(404, "MD404", "기관을 찾을 수 없습니다."),
+
+    // FCM
+    FCM_SEND_FAIL(400, "F401", "FCM 알림 전송을 실패했습니다")
+    ;
 
     private final int status;
     private final String code;
