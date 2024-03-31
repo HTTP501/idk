@@ -1,23 +1,20 @@
 package com.ssafy.mydata.service;
 
 import com.ssafy.mydata.dto.request.AgreeRequestDto;
-import com.ssafy.mydata.dto.request.CertifyRequestDto;
-import com.ssafy.mydata.dto.response.CertifyResponseDto;
-import com.ssafy.mydata.dto.response.CertifyResponseDto.CertifyResult;
+import com.ssafy.mydata.dto.request.SignupRequestDto;
+import com.ssafy.mydata.dto.request.VerifyAuthRequestDto;
 import com.ssafy.mydata.entity.Member;
 import com.ssafy.mydata.entity.Organization;
+import com.ssafy.mydata.entity.Permission;
 import com.ssafy.mydata.exception.MydataException;
 import com.ssafy.mydata.global.error.ErrorCode;
 import com.ssafy.mydata.repository.MemberRepository;
 import com.ssafy.mydata.repository.OrganizationRepository;
-import com.ssafy.mydata.util.MydataUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +29,6 @@ public class MydataService {
     public void agree(AgreeRequestDto requestDto) {
 
         // 사용자 체크
-        System.out.println("requestDto.getName() = " + requestDto.getName());
-        System.out.println("requestDto.getPhoneNumber() = " + requestDto.getPhoneNumber());
-        System.out.println("requestDto.getConnectionInformation() = " + requestDto.getConnectionInformation());
         Member member = memberRepository.findByNameAndPhoneNumberAndConnectionInformation(requestDto.getName(), requestDto.getPhoneNumber(), requestDto.getConnectionInformation())
                 .orElseThrow(() -> new MydataException(ErrorCode.MYDATA_USER_NOT_FOUND));
 
@@ -42,63 +36,51 @@ public class MydataService {
         member.updateIsAgree();
     }
 
-    // 통합인증 요청
-    public CertifyResponseDto certify(CertifyRequestDto requestDto) {
+    // 통합인증 권한 검증 요청
+    public void vertifyAuth(VerifyAuthRequestDto requestDto) {
 
-        // 1. 사용자 마이데이터 동의 여부 체크
-        Member member = memberRepository.findByConnectionInformation(requestDto.getConnectionInformation())
-                .orElseThrow(() -> new MydataException(ErrorCode.MYDATA_USER_NOT_FOUND));
-
-        if (!member.getIsAgree()) {
-            throw new MydataException(ErrorCode.MYDATA_USER_DISAGREE);
-        }
-
-        // 2. 서비스 등록 여부 체크
+        // 아이디로 기관 조회
         Organization organization = organizationRepository.findByClientId(requestDto.getClientId())
                 .orElseThrow(() -> new MydataException(ErrorCode.MYDATA_ORG_NOT_FOUND));
 
-        if (!organization.getClientSecret().equals(requestDto.getClientSecret())) {
-            throw new MydataException(ErrorCode.MYDATA_SECRET_INVALID);
+        // 코드와 비밀번호 같은지 체크
+        if (!organization.getOrgCode().equals(requestDto.getOrgCode()) ||
+                !organization.getClientSecret().equals(requestDto.getClientSecret())) {
+            throw new MydataException(ErrorCode.MYDATA_ORG_INVALID);
         }
 
-        // 3. 마이데이터 사업자 권한 체크
+        // 권한이 있는 지 체크
+        String authorityStr = requestDto.getAuthority();
+        try {
+            Permission authority = Permission.valueOf(authorityStr);
 
-        // 전송요구 내역, 서명 내역 순서대로 각 정보제공자 API 호출
-        // ci, consentInfo, digitalSignature
 
-
-        // 전송내역 역직렬화
-        String consentInfo = requestDto.getConsentInfo();
-        List<Map<String, String>> consentInfoList = MydataUtil.convertJsonToList(consentInfo);
-
-        // 전자서명 역직렬화
-        String digitalSignature = requestDto.getDigitalSignature();
-        List<Map<String, String>> signatureInfoList = MydataUtil.convertJsonToList(digitalSignature);
-
-        // 기관과 토큰 정보를 함께 담아서 리스트에 저장
-        List<CertifyResult> resultList = new ArrayList<>();
-
-        for (Map<String, String> consent : consentInfoList) {
-
-            String orgCode = consent.get("orgCode");
-            String orgType = consent.get("orgType");
-
-            String token;
-            if (orgType.equals("BANK")) {
-                // Bank API 호출
-                token = clientProviderService.certifyToBank(orgCode, consent, signatureInfoList);
-            } else {
-                // Card API 호출
-                token = clientProviderService.certifyToCard(orgCode, consent, signatureInfoList);
+            if (!organization.getPermissions().contains(authority)) {
+                throw new MydataException(ErrorCode.MYDATA_ORG_NO_AUTHORITY);
             }
-
-            CertifyResult result = CertifyResult.builder()
-                    .orgCode(orgCode)
-                    .token(token)
-                    .build();
-
-            resultList.add(result);
+        } catch (IllegalArgumentException e) {
+            // enum으로 변환할 수 없는 값이 전달된 경우
+            throw new MydataException(ErrorCode.MYDATA_INVALID_AUTHORITY);
         }
-        return CertifyResponseDto.of(resultList);
+    }
+
+    @Transactional
+    public void signup(SignupRequestDto requestDto) {
+        
+        // 중복 회원 체크
+        Optional<Member> isExist = memberRepository.findByConnectionInformation(requestDto.getConnectionInformation());
+        if (isExist.isPresent()) {
+            throw new MydataException(ErrorCode.MYDATA_USER_DUPLICATED);
+        }
+
+        // 없으면 회원 저장
+        Member member = Member.builder()
+                .name(requestDto.getName())
+                .phoneNumber(requestDto.getPhoneNumber())
+                .birthDate(requestDto.getBirthDate())
+                .connectionInformation(requestDto.getConnectionInformation())
+                .build();
+
+        memberRepository.save(member);
     }
 }

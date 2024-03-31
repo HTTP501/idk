@@ -1,25 +1,18 @@
 package com.ssafy.mydata.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+public enum Permission {
+    MY_DATA_RECEIVER("마이데이터 사업자"),
+    DATA_PROVIDER("정보 제공자"),
+    AUTHENTICATION_PROVIDER("인증 기관"),
+    INTERMEDIARY("중계 기관");
 
-import java.util.List;
+    private final String displayName;
 
-@Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@Table(name = "permission")
-public class Permission {
+    Permission(String displayName) {
+        this.displayName = displayName;
+    }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
-
-    @Column(name = "permission_name")
-    private PermissionName name;
-
-    @OneToMany(mappedBy = "permission", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<OrganizationPermission> organizationPermissionList;
+    public String getDisplayName() {
+        return displayName;
+    }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@Table(name = "orgniazation")
+@Table(name = "organization")
 public class Organization {
 
     @Id
@@ -23,6 +23,7 @@ public class Organization {
     @Column(name = "org_code")
     private String orgCode;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "org_type")
     private OrganizationType orgType;
 
@@ -32,7 +33,10 @@ public class Organization {
     @Column(name = "client_secret")
     private String clientSecret;
 
-    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<OrganizationPermission> organizationPermissionList;
+    @ElementCollection
+    @CollectionTable(name = "organization_permissions", joinColumns = @JoinColumn(name = "org_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "permission")
+    private List<Permission> permissions;
 
 }
