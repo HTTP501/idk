@@ -20,7 +20,10 @@ public enum ErrorCode {
     COMPANY_NOT_FOUND(404, "CARD-CP401", "해당 신용카드사 정보를 찾을 수 없습니다."),
 
     // ORGANIZATION
-    ORGANIZATION_NOT_FOUND(404, "CARD-OR401", "해당 기관 정보를 찾을 수 없습니다."),
+    ORGANIZATION_NOT_FOUND(404, "CARD-ORG401", "해당 기관 정보를 찾을 수 없습니다."),
+
+    // CREDIT
+    CREDIT_NOT_FOUND(404, "CARD-CRDT401", "해당 신용카드를 찾을 수 없습니다."),
 
     ;
 

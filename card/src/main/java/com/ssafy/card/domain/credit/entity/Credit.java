@@ -28,10 +28,10 @@ public class Credit {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id") @NotNull
+    @JoinColumn(name = "company_id")
     private Company company;
 
-    @Column(length = 16, name = "card_number") @NotNull
+    @Column(length = 16, name = "card_number")
     private String cardNumber;
 
     @Column(length = 20, name = "account_num") @NotNull
@@ -55,6 +55,14 @@ public class Credit {
 
     @OneToMany(mappedBy = "credit", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Bill> arrayBill;
+
+    public void setAccountNum(String accountNum) {
+        this.accountNum = accountNum;
+    }
+
+    public void setAccountOrgCode(String accountOrgCode) {
+        this.accountOrgCode = accountOrgCode;
+    }
 
     @PrePersist
     public void prePresist() {

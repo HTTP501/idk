@@ -4,6 +4,8 @@ package com.ssafy.card.domain.credit.service;
 import com.ssafy.card.domain.company.entity.Company;
 import com.ssafy.card.domain.company.repository.CompanyRepository;
 import com.ssafy.card.domain.credit.dto.request.CreditCreateRequestDto;
+import com.ssafy.card.domain.credit.dto.request.CreditUpdateRequestDto;
+import com.ssafy.card.domain.credit.dto.response.CreditUpdateAccountNumResponseDto;
 import com.ssafy.card.domain.credit.entity.Credit;
 import com.ssafy.card.domain.credit.repository.CreditRepository;
 import com.ssafy.card.domain.member.entity.Member;
@@ -72,5 +74,30 @@ public class CreditService {
 
         // 출금동의 자동이체 정보 등록 요청 (IDK 반영 후 구현 필요)
 
+    }
+
+    @Transactional
+    public CreditUpdateAccountNumResponseDto updateAccountNum(CreditUpdateRequestDto requestDto, Long creditId) {
+
+        // 해당 API 요청에 대한 접근권한 확인 방법이 없음
+
+
+        // 해당 신용카드 찾기
+        Credit credit = creditRepository.findById(creditId)
+                .orElseThrow(() -> new CardServerException(ErrorCode.CREDIT_NOT_FOUND));
+
+        // 계좌 유효성 검증 (BANK SERVER 생성 시 구현 필요)
+
+
+        // 신용카드 정보 업데이트
+        credit.setAccountNum(requestDto.getAccountNum());
+        credit.setAccountOrgCode(requestDto.getAccountOrgCode());
+        Credit savedCredit = creditRepository.save(credit);
+
+        return CreditUpdateAccountNumResponseDto.of(
+                savedCredit.getCreditId(),
+                savedCredit.getAccountNum(),
+                savedCredit.getAccountOrgCode()
+        );
     }
 }
