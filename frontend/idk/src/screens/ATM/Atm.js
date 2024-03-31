@@ -82,10 +82,10 @@ const ATM = function ({ navigation, route }) {
   useFocusEffect(
     React.useCallback(() => {
       // 계좌 조회
-    getAccount()
+      getAccount()
     }, [])
   );
-  
+
   const getAccount = async () => {
     // 계좌 조회 Axios
     await getAccountAxios(
@@ -219,162 +219,158 @@ const ATM = function ({ navigation, route }) {
         style={{ backgroundColor: theme["sky-bright-4"] }}
         className="h-full w-full "
       >
-        <View
-          className="mx-10 mt-20 flex"
-          style={[
-            // styles.darkblue,
-            {
-              backgroundColor: theme["sky-bright-6"],
-              height: SCREEN_HEIGHT * 0.56,
-              borderWidth: 3,
-              borderColor: theme["sky-darkness-2"],
-              borderRadius: 10,
-            },
-          ]}
-        >
-          {/* // 입출금 안했을때 */}
-
-          <View>
-            {/* 온라인 ATM 제목 */}
-
-            <View style={{ borderWidth: 2, borderColor: theme["sky-darkness-2"] }}
-              className="flex items-center m-5 py-2 rounded-lg">
-              <Text className="text-2xl font-bold" style={{ color: theme["sky-darkness-2"] }}>온라인 ATM</Text>
+        <View style={{ flex: 2.5, display: "flex" }}>
+          {/* 화면 */}
+          <View style={{ flex: 1, backgroundColor: theme["sky-bright-6"], marginHorizontal: 30, marginTop: 100, borderRadius: 10, borderWidth: 2, borderColor: theme["sky-darkness-2"] }}>
+            {/* 온라인 ATM 상단 */}
+            <View style={{ flex: 1 }}>
+              <View style={{ flex: 1, marginTop: 15, marginHorizontal: 15, borderRadius: 10, borderWidth: 2, borderColor: theme["sky-darkness-2"] }}>
+                <Text className="text-2xl font-bold m-auto" style={{color:theme["sky-darkness-2"]}}>온라인 ATM</Text>
+              </View>
             </View>
-            {enterMoney === false && outMoney === false ? (
-              <View>
-                {/* 안내 문구*/}
-                <View className="flex mx-5 my-3 bg-white px-5 py-3">
-                  <Text className="text-2xl font-bold">원하시는 거래를</Text>
-                  <Text className="text-2xl font-bold">선택하여 주십시오</Text>
-                </View>
-                {/* 버튼 */}
-                <View className="flex items-center mx-5 my-3 py-3">
-                  <TouchableOpacity
-                    activeOpacity={0.6}
-                    className="w-full"
-                    onPress={() => {
-                      setEnterMoney(true);
-                      setOutMoney(false);
-                    }}
-                  >
-                    <View
-                      className="items-center rounded-lg w-full py-5 mb-5"
-                      style={{ backgroundColor: theme["sky-bright-3"] }}
-                    >
-                      <Text className="text-2xl font-bold">입금</Text>
+
+            <View style={{ flex: 4 }}>
+              {enterMoney === false && outMoney === false ?
+                (
+                  <View style={{ flex: 1 }}>
+                    <View style={{ flex: 1 }}>
+                      <View style={{ flex: 1, backgroundColor: 'white', margin: 10, marginHorizontal: 15, borderRadius: 5, paddingLeft: 10, justifyContent: 'center' }}>
+                        <Text className="font-bold text-2xl">원하시는 거래를</Text>
+                        <Text className="font-bold text-2xl">선택하여 주십시오</Text>
+                      </View>
                     </View>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    activeOpacity={0.6}
-                    className="w-full"
-                    onPress={() => {
-                      setOutMoney(true);
-                      setEnterMoney(false);
-                    }}
-                  >
-                    <View
-                      className="items-center rounded-lg w-full py-5"
-                      style={{ backgroundColor: theme["sky-basic"] }}
-                    >
-                      <Text className="text-2xl font-bold">출금</Text>
+                    {/* 입금버튼 */}
+                    <View style={{ flex: 1 }}>
+                      <TouchableOpacity
+                        activeOpacity={0.6}
+                        onPress={() => {
+                          setEnterMoney(true);
+                          setOutMoney(false);
+                        }}
+                        className="rounded-lg items-center"
+                        style={{ flex: 1, backgroundColor: theme["sky-bright-3"], justifyContent: 'center', margin: 15 }}
+                      >
+                        <Text className="text-2xl font-bold">입금</Text>
+                      </TouchableOpacity>
+
                     </View>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ) : (
-              // {/* // 입출금시 화면 */}
-              <View className="bg-white mx-5 p-3 my-3 ">
-                {/* 입금 출금 취소 */}
-                <View className=" flex-row justify-between">
-                  <TouchableOpacity
-                    onPress={() => {
-                      setEnterMoney(false);
-                      setOutMoney(false);
-                      setMoney(0);
-                    }}
-                    className="p-1 px-5 rounded"
-                    style={{ backgroundColor: theme.red }}
-                  >
-                    <Text className="text-lg font-bold text-white">취소</Text>
-                  </TouchableOpacity>
+                    <View style={{ flex: 1 }}>
+                      <TouchableOpacity
+                        activeOpacity={0.6}
+                        onPress={() => {
+                          setOutMoney(true);
+                          setEnterMoney(false);
+                        }}
+                        className="rounded-lg items-center"
+                        style={{ flex: 1, backgroundColor: theme["sky-basic"], justifyContent: 'center', margin: 15 }}
+                      >
+                        <Text className="text-2xl font-bold">출금</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )
+                :
+                (
+                  <View style={{ flex: 1 }}>
+                    <View style={{ flex: 1 }}>
+                      <View style={{ flex: 1, backgroundColor: 'white', margin: 10, marginHorizontal: 15, marginBottom:20, borderRadius: 5, justifyContent: 'center' }}>
+                        <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", padding: 20 }}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setEnterMoney(false);
+                              setOutMoney(false);
+                              setMoney(0);
+                            }}
+                          ><Text className="rounded bg-red-400 px-5 py-1 text-lg font-bold">취소</Text></TouchableOpacity>
+                          {enterMoney ?
+                            <TouchableOpacity
+                              onPress={() => {
 
-                  {enterMoney ? (
-                    <TouchableOpacity
-                      className="p-1 px-5 rounded"
-                      style={{ backgroundColor: theme.grey }}
-                      onPress={() => {
+                                navigation.navigate("AuthStack", {
+                                  screen: "AuthPW",
+                                  params: { data: { isChecked: false, type: "입금", money: money }, destination },
+                                });
 
-                        navigation.navigate("AuthStack", {
-                          screen: "AuthPW",
-                          params: { data: { isChecked: false, type: "입금", money: money }, destination },
-                        });
+                              }}
+                            ><Text className="rounded bg-gray-300  px-5  py-1 text-lg font-bold">입금</Text></TouchableOpacity>
+                            :
+                            <TouchableOpacity
+                              onPress={() => {
 
-                      }}
-                    >
-                      <Text className="text-lg font-bold">입금</Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      className="p-1 px-5 rounded"
-                      style={{ backgroundColor: theme.grey }}
-                      onPress={() => {
+                                navigation.navigate("AuthStack", {
+                                  screen: "AuthPW",
+                                  params: { data: { isChecked: false, type: "출금", money: money }, destination },
+                                });
+                              }}
 
-                        navigation.navigate("AuthStack", {
-                          screen: "AuthPW",
-                          params: { data: { isChecked: false, type: "출금", money: money }, destination },
-                        });
-                      }}
-                    >
-                      <Text className="text-lg font-bold">출금</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-                <View className="my-10 mx-3">
-                  <Text className="text-3xl font-bold">내 계좌</Text>
-                  <Text className="text-lg font-bold">
-                    IDK 은행 {myAccountNumber}
-                  </Text>
-                </View>
-                <View className="flex-row flex items-center mx-3">
-                  <Text
-                    className="font-bold text-3xl bg-gray-100 mr-2"
-                    style={{ flex: 9 }}
-                  >
-                    {formattedNumber(money)}
-                  </Text>
-                  <Text className="font-bold text-2xl" style={{ flex: 1 }}>
-                    원
-                  </Text>
-                </View>
-                <Text className="mx-3 my-2">잔액 : {formattedNumber(myAccountAmount)}원</Text>
-              </View>
-            )}
+                            ><Text className="rounded bg-gray-300  px-5  py-1 text-lg font-bold">출금</Text></TouchableOpacity>
+                          }
+                        </View>
+                        <View style={{ flex: 2, justifyContent: 'center', paddingLeft: 20 }}>
+                          <Text className="text-3xl font-bold">내 계좌</Text>
+                          <Text className="text-lg font-bold">
+                            IDK 은행 {myAccountNumber}
+                          </Text>
+
+                        </View>
+                        <View style={{ flex: 2, justifyContent:'center' }}>
+                          <View className="flex-row flex items-center mx-5">
+                            <Text
+                              className="font-bold text-3xl bg-gray-100 mr-2"
+                              style={{ flex: 9 }}
+                            >
+                              {formattedNumber(money)}
+                            </Text>
+                            <Text className="font-bold text-2xl" style={{ flex: 1 }}>
+                              원
+                            </Text>
+                          </View>
+                          <Text className="mx-5 my-2">잔액 : {formattedNumber(myAccountAmount)}원</Text>
+                        </View>
+
+                      </View>
+
+
+
+                    </View>
+                  </View>
+
+                )
+              }
+
+
+            </View>
           </View>
         </View>
 
-        {enterMoney || outMoney ? (
-          <FlatList
-            data={keyboard}
-            renderItem={renderItem}
-            numColumns={3}
-            // className="justify-between"
-            contentContainerStyle={{
-              // height: SCREEN_HEIGHT * 0.35,
-              marginTop: 10,
-              marginBottom: 30,
-              display: "flex",
-              alignItems: "center",
-            }}
-          />
-        ) : (
-          <Text
-            className="text-center font-bold mt-10 text-white"
-            style={{ fontSize: 80 }}
-          >
-            ATM
-          </Text>
-        )}
+        {/* 키보드 */}
+        <View style={{ flex: 1 }}>
+          {enterMoney || outMoney ? (
+            <FlatList
+              data={keyboard}
+              renderItem={renderItem}
+              numColumns={3}
+              // className="justify-between"
+              contentContainerStyle={{
+                // height: SCREEN_HEIGHT * 0.35,
+                marginTop: 10,
+                marginBottom: 30,
+                display: "flex",
+                alignItems: "center",
+              }}
+            />
+          ) : (
+            <Text
+              className="text-center font-bold mt-10 text-white"
+              style={{ fontSize: 80 }}
+            >
+              ATM
+            </Text>
+          )}
+        </View>
+
+
+
       </View>
     </View>
   );
@@ -386,3 +382,4 @@ const styles = StyleSheet.create({
   },
 });
 export default ATM;
+
