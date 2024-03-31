@@ -10,6 +10,7 @@ import lombok.Getter;
 public class AccountResponseDto {
 
     private Long accountId;
+    private String userName;
     private String accountNumber;
     private String accountName;
     private Long accountBalance;
@@ -18,6 +19,7 @@ public class AccountResponseDto {
 
     public static AccountResponseDto of(
             final Long accountId,
+            final String userName,
             final String accountNumber,
             final String accountName,
             final Long accountBalance,
@@ -26,6 +28,7 @@ public class AccountResponseDto {
     ) {
         return AccountResponseDto.builder()
                 .accountId(accountId)
+                .userName(userName)
                 .accountNumber(accountNumber)
                 .accountName(accountName)
                 .accountBalance(accountBalance)
