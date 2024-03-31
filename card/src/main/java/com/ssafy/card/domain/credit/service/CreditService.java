@@ -7,6 +7,7 @@ import com.ssafy.card.domain.credit.dto.request.CreditCreateRequestDto;
 import com.ssafy.card.domain.credit.dto.request.CreditRequestDto;
 import com.ssafy.card.domain.credit.dto.request.CreditUpdateRequestDto;
 import com.ssafy.card.domain.credit.dto.response.CreditDetailResponseDto;
+import com.ssafy.card.domain.credit.dto.response.CreditArrayResponseDto;
 import com.ssafy.card.domain.credit.dto.response.CreditInfoResponseDto;
 import com.ssafy.card.domain.credit.dto.response.CreditUpdateAccountNumResponseDto;
 import com.ssafy.card.domain.credit.entity.Credit;
@@ -108,7 +109,7 @@ public class CreditService {
     }
 
     // [MYDATA] 신용카드 목록 조회
-    public CreditGetArrayResponseDto getArrayCredit(CreditRequestDto requestDto) {
+    public CreditArrayResponseDto getArrayCredit(CreditRequestDto requestDto) {
 
         // 전자서명?으로 해당 사용자 확인 필요
         String CI = "";
@@ -135,7 +136,7 @@ public class CreditService {
                     ));
         }
 
-        return CreditGetArrayResponseDto.of(arrayCreditResponseDto);
+        return CreditArrayResponseDto.of(arrayCreditResponseDto);
     }
 
     // [MYDATA] 신용카드 기본정보 조회
