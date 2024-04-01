@@ -406,7 +406,7 @@ public class PocketService {
 
         Member member = authenticationService.getMemberByAuthentication();
 
-        List<Pocket> arrayPocket = pocketRepository.getByMemberOrderByOrderNumber(member);
+        List<Pocket> arrayPocket = pocketRepository.findByMemberOrderByOrderNumber(member);
         List<PocketGetDetailResponseDto> arrayPocketResponseDto = new ArrayList<>();
         for (Pocket pocket : arrayPocket) {
 
@@ -482,6 +482,27 @@ public class PocketService {
                 pocket.setDeposited(false);
                 pocketRepository.save(pocket);
             }
+        }
+    }
+
+    @Transactional
+    public void pocketAutoDeposit(Member member, Account savedAccount) {
+
+        List<Pocket> pocketList = pocketRepository.findByMemberOrderByOrderNumber(member);
+        for (Pocket pocket : pocketList) {
+
+            // 돈 포켓이 활성화 되었는지, 결제가 이루어졌는지, 입금이 완료되었는지 확인
+            if (!pocket.isActivated() || pocket.isPaid() || pocket.isDeposited()) continue;
+
+            // 계좌 최소보유금액 설정 시 해당 금액 이상의 잔고가 남아야 함
+            // 이는, 우선순위가 높은 돈 포켓의 금액보다 작을 때 돈 포켓 입금 종료의 충분조건
+            if (savedAccount.getBalance() - pocket.getTarget() < savedAccount.getMinAmount()) break;
+
+            // 계좌 출금 및 돈 포켓 입금
+            savedAccount.withdraw(pocket.getTarget());
+            pocket.deposit();
+            savedAccount = accountRepository.save(savedAccount);
+            pocketRepository.save(pocket);
         }
     }
 }

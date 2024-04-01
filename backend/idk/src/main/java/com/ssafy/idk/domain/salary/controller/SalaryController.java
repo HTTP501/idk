@@ -1,6 +1,6 @@
 package com.ssafy.idk.domain.salary.controller;
 
-import com.ssafy.idk.domain.salary.dto.SalaryCreateRequestDto;
+import com.ssafy.idk.domain.salary.dto.SalaryRequestDto;
 import com.ssafy.idk.domain.salary.service.SalaryService;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;
@@ -20,7 +20,7 @@ public class SalaryController {
 
     @Operation(summary = "월급 등록")
     @PostMapping("")
-    public ResponseEntity<ResultResponse> createSalary(@RequestBody SalaryCreateRequestDto requestDto) {
+    public ResponseEntity<ResultResponse> createSalary(@RequestBody SalaryRequestDto requestDto) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.SALARY_CREATE_SUCCESS, salaryService.createSalary(requestDto)));
     }
 
@@ -35,5 +35,11 @@ public class SalaryController {
     public ResponseEntity<ResultResponse> deleteSalary(@PathVariable(name = "salaryId") Long salaryId) {
         salaryService.deleteSalary(salaryId);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.SALARY_DELETE_SUCCESS));
+    }
+
+    @Operation(summary = "월급 수정")
+    @PutMapping("/{salaryId}")
+    public ResponseEntity<ResultResponse> updateSalary(@RequestBody SalaryRequestDto requestDto, @PathVariable(name = "salaryId") Long salaryId) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.SALARY_UPDATE_SUCCESS, salaryService.updateSalary(requestDto, salaryId)));
     }
 }

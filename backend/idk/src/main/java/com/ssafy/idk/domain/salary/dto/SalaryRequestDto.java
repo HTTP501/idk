@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class SalaryCreateRequestDto {
+public class SalaryRequestDto {
 
     private Long accountId;
     private Integer salaryDay;
