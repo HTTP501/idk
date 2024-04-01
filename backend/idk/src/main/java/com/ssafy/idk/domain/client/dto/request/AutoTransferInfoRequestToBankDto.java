@@ -4,21 +4,24 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Map;
+
 @Builder
 @Getter
 @AllArgsConstructor
-public class AgreeRequestToMydataDto {
+public class AutoTransferInfoRequestToBankDto {
 
     private String name;
-    private String phoneNumber;
     private String connectionInformation;
 
-    public static AgreeRequestToMydataDto of(
-            String name, String phoneNumber, String connectionInformation
+
+    public static AutoTransferInfoRequestToBankDto of(
+            String name,
+            String connectionInformation
+
     ) {
-        return AgreeRequestToMydataDto.builder()
+        return AutoTransferInfoRequestToBankDto.builder()
                 .name(name)
-                .phoneNumber(phoneNumber)
                 .connectionInformation(connectionInformation)
                 .build();
     }

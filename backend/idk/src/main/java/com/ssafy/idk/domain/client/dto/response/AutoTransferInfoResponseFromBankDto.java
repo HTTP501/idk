@@ -1,18 +1,23 @@
 package com.ssafy.idk.domain.client.dto.response;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
 
 @Getter
-public class CertifyResponseFromMydataDto {
+@Setter
+public class AutoTransferInfoResponseFromBankDto {
 
     private Data data;
 
     @Getter
+    @Setter
     public static class Data {
-        List<Map<String, String>> certifiedResult;
+
+        private List<AutoTransferInfoDto> autoTransferList;
     }
 }
