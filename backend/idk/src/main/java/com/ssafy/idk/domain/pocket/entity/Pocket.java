@@ -44,10 +44,6 @@ public class Pocket {
     @JoinColumn(name = "mydata_id")
     private Mydata mydata;
 
-    @OneToOne
-    @JoinColumn(name = "auto_debit_id")
-    private AutoDebit autoDebit;
-
     @Column(name = "name") @NotNull
     private String name;
 
@@ -77,6 +73,10 @@ public class Pocket {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setOrderNumber(Integer orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     public void setActivated(boolean activated) {

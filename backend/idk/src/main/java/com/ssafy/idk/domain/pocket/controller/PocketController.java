@@ -3,6 +3,7 @@ package com.ssafy.idk.domain.pocket.controller;
 import com.ssafy.idk.domain.pocket.dto.request.PocketCreateCreditRequestDto;
 import com.ssafy.idk.domain.pocket.dto.request.PocketCreateAutoTransferRequestDto;
 import com.ssafy.idk.domain.pocket.dto.request.PocketUpdateNameRequestDto;
+import com.ssafy.idk.domain.pocket.dto.request.PocketUpdateOrderRequestDto;
 import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;
@@ -79,6 +80,12 @@ public class PocketController {
     @PatchMapping(value = "/{pocketId}/withdrawal")
     public ResponseEntity<ResultResponse> withdrawalPocket(@PathVariable(name = "pocketId") Long pocketId) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_WITHDRAWAL_SUCCESS, pocketService.withdrawPocket(pocketId)));
+    }
+
+    @Operation(summary = "돈 포켓 순서 변경")
+    @PutMapping(value = "/order")
+    public ResponseEntity<ResultResponse> updatePocketOrders(@RequestBody PocketUpdateOrderRequestDto requestDto) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_UPDATE_ORDER_SUCCESS, pocketService.updatePocketOrders(requestDto)));
     }
 
 }

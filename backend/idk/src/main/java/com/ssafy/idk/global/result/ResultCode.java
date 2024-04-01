@@ -78,7 +78,8 @@ public enum ResultCode {
     POCKET_DEPOSIT_SUCCESS(200, "P208", "해당 돈 포켓에 목표금액을 입금했습니다."),
     POCKET_WITHDRAWAL_SUCCESS(200, "P209", "해당 돈 포켓의 입금금액을 출금했습니다."),
     POCKET_GET_TRANSACTION_DETAIL_SUCCESS(200, "P210", "해당 돈 포켓 입출금 내역을 조회했습니다."),
-    POCKET_GET_LIST_SUCCESS(200, "P201", "돈 포켓 목록을 조회했습니다."),
+    POCKET_GET_LIST_SUCCESS(200, "P211", "돈 포켓 목록을 조회했습니다."),
+    POCKET_UPDATE_ORDER_SUCCESS(200, "P212", "돈 포켓 순서를 변경했습니다."),
 
     // Analyst
     ANALYST_GET_TOTAL_AMOUNT_SUCCESS(200, "AN001", "총 지출 금액을 조회했습니다."),

@@ -120,6 +120,9 @@ public class TargetSavingService {
                 .build();
         transactionRepository.save(transaction);
 
+        // 돈 포켓 재정렬
+        pocketService.reOrderArrayPocket(member);
+
         return TargetSavingDeleteResponseDto.of(account.getBalance());
     }
 

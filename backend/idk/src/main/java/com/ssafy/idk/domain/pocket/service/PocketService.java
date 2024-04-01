@@ -3,20 +3,15 @@ package com.ssafy.idk.domain.pocket.service;
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.account.entity.Category;
 import com.ssafy.idk.domain.account.entity.Transaction;
-import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
-import com.ssafy.idk.domain.autodebit.entity.AutoDebit;
-import com.ssafy.idk.domain.autodebit.repository.AutoDebitRepository;
 import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
 import com.ssafy.idk.domain.autotransfer.repository.AutoTransferRepository;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.mydata.entity.Mydata;
 import com.ssafy.idk.domain.mydata.repository.MydataRepository;
-import com.ssafy.idk.domain.pocket.dto.request.PocketCreateCreditRequestDto;
-import com.ssafy.idk.domain.pocket.dto.request.PocketCreateAutoTransferRequestDto;
-import com.ssafy.idk.domain.pocket.dto.request.PocketUpdateNameRequestDto;
+import com.ssafy.idk.domain.pocket.dto.request.*;
 import com.ssafy.idk.domain.pocket.dto.response.*;
 import com.ssafy.idk.domain.pocket.entity.Pocket;
 import com.ssafy.idk.domain.pocket.entity.PocketTransaction;
@@ -172,7 +167,7 @@ public class PocketService {
                 pocket.getPocketType(),
                 (pocket.getTargetSaving() == null ? null : pocket.getTargetSaving().getTargetSavingId()),
                 (pocket.getAutoTransfer() == null ? null : pocket.getAutoTransfer().getAutoTransferId()),
-                (pocket.getAutoDebit() == null ? null : pocket.getAutoDebit().getAutoDebitId()),
+                (pocket.getMydata() == null ? null : pocket.getMydata().getMydataId()),
                 pocket.getName(),
                 pocket.getBalance(),
                 pocket.getTarget(),
@@ -229,6 +224,9 @@ public class PocketService {
         accountRepository.save(account);
 
         pocketRepository.delete(pocket);
+
+        // 돈 포켓 재정렬
+        reOrderArrayPocket(member);
 
         return PocketAutoTransferDeleteResponseDto.of(
                 account.getAccountId(),
@@ -406,7 +404,7 @@ public class PocketService {
 
         Member member = authenticationService.getMemberByAuthentication();
 
-        List<Pocket> arrayPocket = member.getArrayPocketOrders();
+        List<Pocket> arrayPocket = pocketRepository.getByMemberOrderByOrderNumber(member);
         List<PocketGetDetailResponseDto> arrayPocketResponseDto = new ArrayList<>();
         for (Pocket pocket : arrayPocket) {
 
@@ -420,14 +418,15 @@ public class PocketService {
                             pocket.getPocketType(),
                             (pocket.getTargetSaving() == null ? null : pocket.getTargetSaving().getTargetSavingId()),
                             (pocket.getAutoTransfer() == null ? null : pocket.getAutoTransfer().getAutoTransferId()),
-                            (pocket.getAutoDebit() == null ? null : pocket.getAutoDebit().getAutoDebitId()),
+                            (pocket.getMydata() == null ? null : pocket.getMydata().getMydataId()),
                             pocket.getName(),
                             pocket.getBalance(),
                             pocket.getTarget(),
                             expectedDate,
                             pocket.isActivated(),
                             pocket.isDeposited(),
-                            pocket.isPaid()
+                            pocket.isPaid(),
+                            pocket.getOrderNumber()
                     )
             );
         }
@@ -435,5 +434,34 @@ public class PocketService {
         return PocketGetArrayResponseDto.of(
                 arrayPocketResponseDto
         );
+    }
+
+    @Transactional
+    public PocketGetArrayResponseDto updatePocketOrders(PocketUpdateOrderRequestDto requestDto) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        int idx = 0;
+        for (Long pocketId : requestDto.getArrayPocketId()) {
+            Pocket pocket = pocketRepository.findById(pocketId)
+                    .orElseThrow(() -> new PocketException(ErrorCode.POCKET_NOT_FOUND));
+            pocket.setOrderNumber(idx++);
+            pocketRepository.save(pocket);
+        }
+
+        return getArrayPocket();
+    }
+
+    @Transactional
+    public void reOrderArrayPocket(Member member) {
+
+        List<Pocket> arrayPocket = member.getArrayPocketOrders();
+
+        int idx = 0;
+        for (Pocket pocket : arrayPocket) {
+            pocket.setOrderNumber(idx++);
+            pocketRepository.save(pocket);
+        }
+
     }
 }
