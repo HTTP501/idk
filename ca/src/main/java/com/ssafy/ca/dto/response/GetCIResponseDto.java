@@ -1,4 +1,4 @@
-package com.ssafy.ca.dto;
+package com.ssafy.ca.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,14 +7,14 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor
-public class CreateCIResponseDto {
+public class GetCIResponseDto {
 
     private String connectionInformation;
 
-    public static CreateCIResponseDto of(
+    public static GetCIResponseDto of(
             String connectionInformation
     ) {
-        return CreateCIResponseDto.builder()
+        return GetCIResponseDto.builder()
                 .connectionInformation(connectionInformation)
                 .build();
     }
