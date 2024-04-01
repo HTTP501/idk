@@ -11,23 +11,23 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@Table(name = "ca_organization")
+@Table(name = "organization")
 public class Organization {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long org_id;
+    private Long orgId;
 
     @Column(name = "org_code")
     private String orgCode;
 
-    @Column(name = "org_type")
+    @Column(name = "org_name")
+    private String orgName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "org_type", columnDefinition = "TEXT")
     private OrganizationType orgType;
 
-    @Column(name = "token")
-    private String token;
-
-    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<OrganizationMember> organizationMembers;
-
+    @Column(name = "access_token")
+    private String accessToken;
 }

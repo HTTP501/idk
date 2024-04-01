@@ -1,4 +1,4 @@
-package com.ssafy.ca.dto;
+package com.ssafy.ca.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
