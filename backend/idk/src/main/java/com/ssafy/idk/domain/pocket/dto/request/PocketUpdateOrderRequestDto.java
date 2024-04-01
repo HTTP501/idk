@@ -3,10 +3,12 @@ package com.ssafy.idk.domain.pocket.dto.request;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
-public class PocketCreateAutoDebitRequestDto {
+public class PocketUpdateOrderRequestDto {
 
-    private Long autoDebitId;
+    private List<Long> arrayPocketId;
 
 }

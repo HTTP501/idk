@@ -70,7 +70,7 @@ public enum ResultCode {
     // POCKET
     POCKET_CREATE_BY_TARGET_SAVING_SUCCESS(201, "P201", "목표저축을 통해 돈 포켓을 생성했습니다."),
     POCKET_CREATE_BY_AUTO_TRANSFER_SUCCESS(201, "P202", "자동이체를 통해 돈 포켓을 생성했습니다."),
-    POCKET_CREATE_BY_AUTO_DEBIT_SUCCESS(201, "P203", "자동결제를 통해 돈 포켓을 생성했습니다."),
+    POCKET_CREATE_BY_CREDIT_MYDATA_SUCCESS(201, "P203", "신용카드 마이데이터를 통해 돈 포켓을 생성했습니다."),
     POCKET_GET_DETAIL_SUCCESS(200, "P204", "해당 돈 포켓을 조회했습니다."),
     POCKET_UPDATE_NAME_SUCCESS(200, "P205", "해당 돈 포켓의 이름을 수정했습니다."),
     POCKET_UPDATE_IS_ACTIVATED_SUCCESS(200, "P206", "해당 돈 포켓의 활성화 여부를 수정했습니다."),
@@ -78,7 +78,8 @@ public enum ResultCode {
     POCKET_DEPOSIT_SUCCESS(200, "P208", "해당 돈 포켓에 목표금액을 입금했습니다."),
     POCKET_WITHDRAWAL_SUCCESS(200, "P209", "해당 돈 포켓의 입금금액을 출금했습니다."),
     POCKET_GET_TRANSACTION_DETAIL_SUCCESS(200, "P210", "해당 돈 포켓 입출금 내역을 조회했습니다."),
-    POCKET_GET_LIST_SUCCESS(200, "P201", "돈 포켓 목록을 조회했습니다."),
+    POCKET_GET_LIST_SUCCESS(200, "P211", "돈 포켓 목록을 조회했습니다."),
+    POCKET_UPDATE_ORDER_SUCCESS(200, "P212", "돈 포켓 순서를 변경했습니다."),
 
     // Analyst
     ANALYST_GET_TOTAL_AMOUNT_SUCCESS(200, "AN001", "총 지출 금액을 조회했습니다."),
@@ -107,7 +108,14 @@ public enum ResultCode {
 
     // FCM
     FCM_SAVE_SUCCESS(201, "F001", "FCM 토큰을 저장했습니다"),
-    FCM_DELETE_SUCCESS(201, "F002", "FCM 토큰을 삭제했습니다")
+    FCM_DELETE_SUCCESS(201, "F002", "FCM 토큰을 삭제했습니다"),
+
+    // SALARY
+    SALARY_CREATE_SUCCESS(201, "SLR001", "월급을 생성했습니다."),
+    SALARY_GET_SUCCESS(200, "SLR002", "월급을 조회했습니다."),
+    SALARY_UPDATE_SUCCESS(200, "SLR003", "월급을 수정했습니다."),
+    SALARY_DELETE_SUCCESS(204, "SLR004", "월급을 삭제했습니다."),
+
     ;
 
     private final int status;
