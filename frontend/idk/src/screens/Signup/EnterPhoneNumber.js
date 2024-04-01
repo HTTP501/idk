@@ -18,7 +18,7 @@ const SIGNUP_KEY = "@signup";
 const EnterPhoneNumber = ({ route, navigation }) => {
   const textInputRef = useRef(null);
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [showVerificationInput, setShowVerificationInput] = useState(false); // 인증번호 입력창을 보여줄지 여부
+  const [showVerificationInput, setShowVerificationInput] = useState(true); // 인증번호 입력창을 보여줄지 여부
   const [verificationRequested, setVerificationRequested] = useState(false); // 인증 요청 여부
   const [verificationCode, setVerificationCode] = useState(""); // 인증 번호
   const [completeVerificationCode, setCompleteVerificationCode] =

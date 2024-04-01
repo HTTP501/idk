@@ -4,7 +4,7 @@
     "slug": "idk",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo/app_icon.png",
+    "icon": "./assets/logo/favicon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/logo/SplashImg.png",
