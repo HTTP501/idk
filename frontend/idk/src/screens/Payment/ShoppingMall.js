@@ -466,6 +466,7 @@ const ShoppingMall = ({ navigation }) => {
           {/* 카테고리 별 상품 출력 부분 */}
           <View style={ShoppingMallStyles.mainContent}>
             <FlatList
+            showsHorizontalScrollIndicator={false}
               // 먼저 필수 prop인 data를 보자 무조건 배열로 받아야한다!
               // 만약 + 구현할거면! 여기에 addPurchase 추가해주자!
               data={[...nowData]}

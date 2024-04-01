@@ -1,6 +1,4 @@
-import {
-  GestureHandlerRootView,
-} from "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   ScaleDecorator,
   ShadowDecorator,
@@ -16,16 +14,20 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 
 import DonPocket from "./DonPocketItem";
 
-
 // 돈포켓 리스트
-const DonPocketList = function ({ navigation, pocketData, changePocketOrder, fetchData }) {
-
+const DonPocketList = function ({
+  navigation,
+  pocketData,
+  changePocketOrder,
+  fetchData,
+}) {
   const ref = useRef();
   const data = pocketData;
+  // const change
   const renderItem = ({ item, drag }) => {
     // 상세 페이지로 넘길때 id만 넘긴다
     const pocketId = item.pocketId;
-    const pocketType = item.pocketType
+    const pocketType = item.pocketType;
     const { isActive } = useOnCellActiveAnimation();
     return (
       <ScaleDecorator>
@@ -41,7 +43,12 @@ const DonPocketList = function ({ navigation, pocketData, changePocketOrder, fet
               activeOpacity={1}
               style={[styles.donpocketlist]}
             >
-              <DonPocket item={item} isActive={isActive} isFiltered={false} fetchData={fetchData}/>
+              <DonPocket
+                item={item}
+                isActive={isActive}
+                isFiltered={false}
+                fetchData={fetchData}
+              />
             </TouchableOpacity>
           </ShadowDecorator>
         </OpacityDecorator>
@@ -58,7 +65,6 @@ const DonPocketList = function ({ navigation, pocketData, changePocketOrder, fet
           onDragEnd={({ data }) => {
             // 부모에게 바뀐 데이터 올려주기
             changePocketOrder(data);
-            console.log("드래그로 바꿈!");
           }}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
@@ -68,7 +74,6 @@ const DonPocketList = function ({ navigation, pocketData, changePocketOrder, fet
   };
   return <Pocket />;
 };
-
 
 const styles = StyleSheet.create({
   shadow: {

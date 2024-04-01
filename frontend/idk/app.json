@@ -21,7 +21,9 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo/app_icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.yunyebeen.idk",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/logo/app_icon.png"
