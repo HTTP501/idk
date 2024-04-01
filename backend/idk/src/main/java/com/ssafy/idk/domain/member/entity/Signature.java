@@ -15,14 +15,13 @@ public class Signature {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @Column(name = "consent_info", length = 5000)
-    private String consentInfo;
+    @Column(name = "consent", length = 5000)
+    private String consent;
 
-    @Column(name = "digital_signature", length = 10000)
-    private String digitalSignature;
+    @Column(name = "signed_consent", length = 10000)
+    private String signedConsent;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-
 }

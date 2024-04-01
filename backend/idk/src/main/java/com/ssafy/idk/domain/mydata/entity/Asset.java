@@ -36,4 +36,16 @@ public class  Asset {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mydata_id")
     private Mydata mydata;
+
+    public void updateScheduledAmount(Long scheduledAmount) {
+        this.scheduledAmount = scheduledAmount;
+    }
+
+    public void updateScheduledDate(Integer scheduledDate) {
+        this.scheduledDate = scheduledDate;
+    }
+
+    public void updateIsLinked(Boolean isLinked) {
+        this.isLinked = isLinked;
+    }
 }

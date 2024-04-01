@@ -54,9 +54,6 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Mydata> mydataList;
 
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Signature signature;
-
     @PrePersist
     public void prePersist() {
         LocalDateTime now = LocalDateTime.now();
