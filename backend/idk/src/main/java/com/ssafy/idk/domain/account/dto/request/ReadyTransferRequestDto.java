@@ -8,6 +8,5 @@ import lombok.NoArgsConstructor;
 public class ReadyTransferRequestDto {
 
     private String accountNumber;
-    private String bankName;
 
 }
