@@ -21,12 +21,12 @@ public class TimeUtil {
     private final SalaryService salaryService;
     private final PocketService pocketService;
 
-    @Scheduled(fixedRate = 5000)
-    public void oneDayCycle() {
-        updateDate();
-        salaryService.salaryDeposit(systemDay);
-        pocketService.updatePocketStatementAtSalaryDay(systemDay);
-    }
+//    @Scheduled(fixedRate = 5000)
+//    public void oneDayCycle() {
+//        updateDate();
+//        salaryService.salaryDeposit(systemDay);
+//        pocketService.updatePocketStatementAtSalaryDay(systemDay);
+//    }
 
     public void updateDate() {
         updateDay();
