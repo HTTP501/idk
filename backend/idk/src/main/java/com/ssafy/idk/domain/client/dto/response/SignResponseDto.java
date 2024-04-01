@@ -15,6 +15,6 @@ public class SignResponseDto {
     @Getter
     @Setter
     public static class Data {
-        private List<Map<String, String>> signedDataList;
+        private List<Map<String, String>> signedInfoList;
     }
 }

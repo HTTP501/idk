@@ -92,10 +92,15 @@ public enum ErrorCode {
     MYDATA_FAILED(400, "MD400", "마이데이터 요청을 실패했습니다."),
     MYDATA_SIGN_TRANSFORM_FAILED(400, "MD400", "전자서명 변환에 실패했습니다."),
     MYDATA_ORG_NOT_FOUND(404, "MD404", "기관을 찾을 수 없습니다."),
+    MYDATA_ASSET_NOT_FOUND(404, "MD404", "마이데이터 자산 정보를 찾을 수 없습니다."),
     MYDATA_NOT_FOUND(404, "MD405", "해당 마이데이터 정보를 찾을 수 없습니다."),
 
     // FCM
     FCM_SEND_FAIL(400, "F401", "FCM 알림 전송을 실패했습니다"),
+
+    // CLIENT
+    CLIENT_BANK_SIGNUP_FAILED(400, "CB400", "타은행 회원 생성에 실패했습니다."),
+    CLIENT_AUTO_TRANSFER_INFO_FAILED(400, "CB400", "자동이체 정보 조회에 실패했습니다."),
 
     // SALARY
     SALARY_NOT_FOUND(404, "SLR401", "해당 월급이 존재하지 않습니다."),

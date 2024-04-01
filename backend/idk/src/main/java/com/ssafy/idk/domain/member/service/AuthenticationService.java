@@ -19,7 +19,7 @@ public class AuthenticationService {
     public Member getMemberByAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Long memberId =  userDetails.getMemberId();
+        Long memberId =  userDetails.getId();
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_UNAUTHORIZED));
     }
