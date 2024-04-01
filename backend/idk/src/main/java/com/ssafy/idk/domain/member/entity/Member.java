@@ -52,9 +52,6 @@ public class Member {
     @Column(name = "mydata_agreed")
     private Boolean mydataAgreed;
 
-    @Column(name = "digital_signature", length = 10000)
-    private String digitalSignature;
-
     @Column(name = "fcm_token")
     private String fcmToken;
 
@@ -82,10 +79,6 @@ public class Member {
 
     public void updateTransactionPushEnabled() {
         this.transactionPushEnabled = !this.transactionPushEnabled;
-    }
-
-    public void updateDigitalSignature(String digitalSignature) {
-        this.digitalSignature = digitalSignature;
     }
 
     public void updateMydataAgreed() {

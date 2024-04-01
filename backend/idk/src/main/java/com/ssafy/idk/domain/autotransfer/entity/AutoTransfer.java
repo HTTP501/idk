@@ -69,5 +69,4 @@ public class AutoTransfer {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
-
 }

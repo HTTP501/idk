@@ -24,7 +24,7 @@ public class Organization {
     private String orgCode;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "org_type")
+    @Column(name = "org_type", columnDefinition = "TEXT")
     private OrganizationType orgType;
 
     @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
