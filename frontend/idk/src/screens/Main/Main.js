@@ -133,13 +133,13 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
       {orderedId.push(item.pocketId)}
       )
     console.log(orderedId)
-    // changeDonPocketOrderAxios({arrayPocketId:orderedId},
-    //   res=>{
-    //   console.log(res)
-    // }, err =>{
-    //   console.log(err)
-    // }
-    // )
+    changeDonPocketOrderAxios({arrayPocketId:orderedId},
+      res=>{
+      console.log(res)
+    }, err =>{
+      console.log(err)
+    }
+    )
   }
   // 돈포켓 총 금액
   const totalPocket = pocketData.reduce((acc, curr) => acc + curr.balance, 0);

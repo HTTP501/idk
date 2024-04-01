@@ -83,3 +83,19 @@ export const settingIncomeDayAxios = async function (data, success, fail) {
   await local.put(`/account/income-day/${data}`).then(success).catch(fail);
 };
 
+// 월급 등록
+export const settingSalaryAxios = async function (data, success, fail) {
+  await local.post(`/salary`,data).then(success).catch(fail);
+};
+// 월급 수정
+export const changeSalaryAxios = async function (data, success, fail) {
+  await local.put(`/salary`,data).then(success).catch(fail);
+};
+// 월급 삭제
+export const deleteSalaryAxios = async function (data, success, fail) {
+  await local.delete(`/salary/${data}`).then(success).catch(fail);
+};
+// 월급 조회
+export const getSalaryAxios = async function (data, success, fail) {
+  await local.get(`/salary/${data}`).then(success).catch(fail);
+};
