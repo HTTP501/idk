@@ -108,7 +108,14 @@ public enum ResultCode {
 
     // FCM
     FCM_SAVE_SUCCESS(201, "F001", "FCM 토큰을 저장했습니다"),
-    FCM_DELETE_SUCCESS(201, "F002", "FCM 토큰을 삭제했습니다")
+    FCM_DELETE_SUCCESS(201, "F002", "FCM 토큰을 삭제했습니다"),
+
+    // SALARY
+    SALARY_CREATE_SUCCESS(201, "SLR001", "월급을 생성했습니다."),
+    SALARY_GET_SUCCESS(200, "SLR002", "월급을 조회했습니다."),
+    SALARY_UPDATE_SUCCESS(200, "SLR003", "월급을 수정했습니다."),
+    SALARY_DELETE_SUCCESS(204, "SLR004", "월급을 삭제했습니다."),
+
     ;
 
     private final int status;

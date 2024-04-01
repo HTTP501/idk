@@ -3,6 +3,7 @@ package com.ssafy.idk.domain.member.entity;
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.mydata.entity.Mydata;
 import com.ssafy.idk.domain.pocket.entity.Pocket;
+import com.ssafy.idk.domain.salary.entity.Salary;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;

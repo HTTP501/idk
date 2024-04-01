@@ -95,7 +95,10 @@ public enum ErrorCode {
     MYDATA_NOT_FOUND(404, "MD405", "해당 마이데이터 정보를 찾을 수 없습니다."),
 
     // FCM
-    FCM_SEND_FAIL(400, "F401", "FCM 알림 전송을 실패했습니다")
+    FCM_SEND_FAIL(400, "F401", "FCM 알림 전송을 실패했습니다"),
+
+    // SALARY
+    SALARY_NOT_FOUND(404, "SLR401", "해당 월급이 존재하지 않습니다."),
     ;
 
     private final int status;
