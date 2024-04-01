@@ -162,7 +162,13 @@ const Chart = ({ navigation }) => {
           new Date(`${each.year}-${each.month}-01`) <= nowDate &&
           oneYearAgo <= new Date(`${each.year}-${each.month}-01`)
         ) {
-          tmpSum += Math.floor(each.amount / 10000);
+          if (
+            each.year === new Date().getFullYear() &&
+            each.month === new Date().getMonth() + 1
+          ) {
+          } else {
+            tmpSum += Math.floor(each.amount / 10000);
+          }
 
           // 접속한 달의 사용요금을 먼저 상태로 지정
           if (each.year === nowYear && each.month === nowMonth) {
@@ -190,17 +196,20 @@ const Chart = ({ navigation }) => {
   const ChartStyle = StyleSheet.create({
     mainContainer: {
       flex: 1,
-      paddingHorizontal: 20,
+      width: windowWidth * 0.8,
+      alignSelf: "center",
     },
     topBarStyle: {
       flex: 1,
-      marginTop: 60,
+      alignItems: "center",
+      marginTop: windowWidth * 0.03,
     },
     titlefont: {
       fontWeight: "bold",
       fontSize: 30,
       marginTop: 20,
       marginLeft: 20,
+      textAlign: "center",
     },
     topChartArea: {
       flex: 2,
@@ -235,19 +244,12 @@ const Chart = ({ navigation }) => {
   const topBar = () => {
     return (
       <View style={{ ...ChartStyle.topBarStyle }}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack();
-          }}
-        >
-          <MaterialIcons name="arrow-back-ios-new" size={36} color="black" />
-        </TouchableOpacity>
         <Text style={{ ...ChartStyle.titlefont }}>통계</Text>
       </View>
     );
   };
 
-  const width = 730;
+  const width = 700;
   const height = 400;
   const marginBottom = 30;
   const skyBright1 = "#7ECEFF";
@@ -374,18 +376,18 @@ const Chart = ({ navigation }) => {
             showsHorizontalScrollIndicator={false}
             ref={myScrollViewRef}
           >
-            <Svg height={height + 50} width={width} id="barChart">
+            <Svg height={height + 50} width={width * 1.1} id="barChart">
               <Line
                 x1="10"
                 y1={y(average)}
-                x2={width - 25}
+                x2={width * 1.05}
                 y2={y(average)}
                 stroke={skyBright1}
                 strokeWidth="2"
                 strokeDasharray="5, 5"
               />
               <SvgText
-                x={width - 10}
+                x={width * 1.08}
                 y={y(average) + 4}
                 fontSize="13"
                 textAnchor="middle"
@@ -397,7 +399,7 @@ const Chart = ({ navigation }) => {
                 <Rect
                   x={0}
                   y={height}
-                  width={width - 20}
+                  width={width * 1.05}
                   height="40"
                   rx={3}
                   ry={3}
@@ -427,7 +429,9 @@ const Chart = ({ navigation }) => {
                       textAnchor="middle"
                       fill={"black"}
                     >
-                      {d3.timeFormat("%y.%m")(tick)}
+                      {d3.timeFormat("%Y")(tick) === String(selectedYear)
+                        ? `${parseInt(d3.timeFormat("%m")(tick), 10)}월`
+                        : d3.timeFormat("%y.%m")(tick)}
                     </SvgText>
                   </G>
                 ))}
@@ -542,7 +546,7 @@ const Chart = ({ navigation }) => {
           </Text>
         </Text>
         <Svg width={"100%"} height={windowHeight * 0.6}>
-          <G translate={`${windowWidth * 0.4}, ${windowHeight * 0.15}`}>
+          <G translate={`${windowWidth * 0.3}, ${windowHeight * 0.15}`}>
             {pieChart.map((piece, index) => {
               const arcGenerator = d3
                 .arc()
@@ -616,7 +620,7 @@ const Chart = ({ navigation }) => {
           {sortedKeys.map((each, index) => (
             <React.Fragment key={each}>
               <Rect
-                x={windowWidth * 0.05}
+                x={windowWidth * 0.01}
                 y={windowHeight * (0.34 + index * 0.05)}
                 width="15"
                 height="15"
@@ -625,7 +629,7 @@ const Chart = ({ navigation }) => {
                 fill={donutColor[index]}
               />
               <SvgText
-                x={windowWidth * 0.27}
+                x={windowWidth * 0.2}
                 y={windowHeight * (0.35 + index * 0.05)}
                 fill="black"
                 textAnchor="middle"
@@ -635,7 +639,7 @@ const Chart = ({ navigation }) => {
                 {titleMatch[each]}
               </SvgText>
               <SvgText
-                x={windowWidth * 0.46}
+                x={windowWidth * 0.38}
                 y={windowHeight * (0.35 + index * 0.05)}
                 fill="black"
                 textAnchor="middle"
@@ -645,8 +649,8 @@ const Chart = ({ navigation }) => {
                 {usedAverage[index]}%
               </SvgText>
               <SvgText
-                x={windowWidth * 0.6}
-                y={windowHeight * (0.342 + index * 0.05)}
+                x={windowWidth * 0.5}
+                y={windowHeight * (0.35 + index * 0.05)}
                 fill="black"
                 alignmentBaseline="middle"
                 fontSize="17"
@@ -662,50 +666,96 @@ const Chart = ({ navigation }) => {
   };
 
   return (
-    <View style={{ ...ChartStyle.mainContainer, backgroundColor: "white" }}>
-      {isLoading ? (
-        <ChartLoading />
-      ) : (
-        <ScrollView
-          style={{ backgroundColor: "white" }}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-        >
-          {topBar()}
-          <View style={{ ...ChartStyle.topChartArea }}>
-            {totalAverageChart()}
-          </View>
-          <View>
-            <Text style={{fontSize: 25, fontWeight:"bold", marginTop: 20,}}>{selectedYear}년 {selectedMonth}월 지출</Text>
-          </View>
-          <View>
-            {isDonutLoading ? (
-              <ActivityIndicator size={"large"} color={theme["sky-basic"]} style={{marginVertical: 25,}} />
-            ) : (
-              <View>
-                {donutChart(
-                  "총 지출",
-                  nowDonutData.totalAmountBreakdown,
-                  nowDonutData.totalAmount
-                )}
-              </View>
-            )}
-          </View>
-          <View style={{ marginBottom: 40 }}>
-            {isDonutLoading ? (
-              <ActivityIndicator size={"large"} color={theme["sky-basic"]} style={{marginVertical: 25,}} />
-            ) : (
-              <View>
-                {donutChart(
-                  "일반 지출",
-                  nowDonutData.totalCommonAmountBreakdown,
-                  nowDonutData.totalCommonAmount
-                )}
-              </View>
-            )}
-          </View>
-        </ScrollView>
-      )}
+    <View style={{ flex: 1, backgroundColor: "white" }}>
+      <View style={{ ...ChartStyle.mainContainer, backgroundColor: "white" }}>
+        {isLoading ? (
+          <ChartLoading />
+        ) : (
+          <ScrollView
+            style={{ backgroundColor: "white" }}
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+          >
+            {topBar()}
+            <View style={{ ...ChartStyle.topChartArea }}>
+              {totalAverageChart()}
+            </View>
+            <View>
+              <Text style={{ fontSize: 25, fontWeight: "bold", marginTop: 20 }}>
+                {selectedYear}년 {selectedMonth}월 지출
+              </Text>
+            </View>
+            <View>
+              {/* 현재 진행 중인 지출은 출력하지 않는다고 안내 */}
+              {new Date().getFullYear() == selectedYear &&
+              new Date().getMonth() + 1 == selectedMonth ? (
+                <View
+                  style={{
+                    width: "auto",
+                    height: windowHeight * 0.3,
+                    borderWidth: 1,
+                    borderRadius: 20,
+                    borderColor: "grey",
+                    paddingHorizontal: 20,
+                    textAlign: "center",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginTop: 20,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: 20,
+                      marginBottom: 20,
+                    }}
+                  >
+                    {" "}
+                    이번 달 지출을 집계중이에요!{" "}
+                  </Text>
+                  <Text style={{ fontWeight: "bold", fontSize: 16 }}>
+                    {" "}
+                    이번 달 지출 통계는 다음달에 보실 수 있어요!{" "}
+                  </Text>
+                </View>
+              ) : isDonutLoading ? (
+                <ActivityIndicator
+                  size={"large"}
+                  color={theme["sky-basic"]}
+                  style={{ marginVertical: 25 }}
+                />
+              ) : (
+                <View>
+                  {donutChart(
+                    "총 지출",
+                    nowDonutData.totalAmountBreakdown,
+                    nowDonutData.totalAmount
+                  )}
+                </View>
+              )}
+            </View>
+            <View style={{ marginBottom: 40 }}>
+              {new Date().getFullYear() == selectedYear &&
+              new Date().getMonth() + 1 ==
+                selectedMonth ? null : isDonutLoading ? (
+                <ActivityIndicator
+                  size={"large"}
+                  color={theme["sky-basic"]}
+                  style={{ marginVertical: 25 }}
+                />
+              ) : (
+                <View>
+                  {donutChart(
+                    "일반 지출",
+                    nowDonutData.totalCommonAmountBreakdown,
+                    nowDonutData.totalCommonAmount
+                  )}
+                </View>
+              )}
+            </View>
+          </ScrollView>
+        )}
+      </View>
     </View>
   );
 };
