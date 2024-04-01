@@ -1,6 +1,7 @@
 import { Dimensions } from "react-native";
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
+import { FontAwesome5 } from '@expo/vector-icons';
 import theme from "../style";
 import {
   View,
@@ -63,7 +64,7 @@ const Account = ({ account, navigation }) => {
               copyToClipboard(account.accountNumber);
             }}
           >
-            <Image source={copyIcon} />
+            <FontAwesome5 name="copy" size={12} color="gray" />
           </TouchableOpacity>
         </View>
 
