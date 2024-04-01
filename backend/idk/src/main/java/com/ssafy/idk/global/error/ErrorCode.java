@@ -23,7 +23,7 @@ public enum ErrorCode {
     ACCOUNT_BALANCE_LACK(400, "A405", "계좌의 잔액이 부족합니다"),
     ACCOUNT_EXISTS(404, "A406", "계좌가 존재합니다"),
     ACCOUNT_MIN_AMOUNT_MINUS(404, "A409", "최소보유금액은 0보다 커야합니다"),
-
+    
     // TRANSFER
     TRANSFER_USER_NOT_FOUND(404, "TR401", "해당 은행에 해당 계좌를 갖고 있는 유저가 없습니다"),
     TRANSFER_RECEIVER_FAIL(400, "TR402", "받는사람 계좌수단검증에 실패했습니다"),
@@ -93,6 +93,7 @@ public enum ErrorCode {
     MYDATA_SIGN_TRANSFORM_FAILED(400, "MD400", "전자서명 변환에 실패했습니다."),
     MYDATA_ORG_NOT_FOUND(404, "MD404", "기관을 찾을 수 없습니다."),
     MYDATA_ASSET_NOT_FOUND(404, "MD404", "마이데이터 자산 정보를 찾을 수 없습니다."),
+    MYDATA_NOT_FOUND(404, "MD405", "해당 마이데이터 정보를 찾을 수 없습니다."),
 
     // FCM
     FCM_SEND_FAIL(400, "F401", "FCM 알림 전송을 실패했습니다"),
@@ -100,6 +101,9 @@ public enum ErrorCode {
     // CLIENT
     CLIENT_BANK_SIGNUP_FAILED(400, "CB400", "타은행 회원 생성에 실패했습니다."),
     CLIENT_AUTO_TRANSFER_INFO_FAILED(400, "CB400", "자동이체 정보 조회에 실패했습니다."),
+
+    // SALARY
+    SALARY_NOT_FOUND(404, "SLR401", "해당 월급이 존재하지 않습니다."),
     ;
 
     private final int status;
