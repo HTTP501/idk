@@ -436,7 +436,6 @@ const ShoppingMall = ({ navigation }) => {
             <View style={{ ...ShoppingMallStyles.toptitle }}>
               <Text style={ShoppingMallStyles.pageTitle}>IDK 몰</Text>
             </View>
-
             {/* 뒤로가기 버튼 부분 */}
             {/* <View style={{...ShoppingMallStyles.backBtn}}>
               <TouchableOpacity

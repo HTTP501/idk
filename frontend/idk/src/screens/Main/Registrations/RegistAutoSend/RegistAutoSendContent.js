@@ -131,6 +131,7 @@ const RegistAutoSendContent = ({ navigation,route }) => {
       (res) => {
         // console.log(res);
         setMyAccount(res.data.data);
+        setShowOtherAccountName(res.data.data.userName)
       },
       (err) => {
         console.log(err);
@@ -148,8 +149,8 @@ const RegistAutoSendContent = ({ navigation,route }) => {
       date: date,
       startYearMonth: `${startYear}-${startMonth.toString().padStart(2, "0")}`,
       endYearMonth: `${endYear}-${endMonth.toString().padStart(2, "0")}`,
-      showRecipientBankAccount: showMyAccountName,
-      showMyBankAccount: showOtherAccountName,
+      showRecipientBankAccount: showOtherAccountName,
+      showMyBankAccount: showMyAccountName,
     };
     console.log(payload);
     await registAutoTransferAxios(
@@ -276,9 +277,9 @@ const RegistAutoSendContent = ({ navigation,route }) => {
         <View style={styles.box}>
           <Text className="text-lg font-bold">받는 분 통장 표시</Text>
           <TextInput
-            value={showMyAccountName}
+            value={showOtherAccountName}
             onChangeText={(text) => {
-              setShowMyAccountName(text);
+              setShowOtherAccountName(text);
             }}
             style={styles.input}
             placeholder="ex) 홍길동"
@@ -287,9 +288,9 @@ const RegistAutoSendContent = ({ navigation,route }) => {
         <View style={styles.box}>
           <Text className="text-lg font-bold">내 통장 표시</Text>
           <TextInput
-            value={showOtherAccountName}
+            value={showMyAccountName}
             onChangeText={(text) => {
-              setShowOtherAccountName(text);
+              setShowMyAccountName(text);
             }}
             style={styles.input}
             placeholder="ex) 아이들과 미래재단 정기후원"

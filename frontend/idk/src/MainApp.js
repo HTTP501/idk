@@ -78,7 +78,7 @@ export default function MainApp() {
               fontWeight: "bold",
               textAlign: "center",
               color: "white",
-              marginBottom: 30,
+              marginBottom: 80,
             }}
           >
             나의 지출관리 도우미, IDK
@@ -114,7 +114,8 @@ export default function MainApp() {
               style={{
                 alignItems: "center",
                 justifyContent: "center",
-                borderWidth: 5,
+                
+                borderWidth: 3,
                 height: 80,
                 borderColor: "white",
                 borderRadius: 20,
