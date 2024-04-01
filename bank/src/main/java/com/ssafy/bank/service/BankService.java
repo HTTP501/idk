@@ -161,7 +161,7 @@ public class BankService {
         // 은행 이름, 기관 코드, 계좌주 이름, 계좌번호, 잔고
         String bankName = bank.getName();
         String memberName = account.getMember().getName();
-        String balance = account.getBalance();
+        Long balance = account.getBalance();
 
         return AccountDetailsResponseDto.of(bankName, orgCode, memberName, account.getAccountNumber(), balance);
     }
@@ -186,6 +186,7 @@ public class BankService {
         for (Account memberAccount : memberAccounts) {
             List<AutoTransfer> autoTransfers = autoTransferRepository.findByAccount(memberAccount);
             for (AutoTransfer autoTransfer : autoTransfers) {
+
                 autoTransferInfoList.add(AutoTransferInfoResponseDto.of(
                         autoTransfer.getAccount().getBank().getName(),
                         autoTransfer.getAccount().getBank().getOrganization().getOrgCode(),
@@ -198,7 +199,6 @@ public class BankService {
                 ));
             }
         }
-
         return AutoTransferInfoListResponseDto.of(autoTransferInfoList);
     }
 
@@ -225,7 +225,7 @@ public class BankService {
         consentInfo.put("orgType", organization.getOrgType().name());
 
         // CA(인증기관) 서버에 전자서명 검증 요청
-        if (!clientService.verifySignature(member.getName(), member.getPhoneNumber(), member.getConnectionInformation(), requestDto.getConsentInfo(), requestDto.getEncodedSignature())) {
+        if (!clientService.verifySignature(member.getName(), member.getPhoneNumber(), member.getConnectionInformation(), requestDto.getConsent(), requestDto.getSignedConsent())) {
             throw new BankException(ErrorCode.BANK_SIGNALUTE_INVALID);
         }
 

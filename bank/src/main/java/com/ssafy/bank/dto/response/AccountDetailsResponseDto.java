@@ -13,14 +13,14 @@ public class AccountDetailsResponseDto {
     private String orgCode;
     private String memberName;
     private String accountNumber;
-    private String balance;
+    private Long balance;
 
     public static AccountDetailsResponseDto of(
             String bankName,
             String orgCode,
             String memberName,
             String accountNumber,
-            String balance
+            Long balance
     ) {
 
         return AccountDetailsResponseDto.builder()

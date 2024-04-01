@@ -30,7 +30,7 @@ public class BankController {
 
     // 회원 생성 db 저장, 계좌 더미데이터 생성
     @Operation(summary = "회원가입")
-    @PostMapping("/")
+    @PostMapping("/signup")
     public ResponseEntity<ResultResponse> signup(@RequestBody CreateDataRequestDto requestDto) {
 
         // 회원 가입
@@ -57,8 +57,8 @@ public class BankController {
 
     // 인증 요청(토큰 발급)
     @Operation(summary = "인증")
-    @PostMapping("/authentication")
-    public ResponseEntity<ResultResponse> authentication(AuthenticationRequestDto requestDto) {
+    @PostMapping("/certify")
+    public ResponseEntity<ResultResponse> authentication(@RequestBody AuthenticationRequestDto requestDto) {
 
         return ResponseEntity.ok(ResultResponse.of(ResultCode.BANK_AUTHENTICATION_SUCCESS, bankService.authentication(requestDto)));
     }

@@ -35,17 +35,17 @@ public class BankUtil {
     }
 
     // 잔고를 랜덤 생성하는 메서드
-    public static String generateBalance() {
+    public static Long generateBalance() {
         Random random = new Random();
-        int balance = random.nextInt(10000000);
-        return Integer.toString(balance);
+        Long balance = random.nextLong(10000000L);
+        return balance;
     }
 
     // 자동 이체 금액을 랜덤 생성하는 메서드
-    public static String generateAutoTransferAmount() {
+    public static Long generateAutoTransferAmount() {
         Random random = new Random();
-        int amount = random.nextInt(1000000);
-        return Integer.toString(amount);
+        Long amount = random.nextLong(1000000L);
+        return amount;
     }
 
     // 자동 이체 일정일을 랜덤 생성하는 메서드

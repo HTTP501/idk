@@ -25,7 +25,7 @@ public class Bank {
     @Column(name = "client_secret")
     private String clientSecret;
 
-    @JoinColumn(name = "org_code") @NotNull
+    @JoinColumn(name = "org_code", unique = true) @NotNull
     @OneToOne(fetch = FetchType.LAZY)
     private Organization organization;
 }

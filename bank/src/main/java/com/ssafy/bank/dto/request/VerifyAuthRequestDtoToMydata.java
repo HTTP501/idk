@@ -12,16 +12,19 @@ public class VerifyAuthRequestDtoToMydata {
     private String clientId;
     private String clientSecret;
     private String orgCode;
+    private String authority;
 
     public static VerifyAuthRequestDtoToMydata of(
             String clientId,
             String clientSecret,
-            String orgCode
+            String orgCode,
+            String authority
     ) {
         return VerifyAuthRequestDtoToMydata.builder()
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .orgCode(orgCode)
+                .authority(authority)
                 .build();
     }
 

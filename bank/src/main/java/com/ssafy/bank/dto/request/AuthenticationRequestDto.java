@@ -3,6 +3,8 @@ package com.ssafy.bank.dto.request;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 @Getter
 @Setter
 public class AuthenticationRequestDto {
@@ -12,7 +14,7 @@ public class AuthenticationRequestDto {
     private String providerOrgCode;
     private String clientId;
     private String clientSecret;
-    private String consentInfo;
-    private String encodedSignature;
+    private Map<String, String> consent;
+    private String signedConsent;
 
 }

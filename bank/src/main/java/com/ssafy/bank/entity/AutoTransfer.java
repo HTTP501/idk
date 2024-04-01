@@ -21,7 +21,7 @@ public class AutoTransfer {
     private Long id;
 
     @Column(name = "amount")
-    private String amount;
+    private Long amount;
 
     @Column(name = "designated_account_number")
     private String designatedAccountNumber;

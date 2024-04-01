@@ -16,7 +16,7 @@ public class Account {
     private Long id;
 
     @Column(name = "balance")
-    private String balance;
+    private Long balance;
 
     @Column(name = "account_number")
     private String accountNumber;
