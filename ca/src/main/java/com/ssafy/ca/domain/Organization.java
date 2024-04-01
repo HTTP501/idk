@@ -11,12 +11,12 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@Table(name = "ca_organization")
+@Table(name = "organization")
 public class Organization {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long org_id;
+    private Long orgId;
 
     @Column(name = "org_code")
     private String orgCode;
@@ -24,9 +24,10 @@ public class Organization {
     @Column(name = "org_name")
     private String orgName;
 
-    @Column(name = "org_type")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "org_type", columnDefinition = "TEXT")
     private OrganizationType orgType;
 
-    @Column(name = "token")
-    private String token;
+    @Column(name = "access_token")
+    private String accessToken;
 }

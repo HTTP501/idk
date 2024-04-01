@@ -12,12 +12,12 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@Table(name = "ca_member")
+@Table(name = "member")
 public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberId;
+    private Long id;
 
     @Column(name = "name")
     private String name;

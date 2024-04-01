@@ -12,14 +12,14 @@ import java.util.Map;
 @AllArgsConstructor
 public class SignResponseDto {
 
-    private List<Map<String, String>> signedDataList;
+    private List<Map<String, String>> signedInfoList;
 
 
     public static SignResponseDto of(
-            List<Map<String, String>> signedDataList
+            List<Map<String, String>> signedInfoList
     ) {
         return SignResponseDto.builder()
-                .signedDataList(signedDataList)
+                .signedInfoList(signedInfoList)
                 .build();
     }
 }

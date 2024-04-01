@@ -21,7 +21,9 @@ public enum ErrorCode {
     CA_ORGANIZATION_NOT_FOUND(400, "C400", "기관을 찾을 수 없습니다."),
     CA_PRIVATE_KEY_NOT_EXIST(400, "C400", "개인 키 파일이 존재하지 않습니다."),
     CA_CERTIFICATION_NOT_EXIST(400, "C400", "인증서 파일이 존재하지 않습니다."),
-    CA_SIGNATURE_NOT_FOUND(404, "C404", "유저의 전자서명이 없습니다.");
+    CA_SIGNATURE_NOT_FOUND(404, "C404", "유저의 전자서명이 없습니다."),
+    CA_MEMBER_INFO_MISMATCH(400, "C400", "유저 정보가 일치하지 않습니다."),
+    CA_ORG_NOT_MATCH(400, "C400", "기관 정보가 일치하지 않습니다.");
 
 
     private final int status;
