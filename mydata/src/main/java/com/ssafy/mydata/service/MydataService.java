@@ -53,6 +53,8 @@ public class MydataService {
         String authorityStr = requestDto.getAuthority();
         try {
             Permission authority = Permission.valueOf(authorityStr);
+            System.out.println("authority = " + authority);
+            System.out.println("organization = " + organization.getPermissions());
 
 
             if (!organization.getPermissions().contains(authority)) {
