@@ -39,7 +39,6 @@ public class MemberService {
     private final AuthenticationService authenticationService;
     private final RSAKeyService rsaKeyService;
     private final ClientCaService clientCaService;
-    private final RestTemplate restTemplate;
 
     // 회원가입
     @Transactional
@@ -70,7 +69,6 @@ public class MemberService {
                 .transactionPushEnabled(false)
                 .mydataAgreed(false)
                 .build();
-
 
         Member savedMember = memberRepository.save(member);
         rsaKeyService.saveRSAKey(savedMember.getMemberId(), privateKey);

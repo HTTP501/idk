@@ -1,7 +1,5 @@
 package com.ssafy.idk.domain.member.jwt;
 
-import com.ssafy.idk.domain.member.exception.MemberException;
-import com.ssafy.idk.global.error.ErrorCode;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,7 +65,7 @@ public class JwtTokenProvider {
         return expirationDate.getTime() - now.getTime();
     }
 
-    // 토큰 만료
+    // 토큰 만료 체크
     public Boolean isExpired(String token) {
 
         return Jwts.parser()
