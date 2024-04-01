@@ -3,6 +3,8 @@ package com.ssafy.idk.global.error;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.exception.RSAKeyException;
 import com.ssafy.idk.domain.account.exception.TransferException;
+import com.ssafy.idk.domain.autodebit.exception.AutoDebitException;
+import com.ssafy.idk.domain.fcm.exception.FcmException;
 import com.ssafy.idk.domain.mydata.exception.MydataException;
 import com.ssafy.idk.domain.autotransfer.exception.AutoTransferException;
 import com.ssafy.idk.domain.piggybank.exception.PiggyBankException;
@@ -92,9 +94,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }
 
+    @ExceptionHandler(AutoDebitException.class)
+    protected ResponseEntity<ErrorResponse> handleAutoDebitException(AutoDebitException ex) {
+        log.error("handleAutoDebitException", ex);
+        final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
     @ExceptionHandler(PocketException.class)
     protected ResponseEntity<ErrorResponse> handlePocketException(PocketException ex) {
         log.error("handleAutoPocketException", ex);
+        final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(FcmException.class)
+    protected ResponseEntity<ErrorResponse> handleFcmException(FcmException ex) {
+        log.error("handleFcmException", ex);
         final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }

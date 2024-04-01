@@ -1,5 +1,6 @@
 package com.ssafy.idk.domain.member.entity;
 
+import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.mydata.entity.Mydata;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,7 +28,7 @@ public class Member {
     @Column(name = "pin")
     private String pin;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
     @Column(name = "connection_information")
@@ -51,8 +52,14 @@ public class Member {
     @Column(name = "mydata_agreed")
     private Boolean mydataAgreed;
 
+    @Column(name = "fcm_token")
+    private String fcmToken;
+
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Mydata> mydataList;
+
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private Account account;
 
     @PrePersist
     public void prePersist() {
@@ -76,5 +83,13 @@ public class Member {
 
     public void updateMydataAgreed() {
         this.mydataAgreed = true;
+    }
+
+    public void updateToken(String token) {
+        this.fcmToken = token;
+    }
+
+    public void deleteToken() {
+        this.fcmToken = null;
     }
 }
