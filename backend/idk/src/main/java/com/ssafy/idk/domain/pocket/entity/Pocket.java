@@ -3,6 +3,8 @@ package com.ssafy.idk.domain.pocket.entity;
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
 import com.ssafy.idk.domain.autodebit.entity.AutoDebit;
+import com.ssafy.idk.domain.member.entity.Member;
+import com.ssafy.idk.domain.mydata.entity.Mydata;
 import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -24,8 +26,8 @@ public class Pocket {
     private Long pocketId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id") @NotNull
-    private Account account;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Column(name = "pocket_type") @NotNull
     private PocketType pocketType;
@@ -37,6 +39,10 @@ public class Pocket {
     @OneToOne
     @JoinColumn(name = "auto_transfer_id")
     private AutoTransfer autoTransfer;
+
+    @OneToOne
+    @JoinColumn(name = "mydata_id")
+    private Mydata mydata;
 
     @OneToOne
     @JoinColumn(name = "auto_debit_id")

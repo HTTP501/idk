@@ -74,7 +74,7 @@ public class TargetSavingService {
         TargetSaving savedTargetSaving = targetSavingRepository.save(targetSaving);
 
         // 돈 포켓 동시 생성
-        Pocket pocket = pocketService.createByTargetSaving(savedTargetSaving, account);
+        Pocket pocket = pocketService.createByTargetSaving(savedTargetSaving, member);
         savedTargetSaving.setPocket(pocket);
         targetSavingRepository.save(savedTargetSaving);
 

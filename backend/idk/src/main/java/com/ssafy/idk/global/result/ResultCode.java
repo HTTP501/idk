@@ -70,7 +70,7 @@ public enum ResultCode {
     // POCKET
     POCKET_CREATE_BY_TARGET_SAVING_SUCCESS(201, "P201", "목표저축을 통해 돈 포켓을 생성했습니다."),
     POCKET_CREATE_BY_AUTO_TRANSFER_SUCCESS(201, "P202", "자동이체를 통해 돈 포켓을 생성했습니다."),
-    POCKET_CREATE_BY_AUTO_DEBIT_SUCCESS(201, "P203", "자동결제를 통해 돈 포켓을 생성했습니다."),
+    POCKET_CREATE_BY_CREDIT_MYDATA_SUCCESS(201, "P203", "신용카드 마이데이터를 통해 돈 포켓을 생성했습니다."),
     POCKET_GET_DETAIL_SUCCESS(200, "P204", "해당 돈 포켓을 조회했습니다."),
     POCKET_UPDATE_NAME_SUCCESS(200, "P205", "해당 돈 포켓의 이름을 수정했습니다."),
     POCKET_UPDATE_IS_ACTIVATED_SUCCESS(200, "P206", "해당 돈 포켓의 활성화 여부를 수정했습니다."),

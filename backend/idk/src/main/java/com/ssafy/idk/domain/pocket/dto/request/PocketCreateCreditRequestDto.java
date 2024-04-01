@@ -5,8 +5,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class PocketCreateAutoDebitRequestDto {
+public class PocketCreateCreditRequestDto {
 
-    private Long autoDebitId;
+    private Long mydataId;
 
 }

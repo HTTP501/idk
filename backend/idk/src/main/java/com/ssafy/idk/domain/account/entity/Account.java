@@ -67,10 +67,6 @@ public class Account {
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<AutoDebit> arrayAutoDebit;
 
-    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @OrderBy("orderNumber asc")
-    List<Pocket> arrayPocketOrders;
-
     @OneToOne(mappedBy = "account",  fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private PiggyBank piggyBank;
 

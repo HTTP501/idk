@@ -1,13 +1,12 @@
 package com.ssafy.idk.domain.pocket.controller;
 
-import com.ssafy.idk.domain.pocket.dto.request.PocketCreateAutoDebitRequestDto;
+import com.ssafy.idk.domain.pocket.dto.request.PocketCreateCreditRequestDto;
 import com.ssafy.idk.domain.pocket.dto.request.PocketCreateAutoTransferRequestDto;
 import com.ssafy.idk.domain.pocket.dto.request.PocketUpdateNameRequestDto;
 import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +22,9 @@ public class PocketController {
     private final PocketService pocketService;
 
     @Operation(summary = "돈 포켓 목록 조회")
-    @GetMapping(value = "/account/{accountId}")
-    public ResponseEntity<ResultResponse> getArrayPocket(@PathVariable(name = "accountId") Long accountId) {
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_GET_LIST_SUCCESS, pocketService.getArrayPocket(accountId)));
+    @GetMapping(value = "/list")
+    public ResponseEntity<ResultResponse> getArrayPocket() {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_GET_LIST_SUCCESS, pocketService.getArrayPocket()));
     }
 
     @Operation(summary = "자동이체 돈 포켓 가입")
@@ -34,10 +33,10 @@ public class PocketController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_CREATE_BY_AUTO_TRANSFER_SUCCESS, pocketService.createByAutoTransfer(requestDto)));
     }
 
-    @Operation(summary = "자동결제 돈 포켓 가입")
-    @PostMapping(value = "/auto-debit")
-    public ResponseEntity<ResultResponse> createPocketAutoDebit(@RequestBody PocketCreateAutoDebitRequestDto requestDto) {
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_CREATE_BY_AUTO_TRANSFER_SUCCESS, pocketService.createByAutoDebit(requestDto)));
+    @Operation(summary = "신용카드 마이데이터 돈 포켓 가입")
+    @PostMapping(value = "/credit")
+    public ResponseEntity<ResultResponse> createPocketCredit(@RequestBody PocketCreateCreditRequestDto requestDto) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_CREATE_BY_CREDIT_MYDATA_SUCCESS, pocketService.createByCredit(requestDto)));
     }
 
     @Operation(summary = "돈 포켓 상세 조회(입출금내역)")
