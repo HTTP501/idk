@@ -22,8 +22,7 @@
         "foregroundImage": "./assets/logo/app_icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.yunyebeen.idk",
-      "googleServicesFile": "./google-services.json"
+      "package": "com.yunyebeen.idk"
     },
     "web": {
       "favicon": "./assets/logo/app_icon.png"
@@ -32,9 +31,16 @@
       [
         "expo-font",
         {
-          "MaplestoryBold": ["./assets/fonts/MaplestoryBold.ttf"]
+          "MaplestoryBold": [
+            "./assets/fonts/MaplestoryBold.ttf"
+          ]
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "6d60907d-1376-4a89-8afa-2d9789f07c91"
+      }
+    }
   }
 }
