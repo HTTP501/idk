@@ -79,6 +79,14 @@ public class Pocket {
         this.orderNumber = orderNumber;
     }
 
+    public void setDeposited(boolean deposited) {
+        isDeposited = deposited;
+    }
+
+    public void setPaid(boolean paid) {
+        isPaid = paid;
+    }
+
     public void setActivated(boolean activated) {
         isActivated = activated;
     }

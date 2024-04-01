@@ -8,6 +8,7 @@ import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
 import com.ssafy.idk.domain.autotransfer.repository.AutoTransferRepository;
 import com.ssafy.idk.domain.member.entity.Member;
+import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.mydata.entity.Mydata;
 import com.ssafy.idk.domain.mydata.repository.MydataRepository;
@@ -42,6 +43,7 @@ public class PocketService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
     private final MydataRepository mydataRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public Pocket createByTargetSaving(TargetSaving targetSaving, Member member) {
@@ -56,7 +58,7 @@ public class PocketService {
                 .isActivated(false)
                 .isDeposited(false)
                 .isPaid(false)
-                .orderNumber(member.getArrayPocketOrders().size())
+                .orderNumber(member.getArrayPocket().size())
                 .build();
     }
 
@@ -85,7 +87,7 @@ public class PocketService {
                 .name(autoTransfer.getName() + "의 돈포켓")
                 .target(autoTransfer.getAmount())
                 .expectedDate(autoTransfer.getDate())
-                .orderNumber(member.getArrayPocketOrders().size())
+                .orderNumber(member.getArrayPocket().size())
                 .build();
         Pocket savedPocket = pocketRepository.save(pocket);
 
@@ -119,7 +121,7 @@ public class PocketService {
                 .name(mydata.getOrganization().getOrgName() + "의 돈포켓")
                 .target(null)                               // null일 때 추후 표현될 것이라고 안내
                 .expectedDate(null)                         // 날짜 조회 때문에 잠깐 미뤄둠
-                .orderNumber(member.getArrayPocketOrders().size())  // 순서가 account 기준이라 변경 필요
+                .orderNumber(member.getArrayPocket().size())  // 순서가 account 기준이라 변경 필요
                 .build();
         Pocket savedPocket = pocketRepository.save(pocket);
 
@@ -455,7 +457,7 @@ public class PocketService {
     @Transactional
     public void reOrderArrayPocket(Member member) {
 
-        List<Pocket> arrayPocket = member.getArrayPocketOrders();
+        List<Pocket> arrayPocket = member.getArrayPocket();
 
         int idx = 0;
         for (Pocket pocket : arrayPocket) {
@@ -463,5 +465,23 @@ public class PocketService {
             pocketRepository.save(pocket);
         }
 
+    }
+
+    @Transactional
+    public void updatePocketStatementAtSalaryDay(Integer systemDay) {
+
+        // 입력된 일자에 월급일인 사용자 찾기
+        List<Account> accounts = accountRepository.findByPayDate(systemDay);
+        for (Account account : accounts) {
+            if (!Objects.equals(account.getPayDate(), systemDay)) continue;
+
+            Member member = account.getMember();
+            List<Pocket> pocketList = member.getArrayPocket();
+            for (Pocket pocket : pocketList) {
+                pocket.setPaid(false);
+                pocket.setDeposited(false);
+                pocketRepository.save(pocket);
+            }
+        }
     }
 }

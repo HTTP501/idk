@@ -1,5 +1,6 @@
 package com.ssafy.idk.global.util;
 
+import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.domain.salary.service.SalaryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,7 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -19,12 +19,14 @@ public class TimeUtil {
     private Integer systemMonth = 4;
     private Integer systemDay = 1;
     private final SalaryService salaryService;
+    private final PocketService pocketService;
 
-//    @Scheduled(fixedRate = 5000)
-//    public void oneDayCycle() {
-//        updateDate();
-//        salaryService.salaryDeposit(systemDay);
-//    }
+    @Scheduled(fixedRate = 5000)
+    public void oneDayCycle() {
+        updateDate();
+        salaryService.salaryDeposit(systemDay);
+        pocketService.updatePocketStatementAtSalaryDay(systemDay);
+    }
 
     public void updateDate() {
         updateDay();
