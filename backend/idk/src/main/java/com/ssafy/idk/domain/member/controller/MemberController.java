@@ -43,10 +43,10 @@ public class MemberController {
         // 종합포털 회원가입
         Member member = memberRepository.findByPhoneNumber(requestDto.getPhoneNumber())
                         .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
+
         clientMydataService.signupMydata(member.getName(), member.getPhoneNumber(), requestDto.getBirthDate(), member.getConnectionInformation());
 
         // 타은행 회원 생성
-
 
         return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_SIGNUP_SUCCESS, signupResponseDto));
     }
