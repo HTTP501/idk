@@ -20,8 +20,8 @@ import { getUserAccountAxios } from "../../../API/Account";
 const EnterAccount = ({ navigation }) => {
   const [accountNumber, setAccountNumber] = useState("");
   const [transferBank, setTransferBank] = useState("IDK은행");
+  const [focusOppentIndication, setFocusOppentIndication] = useState(false);
   const gotoEnterMoney = async () => {
-
     // 사용자 조회
     getUserAccountAxios(
       { accountNumber: accountNumber, bankName: transferBank },
@@ -37,16 +37,16 @@ const EnterAccount = ({ navigation }) => {
         });
       },
       (err) => {
-        Alert.alert("사용자를 찾을 수 없습니다","",[{"text":"확인"}])
+        Alert.alert("사용자를 찾을 수 없습니다", "", [{ text: "확인" }]);
       }
     );
   };
   return (
     <View style={styles.container}>
       <Text style={styles.pageName} className="text-3xl font-bold">
-        계좌 이체
-      </Text>
-
+          계좌 이체
+        </Text>
+      
       {/* 계좌이체 ~ 은행 토글 */}
       <View className="p-10 gap-10">
         {/* 계좌 번호 입력 */}
@@ -64,6 +64,8 @@ const EnterAccount = ({ navigation }) => {
               keyboardType="number-pad"
               returnKeyType="next"
               placeholder="계좌번호 입력"
+              onFocus={() => setFocusOppentIndication(true)}
+              onBlur={() => setFocusOppentIndication(false)}
             />
             <TouchableOpacity onPress={() => setAccountNumber("")}>
               <AntDesign name="closecircle" size={24} color="gray" />
@@ -105,13 +107,14 @@ const EnterAccount = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   pageName: {
-    position: "absolute", // 위치를 절대로 설정
-    top: 120, // 화면 하단과의 간격
+    // position: "absolute", // 위치를 절대로 설정
+    // top: 120, // 화면 하단과의 간격
     marginLeft: SCREEN_WIDTH * (1 / 10),
+    marginTop:120
   },
   container: {
     flex: 1,
-    justifyContent: "center",
+    // justifyContent: "center",
     backgroundColor: "white",
   },
   input: {

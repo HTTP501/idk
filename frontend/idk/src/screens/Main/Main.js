@@ -38,7 +38,7 @@ import PiggyBank from "../../components/PiggyBankItem";
 
 import { useFocusEffect } from "@react-navigation/native";
 import Loading from "../../components/Loading";
-
+import { changeDonPocketOrderAxios } from "../../API/DonPocket";
 // 메인 페이지
 const Main = gestureHandlerRootHOC(({ navigation }) => {
   const ACCOUNT_KEY = "@account";
@@ -125,7 +125,22 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   let [autoDebitPocketData, setAutoDebitPocketData] = useState(
     pocketData.filter((item) => item.pocketType === "자동결제")
   );
-
+  // 포켓 순서 바꾸기
+  const changePocketOrder = async function(data){
+    setPocketData(data)
+    let orderedId = []
+    await data.map(item=>
+      {orderedId.push(item.pocketId)}
+      )
+    console.log(orderedId)
+    // changeDonPocketOrderAxios({arrayPocketId:orderedId},
+    //   res=>{
+    //   console.log(res)
+    // }, err =>{
+    //   console.log(err)
+    // }
+    // )
+  }
   // 돈포켓 총 금액
   const totalPocket = pocketData.reduce((acc, curr) => acc + curr.balance, 0);
   // + 버튼 눌렸는지 판단
@@ -162,7 +177,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
                 <DonPocketList
                   navigation={navigation}
                   pocketData={pocketData}
-                  changePocketOrder={(data) => setPocketData(data)}
+                  changePocketOrder={(data) => changePocketOrder(data)}
                   fetchData={fetchData}
                 />
                 {piggyBankData 

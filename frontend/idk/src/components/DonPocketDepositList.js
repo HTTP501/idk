@@ -12,7 +12,7 @@ const DonPocketDepositList = function ({ arrayTransaction }) {
   for (const item of arrayTransaction) {
     const stringDate = new Date(item.createdAt);
     const FullYear = stringDate.getFullYear()
-    const Month = stringDate.getMonth()
+    const Month = stringDate.getMonth()+1
     const day = stringDate.getDate()
     let date = ""
     //  올해라면 년 생략
@@ -60,6 +60,7 @@ const DepositOnedayList = function ({ item }) {
 
 const DepositItem = function ({ item }) {
   const date = new Date(item.createdAt);
+  
   // 시간 추출
   const hours = date.getHours();
   

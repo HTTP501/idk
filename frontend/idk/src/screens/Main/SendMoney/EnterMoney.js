@@ -25,6 +25,7 @@ const EnterMoney = ({ navigation, route }) => {
         console.log(res.data.data.accountBalance);
         setMyAccount(res.data.data.accountBalance);
         setOriginAccount(res.data.data.accountBalance);
+        setMyName(res.data.data.userName);
       },
       (err) => {
         console.log(err);
@@ -34,6 +35,7 @@ const EnterMoney = ({ navigation, route }) => {
   let [transferAmount, setTransferAmount] = useState(0);
   let [originAccount,setOriginAccount] = useState(0)
   let [myAccount, setMyAccount] = useState(0);
+  let [myName, setMyName] = useState("");
 
   const accountNumber = route.params.data.accountNumber;
   const transferBank = route.params.data.transferBank;
@@ -48,6 +50,7 @@ const EnterMoney = ({ navigation, route }) => {
     transferAmount: transferAmount,
     myAccount: myAccount,
     isChecked:false,
+    myName:myName,
   };
   // 입금액 변경 함수
   const changeTransferAmount = function (number) {
@@ -117,10 +120,10 @@ const EnterMoney = ({ navigation, route }) => {
 // 키보드
 const KeyBoard = function (props) {
   return (
-    <View className="flex-grow">
-      <View className="flex-row justify-center">
+    <View className="flex-1">
+      <View className="flex-1 flex-row justify-evenly items-center">
         <TouchableOpacity
-          className="px-10 py-5"
+          className="py-auto"
           onPress={() => {
             props.changeTransferAmount(1);
           }}
@@ -128,7 +131,7 @@ const KeyBoard = function (props) {
           <Text className="text-3xl text-center">1</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="px-10 py-5"
+          className="py-auto"
           onPress={() => {
             props.changeTransferAmount(2);
           }}
@@ -136,7 +139,7 @@ const KeyBoard = function (props) {
           <Text className="text-3xl text-center">2</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="px-10 py-5"
+          className="py-auto"
           onPress={() => {
             props.changeTransferAmount(3);
           }}
@@ -144,9 +147,9 @@ const KeyBoard = function (props) {
           <Text className="text-3xl text-center">3</Text>
         </TouchableOpacity>
       </View>
-      <View className="flex-row justify-center">
+      <View className="flex-1 flex-row justify-evenly items-center">
         <TouchableOpacity
-          className="px-10 py-5"
+          className="py-auto"
           onPress={() => {
             props.changeTransferAmount(4);
           }}
@@ -154,7 +157,7 @@ const KeyBoard = function (props) {
           <Text className="text-3xl text-center">4</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="px-10 py-5"
+          className="py-auto"
           onPress={() => {
             props.changeTransferAmount(5);
           }}
@@ -162,7 +165,7 @@ const KeyBoard = function (props) {
           <Text className="text-3xl text-center">5</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="px-10 py-5"
+          className="py-auto"
           onPress={() => {
             props.changeTransferAmount(6);
           }}
@@ -170,9 +173,9 @@ const KeyBoard = function (props) {
           <Text className="text-3xl text-center">6</Text>
         </TouchableOpacity>
       </View>
-      <View className="flex-row justify-center">
+      <View className="flex-1 flex-row justify-evenly items-center">
         <TouchableOpacity
-          className="px-10 py-5"
+          className="py-auto"
           onPress={() => {
             props.changeTransferAmount(7);
           }}
@@ -180,7 +183,7 @@ const KeyBoard = function (props) {
           <Text className="text-3xl text-center">7</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="px-10 py-5"
+          className="py-auto"
           onPress={() => {
             props.changeTransferAmount(8);
           }}
@@ -188,7 +191,7 @@ const KeyBoard = function (props) {
           <Text className="text-3xl text-center">8</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="px-10 py-5"
+          className=""
           onPress={() => {
             props.changeTransferAmount(9);
           }}
@@ -196,9 +199,9 @@ const KeyBoard = function (props) {
           <Text className="text-3xl text-center">9</Text>
         </TouchableOpacity>
       </View>
-      <View className="flex-row justify-center">
+      <View className="flex-1 flex-row justify-evenly items-center">
         <TouchableOpacity
-          className="px-10 py-5"
+          className="py-auto"
           onPress={() => {
             props.changeTransferAmount("00");
           }}
@@ -206,7 +209,7 @@ const KeyBoard = function (props) {
           <Text className="text-3xl text-center">00</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="px-10 py-5"
+          className="py-auto"
           onPress={() => {
             props.changeTransferAmount(0);
           }}
@@ -214,7 +217,7 @@ const KeyBoard = function (props) {
           <Text className="text-3xl text-center">0</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="px-10 py-5"
+          className="py-auto"
           onPress={() => {
             props.changeTransferAmount("D");
           }}

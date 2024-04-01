@@ -23,12 +23,13 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
   const transferBank = route.params.data.transferBank;
   const memberName = route.params.data.memberName;
   const memberId = route.params.data.memberId;
+  const myName = route.params.data.myName;
 
   const otherName = memberName;
   let [focusOppentIndication, setFocusOppentIndication] = useState(false);
   let [focusMyIndication, setFocusMyIndication] = useState(false);
-  let [receiverPaymentContent, setReceiverPaymentContent] = useState(otherName);
-  let [myPaymentContent, setMyPaymentContent] = useState("윤예빈");
+  let [receiverPaymentContent, setReceiverPaymentContent] = useState(myName);
+  let [myPaymentContent, setMyPaymentContent] = useState(otherName);
   const data = {
     transferAmount,
     myAccount,
@@ -123,8 +124,8 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
             onFocus={() => setFocusOppentIndication(true)}
             onBlur={() => setFocusOppentIndication(false)}
             style={styles.input}
-            onChangeText={(text) => setMyPaymentContent(text)}
-            value={myPaymentContent}
+            onChangeText={(text) => setReceiverPaymentContent(text)}
+            value={receiverPaymentContent}
             className="text-2xl"
             returnKeyType="next"
             placeholder="받는 분 통장 표시"
@@ -136,8 +137,8 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
             onFocus={() => setFocusMyIndication(true)}
             onBlur={() => setFocusMyIndication(false)}
             style={styles.input}
-            onChangeText={(text) => setReceiverPaymentContent(text)}
-            value={receiverPaymentContent}
+            onChangeText={(text) => setMyPaymentContent(text)}
+            value={myPaymentContent}
             className="text-2xl"
             returnKeyType="next"
             placeholder="내 통장 표시"

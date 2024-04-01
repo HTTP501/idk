@@ -65,6 +65,7 @@ const ATM = function ({ navigation, route }) {
   let [money, setMoney] = useState(0);
   let [myAccountAmount, setMyAccountAmount] = useState(0)
   let [myAccountNumber, setMyAccountNumber] = useState("")
+  let [myName,setMyName] = useState("")
   const destination = { stack: "ATM", screen: "ATM" };
   // 다시 돌아올때 route 체크를 확인하고 해지한다
   useEffect(() => {
@@ -92,6 +93,7 @@ const ATM = function ({ navigation, route }) {
       (res) => {
         setMyAccountAmount(res.data.data.accountBalance);
         setMyAccountNumber(res.data.data.accountNumber);
+        setMyName(res.data.data.userName)
       },
       (err) => {
         // 계좌 번호가 있는지 판단해서 없으면 계좌 생성페이지로 이동
@@ -307,7 +309,7 @@ const ATM = function ({ navigation, route }) {
                           }
                         </View>
                         <View style={{ flex: 2, justifyContent: 'center', paddingLeft: 20 }}>
-                          <Text className="text-3xl font-bold">내 계좌</Text>
+                          <Text className="text-3xl font-bold">{myName}님</Text>
                           <Text className="text-lg font-bold">
                             IDK 은행 {myAccountNumber}
                           </Text>
