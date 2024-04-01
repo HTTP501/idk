@@ -62,7 +62,7 @@ public class AutoTransferService {
 
         AutoTransfer autoTransfer = AutoTransfer.builder()
                 .account(account)
-                .name(requestDto.getName())
+                .name(requestDto.getShowMyBankAccount())
                 .toAccount(requestDto.getToAccount())
                 .toAccountBank(requestDto.getToAccountBank())
                 .startYearMonth(startYearMonth)

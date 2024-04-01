@@ -2,6 +2,7 @@ package com.ssafy.idk.domain.member.entity;
 
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.mydata.entity.Mydata;
+import com.ssafy.idk.domain.pocket.entity.Pocket;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -60,6 +61,10 @@ public class Member {
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Account account;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OrderBy("orderNumber asc")
+    List<Pocket> arrayPocket;
 
     @PrePersist
     public void prePersist() {
