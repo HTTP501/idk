@@ -3,15 +3,18 @@ package com.ssafy.ca.service;
 
 import com.ssafy.ca.domain.Member;
 import com.ssafy.ca.domain.Organization;
-import com.ssafy.ca.domain.OrganizationMember;
-import com.ssafy.ca.dto.*;
-import com.ssafy.ca.dto.SignRequestDto.ConsentInfoDto;
+import com.ssafy.ca.dto.request.CreateCIRequestDto;
+import com.ssafy.ca.dto.request.SignRequestDto;
+import com.ssafy.ca.dto.request.SignVerifyRequestDto;
+import com.ssafy.ca.dto.response.CreateCIResponseDto;
+import com.ssafy.ca.dto.response.GetCIResponseDto;
+import com.ssafy.ca.dto.response.SignResponseDto;
 import com.ssafy.ca.exception.CaException;
 import com.ssafy.ca.global.error.ErrorCode;
 import com.ssafy.ca.repository.MemberRepository;
-import com.ssafy.ca.repository.OrganizationMemberRepositoy;
 import com.ssafy.ca.repository.OrganizationRepository;
 import com.ssafy.ca.util.CICreator;
+import com.ssafy.ca.util.CaUtil;
 import com.ssafy.ca.util.DigitalSignature;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +28,6 @@ public class CaService {
 
     private final MemberRepository memberRepository;
     private final OrganizationRepository organizationRepository;
-    private final OrganizationMemberRepositoy organizationMemberRepositoy;
 
     // CI 생성
     // 회원가입과 유사
@@ -81,121 +83,89 @@ public class CaService {
     // 전자서명 요청(생성)
     public SignResponseDto signRequest(SignRequestDto requestDto) throws Exception {
 
-        // 유효성 검증
-        isValidInput(requestDto.getName(), requestDto.getBirthDate(), requestDto.getPhoneNumber());
+        // Json 데이터 받기
+        List<Map<String, String>> consentList = requestDto.getConsentList();
 
         // 사용자 조회
-        Member member = memberRepository.findByNameAndBirthDateAndPhoneNumber(requestDto.getName(), requestDto.getBirthDate(), requestDto.getPhoneNumber())
+        String requestCI = requestDto.getConnectionInformation();
+        Member member = memberRepository.findByConnectionInformation(requestCI)
                 .orElseThrow(() -> new CaException(ErrorCode.CA_MEMBER_NOT_FOUND));
 
         String memberCI = member.getConnectionInformation();
-        String requestCI = requestDto.getConnectionInformation();
 
         // null 체크, ci 검증
         if (memberCI == null || !memberCI.equals(requestCI)) {
             throw new CaException(ErrorCode.CA_CI_INVALID);
         }
 
-        // 전송 요청 내용 목록
-        String agreement = requestDto.getAgreement();
-        List<ConsentInfoDto> consentInfoList = requestDto.getConsentInfoList();
+        // 전자서명 생성
+        List<Map<String, String>> signedInfoList = new ArrayList<>();
+        for (Map<String, String> consent : consentList) {
 
-        // 전자서명 데이터 준비 (요청 데이터를 바탕으로 생성)
-        List<Map<String, String>> signedDataList = prepareSignData(member, agreement, consentInfoList);
-
-        return SignResponseDto.of(signedDataList);
-    }
-
-    // 데이터 전처리 및 전자서명 생성
-    @Transactional
-    private List<Map<String, String>> prepareSignData(Member member, String agreement, List<ConsentInfoDto> consentInfoList) throws Exception {
-
-        // (전송 요청 대상 + 서명) 목록
-        List<Map<String, String>> orgDataList = new ArrayList<>();
-
-        // 전자서명 묶음 생성
-        for (ConsentInfoDto consentInfoDto : consentInfoList) {
-
-            // db 저장용 서명 데이터
-            Map<String, String> signDataMap = new HashMap<>();
-
-            // 응답 데이터용
-            Map<String, String> orgData = new HashMap<>();
-
-            signDataMap.put("agreement", agreement);
-            signDataMap.put("name", member.getName());
-            signDataMap.put("birthDate", member.getBirthDate());
-            signDataMap.put("phoneNumber", member.getPhoneNumber());
-            signDataMap.put("connectionInformation", member.getConnectionInformation());
-
-            signDataMap.put("orgCode", consentInfoDto.getOrgCode());
-            signDataMap.put("orgType", consentInfoDto.getOrgType());
-
-            // 기관 정보를 Map 형태로 저장
-            orgData.put("orgCode", consentInfoDto.getOrgCode());
-            orgData.put("orgType", consentInfoDto.getOrgType());
-
-            // 기관 조회
-            Organization organization = organizationRepository.findByOrgCode(consentInfoDto.getOrgCode())
+            // 기관 체크
+            Organization organization = organizationRepository.findByOrgCode(consent.get("orgCode"))
                     .orElseThrow(() -> new CaException(ErrorCode.CA_ORGANIZATION_NOT_FOUND));
+            // 이름, 업권 체크
+            if (!organization.getOrgName().equals(consent.get("orgName")) || !organization.getOrgType().name().equals(consent.get("orgType"))) {
+                throw new CaException(ErrorCode.CA_ORG_NOT_MATCH);
+            }
 
-            // 서명 데이터 문자열로 변환
-            String signData = signDataMap.toString();
+            // 원본데이터에 유저정보 추가
+            consent.put("name", member.getName());
+            consent.put("phoneNumber", member.getPhoneNumber());
+            consent.put("connectionInformation", memberCI);
 
-            // 중개테이블에 저장
-            OrganizationMember organizationMember = OrganizationMember.builder()
-                    .member(member)
-                    .organization(organization)
-                    .signData(signData)
-                    .build();
-            organizationMemberRepositoy.save(organizationMember);
+            // 원본 데이터 문자열로 변환
+            String signData = CaUtil.convertToJson(consent);
+            // 전자서명 생성
+            byte[] signature = DigitalSignature.signData(signData.getBytes());
+            // 전자서명 인코딩
+            String signedData = Base64.getEncoder().encodeToString(signature);
 
-            // 전자서명 생성, Base64 인코딩
-            byte[] signedDataByte = DigitalSignature.signData(signData.getBytes());
-            String encodedSignedData = Base64.getEncoder().encodeToString(signedDataByte);
+            // 기관 정보와 함께 반환
+            Map<String, String> orgData = new HashMap<>();
+            orgData.put("orgCode", organization.getOrgCode());
+            orgData.put("orgName", organization.getOrgName());
+            orgData.put("orgType", String.valueOf(organization.getOrgType()));
+            orgData.put("signedConsent", signedData);
 
-            orgData.put("signedData", encodedSignedData);
-            orgDataList.add(orgData);
+            signedInfoList.add(orgData);
         }
 
-        return orgDataList;
+        System.out.println("signedInfoList = " + signedInfoList);
+
+        return SignResponseDto.of(signedInfoList);
     }
 
     // 전자서명 검증
     public void signVerify(SignVerifyRequestDto requestDto) throws Exception {
 
-        // 요청으로부터 기관 코드(orgCode), 사용자 정보(ci), 전자서명(signedData)를 추출합니다.
-        String orgCode = requestDto.getOrgCode();
-        String ci = requestDto.getConnectionInformation();
-        String digitalSignature = requestDto.getDigitalSignature();
+        // 원본데이터
+        Map<String, String> consent = requestDto.getConsent();
+        String jsonConsent = CaUtil.convertToJson(consent);
+        byte[] consentInfoListBytes = jsonConsent.getBytes();
+
+        // 전자서명 데이터
+        String signedConsent = requestDto.getSignedConsent();
+        System.out.println("signedConsent = " + signedConsent);
+        byte[] signedConsentBytes = Base64.getDecoder().decode(signedConsent);
 
         // 해당 기관 조회
-        Organization organization = organizationRepository.findByOrgCode(orgCode)
+        Organization organization = organizationRepository.findByOrgCode(consent.get("orgCode"))
                 .orElseThrow(() -> new CaException(ErrorCode.CA_ORGANIZATION_NOT_FOUND));
 
+
         // 해당 ci 사용자 조회
-        Member member = memberRepository.findByConnectionInformation(ci)
+        Member member = memberRepository.findByConnectionInformation(consent.get("connectionInformation"))
                 .orElseThrow(() -> new CaException(ErrorCode.CA_MEMBER_NOT_FOUND));
 
-        OrganizationMember organizationMember = organizationMemberRepositoy.findByMemberAndOrganization(member, organization)
-                .orElseThrow(() -> new CaException(ErrorCode.CA_SIGNATURE_NOT_FOUND));
-
-        // 원본 데이터
-        String signData = organizationMember.getSignData();
-
-        // 원본 데이터 바이트로 전환
-        byte[] originalData = signData.getBytes();
-
-        // 전자서명 데이터 디코딩
-        byte[] signedData;
-        try {
-            signedData = Base64.getDecoder().decode(digitalSignature);
-        } catch (Exception e) {
-            throw new CaException(ErrorCode.CA_SIGN_INVALID);
+        // 이름, 휴대폰 번호 같은지 체크
+        if (!member.getName().equals(requestDto.getName()) || !member.getPhoneNumber().equals(requestDto.getPhoneNumber())) {
+            throw new CaException(ErrorCode.CA_MEMBER_INFO_MISMATCH);
         }
 
-        // 무결성 검증 + 데이터 검증
-        boolean result = DigitalSignature.verifySignature(originalData, signedData);
+        // 전자 서명 무결성 검증 + 데이터 검증
+        boolean result = DigitalSignature.verifySignature(consentInfoListBytes, signedConsentBytes);
 
         // 검증 실패
         if (!result) {

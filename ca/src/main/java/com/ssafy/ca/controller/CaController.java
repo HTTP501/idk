@@ -1,10 +1,8 @@
 package com.ssafy.ca.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ssafy.ca.dto.CreateCIRequestDto;
-import com.ssafy.ca.dto.GetCIRequestDto;
-import com.ssafy.ca.dto.SignRequestDto;
-import com.ssafy.ca.dto.SignVerifyRequestDto;
+import com.ssafy.ca.dto.request.CreateCIRequestDto;
+import com.ssafy.ca.dto.request.SignRequestDto;
+import com.ssafy.ca.dto.request.SignVerifyRequestDto;
 import com.ssafy.ca.global.result.ResultCode;
 import com.ssafy.ca.global.result.ResultResponse;
 import com.ssafy.ca.service.CaService;
