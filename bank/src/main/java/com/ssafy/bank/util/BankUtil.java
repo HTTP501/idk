@@ -6,6 +6,7 @@ import com.ssafy.bank.entity.Member;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class BankUtil {
@@ -36,55 +37,50 @@ public class BankUtil {
 
     // 잔고를 랜덤 생성하는 메서드
     public static Long generateBalance() {
-        Random random = new Random();
-        Long balance = random.nextLong(10000000L);
-        return balance;
+        double balance = Math.random() * 100000000L;
+        return (long )balance;
     }
 
     // 자동 이체 금액을 랜덤 생성하는 메서드
     public static Long generateAutoTransferAmount() {
-        Random random = new Random();
-        Long amount = random.nextLong(1000000L);
-        return amount;
+        double amount = Math.random() * 100000000L;
+
+        return (long) amount;
     }
 
     // 자동 이체 일정일을 랜덤 생성하는 메서드
     public static int generateAutoTransferScheduledDate() {
-        Random random = new Random();
         int minDay = 1;
         int maxDay = 28;
-        return random.nextInt(maxDay - minDay + 1) + minDay;
+        return ThreadLocalRandom.current().nextInt(minDay, maxDay + 1);
     }
 
     // 회원의 계좌 중 랜덤하게 하나 선택하는 메서드
     public static Account selectRandomAccount(List<Account> accounts) {
-        Random random = new Random();
-        return accounts.get(random.nextInt(accounts.size()));
+        return accounts.get(ThreadLocalRandom.current().nextInt(accounts.size()));
     }
 
     // 임의의 은행을 선택하는 메서드
     public static Bank selectRandomBank(List<Bank> banks) {
-        Random random = new Random();
-        return banks.get(random.nextInt(banks.size()));
+        return banks.get(ThreadLocalRandom.current().nextInt(banks.size()));
     }
 
     // 선택된 은행에 속하는 임의의 계좌를 선택하는 메서드
     public static Account selectRandomAccountInBank(Member member, List<Account> accounts) {
 
         // 선택된 은행에 속하는 계좌 목록 조회
-        List<Account> nonMemberAccounts = accounts.stream()
+        List<Account> memberAccounts = accounts.stream()
                 .filter(account -> !account.getBank().equals(member))
                 .collect(Collectors.toList());
 
         // nonMemberAccounts가 비어 있는지 확인
-        if (nonMemberAccounts.isEmpty()) {
+        if (memberAccounts.isEmpty()) {
             // 비어 있다면 예외 처리하거나 다른 방법으로 처리할 수 있음
             // 여기서는 null을 반환하도록 함
             return null;
         }
 
         // 랜덤하게 계좌 선택
-        Random random = new Random();
-        return nonMemberAccounts.get(random.nextInt(nonMemberAccounts.size()));
+        return selectRandomAccount(memberAccounts);
     }
 }
