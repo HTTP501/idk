@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo/app_icon.png",
+        "foregroundImage": "./assets/logo/favicon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.yunyebeen.idk"

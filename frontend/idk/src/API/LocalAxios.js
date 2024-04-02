@@ -6,7 +6,7 @@ import { navigate } from "../navigations/AppNavigation";
 // 내가 적은것
 export default function localAxios() {
   const instance = axios.create({
-    baseURL: "http://j10a501.p.ssafy.io:8081/api",
+    baseURL: "https://j10a501.p.ssafy.io/api",
     headers: {
       tmp: "application/json",
     },
