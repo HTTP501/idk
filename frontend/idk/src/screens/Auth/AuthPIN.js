@@ -59,7 +59,8 @@ const AuthPIN = ({ navigation }) => {
         err => {
           console.log(err.response);
           if (err.response.data.code === 'M402') {
-            Alert.alert('존재하지 않는 회원입니다.','',[{text:'확인'}])
+            AsyncStorage.clear();
+            Alert.alert('존재하지 않는 회원입니다.','',[{text:'확인', onPress:() => navigation.reset({routes: [{name:'MainApp'}]})}])
           }
         }
       )
@@ -108,7 +109,8 @@ const AuthPIN = ({ navigation }) => {
       },
       err => {
         if (err.response.data.code === 'M402') {
-          Alert.alert('존재하지 않는 회원입니다.','',[{text:'확인'}])
+          AsyncStorage.clear();
+          Alert.alert('존재하지 않는 회원입니다.','',[{text:'확인', onPress:() => navigation.reset({routes: [{name:'MainApp'}]})}])
         } else if (err.response.data.code === 'M403') {
           Alert.alert('유효하지 않은 비밀번호입니다.','',[{text:'확인'}])
         }

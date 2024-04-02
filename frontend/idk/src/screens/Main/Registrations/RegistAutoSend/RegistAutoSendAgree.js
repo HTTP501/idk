@@ -11,9 +11,11 @@ import theme from "../../../../style";
 import { useNavigation } from "@react-navigation/native";
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
-const RegistAutoSendAgree = ({ navigation }) => {
+const RegistAutoSendAgree = ({ navigation, route }) => {
   let [agreeBetweenAccounts, setAgreeBetweenAccounts] = useState(false);
   let [agreeAnotherBank, setAgreeAnotherBank] = useState(false);
+  const myDataInfo = route.params
+  console.log(myDataInfo);
 
   // 모든 체크박스가 선택되었는지 확인하는 함수
 
@@ -81,7 +83,7 @@ const RegistAutoSendAgree = ({ navigation }) => {
           styles.button,
           { opacity: allCheckboxesChecked() ? 1 : 0.5 }, // 모든 체크박스가 선택되었을 때만 활성화
         ]}
-        onPress={() => navigation.navigate("RegistAutoSendContent")}
+        onPress={() => navigation.navigate("RegistAutoSendContent", {myDataInfo})}
         disabled={!allCheckboxesChecked()} // 모든 체크박스가 선택되지 않은 경우 버튼 비활성화
       >
         <Text className="text-white text-lg font-bold">다음</Text>

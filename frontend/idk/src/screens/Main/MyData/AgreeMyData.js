@@ -3,6 +3,7 @@ import Checkbox from 'expo-checkbox';
 import { useState } from 'react';
 import theme from '../../../style'
 import { useNavigation } from '@react-navigation/native';
+import { agreeMyDataAxios } from '../../../API/MyData'
 
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window')
@@ -31,6 +32,19 @@ const AgreeMyData = ({navigation}) => {
       isCheckedRights
     );
   };
+
+  // 마이테이터 인증 약관 동의 Axios
+  const handleAgreeMyData = () => {
+    agreeMyDataAxios(
+      res => {
+        // console.log(res);
+        navigation.navigate('LinkMyData')
+      },
+      err => {
+        // console.log(err);
+      }
+    )
+  }
 
 
   return(
@@ -65,7 +79,7 @@ const AgreeMyData = ({navigation}) => {
         <TouchableOpacity
           style={[styles.button, { opacity: isAllChecked() ? 1 : 0.5 }]}
           disabled={!isAllChecked()}
-          onPress={() => navigation.navigate('LinkMyData')}>
+          onPress={handleAgreeMyData}>
           <Text className="text-white text-lg">다음</Text>
         </TouchableOpacity>
       </ScrollView>
