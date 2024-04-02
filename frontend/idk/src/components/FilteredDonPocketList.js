@@ -8,12 +8,17 @@ import formattedNumber from "./moneyFormatter";
 import theme from "../style";
 
 // 돈포켓 리스트
-const FilteredDonPocketList = function ({ navigation, filteredPocketData, fetchData }) {
+const FilteredDonPocketList = function ({
+  navigation,
+  filteredPocketData,
+  fetchData,
+}) {
+  console.log(filteredPocketData);
   // 필터된 돈포켓 데이터
   const data = filteredPocketData;
   const RenderItem = ({ data }) => {
     const pocketId = data.pocketId;
-    const pocketType = data.pocketType
+    const pocketType = data.pocketType;
     return (
       <TouchableOpacity
         onPress={() => {
@@ -22,7 +27,12 @@ const FilteredDonPocketList = function ({ navigation, filteredPocketData, fetchD
         activeOpacity={1}
         style={[styles.donpocketlist]}
       >
-        <DonPocket item={data} isActive={null} isFiltered={true} fetchData={fetchData}/>
+        <DonPocket
+          item={data}
+          isActive={null}
+          isFiltered={true}
+          fetchData={fetchData}
+        />
       </TouchableOpacity>
     );
   };
@@ -31,7 +41,11 @@ const FilteredDonPocketList = function ({ navigation, filteredPocketData, fetchD
     return (
       <View>
         {data.map((item) => (
-          <RenderItem key={item.pocketId} data={item} keyExtractor={(item) => item.pocketId} />
+          <RenderItem
+            key={item.pocketId}
+            data={item}
+            keyExtractor={(item) => item.pocketId}
+          />
         ))}
       </View>
     );

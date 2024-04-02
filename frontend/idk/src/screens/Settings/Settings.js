@@ -82,7 +82,6 @@ const Settings = ({ navigation, route }) => {
   const deleteAccount = (res) => {
     deleteAccountAxios(
       (response) => {
-        console.log(response.data.message);
         Alert.alert("계좌가 해지되었습니다.", "", [
           {
             text: "확인",
@@ -93,7 +92,6 @@ const Settings = ({ navigation, route }) => {
         ]);
       },
       (err) => {
-        console.log(err);
       }
     );
   };
@@ -124,7 +122,7 @@ const Settings = ({ navigation, route }) => {
         }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="mb-5 self-start">
+        <View className="my-5 self-start">
           <Text className="text-3xl font-bold">계좌 관리</Text>
         </View>
         <TouchableOpacity

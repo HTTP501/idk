@@ -90,6 +90,7 @@ const SettingTargetSaving = ({ navigation, route }) => {
     changeDonPocketActivateAxios(
       pocketId,
       res => {
+        setIsActivated(previousState => !previousState)
       },
       err => {
         if (err.response.data.code === 'C401') {
@@ -99,7 +100,6 @@ const SettingTargetSaving = ({ navigation, route }) => {
         }
       }
     )
-    setIsActivated(previousState => !previousState)
   }
 
   

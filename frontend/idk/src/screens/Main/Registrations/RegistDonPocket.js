@@ -83,13 +83,23 @@ const RegistDonPocket = ({ navigation, route }) => {
     // 자동이체 Axios
     getAutoTransferAxios(
       JSON.parse(a).accountId,
-      (res) => {
-        console.log(res);
-        setAutoTransferList(res.data.data.arrayAutoTransfer);
+
+      res => {
+        setAutoTransferList(res.data.data.arrayAutoTransfer)
       },
-      (err) => {
-        console.log(err);
-        console.log(err.response);
+      err => {
+        if (err.response.data.code === 'C401') {
+          Alert.alert(
+            err.response.data.message,
+            "계좌 페이지로 이동합니다.",
+            [
+              {
+                text: "확인",
+                onPress: () => navigation.navigate("Main"),
+              },
+            ]
+          )
+        } 
       }
     );
   };
@@ -150,14 +160,39 @@ const Pocket = function ({ getAccountId, dataType, myDataItemId, navigation ,rou
     // 자동이체 Axios
     if (dataType === "자동이체") {
       joinDonPocketAutoTransferAxios(
-        { autoTransferId: myDataItemId.autoTransferId },
-        (res) => {
-          console.log(res);
+
+        {autoTransferId: myDataItemId.autoTransferId},
+        res => {
           setPocketShowModal(true);
           getAccountId();
         },
-        (err) => {
-          console.log(err);
+
+        err => {
+          if (err.response.data.code === 'C401') {
+            Alert.alert(
+              err.response.data.message,
+              "계좌 페이지로 이동합니다.",
+              [
+                {
+                  text: "확인",
+                  onPress: () => navigation.navigate("Main"),
+                },
+              ]
+            )
+          } else if (err.response.data.code === 'P402') {
+            Alert.alert(
+              err.response.data.message,
+              "계좌 페이지로 이동합니다.",
+              [
+                {
+                  text: "확인",
+                  onPress: () => navigation.navigate("Main"),
+                },
+              ]
+            )
+          }
+          
+
         }
       );
     } else {

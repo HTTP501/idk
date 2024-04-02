@@ -19,7 +19,7 @@ const FinishEnterPIN = ({ route, navigation }) => {
   }, []);
 
   const receiveData = route.params
-  console.log(receiveData);
+  // console.log(receiveData);
 
   const checkBiometricAvailability = async () => {
     const available = await LocalAuthentication.hasHardwareAsync();
@@ -37,7 +37,7 @@ const FinishEnterPIN = ({ route, navigation }) => {
 
     if (result.success) {
       // 인증 성공
-      console.log('Authentication successful');
+      // console.log('Authentication successful');
       setShowModal(false)
       // 지문 O로 회원가입 요청
       await signupAxios(
@@ -60,7 +60,7 @@ const FinishEnterPIN = ({ route, navigation }) => {
       )
     } else {
       // 인증 실패 또는 취소
-      console.log('Authentication failed or canceled');
+      // console.log('Authentication failed or canceled');
       setShowModal(false)
     }
   };

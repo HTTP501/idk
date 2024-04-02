@@ -31,7 +31,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { getAccountAxios } from "../../API/Account";
 import { getPocketAxios } from "../../API/DonPocket";
 import { getPiggyBankAxios } from "../../API/Saving";
-import { getPocketListAxios } from '../../API/DonPocket'
+import { getPocketListAxios } from "../../API/DonPocket";
 import FilteredDonPocketList from "../../components/FilteredDonPocketList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PiggyBank from "../../components/PiggyBankItem";
@@ -43,6 +43,10 @@ import { changeDonPocketOrderAxios } from "../../API/DonPocket";
 const Main = gestureHandlerRootHOC(({ navigation }) => {
   const ACCOUNT_KEY = "@account";
   let [loading, setLoading] = useState(false);
+  // 필터링 된 데이터
+  const [savingPocketData, setSavingPocketData] = useState(null);
+  const [autoTransferPocketData, setAutoTransferPocketData] = useState(null);
+  const [autoDebitPocketData, setAutoDebitPocketData] = useState(null);
   // 저금통 데이터
   const [piggyBankData, setPiggyBankData] = useState(null);
 
@@ -55,21 +59,35 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
         // 스토리지에 계좌정보만 저장해주기
         const data = JSON.stringify({
           accountNumber: res.data.data.accountNumber,
-          accountId: res.data.data.accountId
+          accountId: res.data.data.accountId,
         });
-        AsyncStorage.setItem(ACCOUNT_KEY, data)
+        AsyncStorage.setItem(ACCOUNT_KEY, data);
         // 돈포켓 조회 Axios
         getPocketListAxios(
-          res => {
-            // console.log('돈포켓 데이터',res?.data?.data?.arrayPocket)
-            setPocketData(res.data.data.arrayPocket)
+
+          (res) => {
+            setPocketData(res.data.data.arrayPocket);
+            setSavingPocketData(
+              res.data.data.arrayPocket.filter(
+                (item) => item.pocketType === "목표저축"
+              )
+            );
+            setAutoTransferPocketData(
+              res.data.data.arrayPocket.filter(
+                (item) => item.pocketType === "자동이체"
+              )
+            );
+            setAutoDebitPocketData(
+              res.data.data.arrayPocket.filter(
+                (item) => item.pocketType === "자동결제"
+              )
+            );
           },
-          err => {
-            console.log("돈포켓 에러",err.config)
-          }
-        )
+          (err) => {}
+        );
+
         setAccount(res.data.data);
-        },
+      },
       (err) => {
         // 계좌 번호가 있는지 판단해서 없으면 계좌 생성페이지로 이동
         if (err.response.data.code === "A401") {
@@ -88,20 +106,19 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     );
     // 저금통 조회 Axios
     await getPiggyBankAxios(
-      res => {
-        setPiggyBankData(res.data.data)
+      (res) => {
+        setPiggyBankData(res.data.data);
       },
-      err => {
-        setPiggyBankData(null)
+      (err) => {
+        setPiggyBankData(null);
       }
-    )
-  }
-
+    );
+  };
 
   // 화면 포커싱 시 데이터 다시 가져오기
   useFocusEffect(
     React.useCallback(() => {
-      setLoading(false)
+      setLoading(false);
       fetchData();
       setTimeout(() => {
         setLoading(true);
@@ -110,23 +127,22 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   );
 
   // 계좌 데이터 - 더미
-  const [account, setAccount] = useState({"accountAvailableAmount": 0, "accountBalance": 0, "accountId": 4, "accountMinAmount": 0, "accountName": "IDK 우리나라 국민우대통장", "accountNumber": "1234567891010", "accountPayDate": 1});
+  const [account, setAccount] = useState({
+    accountAvailableAmount: 0,
+    accountBalance: 0,
+    accountId: 4,
+    accountMinAmount: 0,
+    accountName: "IDK 우리나라 국민우대통장",
+    accountNumber: "1234567891010",
+    accountPayDate: 1,
+  });
   // 돈포켓 데이터
   const [pocketData, setPocketData] = useState([]);
 
   let [pocketType, setPocketType] = useState("total");
 
-  // 필터링 된 데이터
-  let [savingPocketData, setSavingPocketData] = useState(
-    pocketData.filter((item) => item.pocketType === "목표저축")
-  );
-  let [autoTransferPocketData, setAutoTransferPocketData] = useState(
-    pocketData.filter((item) => item.pocketType === "자동이체")
-  );
-  let [autoDebitPocketData, setAutoDebitPocketData] = useState(
-    pocketData.filter((item) => item.pocketType === "자동결제")
-  );
   // 포켓 순서 바꾸기
+
   const changePocketOrder = async function(data){
     setPocketData(data)
     let orderedId = []
@@ -142,11 +158,12 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     }
     )
   }
+
   // 돈포켓 총 금액
   const totalPocket = pocketData.reduce((acc, curr) => acc + curr.balance, 0);
   // + 버튼 눌렸는지 판단
   let [isButtenOpen, setisButtenOpen] = useState(false);
-
+  console.log(savingPocketData);
   return (
     <View className="flex-1">
       {/* 로딩이 끝나야 보여줌 */}
@@ -157,7 +174,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
             <View style={styles.back}></View>
             {/* 로고 알람 */}
             <View className="px-10 mt-10 mb-2">
-              <Header navigation={navigation}/>
+              <Header navigation={navigation} />
             </View>
 
             {/* 계좌 */}
@@ -181,19 +198,21 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
                   changePocketOrder={(data) => changePocketOrder(data)}
                   fetchData={fetchData}
                 />
-                {piggyBankData 
-                  ? <PiggyBank piggyBankData={piggyBankData} navigation={navigation}/>
-                  : null
-                }
+                {piggyBankData ? (
+                  <PiggyBank
+                    piggyBankData={piggyBankData}
+                    navigation={navigation}
+                  />
+                ) : null}
               </View>
-            ) : pocketType === "목표저축" ? (
+            ) : pocketType === "saving" ? (
               // 저축 돈포켓
               <FilteredDonPocketList
                 navigation={navigation}
                 filteredPocketData={savingPocketData}
                 fetchData={fetchData}
               />
-            ) : pocketType === "자동이체" ? (
+            ) : pocketType === "autoTransfer" ? (
               // 자동이체 돈포켓
               <FilteredDonPocketList
                 navigation={navigation}
@@ -276,7 +295,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   );
 });
 // 헤더
-const Header = ({navigation}) => {
+const Header = ({ navigation }) => {
   const logo = require("../../../assets/logo/white_idk_bank_logo.png");
   return (
     <View className="flex-row justify-between items-center">
@@ -393,10 +412,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: "center",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     alignItems: "center",
     padding: 12,
-    paddingHorizontal:20
+    paddingHorizontal: 20,
   },
   text: {
     fontSize: 28,

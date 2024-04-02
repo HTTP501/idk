@@ -30,8 +30,10 @@ const ChangeSalaryDay = ({ navigation }) => {
         navigation.navigate('Settings')
       }, 
       err => {
-        if (err.response.data.code === 400) {
-          Alert.alert('변경 요청한 월급일이 등록한 월급일과 같습니다.', `${day} 일`,[{text:'확인'}])
+        if (err.response.data.code === 'M402') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'A409') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])  
         }
       }
     )
@@ -51,7 +53,6 @@ const ChangeSalaryDay = ({ navigation }) => {
           <Text className="text-lg" style={{ marginRight: SCREEN_WIDTH * (1 / 10)}}>월급일 이후 돈포켓에 입금되지 않았을 때 한 눈에 확인할 수 있도록 화면을 제공해요!</Text>
           <Text className="text-lg" style={{ marginRight: SCREEN_WIDTH * (1 / 10)}}>실제 월급일에 영향을 주지는 않아요!</Text>
         </View>
-        <Text className="text-xl font-bold mb-5" style={{ marginLeft: SCREEN_WIDTH * (1 / 10) }}>월급일</Text>
         <View style={{marginBottom: 100}}>
           <View style={styles.input}>
             <Text className='text-lg font-bold'>매월 </Text>

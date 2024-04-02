@@ -41,6 +41,7 @@
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-dynamically-selected-picker": "^3.3.0",
     "react-native-element-dropdown": "^2.10.2",
+    "react-native-event-source": "^1.1.0",
     "react-native-gesture-handler": "~2.14.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-linear-gradient": "^2.8.3",
