@@ -104,10 +104,6 @@ public enum ResultCode {
     // TRANSACTION
     TRANSACTION_ATM_DEPOSIT_SUCCESS(201, "TR001", "ATM으로 입금했습니다"),
     TRANSACTION_ATM_WITHDRAW_SUCCESS(201, "TR002", "ATM으로 출금했습니다"),
-
-    // FCM
-    FCM_SAVE_SUCCESS(201, "F001", "FCM 토큰을 저장했습니다"),
-    FCM_DELETE_SUCCESS(201, "F002", "FCM 토큰을 삭제했습니다")
     ;
 
     private final int status;
