@@ -36,7 +36,7 @@ public class TimeUtil {
         sseEmitterService.shareSystemTime(sseDateDto);
 
         // 돈포켓 테스트
-        sseEmitterService.updatePocketStatement(1L);
+        sseEmitterService.updatePocketStatement(2L);
 
         // 자동이체
 //        autoTransferService.autoTransfer(systemDay);
