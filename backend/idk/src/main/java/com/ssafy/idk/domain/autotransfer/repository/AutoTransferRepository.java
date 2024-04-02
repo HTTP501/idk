@@ -12,4 +12,6 @@ import java.util.Optional;
 public interface AutoTransferRepository extends JpaRepository<AutoTransfer, Long> {
 
     List<AutoTransfer> findByAccount(Account account);
+
+    List<AutoTransfer> findByDate(Integer systemDay);
 }
