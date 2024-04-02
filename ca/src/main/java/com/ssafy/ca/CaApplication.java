@@ -16,5 +16,4 @@ public class CaApplication {
 //		Security.addProvider(new BouncyCastleProvider());
 		SpringApplication.run(CaApplication.class, args);
 	}
-
 }
