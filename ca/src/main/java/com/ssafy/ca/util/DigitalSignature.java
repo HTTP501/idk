@@ -19,12 +19,9 @@ import org.bouncycastle.util.Store;
 import org.bouncycastle.asn1.cms.Attribute;
 
 import java.io.File;
-import java.io.OutputStream;
-import com.ssafy.ca.exception.CaException;
-import com.ssafy.ca.global.error.ErrorCode;
-import org.springframework.core.io.ClassPathResource;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
