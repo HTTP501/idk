@@ -3,8 +3,9 @@ package com.ssafy.idk.global.util;
 import com.ssafy.idk.domain.autotransfer.service.AutoTransferService;
 import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.domain.salary.service.SalaryService;
-import com.ssafy.idk.global.stream.dto.SseDateDto;
-import com.ssafy.idk.global.stream.service.SseEmitterService;
+//import com.ssafy.idk.global.stream.dto.SseDateDto;
+//import com.ssafy.idk.global.stream.service.SseEmitterService;
+import com.ssafy.idk.global.stream.controller.SSEController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,19 +25,18 @@ public class TimeUtil {
     private final SalaryService salaryService;
     private final PocketService pocketService;
     private final AutoTransferService autoTransferService;
-    private final SseEmitterService sseEmitterService;
+    private final SSEController sseController;
 
-//    @Scheduled(fixedRate = 5000)
-//    public void oneDayCycle() {
-//        // 날짜 변경
-//        updateDate();
-//
-//        // 날짜 스트리밍
-//        SseDateDto sseDateDto = new SseDateDto(systemDate);
-//        sseEmitterService.shareSystemTime(sseDateDto);
-//
-//        // 돈포켓 테스트
-//        sseEmitterService.updatePocketStatement(3L);
+    @Scheduled(fixedRate = 5000)
+    public void oneDayCycle() {
+        // 날짜 변경
+        updateDate();
+
+        // 날짜 스트리밍
+        sseController.sendUpdatedDate(systemDate);
+
+        // 돈포켓 테스트
+//        sseEmitterService.updatePocketStatement(5L);
 //
 //        // 자동이체
 ////        autoTransferService.autoTransfer(systemDay);
@@ -53,7 +53,7 @@ public class TimeUtil {
 ////        if (systemDay == 1) {
 ////            // 통계 함수 사용
 ////        }
-//    }
+    }
 
     public void updateDate() {
         updateDay();
