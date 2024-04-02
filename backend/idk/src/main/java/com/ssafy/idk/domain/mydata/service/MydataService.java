@@ -183,7 +183,18 @@ public class MydataService {
             }
 
             // Asset 엔티티에서 isLinked 값을 가져옴
-            Boolean isLinked = getIsLinkedValueFromAsset(account, autoTransferInfoDto.getAccountNumber(), orgName);
+//            Boolean isLinked = getIsLinkedValueFromAsset(account, autoTransferInfoDto.getAccountNumber(), orgName);
+
+            //
+            Boolean isLinked = false;
+            List<AutoTransfer> autoTransfers = autoTransferRepository.findByAccount(account);
+            for (AutoTransfer autoTransfer : autoTransfers) {
+
+                if (isLinkedAutoTransfer(autoTransferInfoDto, autoTransfer)) {
+                    isLinked = true;
+                    break;
+                }
+            }
 
             // AssetDto를 생성하고 MydataAssetDto의 assetInfo 목록에 추가
             MydataAssetDto.AssetDto assetDto = MydataAssetDto.AssetDto.of(
