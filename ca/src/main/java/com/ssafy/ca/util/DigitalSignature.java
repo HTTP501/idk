@@ -44,11 +44,13 @@ public class DigitalSignature {
     public static byte[] signData(byte[] data) {
 
         try {
-            // String privateKeyPath = "ca/src/main/resources/certs/ca_private.key";
+            String privateKeyPath = "src/main/resources/certs/ca_private.key";
             URL resourceUrl  = DigitalSignature.class.getClassLoader().getResource("certs/ca_private.key");
             File privateKeyFile = new File(resourceUrl.toURI());
-            String privateKeyPath = privateKeyFile.getAbsolutePath();
-
+            String privateKeyPath2 = privateKeyFile.getAbsolutePath();
+            LOGGER.severe("상대경로 : " + privateKeyPath);
+            LOGGER.severe("절대경로로 : " + privateKeyPath2);
+            
             // 파일 존재 여부 확인
             if (!Files.exists(Paths.get(privateKeyPath))) {
                 LOGGER.severe("개인 키 파일이 존재하지 않습니다: " + privateKeyPath);
