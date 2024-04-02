@@ -102,6 +102,9 @@ public class TargetSavingService {
         if (member != account.getMember())
             throw new TargetSavingException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
+        // 돈 포켓 재정렬
+        pocketService.reOrderArrayPocket(member, targetSaving.getPocket());
+
         // 목표저축 납입액 계좌로 이동
         Long amount = targetSaving.getCount() * targetSaving.getMonthlyAmount();
         targetSavingRepository.deleteById(targetSavingId);
@@ -119,9 +122,6 @@ public class TargetSavingService {
                 .account(account)
                 .build();
         transactionRepository.save(transaction);
-
-        // 돈 포켓 재정렬
-        pocketService.reOrderArrayPocket(member);
 
         return TargetSavingDeleteResponseDto.of(account.getBalance());
     }
