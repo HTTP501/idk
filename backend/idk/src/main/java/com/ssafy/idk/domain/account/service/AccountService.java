@@ -15,6 +15,7 @@ import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
+import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.global.error.ErrorCode;
 import com.ssafy.idk.global.util.PasswordEncryptUtil;
 import com.ssafy.idk.global.util.RSAUtil;
@@ -40,6 +41,7 @@ public class AccountService {
     private final RSAKeyService rsaKeyService;
     private final TransactionService transactionService;
     private final AuthenticationService authenticationService;
+    private final PocketService pocketService;
 
     @Transactional
     public AccountCreateResponseDto createAccount(AccountCreateRequestDto requestDto) {
@@ -305,6 +307,13 @@ public class AccountService {
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         account.deposit(amount);
+        Account savedAccount = accountRepository.save(account);
+
+        // 돈 포켓 출금
+        if (savedAccount.getMinAmount() < savedAccount.getBalance()) {
+            pocketService.pocketAutoDeposit(member, savedAccount);
+        }
+
         return account;
     }
 }

@@ -1,6 +1,7 @@
 package com.ssafy.idk.domain.autodebit.controller;
 
 import com.ssafy.idk.domain.autodebit.dto.request.AutoDebitCreateRequestDto;
+import com.ssafy.idk.domain.autodebit.dto.request.AutoDebitPaymentRequestDto;
 import com.ssafy.idk.domain.autodebit.service.AutoDebitService;
 import com.ssafy.idk.domain.autotransfer.dto.request.AutoTransferCreateRequestDto;
 import com.ssafy.idk.global.result.ResultCode;
@@ -42,5 +43,11 @@ public class AutoDebitController {
     @GetMapping("/list/{accountId}")
     public ResponseEntity<ResultResponse> getArrayAutoDebit(@PathVariable(name = "accountId") Long accountId) {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_DEBIT_LIST_GET_SUCCESS, autoDebitService.getArrayAutoDebit(accountId)));
+    }
+
+    @Operation(summary = "자동결제 청구")
+    @PatchMapping("/payment")
+    public ResponseEntity<ResultResponse> paymentAutoDebit(@RequestBody AutoDebitPaymentRequestDto requestDto) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.AUTO_DEBIT_PAYMENT_SUCCESS, autoDebitService.paymentAutoDebit(requestDto)));
     }
 }
