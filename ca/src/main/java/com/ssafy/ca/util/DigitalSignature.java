@@ -44,7 +44,7 @@ public class DigitalSignature {
     public static byte[] signData(byte[] data) {
 
         try {
-            String privateKeyPath = "src/main/resources/certs/ca_private.key";
+            String privateKeyPath = "./src/main/resources/certs/ca_private.key";
 
             // 파일 존재 여부 확인
             if (!Files.exists(Paths.get(privateKeyPath))) {
@@ -90,7 +90,7 @@ public class DigitalSignature {
     public static boolean verifySignature(byte[] data, byte[] signature) {
 
         try {
-            String certificatePath = "src/main/resources/certs/ca_certificate.pem";
+            String certificatePath = "./src/main/resources/certs/ca_certificate.pem";
 
             // 파일 존재 여부 확인
             if (!Files.exists(Paths.get(certificatePath))) {
