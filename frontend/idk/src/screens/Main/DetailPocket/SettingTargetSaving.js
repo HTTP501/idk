@@ -73,6 +73,7 @@ const SettingTargetSaving = ({ navigation, route }) => {
         Alert.alert('해지가 완료되었습니다.', '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
       },
       err => {
+        console.log(err)
         if (err.response.data.code === 'C401') {
           Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
         } else if (err.response.data.code === 'P404') {
