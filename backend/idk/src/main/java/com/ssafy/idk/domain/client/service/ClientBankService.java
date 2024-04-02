@@ -3,6 +3,7 @@ package com.ssafy.idk.domain.client.service;
 import com.ssafy.idk.domain.client.dto.request.AutoTransferInfoRequestToBankDto;
 import com.ssafy.idk.domain.client.dto.request.CertifyRequestToBankDto;
 import com.ssafy.idk.domain.client.dto.request.SignupRequestDto;
+import com.ssafy.idk.domain.client.dto.response.AccountInfoResponseDto;
 import com.ssafy.idk.domain.client.dto.response.AutoTransferInfoDto;
 import com.ssafy.idk.domain.client.dto.response.AutoTransferInfoResponseFromBankDto;
 import com.ssafy.idk.domain.client.dto.response.CertifyResponseFromBankDto;
@@ -98,10 +99,36 @@ public class ClientBankService {
         return Objects.requireNonNull(responseEntity.getBody()).getData().getAutoTransferList();
     }
 
-
     // 계좌 목록 조회
 
-    // 단일 계좌 상세 정보 (계좌번호, 잔고, 이름, 은행)
+    // 계좌 명의 조회(은행 이름, 계좌번호)
+    public String getaccountInfo(String orgName, String accountNumber) {
+
+        String bankGetAccountInfoApiUrl = bankUrl.concat("/api/bank/account");
+
+        String urlTemplate = UriComponentsBuilder.fromHttpUrl(bankGetAccountInfoApiUrl)
+                .queryParam("orgName", "{orgName}")
+                .queryParam("accountNumber", "{accountNumber}")
+                .encode()
+                .toUriString();
+
+        HttpHeaders headers = new HttpHeaders();
+        MediaType mediaType = new MediaType("application", "json", StandardCharsets.UTF_8);
+        headers.setContentType(mediaType);
+
+        HttpEntity<?> request = new HttpEntity<>(headers);
+
+        Map<String, String> param = new HashMap<>();
+        param.put("orgName", orgName);
+        param.put("accountNumber", accountNumber);
+
+        ResponseEntity<AccountInfoResponseDto> responseEntity = restTemplate.exchange(urlTemplate, HttpMethod.GET, request, AccountInfoResponseDto.class, param);
+
+        AccountInfoResponseDto accountInfoResponseDto = responseEntity.getBody();
+
+        assert accountInfoResponseDto != null;
+        return accountInfoResponseDto.getData().getAccountNumber();
+    }
 
     // 고객의 자동이체(상세정보 포함) 목록 조회
 
