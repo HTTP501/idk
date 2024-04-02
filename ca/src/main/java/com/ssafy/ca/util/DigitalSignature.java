@@ -45,11 +45,11 @@ public class DigitalSignature {
 
         try {
             String privateKeyPath = "src/main/resources/certs/ca_private.key";
-            URL resourceUrl  = DigitalSignature.class.getClassLoader().getResource("certs/ca_private.key");
-            File privateKeyFile = new File(resourceUrl.toURI());
-            String privateKeyPath2 = privateKeyFile.getAbsolutePath();
+            // URL resourceUrl  = DigitalSignature.class.getClassLoader().getResource("certs/ca_private.key");
+            // File privateKeyFile = new File(resourceUrl.toURI());
+            // String privateKeyPath2 = privateKeyFile.getAbsolutePath();
             LOGGER.severe("상대경로 : " + privateKeyPath);
-            LOGGER.severe("절대경로로 : " + privateKeyPath2);
+            // LOGGER.severe("절대경로로 : " + privateKeyPath2);
             
             // 파일 존재 여부 확인
             if (!Files.exists(Paths.get(privateKeyPath))) {
