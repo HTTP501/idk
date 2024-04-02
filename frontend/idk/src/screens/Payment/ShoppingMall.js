@@ -19,6 +19,10 @@ import {
   callProductsDataAxios,
   callProductsDetailDataAxios,
 } from "../../API/ShoppingMallData.js";
+import EventSource from "react-native-sse";
+import RNEventSource from "react-native-event-source";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { local } from "d3";
 
 const ShoppingMall = ({ navigation }) => {
   // 기믹에 이용될 상태들 선언
@@ -36,52 +40,136 @@ const ShoppingMall = ({ navigation }) => {
   const [isPushBtn, setIsPushBtn] = useState(false);
   const [nowData, setNowData] = useState(null);
   const [wantGoGoal, setWantGoGoal] = useState(false);
+  const [myAccessToken, setMyAccessToken] = useState(null);
 
   // 화면 사이즈 찾기
   const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
-  const menuWidth = windowWidth * 0.4;
-  const menuHeight = windowHeight * 0.3;
-  const imgSize = menuWidth * 0.8;
+  const menuWidth = windowWidth * 0.35;
+  const menuHeight = windowHeight * 0.25;
+  const imgSize = menuWidth * 0.7;
   const modalHeight = windowHeight * 0.35;
+
+  // useEffect(() => {
+  //   const callAccess = async () => {
+  //     const myAccess = await AsyncStorage.getItem("@auth");
+  //     setMyAccessToken(myAccess);
+  //   };
+
+  //   callAccess();
+  // }, []);
+
+  // useEffect(() => {
+  //   if (myAccessToken !== null) {
+  //     console.log(JSON.parse(myAccessToken).accessToken);
+  //     const baseURL = "http://j10a501.p.ssafy.io:8081";
+  //     const baseLocalURL = "http://70.12.247.81:8080/sse/subscribe";
+  //     const localAccessToken =
+  //       "eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInBob25lTnVtYmVyIjoiMTIzNDU2Nzg5MDAiLCJpYXQiOjE3MTIwMzM1NTcsImV4cCI6MTcxMjAzOTU1N30.G_6rMSdlEY0lC3coTOEaN7y6HtLm7DEmFXzIWuchmWo";
+  //     const options = {
+  //       headers: {
+  //         // Authorization: `Bearer ${JSON.parse(myAccessToken).accessToken}`,
+  //         Authorization: `Bearer ${localAccessToken}`,
+  //         "Content-Type": "text/event-stream",
+  //         Connection: "keep-alive",
+  //         "Cache-Control": "no-cache",
+  //       },
+  //     };
+
+  //     const eventSource = new RNEventSource(
+  //       `${baseLocalURL}/sse/subscribe`,
+  //       options
+  //     );
+
+  //     eventSource.addEventListener("pocket", (event) => {
+  //       console.log(event.type); // message
+  //       console.log(event.data);
+  //     });
+  //     eventSource.addEventListener("date", (event) => {
+  //       console.log(event.type); // message
+  //       console.log(event.data);
+  //     });
+  //     eventSource.addEventListener("error", (event) => {
+  //       console.log(event.type); // message
+  //       console.log(event);
+  //     });
+  //     eventSource.addEventListener("message", (data) => {
+  //       console.log(data.type); // message
+  //       console.log(data);
+  //     });
+  //   }
+
+  // }, [myAccessToken]);
+
+  // useEffect(() => {
+  //   const accessToken =
+  //     "eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInBob25lTnVtYmVyIjoiMTIzNDU2Nzg5MDAiLCJpYXQiOjE3MTIwMjY5NzYsImV4cCI6MTcxMjAzMjk3Nn0.m3Msj9ggWDmbmj4hKUef1S-X6YmTXl5pZbLBQMx7u3o";
+  //   const option = {
+  //     method: "GET",
+  //     headers: `Bearer ${accessToken}`,
+  //   };
+
+  //   const myURL = "http://70.12.247.81:8080/sse/subscribe";
+
+  //   const ES = new EventSource(myURL, option);
+
+  //   ES.addEventListener("open", (event) => {
+  //     console.log("연결됨");
+  //   });
+
+  //   ES.addEventListener("pocket", (event) => {
+  //     console.log("New message event:", event.data);
+  //   });
+
+  //   ES.addEventListener("close", (event) => {
+  //     console.log("Close SSE connection");
+  //   });
+
+  //   ES.addEventListener("error", (event) => {
+  //     if (event.type === "error") {
+  //       console.error("Connection error:", event.message);
+  //     } else if (event.type === "exception") {
+  //       console.error("Error:", event.message, event.error);
+  //     }
+  //   });
+  // });
 
   useFocusEffect(
     React.useCallback(() => {
-      setWantGoGoal(false)
-      setIsSelectProduct(false)
-      setIsPushBtn(false)
-      setModalVisiable(false)
-
+      setWantGoGoal(false);
+      setIsSelectProduct(false);
+      setIsPushBtn(false);
+      setModalVisiable(false);
     }, [])
-  )
+  );
 
   // 데이터가 설정되면 로딩 종료
   useEffect(() => {
     if (nowData !== null) {
-      setIsCallDataLoading(false)
+      setIsCallDataLoading(false);
     }
-  }, [nowData])
+  }, [nowData]);
 
   // 카테고리가 바뀌면 바뀐 카테고리로 데이터 요청
   useEffect(() => {
     if (products !== null) {
       const catchData = (response) => {
-        setNowData(response.data.data)
-      }
-  
+        setNowData(response.data.data);
+      };
+
       const fail = (error) => {
         console.log(error);
-      }
-      callProductsDataAxios(matchCategorys[products], catchData, fail)
+      };
+      callProductsDataAxios(matchCategorys[products], catchData, fail);
     }
-
-  }, [products])
+  }, [products]);
 
   // 스타일 선언!
   const ShoppingMallStyles = StyleSheet.create({
     container: {
       flex: 1,
-      paddingHorizontal: 20,
-      backgroundColor: "white"
+      backgroundColor: "white",
+      justifyContent: "center",
+      alignContent: "center",
     },
     toptitle: {
       flex: 0.6,
@@ -91,14 +179,13 @@ const ShoppingMall = ({ navigation }) => {
       flex: 1,
       marginTop: windowHeight * 0.07,
       marginLeft: windowWidth * 0.05,
-      position: "absolute"
+      position: "absolute",
     },
     pageTitle: {
       fontSize: 30,
       marginTop: 10,
       fontWeight: "bold",
       textAlign: "center",
-      
     },
     categorys: {
       flex: 0.8,
@@ -122,7 +209,6 @@ const ShoppingMall = ({ navigation }) => {
     },
     mainContent: {
       flex: 6,
-      paddingHorizontal: 5,
       marginTop: 20,
       paddingBottom: 25,
     },
@@ -173,7 +259,7 @@ const ShoppingMall = ({ navigation }) => {
 
   // 카테고리 종류 배열로 선언
   const productCategorys = ["식품", "전자제품", "뷰티", "의류", "기타"];
-  const matchCategorys = {"식품" : 1, "전자제품": 2, "뷰티": 3, "의류": 4, "기타": 5};
+  const matchCategorys = { 식품: 1, 전자제품: 2, 뷰티: 3, 의류: 4, 기타: 5 };
   //
   const imgMatch = {
     식품: require("../../../assets/categoryIcons/foods.png"),
@@ -191,7 +277,6 @@ const ShoppingMall = ({ navigation }) => {
     category: "임의",
   };
 
-  
   const menuImage = {
     1: require("../../../assets/categoryItems/1.webp"),
     2: require("../../../assets/categoryItems/2.webp"),
@@ -227,7 +312,6 @@ const ShoppingMall = ({ navigation }) => {
 
   // 메뉴 선택 시, 해당 메뉴의 정보를 상태로 가져줄 함수
   const choiceMenu = async (item) => {
-
     const newNum = formattedNumber(item.itemPrice);
     setChoiceName(item.itemName);
     setChoicePrice(item.itemPrice);
@@ -244,12 +328,10 @@ const ShoppingMall = ({ navigation }) => {
     setChoicePrice("없음");
     setChoiceShop("없음");
     setChoiceCommaPrice("없음");
-    setChoiceId(item.itemId)
+    setChoiceId(item.itemId);
 
     setIsSelectAdd(true);
     setIsLoading(false);
-
-
   };
 
   // FlatList에서 각각의 값에 들어갈 컴포넌트 선언
@@ -284,7 +366,7 @@ const ShoppingMall = ({ navigation }) => {
           >
             <Image
               source={menuImage[item.itemId]}
-              style={{ width: imgSize, height: imgSize, alignSelf: "center"}}
+              style={{ width: imgSize, height: imgSize, alignSelf: "center" }}
             />
             <Text
               style={{ ...ShoppingMallStyles.menuText, fontSize: 13 }}
@@ -313,14 +395,14 @@ const ShoppingMall = ({ navigation }) => {
     price: choicePrice,
     shop: choiceShop,
     category: products,
-    isChecked: false
+    isChecked: false,
   };
 
   const item = {
     id: choiceId,
     name: choiceName,
     price: choicePrice,
-  }
+  };
 
   useEffect(() => {
     if (isSelectAdd) {
@@ -337,155 +419,169 @@ const ShoppingMall = ({ navigation }) => {
   useEffect(() => {
     if (wantGoGoal !== false) {
       if (item.name.length > 25) {
-        item.name = item.name.substring(0, 20)
+        item.name = item.name.substring(0, 20);
       }
-      navigation.navigate("RegistGoalSaving", { item })
+      navigation.navigate("RegistGoalSaving", { item });
     }
-  }, [wantGoGoal])
+  }, [wantGoGoal]);
 
   // 코드 시작
   return (
-    <View style={[ShoppingMallStyles.container]}>
-      {isCallDataLoading ? (<Loading/>) : (
-        <React.Fragment>
-          {/* 모달 부분 */}
-          <Modal
-            animationType="fade"
-            transparent={true}
-            visible={ModalVisiable}
-            onRequestClose={() => {
-              setModalVisiable(false);
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => {
+    <View style={{ flex: 1, backgroundColor: "white" }}>
+      <View
+        style={{
+          ...ShoppingMallStyles.container,
+          width: windowWidth * 0.8,
+          alignSelf: "center",
+        }}
+      >
+        {isCallDataLoading ? (
+          <Loading />
+        ) : (
+          <React.Fragment>
+            {/* 모달 부분 */}
+            <Modal
+              animationType="fade"
+              transparent={true}
+              visible={ModalVisiable}
+              onRequestClose={() => {
                 setModalVisiable(false);
               }}
             >
-              <View
-                style={{
-                  ...ShoppingMallStyles.backgroundModal,
-                  position: "absolute",
-                }}
-              ></View>
-            </TouchableOpacity>
-            <View
-              style={{
-                ...ShoppingMallStyles.modalContainer,
-              }}
-            >
-              <Text style={{ ...ShoppingMallStyles.modalFont, fontSize: 23, paddingHorizontal: 20 }}>
-                {choiceShop} {choiceName}
-              </Text>
-              <Text
-                style={{
-                  ...ShoppingMallStyles.modalFont,
-                  color: theme["black"],
-                  marginBottom: 15,
-                  fontSize: 20,
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisiable(false);
                 }}
               >
-                {" "}
-                {choiceCommaPrice}원{" "}
-              </Text>
-              {/* 목표저축으로 가는 버튼 연결하기 */}
-              <View>
-                <TouchableOpacity
+                <View
                   style={{
-                    ...ShoppingMallStyles.moveBtn,
-                    backgroundColor: theme["sky-bright-6"],
-                    borderColor: theme["sky-bright-6"],
+                    ...ShoppingMallStyles.backgroundModal,
+                    position: "absolute",
                   }}
-                  onPress={() => {
-                    setWantGoGoal(true)
+                ></View>
+              </TouchableOpacity>
+              <View
+                style={{
+                  ...ShoppingMallStyles.modalContainer,
+                }}
+              >
+                <Text
+                  style={{
+                    ...ShoppingMallStyles.modalFont,
+                    fontSize: 23,
+                    paddingHorizontal: 20,
                   }}
                 >
-                  <Text style={ShoppingMallStyles.modalFont}>
-                    목표 저축 등록하러 가기
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              {/* 결제화면으로 가는 버튼 */}
-              <View>
-                <TouchableOpacity
+                  {choiceShop} {choiceName}
+                </Text>
+                <Text
                   style={{
-                    ...ShoppingMallStyles.moveBtn,
-                    backgroundColor: theme["sky-bright-2"],
-                    borderColor: theme["sky-bright-2"],
-                  }}
-                  onPress={() => {
-                    setModalVisiable(false);
-                    setIsPushBtn(true);
-                    // navigation.navigate("FinishPayment", { data });
+                    ...ShoppingMallStyles.modalFont,
+                    color: theme["black"],
+                    marginBottom: 15,
+                    fontSize: 20,
                   }}
                 >
-                  <Text style={ShoppingMallStyles.modalFont}>결제하기</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
-          {/* 상단 부분 (뒤로가기, 카테고리 텍스트) */}
-          <View style={{...ShoppingMallStyles.toptitle}}>
-            <Text style={ShoppingMallStyles.pageTitle}>IDK 몰</Text>
-          </View>
-
-          {/* 뒤로가기 버튼 부분 */}
-          {/* <View style={{...ShoppingMallStyles.backBtn}}>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.goBack();
-              }}
-            >
-              <MaterialIcons name="arrow-back-ios-new" size={36} color="black" />
-            </TouchableOpacity>
-            
-          </View> */}
-
-          {/* 카테고리 바 부분 */}
-          <View style={ShoppingMallStyles.categorys}>
-            {productCategorys.map((cate) => (
-              <View key={cate} style={ShoppingMallStyles.eachCategory}>
-                <TouchableOpacity onPress={() => clickCategory(cate)}>
-                  <View
+                  {" "}
+                  {choiceCommaPrice}원{" "}
+                </Text>
+                {/* 목표저축으로 가는 버튼 연결하기 */}
+                <View>
+                  <TouchableOpacity
                     style={{
-                      ...ShoppingMallStyles.selectedCategory,
-                      backgroundColor: products === cate ? "skyblue" : null,
+                      ...ShoppingMallStyles.moveBtn,
+                      backgroundColor: theme["sky-bright-6"],
+                      borderColor: theme["sky-bright-6"],
+                    }}
+                    onPress={() => {
+                      setWantGoGoal(true);
                     }}
                   >
-                    <Image
-                      source={imgMatch[cate]}
-                      style={{ width: 35, height: 35 }}
-                    />
-                  </View>
-                </TouchableOpacity>
-                <Text>{cate}</Text>
+                    <Text style={ShoppingMallStyles.modalFont}>
+                      목표 저축 등록하러 가기
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                {/* 결제화면으로 가는 버튼 */}
+                <View>
+                  <TouchableOpacity
+                    style={{
+                      ...ShoppingMallStyles.moveBtn,
+                      backgroundColor: theme["sky-bright-2"],
+                      borderColor: theme["sky-bright-2"],
+                    }}
+                    onPress={() => {
+                      setModalVisiable(false);
+                      setIsPushBtn(true);
+                      // navigation.navigate("FinishPayment", { data });
+                    }}
+                  >
+                    <Text style={ShoppingMallStyles.modalFont}>결제하기</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            ))}
-          </View>
+            </Modal>
+            {/* 상단 부분 (뒤로가기, 카테고리 텍스트) */}
+            <View style={{ ...ShoppingMallStyles.toptitle }}>
+              <Text style={ShoppingMallStyles.pageTitle}>IDK 몰</Text>
+            </View>
+            {/* 뒤로가기 버튼 부분 */}
+            {/* <View style={{...ShoppingMallStyles.backBtn}}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.goBack();
+                }}
+              >
+                <MaterialIcons name="arrow-back-ios-new" size={36} color="black" />
+              </TouchableOpacity>
+              
+            </View> */}
 
-          {/* 카테고리 별 상품 출력 부분 */}
-          <View style={ShoppingMallStyles.mainContent}>
-            <FlatList
-            showsHorizontalScrollIndicator={false}
-              // 먼저 필수 prop인 data를 보자 무조건 배열로 받아야한다!
-              // 만약 + 구현할거면! 여기에 addPurchase 추가해주자!
-              data={[...nowData]}
-              // 다음 필수 prop인 renderItem이다.
-              renderItem={Things}
-              // 이것도 필수 prop인것 같다. key값을 주는 것인듯!(map을 생각해보자)
-              keyExtractor={(item, index) => index}
-              // 한개의 row에 몇개의 item(배열 안 요소)을 출력할지에 대해 정하는 prop
-              numColumns={2}
-              // numColumns가 있을 때만 사용가능한 props로 열간의 간격, 각 열의 스타일을 설정할 수 있다.
-              columnWrapperStyle={{
-                justifyContent: "space-between",
-                paddingHorizontal: 10,
-                alignItems: "center",
-              }}
-            />
-          </View>
-        </React.Fragment>
-      )}
+            {/* 카테고리 바 부분 */}
+            <View style={ShoppingMallStyles.categorys}>
+              {productCategorys.map((cate) => (
+                <View key={cate} style={ShoppingMallStyles.eachCategory}>
+                  <TouchableOpacity onPress={() => clickCategory(cate)}>
+                    <View
+                      style={{
+                        ...ShoppingMallStyles.selectedCategory,
+                        backgroundColor: products === cate ? "skyblue" : null,
+                      }}
+                    >
+                      <Image
+                        source={imgMatch[cate]}
+                        style={{ width: 35, height: 35 }}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                  <Text>{cate}</Text>
+                </View>
+              ))}
+            </View>
+
+            {/* 카테고리 별 상품 출력 부분 */}
+            <View style={ShoppingMallStyles.mainContent}>
+              <FlatList
+                // 먼저 필수 prop인 data를 보자 무조건 배열로 받아야한다!
+                // 만약 + 구현할거면! 여기에 addPurchase 추가해주자!
+                data={[...nowData]}
+                // 다음 필수 prop인 renderItem이다.
+                renderItem={Things}
+                // 이것도 필수 prop인것 같다. key값을 주는 것인듯!(map을 생각해보자)
+                keyExtractor={(item, index) => index}
+                // 한개의 row에 몇개의 item(배열 안 요소)을 출력할지에 대해 정하는 prop
+                numColumns={2}
+                // numColumns가 있을 때만 사용가능한 props로 열간의 간격, 각 열의 스타일을 설정할 수 있다.
+                columnWrapperStyle={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+                showsVerticalScrollIndicator={false}
+              />
+            </View>
+          </React.Fragment>
+        )}
+      </View>
     </View>
   );
 };
