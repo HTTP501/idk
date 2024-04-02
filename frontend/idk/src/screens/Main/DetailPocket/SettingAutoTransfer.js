@@ -120,6 +120,7 @@ const SettingAutoTransfer = ({ navigation, route }) => {
     changeDonPocketActivateAxios(
       pocketId,
       res => {
+        setIsActivated(previousState => !previousState)
       },
       err => {
         if (err.response.data.code === 'C401') {
@@ -129,7 +130,6 @@ const SettingAutoTransfer = ({ navigation, route }) => {
         }
       }
     )
-    setIsActivated(previousState => !previousState)
   }
 
 
@@ -152,7 +152,7 @@ const SettingAutoTransfer = ({ navigation, route }) => {
         <View style={[styles.box, styles.input]}>
           <Text className='text-lg font-bold mb-2'>돈포켓 이름</Text>
           <TextInput
-            placeholder={data?.name}
+            placeholder={name}
             className='text-lg'
             value={name}
             onChangeText={(text) => setName(text)}

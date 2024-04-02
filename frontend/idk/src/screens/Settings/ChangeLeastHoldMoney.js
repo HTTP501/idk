@@ -22,12 +22,15 @@ const ChangeLeastHoldMoney = ({ navigation }) => {
     settingMinumumAxios(
       {amount:numMoney},
       res => {
-        console.log(res.data);
         Alert.alert('최소보유금액 설정이 완료되었습니다.', `${money} 원`,[{text:'확인'}])
         navigation.navigate('Settings')
       },
       err => {
-        console.log(err.response);
+        if (err.response.data.code === 'M402') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'A409') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])  
+        }
       }
     )
   }
@@ -39,12 +42,11 @@ const ChangeLeastHoldMoney = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-      <View className="mb-16" style={{ marginLeft: SCREEN_WIDTH * (1 / 10) }}>
+        <View className="mb-16" style={{ marginLeft: SCREEN_WIDTH * (1 / 10) }}>
           <Text className="text-3xl font-bold mb-5">최소보유금액 설정</Text>
           <Text className="text-lg" style={{ marginRight: SCREEN_WIDTH * (1 / 10)}}>돈포켓으로 자동으로 빠져나가지 않는 최소보유금액을 설정할 수 있어요!</Text>
           <Text className="text-lg" style={{ marginRight: SCREEN_WIDTH * (1 / 10)}}>이미 계좌 잔고가 최소보유금액보다 작을 경우 돈포켓으로 빠져나가지 않아요!</Text>
         </View>
-        <Text className="text-xl font-bold mb-5" style={{ marginLeft: SCREEN_WIDTH * (1 / 10) }}>최소보유금액</Text>
         <View style={styles.input}>
           <TextInput
             style={{ fontSize: 20, textAlign: 'right'}}

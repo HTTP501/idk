@@ -81,12 +81,21 @@ const RegistDonPocket = ({navigation}) => {
     getAutoTransferAxios(
       JSON.parse(a).accountId,
       res => {
-        console.log(res);
         setAutoTransferList(res.data.data.arrayAutoTransfer)
       },
       err => {
-        console.log(err);
-        console.log(err.response);
+        if (err.response.data.code === 'C401') {
+          Alert.alert(
+            err.response.data.message,
+            "계좌 페이지로 이동합니다.",
+            [
+              {
+                text: "확인",
+                onPress: () => navigation.navigate("Main"),
+              },
+            ]
+          )
+        } 
       }
     )
   }
@@ -136,12 +145,34 @@ const Pocket = function ({ getAccountId,dataType,myDataItemId,navigation }) {
       joinDonPocketAutoTransferAxios(
         {autoTransferId: myDataItemId.autoTransferId},
         res => {
-          console.log(res);
           setPocketShowModal(true);
           getAccountId()
         },
         err => {
-          console.log(err);
+          if (err.response.data.code === 'C401') {
+            Alert.alert(
+              err.response.data.message,
+              "계좌 페이지로 이동합니다.",
+              [
+                {
+                  text: "확인",
+                  onPress: () => navigation.navigate("Main"),
+                },
+              ]
+            )
+          } else if (err.response.data.code === 'P402') {
+            Alert.alert(
+              err.response.data.message,
+              "계좌 페이지로 이동합니다.",
+              [
+                {
+                  text: "확인",
+                  onPress: () => navigation.navigate("Main"),
+                },
+              ]
+            )
+          }
+          
         }
       )
     } else { // 자동결제 Axios
