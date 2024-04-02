@@ -24,6 +24,10 @@ public class Organization {
     @Column(name = "org_name")
     private String orgName;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "org_type", columnDefinition = "TEXT")
+    private OrganizationType orgType;
+
     @Column(name = "access_token")
     private String accessToken;
 }
