@@ -11,6 +11,7 @@ import com.ssafy.idk.domain.member.repository.SignatureRepository;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.mydata.dto.request.MydataConnectRequestDto;
 import com.ssafy.idk.domain.mydata.dto.response.MydataGetResponseDto;
+import com.ssafy.idk.domain.mydata.entity.Mydata;
 import com.ssafy.idk.domain.mydata.entity.Organization;
 import com.ssafy.idk.domain.mydata.entity.OrganizationType;
 import com.ssafy.idk.domain.mydata.exception.MydataException;
@@ -30,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -112,21 +114,24 @@ public class MydataController {
         // 고객이 연결한 모든 기관에 정보제공 요청
         Member member = authenticationService.getMemberByAuthentication();
 
-        // 멤버가 가지고 있는 모든 서명 목록 조회
-        List<Signature> signatureList = signatureRepository.findByMember(member);
+        // 연결 기관들의 기관 코드 리스트
+        List<String> orgCodeList = mydataService.getConnectedOrgCodeList();
 
         // 서명 목록 순회하면서 기관 코드 추출하고 정보 제공 요청 보내기
         List<AutoTransferInfoDto> autoTransferInfoDtoList = new ArrayList<>();
 
-        List<AutoTransferInfoDto> autoTransferInfoDtos = new ArrayList<>();
+        for (String orgCode : orgCodeList) {
 
-        // 은행은 자동이체 목록
-        autoTransferInfoDtos = clientBankService.getAutoTransferInfo(member.getName(), member.getConnectionInformation());
-        autoTransferInfoDtoList.addAll(autoTransferInfoDtos);
+            List<AutoTransferInfoDto> autoTransferInfoDtos;
 
-        // 카드사는 청구계좌
-        autoTransferInfoDtos = clientCardService.getAutoTransferInfo(member.getName(), member.getConnectionInformation());
-        autoTransferInfoDtoList.addAll(autoTransferInfoDtos);
+            // 은행은 자동이체 목록
+            autoTransferInfoDtos = clientBankService.getAutoTransferInfo(member.getName(), member.getConnectionInformation(), orgCode);
+            autoTransferInfoDtoList.addAll(autoTransferInfoDtos);
+
+            // 카드사는 청구계좌
+            autoTransferInfoDtos = clientCardService.getCardsInfo(member.getName(), member.getConnectionInformation(), orgCode);
+            autoTransferInfoDtoList.addAll(autoTransferInfoDtos);
+        }
 
         // 저장
 //        mydataService.saveAssetList(member, autoTransferInfoDtoList);

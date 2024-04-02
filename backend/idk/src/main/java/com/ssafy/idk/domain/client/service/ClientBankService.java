@@ -69,13 +69,14 @@ public class ClientBankService {
     }
 
     // 자동이체 목록 요청
-    public List<AutoTransferInfoDto> getAutoTransferInfo(String name, String connectionInformation) {
+    public List<AutoTransferInfoDto> getAutoTransferInfo(String name, String connectionInformation, String orgCode) {
 
         String autoTransferInfoRequestApiUrl = bankUrl.concat("/api/bank/auto-transfer");
 
         String urlTemplate = UriComponentsBuilder.fromHttpUrl(autoTransferInfoRequestApiUrl)
                 .queryParam("name", "{name}")
                 .queryParam("connectionInformation", "{connectionInformation}")
+                .queryParam("orgCode", "{orgCode}")
                 .encode()
                 .toUriString();
 
@@ -88,18 +89,16 @@ public class ClientBankService {
         Map<String, String> param = new HashMap<>();
         param.put("name", name);
         param.put("connectionInformation", connectionInformation);
+        param.put("orgCode", orgCode);
 
         ResponseEntity<AutoTransferInfoResponseFromBankDto> responseEntity = restTemplate.exchange(urlTemplate, HttpMethod.GET, request, AutoTransferInfoResponseFromBankDto.class, param);
 
         if (responseEntity.getStatusCode() != HttpStatus.OK) {
             throw new ClientException(ErrorCode.CLIENT_AUTO_TRANSFER_INFO_FAILED);
         }
-        AutoTransferInfoResponseFromBankDto response = responseEntity.getBody();
 
         return Objects.requireNonNull(responseEntity.getBody()).getData().getAutoTransferList();
     }
-
-    // 계좌 목록 조회
 
     // 계좌 명의 조회(은행 이름, 계좌번호)
     public String getaccountInfo(String orgName, String accountNumber) {
@@ -129,7 +128,4 @@ public class ClientBankService {
         assert accountInfoResponseDto != null;
         return accountInfoResponseDto.getData().getAccountNumber();
     }
-
-    // 고객의 자동이체(상세정보 포함) 목록 조회
-
 }

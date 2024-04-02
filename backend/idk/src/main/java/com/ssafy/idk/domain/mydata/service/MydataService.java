@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -216,5 +217,18 @@ public class MydataService {
         Asset asset = assetRepository.findByAccountNumberAndDesignatedOrgName(accountNumber, orgName)
                 .orElseThrow(() -> new MydataException(ErrorCode.MYDATA_ASSET_NOT_FOUND));
         return asset != null && asset.getIsLinked();
+    }
+
+    // 마이데이터 연결 기관들 코드 목록 조회
+    public List<String> getConnectedOrgCodeList() {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        List<Mydata> mydataList = mydataRepository.findByMember(member);
+
+        return mydataList.stream()
+                .filter(mydata -> mydata.getAccessToken() != null)
+                .map(mydata -> mydata.getOrganization().getOrgCode())
+                .collect(Collectors.toList());
     }
 }
