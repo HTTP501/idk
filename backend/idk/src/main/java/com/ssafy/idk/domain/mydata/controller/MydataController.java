@@ -106,7 +106,7 @@ public class MydataController {
     }
 
     @Operation(summary = "마이데이터 조회")
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<ResultResponse> getMydata() {
 
         // 고객이 연결한 모든 기관에 정보제공 요청
