@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ public class BankService {
     private final OrganizationRepository organizationRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final ClientService clientService;
+    private static final Logger LOGGER = Logger.getLogger(BankService.class.getName());
 
     // 회원 가입
     @Transactional
@@ -57,14 +60,19 @@ public class BankService {
         // 모든 은행 정보를 가져옴
         List<Bank> banks = bankRepository.findAll();
 
+        // IDK 은행을 제외한 은행 리스트 생성
+        List<Bank> filteredBanks = banks.stream()
+                .filter(bank -> !bank.getName().equals("IDK은행"))
+                .collect(Collectors.toList());
+
         // 랜덤하게 은행 선택
         Random random = new Random();
-        Bank selectedBank = banks.get(random.nextInt(banks.size()));
+        Bank selectedBank = filteredBanks.get(random.nextInt(filteredBanks.size()));
 
         // 중복되지 않는 계좌번호 생성
         String accountNumber;
         do {
-            accountNumber = BankUtil.generateAccountNumber();
+            accountNumber = BankUtil.generateAccountNumber(selectedBank);
         } while (accountRepository.existsByAccountNumber(accountNumber));
 
         // 임의로 선택된 은행을 사용하여 계좌 생성
@@ -93,8 +101,13 @@ public class BankService {
         List<Account> targetAccounts = accountRepository.findAll();
 
         // 자동 이체 대상 계좌 선택 (회원의 계좌와 다른 계좌로 선택)
-        Account targetAccount;
-        targetAccount = BankUtil.selectRandomAccountInBank(member, targetAccounts);
+        Account targetAccount = BankUtil.selectRandomAccountInBank(member, targetAccounts);
+
+        // 자동 이체 대상 계좌가 없는 경우 예외 처리
+        if (targetAccount == null) {
+            LOGGER.info("자동이체 대상 계좌가 없습니다.");
+            throw new BankException(ErrorCode.BANK_TARGET_ACCOUNT);
+        }
 
         // 자동이체 엔티티 생성
         AutoTransfer autoTransfer = AutoTransfer.builder()
@@ -178,8 +191,8 @@ public class BankService {
             throw new BankException(ErrorCode.BANK_MEMBER_INFO_MISMATCH_ERROR);
         }
 
-        // 회원의 모든 계좌 정보 가져옴
-        List<Account> memberAccounts = accountRepository.findByMember(member);
+        // 회원의 연결 은행의 계좌 목록 조회
+        List<Account> memberAccounts = getConnectedAccounts(member);
 
         // 계좌의 모든 자동이체 목록을 가져옴
         List<AutoTransferInfoResponseDto> autoTransferInfoList = new ArrayList<>();
@@ -210,8 +223,8 @@ public class BankService {
         Member member = memberRepository.findByConnectionInformation(requestDto.getConnectionInformation())
                 .orElseThrow(() -> new BankException(ErrorCode.BANK_MEMBER_NOT_FOUND));
 
-        // 기관 체크
         System.out.println("ReceiverOrgCode = " + requestDto.getReceiverOrgCode());
+        // 기관 체크
         Organization organization = organizationRepository.findByOrgCode(requestDto.getReceiverOrgCode())
                 .orElseThrow(() -> new BankException(ErrorCode.BANK_ORG_NOT_FOUND));
 
@@ -250,4 +263,22 @@ public class BankService {
 
         return AccountOwnerResponseDto.of(account.getMember().getName());
     }
+
+    // 마이데이터 연결 은행 계좌 목록 조회
+    private List<Account> getConnectedAccounts(Member member) {
+        List<Account> allAccounts = accountRepository.findByMember(member);
+
+        // 연결 은행만 계좌 선택
+        List<Account> connectedAccountList = new ArrayList<>();
+        for (Account account : allAccounts) {
+            String accessToken = account.getBank().getOrganization().getAccessToken();
+            LOGGER.info("accessToken = " + accessToken);
+            if (accessToken != null) {
+                connectedAccountList.add(account);
+            }
+        }
+        return connectedAccountList;
+    }
+
+
 }

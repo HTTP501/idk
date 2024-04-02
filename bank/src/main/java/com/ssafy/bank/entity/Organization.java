@@ -12,7 +12,7 @@ import lombok.*;
 public class Organization {
 
     @Id
-    @Column(name = "org_code")
+    @Column(name = "org_code", unique = true)
     private String orgCode;
 
     @Column(name = "org_name")
