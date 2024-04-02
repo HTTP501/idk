@@ -106,7 +106,7 @@ public class MydataController {
     }
 
     @Operation(summary = "마이데이터 조회")
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<ResultResponse> getMydata() {
 
         // 고객이 연결한 모든 기관에 정보제공 요청
@@ -130,7 +130,6 @@ public class MydataController {
         mydataService.saveAssetList(member, autoTransferInfoDtoList);
 
         // 응답데이터 만들기
-
         MydataGetResponseDto mydataGetResponseDto = mydataService.getAssetListInfo(member, autoTransferInfoDtoList);
 
         return ResponseEntity.ok(ResultResponse.of(ResultCode.IDK_MYDATA_GET_SUCCESS, AutoTransferInfoListResponseDto.of(autoTransferInfoDtoList)));

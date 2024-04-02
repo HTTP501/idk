@@ -12,13 +12,13 @@ import java.util.List;
 @AllArgsConstructor
 public class AutoTransferInfoListResponseDto {
 
-    private List<AutoTransferInfoDto> autoTransferList;
+    private List<AutoTransferInfoDto> assestInfoList;
 
     public static AutoTransferInfoListResponseDto of(
-            List<AutoTransferInfoDto> autoTransferList
+            List<AutoTransferInfoDto> assestInfoList
     ) {
         return AutoTransferInfoListResponseDto.builder()
-                .autoTransferList(autoTransferList)
+                .assestInfoList(assestInfoList)
                 .build();
     }
 }

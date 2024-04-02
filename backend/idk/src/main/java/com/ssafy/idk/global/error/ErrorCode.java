@@ -41,6 +41,7 @@ public enum ErrorCode {
     MEMBER_HEADER_NOT_FOUND(400, "M409", "Authorization 헤더가 없습니다."),
     MEMBER_INVALID_HEADER_FORMAT(400, "M410", "Authorization 헤더는 Bearer 토큰 형식이어야 합니다."),
     MEMBER_UNKNOWN_ERROR(400, "M411", "알 수 없는 에러가 발생했습니다."),
+    MEMBER_DUPLICATED(409, "M409", "이미 존재하는 회원입니다."),
 
     // ANALYST
     ANALYST_NOT_MATCHED_TYPE(400, "AN400", "해당 지출 유형이 없습니다."),
