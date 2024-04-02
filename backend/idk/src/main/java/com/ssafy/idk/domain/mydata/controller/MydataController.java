@@ -134,6 +134,6 @@ public class MydataController {
         // 응답데이터 만들기
         MydataGetResponseDto mydataGetResponseDto = mydataService.getAssetListInfo(member, autoTransferInfoDtoList);
 
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.IDK_MYDATA_GET_SUCCESS, AutoTransferInfoListResponseDto.of(autoTransferInfoDtoList)));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.IDK_MYDATA_GET_SUCCESS, mydataGetResponseDto));
     }
 }
