@@ -19,8 +19,8 @@ import {
   callProductsDataAxios,
   callProductsDetailDataAxios,
 } from "../../API/ShoppingMallData.js";
-import EventSource from "react-native-sse";
-import RNEventSource from "react-native-event-source";
+// import EventSource from "react-native-sse";
+// import RNEventSource from "react-native-event-source";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { local } from "d3";
 
