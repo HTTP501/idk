@@ -10,7 +10,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
@@ -22,6 +22,7 @@ import CheckBox from "expo-checkbox";
 import { payRequestAxios, approvalPayAxios } from "../../API/PayRequest.js";
 import { getAccountAxios } from "../../API/Account.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import formattedNumber from "../../components/moneyFormatter.js";
 import { json } from "d3";
 
 const FinishPayment = ({ route, navigation }) => {
@@ -35,65 +36,68 @@ const FinishPayment = ({ route, navigation }) => {
   const [myPrice, setMyPrice] = useState("");
   const [myPlz, setMyPlz] = useState("");
   // 네비게이터에 껴서 보낼 계좌 정보 상태로 저장
-  const [myAccount, setMyAccount] = useState(null);
+  const [myAccount, setMyAccount] = useState({});
   const [myPhone, setMyPhone] = useState(null);
+  const [myName, setMyName] = useState("");
   const [myFormedPhone, setMyFormedPhone] = useState(null);
-  const [isGetAccount,setisGetAccount] = useState(true);
+  const [isGetAccount, setisGetAccount] = useState(true);
   const [orderId, setOrderId] = useState(null);
   const [showModalState, setShowModalState] = useState(false);
 
   // 입장시 계좌 정보 호출
   useEffect(() => {
     const getAccountData = (response) => {
-      setMyAccount(response.data.data)
-    }
+      setMyAccount(response.data.data);
+      console.log(response.data.data);
+    };
 
     const fail = (error) => {
       console.log(error);
-    }
+    };
 
-    getAccountAxios(getAccountData, fail)
+    getAccountAxios(getAccountData, fail);
 
     const callPhone = async () => {
       const myPhoneNumber = await AsyncStorage.getItem("@signup");
-      setMyPhone(myPhoneNumber)
+      setMyPhone(myPhoneNumber);
+    };
 
-    }
-    callPhone()
-  }, [])
+    callPhone();
+  }, []);
 
   useEffect(() => {
     if (myPhone !== null) {
       const formatPhoneNumber = (phoneNumber) => {
         // 숫자만 남기고 모든 문자 제거
-        const cleaned = ('' + phoneNumber).replace(/\D/g, '');
-        
+        const cleaned = ("" + phoneNumber).replace(/\D/g, "");
+
         // 핸드폰 번호 형식에 맞게 - 추가
-        const formatted = cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-        
+        const formatted = cleaned.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+
         return formatted;
       };
-      const formattedPhoneNumber = formatPhoneNumber(JSON.parse(myPhone).phoneNumber);
-      setMyFormedPhone(formattedPhoneNumber)
+      const formattedPhoneNumber = formatPhoneNumber(
+        JSON.parse(myPhone).phoneNumber
+      );
+      setMyFormedPhone(formattedPhoneNumber);
     }
-  }, [myPhone])
-
+  }, [myPhone]);
 
   // 계좌 정보를 받기 전까지 로딩 화면을 보여주기 위해서 useEffect 사용
   useEffect(() => {
     if (myAccount !== null) {
-      setisGetAccount(false)
+      setisGetAccount(false);
     }
-  }, [myAccount])
+  }, [myAccount]);
 
   // 결제 요청을 보내서 orderId를 받으면 계좌 비밀번호 입력으로 이동
   useEffect(() => {
     if (orderId !== null) {
-      const destination = {stack: "PaymentStack", screen: "FinishPayment"}
-      const data = route.params.data
-      navigation.navigate("AuthPW", { data , destination })
+      const destination = { stack: "PaymentStack", screen: "FinishPayment" };
+      const data = route.params.data;
+      navigation.navigate("AuthPW", { data, destination });
     }
-  }, [orderId])
+  }, [orderId]);
 
   // 결제 요청에서 비밀번호 인증을 받고 돌아왔다면,
   useEffect(() => {
@@ -101,21 +105,25 @@ const FinishPayment = ({ route, navigation }) => {
       const successRequest = (response) => {
         console.log(response.data);
         navigation.replace("PayResult", { finalData });
-      }
+      };
 
       const fail = (error) => {
         console.log(error);
-      }
+      };
 
-      approvalPayAxios(finishData, successRequest, fail)
+      approvalPayAxios(finishData, successRequest, fail);
     }
-  }, [route.params.data.isChecked])
+  }, [route.params.data.isChecked]);
 
-  const finalData = myAccount === null ? (null) : (
-    {accountNumber: myAccount.accountNumber,
-    accountName: myAccount.accountName,
-    price: route.params.data.price})
-    
+  const finalData =
+    myAccount === null
+      ? null
+      : {
+          accountNumber: myAccount.accountNumber,
+          accountName: myAccount.accountName,
+          price: route.params.data.price,
+        };
+
   const modalHeight = windowHeight * 0.35;
 
   const FinishPaymentStyle = StyleSheet.create({
@@ -129,24 +137,20 @@ const FinishPayment = ({ route, navigation }) => {
       flex: 1,
       width: windowWidth * 0.8,
       backgroundColor: "white",
-      alignSelf: "center"
+      alignSelf: "center",
     },
     backBtn: {
       flex: 3.5,
-
-      paddingHorizontal: 20,
+      marginTop: windowWidth * 0.1,
     },
     productsInfoBox: {
       flex: 2.5,
-      paddingHorizontal: 10,
     },
     payMethodBox: {
       flex: 2.5,
-      paddingHorizontal: 20,
     },
     resultBox: {
       flex: 2.5,
-      paddingHorizontal: 25,
     },
     requestInput: {
       borderWidth: 1,
@@ -175,7 +179,6 @@ const FinishPayment = ({ route, navigation }) => {
       // marginHorizontal: "2%",
       borderRadius: 10,
       paddingVertical: "6%",
-      
     },
     resultStyle: {
       flexDirection: "row",
@@ -207,7 +210,7 @@ const FinishPayment = ({ route, navigation }) => {
       windowHeight: windowHeight,
       padding: windowHeight,
       paddingTop: "100%",
-      position: "absolute"
+      position: "absolute",
     },
     modalContainer: {
       backgroundColor: "white",
@@ -233,7 +236,7 @@ const FinishPayment = ({ route, navigation }) => {
     },
   });
 
-  const   menuImage = {
+  const menuImage = {
     식품: require("../../../assets/categoryIcons/foods.png"),
     뷰티: require("../../../assets/categoryIcons/beauty.png"),
     전자제품: require("../../../assets/categoryIcons/electronics.png"),
@@ -267,10 +270,6 @@ const FinishPayment = ({ route, navigation }) => {
     26: require("../../../assets/categoryItems/add.png"),
   };
 
-  const formattedNumber = function (number) {
-    return number.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
-  };
-
   const newNum = formattedNumber(route.params.data.price);
   const changeNum = formattedNumber(Number(myPrice));
 
@@ -281,7 +280,7 @@ const FinishPayment = ({ route, navigation }) => {
           ...FinishPaymentStyle.resultStyle,
           marginTop: 20,
           marginHorizontal: 5,
-          backgroundColor:'white'
+          backgroundColor: "white",
         }}
       >
         <Text style={{ ...FinishPaymentStyle.addressText, fontSize: 18 }}>
@@ -339,17 +338,21 @@ const FinishPayment = ({ route, navigation }) => {
           주문상품 1건
         </Text>
         <View style={{ flexDirection: "row" }}>
-            <Image
-              source={menuImage[route.params.data.itemId]}
-              style={{ width: 80, height: 80 }}
-            />
+          <Image
+            source={menuImage[route.params.data.itemId]}
+            style={{ width: 80, height: 80 }}
+          />
           <View>
             <Text style={{ ...FinishPaymentStyle.addressText, marginLeft: 15 }}>
               {route.params.data.shop}
             </Text>
-            <Text style={{ ...FinishPaymentStyle.addressText, marginLeft: 15, maxWidth: windowWidth * 0.5 }}
+            <Text
+              style={{
+                ...FinishPaymentStyle.addressText,
+                marginLeft: 15,
+                maxWidth: windowWidth * 0.5,
+              }}
               numberOfLines={2}
-              
             >
               {route.params.data.name}
             </Text>
@@ -387,7 +390,7 @@ const FinishPayment = ({ route, navigation }) => {
         <View style={{ flexDirection: "row", flex: 1 }}>
           <Image
             source={menuImage[route.params.data.category]}
-            style={{ width: 60, height: 60, marginRight: 20 , marginTop: 5}}
+            style={{ width: 60, height: 60, marginRight: 20, marginTop: 5 }}
           />
           <View>
             <View
@@ -477,62 +480,51 @@ const FinishPayment = ({ route, navigation }) => {
 
   // 클릭 시 모달을 종료 시킬 함수
   const turnOffModal = () => {
-    setShowModalState(false)
-  }
+    setShowModalState(false);
+  };
 
   // 화면 출력 부분! //
   return (
-    <View style={{...FinishPaymentStyle.mainContainer}}>
-      <TouchableOpacity
-        onPress={() => {
-          navigation.goBack();
-        }}
-        style={{      marginTop: 60,
-          paddingHorizontal: 20, marginBottom: 0,}}
-      >
-        <MaterialIcons name="arrow-back-ios-new" size={36} color="black" />
-      </TouchableOpacity>
+    <View style={{ ...FinishPaymentStyle.mainContainer }}>
       <Modal
         animationType="fade"
         transparent={true}
         visible={showModalState}
         onRequestClose={() => {
-          setShowModalState(false)
-        }} 
-      >      
-        <View style={{...FinishPaymentStyle.backgroundModal}}></View>
-        <View style={{...FinishPaymentStyle.modalContainer}}>
-        
-            <Text style={{...FinishPaymentStyle.modalFont}}>
-              계좌에 남은 잔고가 모자라서 
-            </Text>
-            <Text style={{...FinishPaymentStyle.modalFont}}>
-              결제에 실패하였습니다.
-            </Text>
-            <TouchableOpacity
-              style={{
-                ...FinishPaymentStyle.moveBtn,
-                backgroundColor: theme["sky-bright-6"],
-                borderColor: theme["sky-bright-6"],
-                marginTop: 30,
-              }}
-              onPress={() => {
-                setShowModalState(false)
-              }}
-            >
-              <Text style={FinishPaymentStyle.modalFont}>
-                확인
-              </Text>
-            </TouchableOpacity>
-
-    
+          setShowModalState(false);
+        }}
+      >
+        <View style={{ ...FinishPaymentStyle.backgroundModal }}></View>
+        <View style={{ ...FinishPaymentStyle.modalContainer }}>
+          <Text style={{ ...FinishPaymentStyle.modalFont }}>
+            계좌에 남은 잔고가 모자라서
+          </Text>
+          <Text style={{ ...FinishPaymentStyle.modalFont }}>
+            결제에 실패하였습니다.
+          </Text>
+          <TouchableOpacity
+            style={{
+              ...FinishPaymentStyle.moveBtn,
+              backgroundColor: theme["sky-bright-6"],
+              borderColor: theme["sky-bright-6"],
+              marginTop: 30,
+            }}
+            onPress={() => {
+              setShowModalState(false);
+            }}
+          >
+            <Text style={FinishPaymentStyle.modalFont}>확인</Text>
+          </TouchableOpacity>
         </View>
-      </Modal> 
+      </Modal>
 
-      <ScrollView style={FinishPaymentStyle.container} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={FinishPaymentStyle.container}
+        showsVerticalScrollIndicator={false}
+      >
         {/* 주소 및 받는 이 정보 부분 */}
         <View style={FinishPaymentStyle.backBtn}>
-          <Text style={{ marginTop: 20, marginBottom: 20, }}>
+          <Text style={{ marginTop: 20, marginBottom: 20 }}>
             <Text
               style={{
                 ...FinishPaymentStyle.addressText,
@@ -547,11 +539,9 @@ const FinishPayment = ({ route, navigation }) => {
             </Text>
           </Text>
           <Text style={FinishPaymentStyle.addressText}>
-            로컬에서 나의 이름을 가져올게요
+            {myAccount?.userName}
           </Text>
-          <Text style={FinishPaymentStyle.addressText}>
-            {myFormedPhone}
-          </Text>
+          <Text style={FinishPaymentStyle.addressText}>{myFormedPhone}</Text>
           <Text style={FinishPaymentStyle.addressText}>
             서울특별시 강남구 테헤란로 212 (역삼동 718-5번지)
           </Text>
@@ -572,9 +562,7 @@ const FinishPayment = ({ route, navigation }) => {
 
         {/* 주문 상품 정보 부분 */}
         <View style={FinishPaymentStyle.productsInfoBox}>
-          {route.params.data.name === "추가"
-            ? (selectedAdd())
-            : (selectProducts())}
+          {route.params.data.name === "추가" ? selectedAdd() : selectProducts()}
         </View>
 
         <View style={FinishPaymentStyle.sparateLine}></View>
@@ -597,11 +585,18 @@ const FinishPayment = ({ route, navigation }) => {
               alignItems: "center",
             }}
           >
-            {isGetAccount ? (<ActivityIndicator size={"large"} color={theme["sky-basic"]} style={{marginVertical: 25,}} />) : (
+            {isGetAccount ? (
+              <ActivityIndicator
+                size={"large"}
+                color={theme["sky-basic"]}
+                style={{ marginVertical: 25 }}
+              />
+            ) : (
               <React.Fragment>
                 <View style={{ marginLeft: "5%" }}>
                   <Text style={{ fontWeight: "bold", fontSize: 14 }}>
-                    {myAccount.accountName}{"    "}
+                    {myAccount.accountName}
+                    {"    "}
                   </Text>
                   <Text>{myAccount.accountNumber}</Text>
                 </View>
@@ -632,30 +627,35 @@ const FinishPayment = ({ route, navigation }) => {
           {showPrice(newNum, "총 결제금액")}
           {/* 버튼 부분 */}
           <TouchableOpacity
-          disabled = {!isCheckBoxed}
+            disabled={!isCheckBoxed}
             onPress={() => {
               if (isCheckBoxed == true) {
                 // 결제 완료 API 보내기
                 const catchData = (response) => {
-                  setOrderId(response.data.data)
-                }
-            
+                  setOrderId(response.data.data);
+                };
+
                 const fail = (error) => {
                   console.log(error);
                   if (error.response.data.code === "P403") {
-                    setShowModalState(true)
+                    setShowModalState(true);
                   }
-                }
-                payRequestAxios(route.params.data.itemId, catchData, fail)
+                };
+                payRequestAxios(route.params.data.itemId, catchData, fail);
               } else {
                 // 동의 체크하라고 alert 보내기!
                 plzCheckAlert();
               }
             }}
           >
-            <View style={{ ...FinishPaymentStyle.purchaseBtn, 
-              backgroundColor: isCheckBoxed ? (theme["sky-bright-2"]) : (theme.grey), 
-              borderColor: isCheckBoxed ? (theme["sky-bright-2"]) : (theme.grey), }}
+            <View
+              style={{
+                ...FinishPaymentStyle.purchaseBtn,
+                backgroundColor: isCheckBoxed
+                  ? theme["sky-bright-2"]
+                  : theme.grey,
+                borderColor: isCheckBoxed ? theme["sky-bright-2"] : theme.grey,
+              }}
             >
               <Text style={{ ...FinishPaymentStyle.btnFont }}>
                 동의하고 결제하기

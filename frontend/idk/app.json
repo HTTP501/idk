@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#3FB7FF"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -22,8 +20,7 @@
         "foregroundImage": "./assets/logo/app_icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.yunyebeen.idk",
-      "googleServicesFile": "./google-services.json"
+      "package": "com.yunyebeen.idk"
     },
     "web": {
       "favicon": "./assets/logo/app_icon.png"
@@ -35,6 +32,11 @@
           "MaplestoryBold": ["./assets/fonts/MaplestoryBold.ttf"]
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "1d05345d-ac0e-4b72-82e1-76c031391934"
+      }
+    }
   }
 }
