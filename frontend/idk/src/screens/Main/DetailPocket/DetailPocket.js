@@ -28,6 +28,7 @@ const DetailPocket = ({ navigation, route }) => {
   const pocketId = route.params.pocketData.pocketId
   const pocketType = route.params.pocketData.pocketType
   const pocketBalance = route.params.pocketData.balance
+  const pocketTarget = route.params.pocketData.target
   const [donPocketId, setDonPocketId] = useState(null)
   const [name, setName] = useState(null)
   const [deposited, setDeposited] = useState(false)
@@ -90,7 +91,7 @@ const DetailPocket = ({ navigation, route }) => {
                 : <Image style={styles.lock} source={require('../../../../assets/icons/open.png')}/>
               }
               <View className='flex-row mt-5 items-end'>
-                <Text className='text-2xl font-bold'>{formattedNumber(pocketBalance)}원</Text>
+                <Text className='text-2xl font-bold'>{formattedNumber(pocketTarget)}원</Text>
                 {pocketType==='목표저축' ?
                   <Text> 이 저축될 예정이에요.</Text>
                   : <Text> 이 이체될 예정이에요.</Text>

@@ -18,6 +18,26 @@ import {
   Alert,
   Image,
 } from "react-native";
+
+const imgMatch = {
+  'KB국민은행': require("../../../../../assets/banks/KBBank.png"),
+  '카카오뱅크': require("../../../../../assets/banks/KakaoBank.png"),
+  '신한은행': require("../../../../../assets/banks/ShinhanBank.png"),
+  'NH농협은행': require("../../../../../assets/banks/NHBank.png"),
+  '하나은행': require("../../../../../assets/banks/HanaBank.png"),
+  '우리은행': require("../../../../../assets/banks/WooriBank.png"),
+  'IBK기업은행': require("../../../../../assets/banks/IBKBank.png"),
+  '케이뱅크': require("../../../../../assets/banks/KBank.png"),
+  'KB국민카드': require("../../../../../assets/banks/KBCard.png"),
+  '신한카드': require("../../../../../assets/banks/ShinhanCard.png"),
+  '현대카드': require("../../../../../assets/banks/HyundaiCard.png"),
+  '카카오뱅크카드': require("../../../../../assets/banks/KakaoCard.png"),
+  'NH농협카드': require("../../../../../assets/banks/NHCard.png"),
+  '삼성카드': require("../../../../../assets/banks/SamsungCard.png"),
+  '하나카드': require("../../../../../assets/banks/HanaCard.png"),
+  '우리카드': require("../../../../../assets/banks/WooriCard.png"),
+}
+
 // 년, 월 데이터
 const yearData = [
   { label: "2024", value: 0 },
@@ -58,20 +78,21 @@ const getCurrentDate = () => {
 // let [isLateThanToday, setIsLateThanToday] = useState(false)
 
 // 자동이체 페이지
-const RegistAutoSendContent = ({ navigation,route }) => {
-  let [bankName, setBankName] = useState("IDK은행");
-  let [accountId, setAccountId] = useState("");
-  let [date, setDate] = useState(15);
-  let [amount, setAmount] = useState(5000);
+const RegistAutoSendContent = ({ navigation, route }) => {
+  const [bankName, setBankName] = useState("IDK은행");
+  const [accountId, setAccountId] = useState("");
+  const [date, setDate] = useState(15);
+  const [amount, setAmount] = useState(5000);
+  const myDataInfo = route.params.myDataInfo
 
   // 시작 년월, 종료 년월
   const [startYear, setStartYear] = useState(getCurrentYear());
   const [startMonth, setStartMonth] = useState(getCurrentMonth() + 1);
   const [endYear, setEndYear] = useState(getCurrentYear() + 1);
   const [endMonth, setEndMonth] = useState(getCurrentMonth());
-  let [showMyAccountName, setShowMyAccountName] = useState("");
-  let [showOtherAccountName, setShowOtherAccountName] = useState("");
-  let [myAccount, setMyAccount] = useState({});
+  const [showMyAccountName, setShowMyAccountName] = useState("");
+  const [showOtherAccountName, setShowOtherAccountName] = useState("");
+  const [myAccount, setMyAccount] = useState({});
   const data = {
     bankName,
     accountId,
@@ -127,9 +148,16 @@ const RegistAutoSendContent = ({ navigation,route }) => {
   }, [date]);
   // 내 계좌 데이터 가져오기
   useEffect(() => {
+    if (myDataInfo !== undefined) {
+      setBankName(myDataInfo.orgName)
+      setAccountId(myDataInfo.asset)
+      setAmount(myDataInfo.claimAmount)
+      setDate(myDataInfo.claimDate)
+    }
+
     getAccountAxios(
       (res) => {
-        // console.log(res);
+        console.log(res);
         setMyAccount(res.data.data);
         setShowOtherAccountName(res.data.data.userName)
       },
@@ -173,33 +201,48 @@ const RegistAutoSendContent = ({ navigation,route }) => {
   };
   return (
     <View style={styles.container}>
-      <View style={styles.box} className="mb-16">
-        <Text className="text-3xl font-bold">자동이체</Text>
-      </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: "center", alignItems:'center' }}
       >
+        <View style={styles.box} className="mb-16">
+          <Text className="text-3xl font-bold pl-3">자동이체</Text>
+        </View>
         <View style={styles.box}>
           <Text className="text-lg font-bold ">출금 계좌</Text>
-          <View className="border p-2 mt-2 rounded border-gray-300">
-            <Text className="mb-2">{myAccount?.accountName}</Text>
-            <Text>{myAccount?.accountNumber}</Text>
+          <View className="border p-2 mt-2 flex-row rounded border-gray-300">
+            <Image source={require("../../../../../assets/logo/app_icon.png")} style={{ width: 40, height: 40, marginRight: 10}}/>
+            <View>
+              <Text className="text-base font-bold">{myAccount?.accountName}</Text>
+              <Text>{myAccount?.accountNumber}</Text>
+            </View>
           </View>
         </View>
         <View style={styles.box}>
           <Text className="text-lg font-bold mb-3">받는 분</Text>
           {/* 은행 토글 */}
-          <BankToggle changeBank={(bankName) => setBankName(bankName)} />
-          {/* 계좌 번호 */}
-          <TextInput
-            className="text-lg mt-3"
-            value={accountId}
-            onChangeText={(text) => setAccountId(text)}
-            keyboardType="numeric"
-            style={styles.input}
-            placeholder="ex) 110-357-123456"
-          />
+          {myDataInfo === undefined ?
+          <View>
+            <BankToggle changeBank={(bankName) => setBankName(bankName)} />
+            {/* 계좌 번호 */}
+              <TextInput
+              className="text-lg mt-3"
+              value={accountId}
+              onChangeText={(text) => setAccountId(text)}
+              keyboardType="numeric"
+              style={styles.input}
+              placeholder="ex) 110-357-123456"
+              />
+          </View>
+            :
+            <View className='flex-row'>
+              <Image source={imgMatch[bankName]} style={{ width: 50, height: 50}}/>
+              <View>
+                <Text className="text-base font-bold">{bankName}</Text>
+                <Text>{accountId}</Text>
+              </View>
+            </View>
+          }
         </View>
         <View style={styles.box}>
           <Text className="text-lg font-bold">이체 금액</Text>
@@ -207,13 +250,17 @@ const RegistAutoSendContent = ({ navigation,route }) => {
             style={styles.input}
             className="flex-row items-center align-center justify-end gap-3 p-2"
           >
-            <TextInput
-              className="text-lg"
-              placeholder="5,000"
-              value={formattedNumber(amount)}
-              keyboardType="numeric"
-              onChangeText={(text) => changeAmount(text)}
-            />
+            {myDataInfo === undefined ?
+              <TextInput
+                className="text-lg"
+                placeholder="5,000"
+                value={formattedNumber(amount)}
+                keyboardType="numeric"
+                onChangeText={(text) => changeAmount(text)}
+              />
+              :
+              <Text className='text-lg'>{formattedNumber(amount)}</Text>
+            }
             <Text className="text-lg font-bold">원</Text>
           </View>
         </View>
@@ -225,6 +272,7 @@ const RegistAutoSendContent = ({ navigation,route }) => {
             className="flex-row items-center align-center justify-end gap-3 p-2"
           >
             <Text className="text-lg font-bold">매월</Text>
+            {myDataInfo === undefined ?
             <TextInput
               className="text-lg"
               placeholder="15"
@@ -232,6 +280,9 @@ const RegistAutoSendContent = ({ navigation,route }) => {
               onChangeText={(text) => setDate(text)}
               keyboardType="numeric"
             />
+            :
+            <Text className='text-lg'>{date}</Text>
+            }
             <Text className="text-lg font-bold">일</Text>
           </View>
         </View>
@@ -296,28 +347,28 @@ const RegistAutoSendContent = ({ navigation,route }) => {
             placeholder="ex) 아이들과 미래재단 정기후원"
           />
         </View>
+        <TouchableOpacity
+          style={[styles.button,{ backgroundColor: isRegistButtonEnabled ? theme["sky-basic"] : theme["sky-bright-4"] }]}
+          onPress={() => {
+            // 종료일이 시작보다 늦는다면 경고 띄우기
+            if (
+              startYear > endYear ||
+              (startYear == endYear && startMonth > endMonth)
+            ) {
+              Alert.alert("종료일이 시작일보다 빠를 수 없습니다", "", [
+                { text: "확인" },
+              ]);
+              setEndYear(startYear);
+              setEndMonth(startMonth);
+            } else {
+              registAutoSend();
+            }
+          }}
+          disabled={!isRegistButtonEnabled}
+        >
+          <Text className="text-white text-lg font-bold">등록하기</Text>
+        </TouchableOpacity>
       </ScrollView>
-      <TouchableOpacity
-        style={[styles.button,{ backgroundColor: isRegistButtonEnabled ? theme["sky-basic"] : theme["sky-bright-4"] }]}
-        onPress={() => {
-          // 종료일이 시작보다 늦는다면 경고 띄우기
-          if (
-            startYear > endYear ||
-            (startYear == endYear && startMonth > endMonth)
-          ) {
-            Alert.alert("종료일이 시작일보다 빠를 수 없습니다", "", [
-              { text: "확인" },
-            ]);
-            setEndYear(startYear);
-            setEndMonth(startMonth);
-          } else {
-            navigation.navigate("AuthStack",{screen:"AuthPW",params:{data,destination}})
-          }
-        }}
-        disabled={!isRegistButtonEnabled}
-      >
-        <Text className="text-white text-lg font-bold">등록하기</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -457,6 +508,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   button: {
+    marginTop: 20,
     width: SCREEN_WIDTH * (9 / 10),
     height: 50,
     backgroundColor: theme["sky-basic"],

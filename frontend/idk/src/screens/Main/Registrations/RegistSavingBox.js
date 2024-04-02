@@ -8,7 +8,8 @@ import {
   TextInput,
   Image,
   Modal,
-  Alert
+  Alert,
+  ScrollView
 } from "react-native";
 import theme from "../../../style";
 import { AntDesign } from "@expo/vector-icons";
@@ -80,36 +81,38 @@ const RegistSavingBox = ({ navigation }) => {
   //   화면
   return (
     <View style={styles.container}>
-      {/* 상단의 제목과 아이콘 */}
-      <View style={styles.box} className="mb-16 flex-row items-center">
-        <Image source={pigIcon} />
-        <Text className="text-3xl font-bold pl-3">저금통</Text>
-      </View>
-      <View style={{ flex: 1 }}>
-        {/* 설명 */}
-        <Explain />
-        {/* 입금액 입력란 */}
-        <Text className="text-2xl font-bold mt-10 mb-3">넣고 시작하기</Text>
-        <View style={styles.input} className="flex-row gap-3 justify-end">
-          <TextInput
-            className="text-xl"
-            // placeholder="100,000"
-            value={formattedNumber(deposit)}
-            keyboardType="numeric"
-            onChangeText={(text) => changeMoney(text)}
-          />
-          <Text className="text-2xl font-bold">원</Text>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, alignItems: 'center' }}>
+        {/* 상단의 제목과 아이콘 */}
+        <View style={styles.box} className="mb-16 flex-row items-center">
+          <Image source={pigIcon} />
+          <Text className="text-3xl font-bold pl-3">저금통</Text>
         </View>
-      </View>
-      {/* 저금통 등록 버튼 */}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => {
-          registFinish();
-        }}
-      >
-        <Text className="text-white text-lg font-bold">만들기</Text>
-      </TouchableOpacity>
+        <View style={{ flex: 1, width: SCREEN_WIDTH * (4/5) }}>
+          {/* 설명 */}
+          <Explain />
+          {/* 입금액 입력란 */}
+          <Text className="text-2xl font-bold mt-10 mb-3">넣고 시작하기</Text>
+          <View style={styles.input} className="flex-row gap-3 justify-end">
+            <TextInput
+              className="text-xl"
+              // placeholder="100,000"
+              value={formattedNumber(deposit)}
+              keyboardType="numeric"
+              onChangeText={(text) => changeMoney(text)}
+            />
+            <Text className="text-2xl font-bold">원</Text>
+          </View>
+        </View>
+        {/* 저금통 등록 버튼 */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            registFinish();
+          }}
+        >
+          <Text className="text-white text-lg font-bold">만들기</Text>
+        </TouchableOpacity>
+      </ScrollView>
       {/* 모달 */}
       <Modal visible={showModal} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
@@ -175,7 +178,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     paddingTop: 120,
-    paddingHorizontal: 30,
   },
   box: {
     width: SCREEN_WIDTH * (4 / 5),

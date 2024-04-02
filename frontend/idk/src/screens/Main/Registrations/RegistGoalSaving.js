@@ -147,73 +147,82 @@ const RegistGoalSaving = ({ navigation, route }) => {
   };
   return (
     <View style={styles.container}>
-      <View style={styles.box} className="mb-16">
-        <Text className="text-3xl font-bold">목표저축</Text>
-      </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{ flexGrow: 1, width: SCREEN_WIDTH}}
       >
-        {/* 목표 저축 이름 */}
-        <View style={styles.box}>
-          <Text className="text-lg font-bold">목표를 적어주세요</Text>
-          <TextInput
-            style={styles.input}
-            className="text-lg"
-            value={goalName}
-            onChangeText={(text) => setGoalName(text)}
-            placeholder="ex) 유럽 여행, 컴퓨터 사기 등등"
-          />
-        </View>
-        {/* 이체 날짜 */}
-        <View style={styles.box}>
-          <Text className="text-lg font-bold">이체 날짜</Text>
-          <TextInput
-            style={styles.input}
-            className="text-lg"
-            value={String(date)}
-            keyboardType="numeric"
-            onChangeText={(text) => changeDate(text)}
-            placeholder="ex) 15일"
-          />
-        </View>
+        <View style={{marginLeft:SCREEN_WIDTH * (1/10)}}>
+          <View style={styles.box} className="mb-16">
+            <Text className="text-3xl font-bold">목표저축</Text>
+          </View>
+          {/* 목표 저축 이름 */}
+          <View style={styles.box}>
+            <Text className="text-lg font-bold">목표를 적어주세요</Text>
+            <TextInput
+              style={styles.input}
+              className="text-lg"
+              value={goalName}
+              onChangeText={(text) => setGoalName(text)}
+              placeholder="ex) 유럽 여행, 컴퓨터 사기 등등"
+            />
+          </View>
+          {/* 이체 날짜 */}
+          <View style={styles.box}>
+            <Text className="text-lg font-bold">이체 날짜</Text>
+            <TextInput
+              style={styles.input}
+              className="text-lg"
+              value={String(date)}
+              keyboardType="numeric"
+              onChangeText={(text) => changeDate(text)}
+              placeholder="ex) 15일"
+            />
+          </View>
 
-        <Text className="text-lg font-bold mb-3">나의 목표는?</Text>
-        {/* 금액, 기간 설정 */}
-        <View style={styles.box} className="gap-5">
-          {/* 기간 */}
-          <View className="flex-row gap-1 items-end">
-            <TextInput
-              className="text-2xl font-bold"
-              value={String(term)}
-              keyboardType="numeric"
-              style={{ borderBottomWidth: 1, borderColor: theme.grey }}
-              onChangeText={(text) =>
-                changeTermAmount(text)
-              }
-            />
-            <Text className="text-lg font-bold">개월동안</Text>
+          <Text className="text-lg font-bold mb-3">나의 목표는?</Text>
+          {/* 금액, 기간 설정 */}
+          <View style={styles.box} className="gap-5">
+            {/* 기간 */}
+            <View className="flex-row gap-1 items-end">
+              <TextInput
+                className="text-2xl font-bold"
+                value={String(term)}
+                keyboardType="numeric"
+                style={{ borderBottomWidth: 1, borderColor: theme.grey }}
+                onChangeText={(text) =>
+                  changeTermAmount(text)
+                }
+              />
+              <Text className="text-lg font-bold">개월동안</Text>
+            </View>
+            {/* 목표 금액 */}
+            <View className="flex-row gap-1 items-end">
+              <TextInput
+                className="text-2xl font-bold"
+                value={formattedNumber(goalAmount)}
+                keyboardType="numeric"
+                style={{ borderBottomWidth: 1, borderColor: theme.grey }}
+                onChangeText={(text) => changeGoalAmount(text)}
+              />
+              <Text className="text-lg font-bold">원 모으려면</Text>
+            </View>
           </View>
-          {/* 목표 금액 */}
-          <View className="flex-row gap-1 items-end">
-            <TextInput
-              className="text-2xl font-bold"
-              value={formattedNumber(goalAmount)}
-              keyboardType="numeric"
-              style={{ borderBottomWidth: 1, borderColor: theme.grey }}
-              onChangeText={(text) => changeGoalAmount(text)}
-            />
-            <Text className="text-lg font-bold">원 모으려면</Text>
+          {/* 한달 이체금액 */}
+          <Text className="text-lg font-bold mb-3">한달에</Text>
+          <View className="flex-row gap-1 items-end mb-24">
+            <Text className="text-2xl font-bold">
+              {formattedNumber(Number(monthlyAmount))}원
+            </Text>
+            <Text className="text-lg font-bold">이체해야 해요</Text>
           </View>
         </View>
-        {/* 한달 이체금액 */}
-        <Text className="text-lg font-bold mb-3">한달에</Text>
-        <View className="flex-row gap-1 items-end mb-10">
-          <Text className="text-2xl font-bold">
-            {formattedNumber(Number(monthlyAmount))}원
-          </Text>
-          <Text className="text-lg font-bold">이체해야 해요</Text>
-        </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={registFinish}
+        >
+          <Text className="text-white text-lg font-bold">등록하기</Text>
+        </TouchableOpacity>
+      </ScrollView>
         {/* 모달 */}
         <Modal visible={showModal} transparent={true} animationType="slide">
           <View style={styles.modalContainer}>
@@ -248,13 +257,6 @@ const RegistGoalSaving = ({ navigation, route }) => {
             </View>
           </View>
         </Modal>
-      </ScrollView>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={registFinish}
-      >
-        <Text className="text-white text-lg font-bold">등록하기</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -286,7 +288,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme["sky-basic"],
     alignItems: "center",
     justifyContent: "center",
-    // position: 'absolute',
+    position: 'absolute',
     bottom: 20, // 화면 하단과의 간격
     alignSelf: "center",
     borderRadius: 10,

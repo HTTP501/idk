@@ -12,22 +12,62 @@ const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const SettingAutoDebit = ({ navigation, route }) => {
   const pocketId = route.params.pocketId
+  const [name, setName] = useState(route.params.name)
   const [showModal, setShowModal] = useState(false);
   const [isActivated, setIsActivated] = useState(route.params.activated);
   const donPocketId = route.params.donPocketId
 
   // 돈 포켓 자동 넣기 Axios
   const HandleIsActivated = () => {
-    setIsActivated(previousState => !previousState)
+    changeDonPocketActivateAxios(
+      pocketId,
+      res => {
+        setIsActivated(previousState => !previousState)
+      },
+      err => {
+        if (err.response.data.code === 'C401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'P404') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])  
+        }
+      }
+    )
   }
 
   // 수정 Axios
   const handleSetting = () => {
-    Alert.alert('수정이 완료되었습니다.', '', [{text:'확인', onPress: () => navigation.navigate('DetailPocket', { pocketId})}])
+    changeDonPocketNameAxios(
+      pocketId,
+      {name: name},
+      res => {
+        console.log(res);
+        Alert.alert('수정이 완료되었습니다.', '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+      },
+      err => {
+        if (err.response.data.code === 'C401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'P404') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])  
+        }
+      }
+    )
   }
 
   // 돈포켓 해지 Axios
   const deleteDonPocket = () => {
+    deleteDonPocketAutoTransferAxios(
+      pocketId,
+      res => {
+        Alert.alert('해지가 완료되었습니다.', '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+      },
+      err => {
+        if (err.response.data.code === 'C401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'P404') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress: () => navigation.navigate('Main')}])  
+        }
+      }
+    )
     setShowModal(false)
   }
 
@@ -48,10 +88,12 @@ const SettingAutoDebit = ({ navigation, route }) => {
           />
         </View>
         <View style={styles.box}>
-          <Text className='text-base font-bold mb-3'>이름</Text>
+          <Text className='text-base font-bold mb-3'>돈포켓 이름</Text>
           <TextInput
-            placeholder='돈포켓 이름'
+            placeholder={data?.name}
             className='text-base'
+            value={name}
+            onChangeText={(text) => setName(text)}
           >
           </TextInput>
         </View>
