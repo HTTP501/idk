@@ -6,8 +6,9 @@ const local = LocalAxios()
 
 
 // 돈포켓 전체 조회
-export const getPocketListAxios = async function (accountId, success, fail) {
-  await local.get(`/pocket/account/${accountId}`)
+export const getPocketListAxios = async function (success, fail) {
+  // console.log(accountId)
+  await local.get(`/pocket/list`)
         .then(success)
         .catch(fail)
 };

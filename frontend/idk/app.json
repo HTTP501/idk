@@ -4,7 +4,7 @@
     "slug": "idk",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo/app_icon.png",
+    "icon": "./assets/logo/favicon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/logo/SplashImg.png",
@@ -19,11 +19,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo/app_icon.png",
+        "foregroundImage": "./assets/logo/favicon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.yunyebeen.idk",
-      "googleServicesFile": "./google-services.json"
+      "package": "com.yunyebeen.idk"
     },
     "web": {
       "favicon": "./assets/logo/app_icon.png"
@@ -32,9 +31,16 @@
       [
         "expo-font",
         {
-          "MaplestoryBold": ["./assets/fonts/MaplestoryBold.ttf"]
+          "MaplestoryBold": [
+            "./assets/fonts/MaplestoryBold.ttf"
+          ]
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "6d60907d-1376-4a89-8afa-2d9789f07c91"
+      }
+    }
   }
 }
