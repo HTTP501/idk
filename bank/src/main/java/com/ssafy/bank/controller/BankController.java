@@ -65,7 +65,7 @@ public class BankController {
 
     // 계좌 목록 조회
     @Operation(summary = "고객 소유 계좌 목록 조회")
-    @GetMapping("/account")
+    @GetMapping("/accounts")
     public ResponseEntity<ResultResponse> getAccountList(@RequestParam("name") String name, @RequestParam("connectionInformation") String connectionInformation, @RequestParam("orgCode") String orgCode) {
 
         return ResponseEntity.ok(ResultResponse.of(ResultCode.BANK_GET_ACCOUNT_LIST_SUCCESS, bankService.getAccountList(name, connectionInformation, orgCode)));
@@ -85,5 +85,13 @@ public class BankController {
     public ResponseEntity<ResultResponse> getAutoTransferInfo(@RequestParam("name") String name, @RequestParam("connectionInformation") String connectionInformation) {
 
         return ResponseEntity.ok(ResultResponse.of(ResultCode.BANK_GET_AUTO_TRANSFER_INFO_SUCCESS, bankService.getAutoTransferInfo(name, connectionInformation)));
+    }
+
+    // 계좌 명의 조회
+    @Operation(summary = "계좌 명의 조회")
+    @GetMapping("/account")
+    public ResponseEntity<ResultResponse> getAccount(@RequestParam("orgName") String orgName, @RequestParam("accountNumber") String accountNumber) {
+
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.BANK_GET_ACCOUNT_INFO_SUCCESS, bankService.getAccountInfo(orgName, accountNumber)));
     }
 }
