@@ -33,4 +33,15 @@ public class Salary {
     @Column(name = "amount")
     private Long amount;
 
+    public void setSalaryDay(Integer salaryDay) {
+        this.salaryDay = salaryDay;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
+    }
 }

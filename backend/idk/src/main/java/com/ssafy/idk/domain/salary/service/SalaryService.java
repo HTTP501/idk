@@ -10,9 +10,8 @@ import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.pocket.exception.PocketException;
-import com.ssafy.idk.domain.salary.dto.SalaryCreateRequestDto;
+import com.ssafy.idk.domain.salary.dto.SalaryRequestDto;
 import com.ssafy.idk.domain.salary.dto.SalaryResponseDto;
-import com.ssafy.idk.domain.salary.dto.SalaryGetResponseDto;
 import com.ssafy.idk.domain.salary.entity.Salary;
 import com.ssafy.idk.domain.salary.exception.SalaryException;
 import com.ssafy.idk.domain.salary.repository.SalaryRepository;
@@ -59,7 +58,7 @@ public class SalaryService {
     }
 
     @Transactional
-    public SalaryResponseDto createSalary(SalaryCreateRequestDto requestDto) {
+    public SalaryResponseDto createSalary(SalaryRequestDto requestDto) {
 
         Member member = authenticationService.getMemberByAuthentication();
 
@@ -122,6 +121,33 @@ public class SalaryService {
             throw new PocketException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
         salaryRepository.delete(salary);
+
+    }
+
+    @Transactional
+    public SalaryResponseDto updateSalary(SalaryRequestDto requestDto, Long salaryId) {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
+        Account account = accountRepository.findById(requestDto.getAccountId())
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        Salary salary = salaryRepository.findById(salaryId)
+                .orElseThrow(() -> new SalaryException(ErrorCode.SALARY_NOT_FOUND));
+
+        salary.setSalaryDay(requestDto.getSalaryDay());
+        salary.setAmount(requestDto.getAmount());
+        salary.setCompanyName(requestDto.getCompanyName());
+        Salary savedSalary = salaryRepository.save(salary);
+
+        return SalaryResponseDto.of(
+                savedSalary.getSalaryId(),
+                savedSalary.getAccount().getNumber(),
+                savedSalary.getSalaryDay(),
+                savedSalary.getCompanyName(),
+                savedSalary.getAmount()
+        );
 
     }
 }

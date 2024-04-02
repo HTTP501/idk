@@ -66,6 +66,7 @@ public enum ResultCode {
     AUTO_DEBIT_DELETE_SUCCESS(204, "AD202", "자동결제 해지를 완료했습니다."),
     AUTO_DEBIT_GET_SUCCESS(200, "AD203", "해당 자동결제를 조회했습니다."),
     AUTO_DEBIT_LIST_GET_SUCCESS(200, "AD204", "자동결제 목록을 조회했습니다."),
+    AUTO_DEBIT_PAYMENT_SUCCESS(200, "AD205", "자동결제 청구가 완료되었습니다."),
 
     // POCKET
     POCKET_CREATE_BY_TARGET_SAVING_SUCCESS(201, "P201", "목표저축을 통해 돈 포켓을 생성했습니다."),
