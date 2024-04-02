@@ -12,11 +12,13 @@ import java.util.stream.Collectors;
 public class BankUtil {
 
     // 계좌 번호를 랜덤 생성하는 메서드
-    public static String generateAccountNumber() {
+    public static String generateAccountNumber(Bank bank) {
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
 
-        sb.append("501"); // 은행 식별 번호
+        String orgCode = bank.getOrganization().getOrgCode();
+
+        sb.append(orgCode); // 은행 식별 번호
         sb.append("10"); // 계좌 유형 번호 (10은 예금)
 
         // 고객 계좌 식별 번호 (랜덤 생성)
@@ -75,8 +77,6 @@ public class BankUtil {
 
         // nonMemberAccounts가 비어 있는지 확인
         if (memberAccounts.isEmpty()) {
-            // 비어 있다면 예외 처리하거나 다른 방법으로 처리할 수 있음
-            // 여기서는 null을 반환하도록 함
             return null;
         }
 
