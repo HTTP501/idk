@@ -7,7 +7,7 @@ import {
   Dimensions,
   TextInput,
   ScrollView,
-  Keyboard 
+  Keyboard,
 } from "react-native";
 import theme from "../../../style";
 import { useEffect, useState } from "react";
@@ -23,65 +23,78 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
   const transferBank = route.params.data.transferBank;
   const memberName = route.params.data.memberName;
   const memberId = route.params.data.memberId;
+  const myName = route.params.data.myName;
+
   const otherName = memberName;
   let [focusOppentIndication, setFocusOppentIndication] = useState(false);
   let [focusMyIndication, setFocusMyIndication] = useState(false);
-  let [receiverPaymentContent, setReceiverPaymentContent] = useState(otherName);
-  let [myPaymentContent, setMyPaymentContent] = useState("");
+  let [receiverPaymentContent, setReceiverPaymentContent] = useState(myName);
+  let [myPaymentContent, setMyPaymentContent] = useState(otherName);
+  const data = {
+    transferAmount,
+    myAccount,
+    accountNumber,
+    transferBank,
+    memberName,
+    memberId,
+    receiverPaymentContent,
+    myPaymentContent,
+  };
   // 계좌 비밀번호 확인
-  const checkPW = ()=>{
-    navigation.navigate("AuthStack",{screen:'AuthPW',params:{data:route.params.data, destination:{stack:'MainStack',screen:"CheckSendMoneyInfo"}}})
-  }
-  // 이체 
-  const transferMoney = async()=>{
+  const checkPW = () => {
+    navigation.navigate("AuthStack", {
+      screen: "AuthPW",
+      params: {
+        data: data,
+        destination: { stack: "MainStack", screen: "CheckSendMoneyInfo" },
+      },
+    });
+  };
+  // 이체
+  const transferMoney = async () => {
     // 이체 axios
     await DepositOtherAccountAxios(
-      data={
-          "receiverId": memberId,
-          "accountNumber": accountNumber,
-          "transferBank": transferBank,
-          "transferAmount": transferAmount,
-          "receiverPaymentContent": receiverPaymentContent,
-          "myPaymentContent": myPaymentContent
+      ({
+        receiverId: memberId,
+        accountNumber: accountNumber,
+        transferBank: transferBank,
+        transferAmount: transferAmount,
+        receiverPaymentContent: receiverPaymentContent,
+        myPaymentContent: myPaymentContent,
+      }),
+      (res) => {
+        console.log(res.data.message);
       },
-      res =>{
-        console.log(res.data.message)
-      },
-      err=>{
-        console.log(err)
+      (err) => {
+        console.log(err);
       }
-    )
-      // // 송금 완료 페이지로 이동
-      navigation.navigate("FinishSendMoney", {
-        transferAmount,
-        myAccount,
-        otherName:memberName,
-      });
-    
-  }
+    );
+    // // 송금 완료 페이지로 이동
+    navigation.navigate("FinishSendMoney", {
+      transferAmount,
+      myAccount,
+      otherName: memberName,
+    });
+  };
 
   // 다시 네비게이트 되었을때 인증확인하고 이체 요청 보내주기
-  useFocusEffect(
-    React.useCallback(() => {
-      console.log('계좌 비번 인증 성공했음 ')
-      console.log(route.params)
-      if (route.params?.data.isChecked){
-        transferMoney()
-      }
-    }, [])
-  );
+  useEffect(() => {
+    console.log(route.params);
+    if (route.params?.data?.isChecked) {
+      setReceiverPaymentContent(route?.params?.data?.receiverPaymentContent);
+      setMyPaymentContent(route?.params?.data?.myPaymentContent);
+      transferMoney();
+    }
+  }, [route.params]);
+
   return (
     <View style={styles.container}>
-
       {/* 보내는 사람 데이터 */}
       <View style={styles.topView}>
-
         {/* 텍스트 포커스 될때 안보이게 함 */}
         {focusOppentIndication || focusMyIndication ? null : (
           <View>
-            <Text className="text-3xl font-bold mb-3 ">
-              {memberName}님
-            </Text>
+            <Text className="text-3xl font-bold mb-3 ">{memberName}님</Text>
             <Text>
               {transferBank} {accountNumber}
             </Text>
@@ -93,15 +106,15 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
 
       <View style={styles.middleView}>
         {/* 텍스트 포커스 될때 안보이게 함 */}
-      {focusOppentIndication || focusMyIndication ? null :
-        <View className="items-center">
-          <Text className="text-3xl font-bold mb-3">
-            {formattedNumber(transferAmount)}원
-          </Text>
-          <Text>잔액 {formattedNumber(myAccount)}원</Text>
-        </View>}
+        {focusOppentIndication || focusMyIndication ? null : (
+          <View className="items-center">
+            <Text className="text-3xl font-bold mb-3">
+              {formattedNumber(transferAmount)}원
+            </Text>
+            <Text>잔액 {formattedNumber(myAccount)}원</Text>
+          </View>
+        )}
       </View>
-
 
       {/* 통장 표시  */}
       <ScrollView contentContainerStyle={styles.bottomView}>
@@ -111,8 +124,8 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
             onFocus={() => setFocusOppentIndication(true)}
             onBlur={() => setFocusOppentIndication(false)}
             style={styles.input}
-            onChangeText={(text) => setMyPaymentContent(text)}
-            value={myPaymentContent}
+            onChangeText={(text) => setReceiverPaymentContent(text)}
+            value={receiverPaymentContent}
             className="text-2xl"
             returnKeyType="next"
             placeholder="받는 분 통장 표시"
@@ -124,8 +137,8 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
             onFocus={() => setFocusMyIndication(true)}
             onBlur={() => setFocusMyIndication(false)}
             style={styles.input}
-            onChangeText={(text) => setReceiverPaymentContent(text)}
-            value={receiverPaymentContent}
+            onChangeText={(text) => setMyPaymentContent(text)}
+            value={myPaymentContent}
             className="text-2xl"
             returnKeyType="next"
             placeholder="내 통장 표시"
@@ -133,14 +146,14 @@ const CheckSendMoneyInfo = ({ navigation, route }) => {
         </View>
       </ScrollView>
 
-
       {/* 다음 버튼 */}
       <TouchableOpacity
         style={theme.bottomButton}
         className="self-center"
         onPress={() => {
-          checkPW()
-        }}>
+          checkPW();
+        }}
+      >
         <Text className="text-xl font-bold text-white">다음</Text>
       </TouchableOpacity>
     </View>

@@ -12,7 +12,7 @@ const DepositList = function ({ deposit,navigation }) {
   for (const item of deposit) {
     const stringDate = new Date(item.transactionCreatedAt);
     const FullYear = stringDate.getFullYear()
-    const Month = stringDate.getMonth()
+    const Month = stringDate.getMonth()+1
     const day = stringDate.getDate()
     let date = ""
     //  올해라면 년 생략
@@ -59,6 +59,7 @@ const DepositOnedayList = function ({ item,navigation }) {
 };
 
 const DepositItem = function ({ item,navigation }) {
+  console.log(item)
   const date = new Date(item.transactionCreatedAt);
   // 시간 추출
   const hours = date.getHours();

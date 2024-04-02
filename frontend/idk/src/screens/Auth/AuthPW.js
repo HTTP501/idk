@@ -15,15 +15,22 @@ const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const AuthPW = ({ navigation, route }) => {
   const [password, setPassword] = useState("");
+  const [isPassed, setIsPassed] = useState(false)
   const destination = route?.params.destination;
   const data = route?.params?.data;
+
   useEffect(() => {
-    if (data === undefined || data===null) {
-      data[isChecked]=true 
+
+    if (isPassed === true) {
+      data.isChecked = true
+      console.log(data);
+      navigation.navigate(destination.stack, {
+        screen: destination.screen,
+        params: { data },
+      });
     }
-    data.isChecked = true
-    console.log("AuthPW", data);
-  }, []);
+  }, [isPassed]);
+
   // 숫자 입력 시 호출되는 함수
   const handlePWChange = (text) => {
     // 입력값이 숫자가 아니면 무시
@@ -48,15 +55,12 @@ const AuthPW = ({ navigation, route }) => {
       },
       async (res) => {
         console.log(res.data.message);
+        
         Alert.alert("인증이 완료되었습니다.", "", [
           {
             text: "확인",
             onPress: () => {
-              console.log("onPressed 속",data)
-              navigation.navigate(destination.stack, {
-                screen: destination.screen,
-                params: { data },
-              });
+              setIsPassed(true)
             },
           },
         ]);

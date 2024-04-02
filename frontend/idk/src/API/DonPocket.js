@@ -26,6 +26,12 @@ export const joinDonPocketAutoTransferAxios = async function (data, success, fai
         .then(success)
         .catch(fail)
 };
+// 돈포켓 자동이체 가입
+export const changeDonPocketOrderAxios = async function (data, success, fail) {
+  await local.put('/pocket/order', data)
+        .then(success)
+        .catch(fail)
+};
 
 // 돈포켓 자동이체 해지
 export const deleteDonPocketAutoTransferAxios = async function (pocketId, success, fail) {

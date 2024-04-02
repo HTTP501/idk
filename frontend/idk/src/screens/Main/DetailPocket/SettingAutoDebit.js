@@ -115,7 +115,7 @@ const SettingAutoDebit = ({ navigation, route }) => {
           style={styles.button}
           onPress={handleSetting}
         >
-          <Text className="text-white text-lg">수정</Text>
+          <Text className="text-white text-lg font-bold">수정</Text>
         </TouchableOpacity>
       </ScrollView>
 

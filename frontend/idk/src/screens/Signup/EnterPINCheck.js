@@ -65,7 +65,7 @@ const EnterPINCheck = ({ route, navigation }) => {
           }
         }}
       >
-        <Text className='text-white text-lg'>다음</Text>
+        <Text className='text-white text-lg font-bold'>다음</Text>
       </TouchableOpacity>
     </View>
   );

@@ -35,19 +35,20 @@ const Settings = ({ navigation, route }) => {
   ] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const [isPasswordChecked, setIsPasswordChecked] = useState(false);
-  
+
   // 다시 돌아올때 route 체크를 확인하고 해지한다
-  useEffect(()=>{
-    console.log(route)
-    if (route?.params?.data?.isChecked){
-      deleteAccount()
+  useEffect(() => {
+    console.log(route);
+    if (route?.params?.data?.isChecked) {
+      deleteAccount();
     }
-    }, [navigation])
+  }, [route?.params]);
   
+
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
   };
-  const destination = {stack:"SettingStack",screen:"Settings"}
+  const destination = { stack: "SettingStack", screen: "Settings" };
   // 계좌 별명 변경 Axios
   const handleNicknameChange = () => {
     setIsModalVisible(false);
@@ -109,17 +110,11 @@ const Settings = ({ navigation, route }) => {
   }, []);
 
   return (
-    // <View className="flex flex-1">
-    //   {
-    //     isChecking ?
-    //       // 체크한 결과 올려서 저장
-    //       <AuthPW changeResult={(res) => {
-    //         deleteAccount(res)
 
-    //       }} /> :
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={{
+          marginTop:30,
           paddingBottom: 50,
           flexGrow: 1,
           alignItems: "center",
@@ -249,11 +244,10 @@ const Settings = ({ navigation, route }) => {
                 style={styles.modalButton2}
                 onPress={() => {
                   setIsDeleteModalVisible(false);
-                  navigation.navigate(
-                    "AuthStack",
-                    { screen: "AuthPW",params:{data:{isChecked:false},destination} },
-                    
-                  );
+                  navigation.navigate("AuthStack", {
+                    screen: "AuthPW",
+                    params: { data: { isChecked: false }, destination },
+                  });
                   // setIsChecking(true)
                 }}
               >
@@ -266,15 +260,10 @@ const Settings = ({ navigation, route }) => {
         </View>
       </Modal>
     </View>
-    // }
-    // </View>
+
   );
 };
 
-// Settings.screenOptions = {
-//   tabBatStyle: "none",
-//   headerShown: false,
-// };
 
 export default Settings;
 

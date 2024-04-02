@@ -140,7 +140,7 @@ const SettingAutoTransfer = ({ navigation, route }) => {
         contentContainerStyle={{ flexGrow: 1, justifyContent: "center", alignItems: 'center' }}
       >
         <View style={styles.upbox}>
-          <Text className='text-xl font-bold'>돈 포켓 자동 넣기</Text>
+          <Text className='text-lg font-bold'>돈 포켓 자동 넣기</Text>
           <Switch
             trackColor={{ false: "#767577", true: "#81b0ff" }}
             thumbColor={isActivated ? "#f4f3f4" : "#f4f3f4"}
@@ -150,7 +150,7 @@ const SettingAutoTransfer = ({ navigation, route }) => {
           />
         </View>
         <View style={[styles.box, styles.input]}>
-          <Text className='text-xl font-bold mb-1'>돈포켓 이름</Text>
+          <Text className='text-lg font-bold mb-2'>돈포켓 이름</Text>
           <TextInput
             placeholder={name}
             className='text-lg'
@@ -159,63 +159,63 @@ const SettingAutoTransfer = ({ navigation, route }) => {
           >
           </TextInput>
         </View>
-        <View style={styles.box}>
-          <Text className="text-xl font-bold mb-3">출금 계좌</Text>
+        <View style={[styles.box]}>
+          <Text className="text-lg font-bold mb-5">출금 계좌</Text>
           <View className="flex-row items-center">
             <Image source={imgMatch['IDK은행']} style={{width: 50, height:50, marginRight: 10}}/>
             <View>
-              <Text className='text-lg'>{myAccount?.accountName}</Text>
-              <Text className='text-lg'>{myAccount?.accountNumber}</Text>
+              <Text className='text-base'>{myAccount?.accountName}</Text>
+              <Text className='text-base'>{myAccount?.accountNumber}</Text>
             </View>
           </View>
         </View>
-        <View style={styles.box}>
-          <Text className="text-xl font-bold mb-3">받는 분</Text>
+        <View style={[styles.box,{borderBottomWidth:1, borderBottomColor:theme.grey, paddingBottom:20}]}>
+          <Text className="text-lg font-bold mb-5">받는 분</Text>
           <View className='flex-row items-center'>
             <Image source={imgMatch[data?.toAccountBank]} style={{width: 50, height:50, marginRight: 10}}/>
-            <View className=''>
-              <Text className='text-lg'>{data?.toAccountBank}</Text>
-              <Text className='text-lg'>{data?.toAccount}</Text>
+            <View>
+              <Text className='text-base'>{data?.toAccountBank}</Text>
+              <Text className='text-base'>{data?.toAccount}</Text>
             </View>
           </View>
         </View>
         <View style={styles.box}>
-          <Text className="text-xl font-bold mb-1">이체 금액</Text>
+          <Text className="text-lg font-bold mb-3">이체 금액</Text>
           <Text className="text-lg">{data?.amount} 원</Text>
         </View>
         {/* 자동이체 주기 */}
         <View style={styles.box}>
-          <Text className="text-xl font-bold mb-1">자동 이체 주기</Text>
-          <Text className="text-lg">매월 {data?.date} 일</Text>
+          <Text className="text-lg font-bold mb-3">자동 이체 주기</Text>
+          <Text className="text-base">매월 {data?.date} 일</Text>
         </View>
 
         {/* 자동이체 기간 */}
-        <View style={styles.box}>
-          <Text className="text-xl font-bold mb-1">자동 이체 기간</Text>
-          <View className="flex-row items-center">
-            <Text className='text-lg'>시작일 : </Text>
-            <Text className='text-lg'>{data?.startYearMonth}</Text>
+        <View style={[styles.box,styles.input]}>
+          <Text className="text-lg font-bold mb-3">자동 이체 기간</Text>
+          <View className="flex-row items-center mb-3">
+            <Text className='text-base'>시작일 : </Text>
+            <Text className='text-base'>{data?.startYearMonth}</Text>
           </View>
           <View className="flex-row items-center">
-              <Text className='text-lg'>종료일 : </Text>
-              <Text className='text-lg'>{data?.endYearMonth}</Text>
+              <Text className='text-base'>종료일 : </Text>
+              <Text className='text-base'>{data?.endYearMonth}</Text>
           </View>
         </View>
 
         {/* 통장 표시 */}
         <View style={styles.box}>
-          <Text className="text-xl font-bold">받는 분 통장 표시</Text>
+          <Text className="text-lg font-bold mb-3">받는 분 통장 표시</Text>
           <Text className='text-lg'>{data?.showRecipientBankAccount}</Text>
         </View>
         <View style={styles.box}>
-          <Text className="text-xl font-bold">내 통장 표시</Text>
+          <Text className="text-lg font-bold mb-3">내 통장 표시</Text>
           <Text className='text-lg'>{data?.showMyBankAccount}</Text>
         </View>
         <TouchableOpacity
           style={styles.deleteButton}
           onPress={() => setShowModal(true)}
         >
-          <Text className="text-zinc-500 text-lg">돈포켓 해지하기</Text>
+          <Text className="text-zinc-500 text-lg mb-5">돈포켓 해지하기</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
@@ -232,8 +232,8 @@ const SettingAutoTransfer = ({ navigation, route }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text className='text-xl font-bold mb-1'>'{route.params.name}' 자동이체 돈포켓을</Text>
-            <Text className='text-xl font-bold mb-1'>해지하시겠습니까?</Text>
+            <Text className='text-lg font-bold mb-1'>'{route.params.name}' 자동이체 돈포켓을</Text>
+            <Text className='text-lg font-bold mb-1'>해지하시겠습니까?</Text>
             <TouchableOpacity
               style={styles.modalButton1}
               onPress={deleteDonPocket}
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   },
   box: {
     width: SCREEN_WIDTH * (4 / 5),
-    marginBottom: 30,
+    marginBottom: 20,
   },
   input: {
     borderBottomWidth: 1,
@@ -285,6 +285,7 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH * (4 / 5),
     // height: 40,
     paddingVertical: 10,
+    paddingBottom:20,
     alignSelf: "center",
   },
   button: {

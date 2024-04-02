@@ -36,7 +36,7 @@ const RegistAutoSendAgree = ({ navigation, route }) => {
     <View style={styles.container}>
       {/* 제목 */}
       <View style={styles.box} className="mb-16">
-        <Text className="text-3xl font-bold pl-3">자동이체 약관동의</Text>
+        <Text className="text-3xl font-bold ">자동이체 약관동의</Text>
       </View>
       {/* 전체 동의 */}
       <View style={styles.box}>

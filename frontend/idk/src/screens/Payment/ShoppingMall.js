@@ -10,10 +10,15 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { Fontisto, MaterialIcons } from "@expo/vector-icons";
+import { Fontisto, MaterialIcons, Entypo } from "@expo/vector-icons";
 import theme from "../../style";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useFocusEffect } from "@react-navigation/native";
+import Loading from "../../components/Loading.js";
+import {
+  callProductsDataAxios,
+  callProductsDetailDataAxios,
+} from "../../API/ShoppingMallData.js";
 
 const ShoppingMall = ({ navigation }) => {
   // 기믹에 이용될 상태들 선언
@@ -23,35 +28,80 @@ const ShoppingMall = ({ navigation }) => {
   const [choicePrice, setChoicePrice] = useState(null);
   const [choiceCommaPrice, setChoiceCommaPrice] = useState(null);
   const [choiceShop, setChoiceShop] = useState(null);
+  const [choiceId, setChoiceId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCallDataLoading, setIsCallDataLoading] = useState(true);
   const [isSelectAdd, setIsSelectAdd] = useState(false);
   const [isSelectProduct, setIsSelectProduct] = useState(false);
   const [isPushBtn, setIsPushBtn] = useState(false);
+  const [nowData, setNowData] = useState(null);
+  const [wantGoGoal, setWantGoGoal] = useState(false);
 
   // 화면 사이즈 찾기
   const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
   const menuWidth = windowWidth * 0.4;
-  const menuHeight = windowHeight * 0.4;
+  const menuHeight = windowHeight * 0.3;
   const imgSize = menuWidth * 0.8;
   const modalHeight = windowHeight * 0.35;
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setWantGoGoal(false)
+      setIsSelectProduct(false)
+      setIsPushBtn(false)
+      setModalVisiable(false)
+
+    }, [])
+  )
+
+  // 데이터가 설정되면 로딩 종료
+  useEffect(() => {
+    if (nowData !== null) {
+      setIsCallDataLoading(false)
+    }
+  }, [nowData])
+
+  // 카테고리가 바뀌면 바뀐 카테고리로 데이터 요청
+  useEffect(() => {
+    if (products !== null) {
+      const catchData = (response) => {
+        setNowData(response.data.data)
+      }
+  
+      const fail = (error) => {
+        console.log(error);
+      }
+      callProductsDataAxios(matchCategorys[products], catchData, fail)
+    }
+
+  }, [products])
 
   // 스타일 선언!
   const ShoppingMallStyles = StyleSheet.create({
     container: {
       flex: 1,
       paddingHorizontal: 20,
+      backgroundColor: "white"
+    },
+    toptitle: {
+      flex: 0.6,
+      marginTop: 60,
     },
     backBtn: {
       flex: 1,
-      marginTop: 60,
+      marginTop: windowHeight * 0.07,
+      marginLeft: windowWidth * 0.05,
+      position: "absolute"
     },
     pageTitle: {
-      fontSize: 25,
+      fontSize: 30,
       marginTop: 10,
       fontWeight: "bold",
+      textAlign: "center",
+      
     },
     categorys: {
-      flex: 1,
+      flex: 0.8,
       flexDirection: "row",
       justifyContent: "space-between",
       marginTop: 10,
@@ -63,7 +113,6 @@ const ShoppingMall = ({ navigation }) => {
     selectedCategory: {
       width: 60,
       height: 60,
-      // backgroundColor: "white",
       borderRadius: 30,
       justifyContent: "center",
       alignItems: "center",
@@ -90,7 +139,7 @@ const ShoppingMall = ({ navigation }) => {
     },
     menuText: {
       fontWeight: "bold",
-      // fontFamily: "PretendardVariable",
+      paddingHorizontal: 8,
     },
     modalContainer: {
       backgroundColor: "white",
@@ -123,7 +172,8 @@ const ShoppingMall = ({ navigation }) => {
   });
 
   // 카테고리 종류 배열로 선언
-  const productCategorys = ["식품", "뷰티", "전자제품", "의류", "기타"];
+  const productCategorys = ["식품", "전자제품", "뷰티", "의류", "기타"];
+  const matchCategorys = {"식품" : 1, "전자제품": 2, "뷰티": 3, "의류": 4, "기타": 5};
   //
   const imgMatch = {
     식품: require("../../../assets/categoryIcons/foods.png"),
@@ -134,70 +184,41 @@ const ShoppingMall = ({ navigation }) => {
   };
 
   const addPurchase = {
-    name: "추가",
-    price: 0,
-    shop: "입력",
+    itemId: 26,
+    itemName: "추가",
+    itemPrice: 0,
+    itemShop: "입력",
     category: "임의",
   };
 
-  const tmp_data = {
-    식품: [
-      { name: "음식1", price: 10000, shop: "슈퍼", category: "음식" },
-      { name: "음식2", price: 10000, shop: "슈퍼", category: "음식" },
-      { name: "음식3", price: 10000, shop: "슈퍼", category: "음식" },
-      { name: "음식4", price: 10000, shop: "슈퍼", category: "음식" },
-    ],
-    전자제품: [
-      {
-        name: "전자제품1",
-        price: 10000,
-        shop: "삼성전자",
-        category: "전자제품",
-      },
-      {
-        name: "전자제품2",
-        price: 10000,
-        shop: "삼성전자",
-        category: "전자제품",
-      },
-      {
-        name: "전자제품3",
-        price: 10000,
-        shop: "삼성전자",
-        category: "전자제품",
-      },
-      {
-        name: "전자제품4",
-        price: 10000,
-        shop: "삼성전자",
-        category: "전자제품",
-      },
-    ],
-    뷰티: [
-      { name: "뷰티1", price: 10000, shop: "올리브영", category: "뷰티" },
-      { name: "뷰티2", price: 10000, shop: "올리브영", category: "뷰티" },
-      { name: "뷰티3", price: 10000, shop: "올리브영", category: "뷰티" },
-      { name: "뷰티4", price: 10000, shop: "올리브영", category: "뷰티" },
-    ],
-    의류: [
-      { name: "의류1", price: 10000, shop: "무신사", category: "의류" },
-      { name: "의류2", price: 10000, shop: "무신사", category: "의류" },
-      { name: "의류3", price: 10000, shop: "무신사", category: "의류" },
-      { name: "의류4", price: 10000, shop: "무신사", category: "의류" },
-    ],
-    기타: [
-      { name: "기타1", price: 10000, shop: "쿠팡", category: "기타" },
-      { name: "기타2", price: 10000, shop: "쿠팡", category: "기타" },
-      { name: "기타3", price: 10000, shop: "쿠팡", category: "기타" },
-      { name: "기타4", price: 10000, shop: "쿠팡", category: "기타" },
-    ],
-  };
+  
   const menuImage = {
-    음식1: require("../../../assets/categoryItems/food1.jpg"),
-    음식2: require("../../../assets/categoryItems/food2.jpg"),
-    음식3: require("../../../assets/categoryItems/food3.jpg"),
-    음식4: require("../../../assets/categoryItems/food4.jpg"),
-    추가: require("../../../assets/categoryItems/add.png"),
+    1: require("../../../assets/categoryItems/1.webp"),
+    2: require("../../../assets/categoryItems/2.webp"),
+    3: require("../../../assets/categoryItems/3.webp"),
+    4: require("../../../assets/categoryItems/4.webp"),
+    5: require("../../../assets/categoryItems/5.webp"),
+    6: require("../../../assets/categoryItems/6.webp"),
+    7: require("../../../assets/categoryItems/7.webp"),
+    8: require("../../../assets/categoryItems/8.webp"),
+    9: require("../../../assets/categoryItems/9.webp"),
+    10: require("../../../assets/categoryItems/10.webp"),
+    11: require("../../../assets/categoryItems/11.webp"),
+    12: require("../../../assets/categoryItems/12.webp"),
+    13: require("../../../assets/categoryItems/13.webp"),
+    14: require("../../../assets/categoryItems/14.webp"),
+    15: require("../../../assets/categoryItems/15.webp"),
+    16: require("../../../assets/categoryItems/16.webp"),
+    17: require("../../../assets/categoryItems/17.webp"),
+    18: require("../../../assets/categoryItems/18.webp"),
+    19: require("../../../assets/categoryItems/19.webp"),
+    20: require("../../../assets/categoryItems/20.webp"),
+    21: require("../../../assets/categoryItems/21.webp"),
+    22: require("../../../assets/categoryItems/22.webp"),
+    23: require("../../../assets/categoryItems/23.webp"),
+    24: require("../../../assets/categoryItems/24.webp"),
+    25: require("../../../assets/categoryItems/25.webp"),
+    26: require("../../../assets/categoryItems/add.png"),
   };
   // 액수에 쉼표 찍는 함수
   const formattedNumber = function (number) {
@@ -206,10 +227,12 @@ const ShoppingMall = ({ navigation }) => {
 
   // 메뉴 선택 시, 해당 메뉴의 정보를 상태로 가져줄 함수
   const choiceMenu = async (item) => {
-    const newNum = formattedNumber(item.price);
-    setChoiceName(item.name);
-    setChoicePrice(item.price);
-    setChoiceShop(item.shop);
+
+    const newNum = formattedNumber(item.itemPrice);
+    setChoiceName(item.itemName);
+    setChoicePrice(item.itemPrice);
+    setChoiceShop(item.itemShop);
+    setChoiceId(item.itemId);
     setChoiceCommaPrice(newNum);
 
     setIsSelectProduct(true);
@@ -217,21 +240,22 @@ const ShoppingMall = ({ navigation }) => {
 
   const selectAdd = (item) => {
     setIsLoading(true);
-    setChoiceName(item.name);
+    setChoiceName(item.itemName);
     setChoicePrice("없음");
     setChoiceShop("없음");
     setChoiceCommaPrice("없음");
+    setChoiceId(item.itemId)
 
     setIsSelectAdd(true);
     setIsLoading(false);
 
-    // navigation.navigate("FinishPayment", { sendData });
+
   };
 
   // FlatList에서 각각의 값에 들어갈 컴포넌트 선언
   const Things = ({ item }) => {
     // + 인지 아닌지 판별 맞다면 +만 출력
-    if (item.name === "추가") {
+    if (item.itemName === "추가") {
       return (
         <View style={(style = ShoppingMallStyles.eachMenu)}>
           <TouchableOpacity
@@ -240,7 +264,7 @@ const ShoppingMall = ({ navigation }) => {
             }}
           >
             <Image
-              source={menuImage[item.name]}
+              source={menuImage[item.itemId]}
               style={{ width: 50, height: 50 }}
             />
           </TouchableOpacity>
@@ -249,7 +273,7 @@ const ShoppingMall = ({ navigation }) => {
       // 아니라면, 이미지와 상품명, 가격 출력
     } else {
       // 숫자에 쉼표달기!
-      const newNum = formattedNumber(item.price);
+      const newNum = formattedNumber(item.itemPrice);
       return (
         <View style={ShoppingMallStyles.eachMenu}>
           <TouchableOpacity
@@ -259,15 +283,15 @@ const ShoppingMall = ({ navigation }) => {
             }}
           >
             <Image
-              source={menuImage[item.name]}
-              style={{ width: imgSize, height: imgSize }}
+              source={menuImage[item.itemId]}
+              style={{ width: imgSize, height: imgSize, alignSelf: "center"}}
             />
             <Text
               style={{ ...ShoppingMallStyles.menuText, fontSize: 13 }}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {item.shop} {item.name}
+              {item.itemShop} {item.itemName}
             </Text>
             <Text style={{ ...ShoppingMallStyles.menuText, fontSize: 20 }}>
               {newNum}원
@@ -283,152 +307,185 @@ const ShoppingMall = ({ navigation }) => {
     setProducts(choice);
   };
 
-  const sendData = {
+  const data = {
+    itemId: choiceId,
     name: choiceName,
     price: choicePrice,
     shop: choiceShop,
     category: products,
+    isChecked: false
   };
+
+  const item = {
+    id: choiceId,
+    name: choiceName,
+    price: choicePrice,
+  }
 
   useEffect(() => {
     if (isSelectAdd) {
       setIsSelectAdd(false);
-      navigation.navigate("FinishPayment", { sendData });
+      navigation.navigate("FinishPayment", { data });
     } else if (isSelectProduct && isPushBtn) {
       setIsSelectProduct(false);
       setIsPushBtn(false);
-      navigation.navigate("FinishPayment", { sendData });
+      navigation.navigate("FinishPayment", { data });
     }
   });
+
+  // 목표저축으로 가는걸 감지해서 보내주는 useEffect
+  useEffect(() => {
+    if (wantGoGoal !== false) {
+      if (item.name.length > 25) {
+        item.name = item.name.substring(0, 20)
+      }
+      navigation.navigate("RegistGoalSaving", { item })
+    }
+  }, [wantGoGoal])
+
   // 코드 시작
   return (
-    <View style={ShoppingMallStyles.container}>
-      {/* 모달 부분 */}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={ModalVisiable}
-        onRequestClose={() => {
-          setModalVisiable(false);
-        }}
-      >
-        <TouchableOpacity
-          onPress={() => {
-            setModalVisiable(false);
-          }}
-        >
-          <View
-            style={{
-              ...ShoppingMallStyles.backgroundModal,
-              position: "absolute",
-            }}
-          ></View>
-        </TouchableOpacity>
-        <View
-          style={{
-            ...ShoppingMallStyles.modalContainer,
-          }}
-        >
-          <Text style={{ ...ShoppingMallStyles.modalFont, fontSize: 25 }}>
-            {choiceShop} {choiceName}
-          </Text>
-          <Text
-            style={{
-              ...ShoppingMallStyles.modalFont,
-              color: theme["black"],
-              marginBottom: 15,
-              fontSize: 20,
+    <View style={[ShoppingMallStyles.container]}>
+      {isCallDataLoading ? (<Loading/>) : (
+        <React.Fragment>
+          {/* 모달 부분 */}
+          <Modal
+            animationType="fade"
+            transparent={true}
+            visible={ModalVisiable}
+            onRequestClose={() => {
+              setModalVisiable(false);
             }}
           >
-            {" "}
-            {choiceCommaPrice}원{" "}
-          </Text>
-          {/* 목표저축으로 가는 버튼 연결하기 */}
-          <View>
             <TouchableOpacity
-              style={{
-                ...ShoppingMallStyles.moveBtn,
-                backgroundColor: theme["sky-bright-6"],
-                borderColor: theme["sky-bright-6"],
-              }}
-            >
-              <Text style={ShoppingMallStyles.modalFont}>
-                목표 저축 등록하러 가기
-              </Text>
-            </TouchableOpacity>
-          </View>
-          {/* 결제화면으로 가는 버튼 */}
-          <View>
-            <TouchableOpacity
-              style={{
-                ...ShoppingMallStyles.moveBtn,
-                backgroundColor: theme["sky-bright-2"],
-                borderColor: theme["sky-bright-2"],
-              }}
               onPress={() => {
                 setModalVisiable(false);
-                setIsPushBtn(true);
-                // navigation.navigate("FinishPayment", { sendData });
               }}
             >
-              <Text style={ShoppingMallStyles.modalFont}>결제하기</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-      {/* 상단 부분 (뒤로가기, 카테고리 텍스트) */}
-      <View style={ShoppingMallStyles.backBtn}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack();
-          }}
-        >
-          <MaterialIcons name="arrow-back-ios-new" size={36} color="black" />
-        </TouchableOpacity>
-        <Text style={ShoppingMallStyles.pageTitle}>카테고리</Text>
-      </View>
-
-      {/* 카테고리 바 부분 */}
-      <View style={ShoppingMallStyles.categorys}>
-        {productCategorys.map((cate) => (
-          <View key={cate} style={ShoppingMallStyles.eachCategory}>
-            <TouchableOpacity onPress={() => clickCategory(cate)}>
               <View
                 style={{
-                  ...ShoppingMallStyles.selectedCategory,
-                  backgroundColor: products === cate ? "skyblue" : null,
+                  ...ShoppingMallStyles.backgroundModal,
+                  position: "absolute",
+                }}
+              ></View>
+            </TouchableOpacity>
+            <View
+              style={{
+                ...ShoppingMallStyles.modalContainer,
+              }}
+            >
+              <Text style={{ ...ShoppingMallStyles.modalFont, fontSize: 23, paddingHorizontal: 20 }}>
+                {choiceShop} {choiceName}
+              </Text>
+              <Text
+                style={{
+                  ...ShoppingMallStyles.modalFont,
+                  color: theme["black"],
+                  marginBottom: 15,
+                  fontSize: 20,
                 }}
               >
-                <Image
-                  source={imgMatch[cate]}
-                  style={{ width: 50, height: 50 }}
-                />
+                {" "}
+                {choiceCommaPrice}원{" "}
+              </Text>
+              {/* 목표저축으로 가는 버튼 연결하기 */}
+              <View>
+                <TouchableOpacity
+                  style={{
+                    ...ShoppingMallStyles.moveBtn,
+                    backgroundColor: theme["sky-bright-6"],
+                    borderColor: theme["sky-bright-6"],
+                  }}
+                  onPress={() => {
+                    setWantGoGoal(true)
+                  }}
+                >
+                  <Text style={ShoppingMallStyles.modalFont}>
+                    목표 저축 등록하러 가기
+                  </Text>
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
-            <Text>{cate}</Text>
+              {/* 결제화면으로 가는 버튼 */}
+              <View>
+                <TouchableOpacity
+                  style={{
+                    ...ShoppingMallStyles.moveBtn,
+                    backgroundColor: theme["sky-bright-2"],
+                    borderColor: theme["sky-bright-2"],
+                  }}
+                  onPress={() => {
+                    setModalVisiable(false);
+                    setIsPushBtn(true);
+                    // navigation.navigate("FinishPayment", { data });
+                  }}
+                >
+                  <Text style={ShoppingMallStyles.modalFont}>결제하기</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+          {/* 상단 부분 (뒤로가기, 카테고리 텍스트) */}
+          <View style={{...ShoppingMallStyles.toptitle}}>
+            <Text style={ShoppingMallStyles.pageTitle}>IDK 몰</Text>
           </View>
-        ))}
-      </View>
 
-      {/* 카테고리 별 상품 출력 부분 */}
-      <View style={ShoppingMallStyles.mainContent}>
-        <FlatList
-          // 먼저 필수 prop인 data를 보자 무조건 배열로 받아야한다!
-          data={[...tmp_data[products], addPurchase]}
-          // 다음 필수 prop인 renderItem이다.
-          renderItem={Things}
-          // 이것도 필수 prop인것 같다. key값을 주는 것인듯!(map을 생각해보자)
-          keyExtractor={(item, index) => index}
-          // 한개의 row에 몇개의 item(배열 안 요소)을 출력할지에 대해 정하는 prop
-          numColumns={2}
-          // numColumns가 있을 때만 사용가능한 props로 열간의 간격, 각 열의 스타일을 설정할 수 있다.
-          columnWrapperStyle={{
-            justifyContent: "space-between",
-            paddingHorizontal: 10,
-            alignItems: "center",
-          }}
-        />
-      </View>
+          {/* 뒤로가기 버튼 부분 */}
+          {/* <View style={{...ShoppingMallStyles.backBtn}}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.goBack();
+              }}
+            >
+              <MaterialIcons name="arrow-back-ios-new" size={36} color="black" />
+            </TouchableOpacity>
+            
+          </View> */}
+
+          {/* 카테고리 바 부분 */}
+          <View style={ShoppingMallStyles.categorys}>
+            {productCategorys.map((cate) => (
+              <View key={cate} style={ShoppingMallStyles.eachCategory}>
+                <TouchableOpacity onPress={() => clickCategory(cate)}>
+                  <View
+                    style={{
+                      ...ShoppingMallStyles.selectedCategory,
+                      backgroundColor: products === cate ? "skyblue" : null,
+                    }}
+                  >
+                    <Image
+                      source={imgMatch[cate]}
+                      style={{ width: 35, height: 35 }}
+                    />
+                  </View>
+                </TouchableOpacity>
+                <Text>{cate}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* 카테고리 별 상품 출력 부분 */}
+          <View style={ShoppingMallStyles.mainContent}>
+            <FlatList
+            showsHorizontalScrollIndicator={false}
+              // 먼저 필수 prop인 data를 보자 무조건 배열로 받아야한다!
+              // 만약 + 구현할거면! 여기에 addPurchase 추가해주자!
+              data={[...nowData]}
+              // 다음 필수 prop인 renderItem이다.
+              renderItem={Things}
+              // 이것도 필수 prop인것 같다. key값을 주는 것인듯!(map을 생각해보자)
+              keyExtractor={(item, index) => index}
+              // 한개의 row에 몇개의 item(배열 안 요소)을 출력할지에 대해 정하는 prop
+              numColumns={2}
+              // numColumns가 있을 때만 사용가능한 props로 열간의 간격, 각 열의 스타일을 설정할 수 있다.
+              columnWrapperStyle={{
+                justifyContent: "space-between",
+                paddingHorizontal: 10,
+                alignItems: "center",
+              }}
+            />
+          </View>
+        </React.Fragment>
+      )}
     </View>
   );
 };

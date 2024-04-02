@@ -62,7 +62,7 @@ const EnterBirthId = ({ route, navigation }) => {
         style={[styles.button, { opacity: (firstInputValue.length === 6 && secondInputValue.length === 7) ? 1 : 0.5 }]}
         disabled={!(firstInputValue.length === 6 && secondInputValue.length === 7)}
         onPress={() => navigation.navigate('EnterPhoneNumber', sendData)}>
-        <Text className='text-white text-lg'>다음</Text>
+        <Text className='text-white text-lg font-bold'>다음</Text>
       </TouchableOpacity>
     </View>
   );

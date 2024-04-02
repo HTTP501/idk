@@ -84,7 +84,6 @@ const RegistAutoSendContent = ({ navigation, route }) => {
   const [date, setDate] = useState(15);
   const [amount, setAmount] = useState(5000);
   const myDataInfo = route.params.myDataInfo
-  console.log(myDataInfo);
 
   // 시작 년월, 종료 년월
   const [startYear, setStartYear] = useState(getCurrentYear());
@@ -94,7 +93,22 @@ const RegistAutoSendContent = ({ navigation, route }) => {
   const [showMyAccountName, setShowMyAccountName] = useState("");
   const [showOtherAccountName, setShowOtherAccountName] = useState("");
   const [myAccount, setMyAccount] = useState({});
-
+  const data = {
+    bankName,
+    accountId,
+    date,
+    amount,
+    startYear,
+    startMonth,
+    endYear,
+    endMonth,
+    myAccount,
+    isChecked:false
+  }
+  const destination = {
+    stack:"MainStack",
+    screen:"RegistAutoSendContent"
+  }
   // '등록' 버튼 활성화 여부
   const isRegistButtonEnabled = showMyAccountName !== "" &&
     showOtherAccountName !== "" &&
@@ -109,7 +123,21 @@ const RegistAutoSendContent = ({ navigation, route }) => {
       setAmount(number);
     }
   };
-
+  // params 받기
+  useEffect(()=>{
+    if (route?.params?.data?.isChecked){
+      setBankName(route.params.data.bankName)
+      setAccountId(route.params.data.accountId)
+      setDate(route.params.data.date)
+      setAmount(route.params.data.amount)
+      setStartYear(route.params.data.startYear)
+      setStartMonth(route.params.data.startMonth)
+      setEndYear(route.params.data.endYear)
+      setEndMonth(route.params.data.endMonth)
+      setMyAccount(route.params.data.myAccount)
+      registAutoSend()
+    }
+  },[route.params])
   useEffect(() => {
     if (date > 28 || date < 1) {
       Alert.alert("이체일은 1일에서 28일 사이만 가능합니다", "", [
@@ -131,6 +159,7 @@ const RegistAutoSendContent = ({ navigation, route }) => {
       (res) => {
         console.log(res);
         setMyAccount(res.data.data);
+        setShowOtherAccountName(res.data.data.userName)
       },
       (err) => {
         console.log(err);
@@ -148,8 +177,8 @@ const RegistAutoSendContent = ({ navigation, route }) => {
       date: date,
       startYearMonth: `${startYear}-${startMonth.toString().padStart(2, "0")}`,
       endYearMonth: `${endYear}-${endMonth.toString().padStart(2, "0")}`,
-      showRecipientBankAccount: showMyAccountName,
-      showMyBankAccount: showOtherAccountName,
+      showRecipientBankAccount: showOtherAccountName,
+      showMyBankAccount: showMyAccountName,
     };
     console.log(payload);
     await registAutoTransferAxios(
@@ -182,7 +211,7 @@ const RegistAutoSendContent = ({ navigation, route }) => {
         <View style={styles.box}>
           <Text className="text-lg font-bold ">출금 계좌</Text>
           <View className="border p-2 mt-2 flex-row rounded border-gray-300">
-            <Image source={imgMatch[myAccount?.accountName]} style={{ width: 50, height: 50}}/>
+            <Image source={require("../../../../../assets/logo/app_icon.png")} style={{ width: 40, height: 40, marginRight: 10}}/>
             <View>
               <Text className="text-base font-bold">{myAccount?.accountName}</Text>
               <Text>{myAccount?.accountNumber}</Text>
@@ -299,9 +328,9 @@ const RegistAutoSendContent = ({ navigation, route }) => {
         <View style={styles.box}>
           <Text className="text-lg font-bold">받는 분 통장 표시</Text>
           <TextInput
-            value={showMyAccountName}
+            value={showOtherAccountName}
             onChangeText={(text) => {
-              setShowMyAccountName(text);
+              setShowOtherAccountName(text);
             }}
             style={styles.input}
             placeholder="ex) 홍길동"
@@ -310,9 +339,9 @@ const RegistAutoSendContent = ({ navigation, route }) => {
         <View style={styles.box}>
           <Text className="text-lg font-bold">내 통장 표시</Text>
           <TextInput
-            value={showOtherAccountName}
+            value={showMyAccountName}
             onChangeText={(text) => {
-              setShowOtherAccountName(text);
+              setShowMyAccountName(text);
             }}
             style={styles.input}
             placeholder="ex) 아이들과 미래재단 정기후원"

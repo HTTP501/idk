@@ -18,7 +18,7 @@ export default function localAxios() {
     async (config) => {
       try {
         const accessToken = await AsyncStorage.getItem("@auth");
-        console.log(accessToken)
+        // console.log(accessToken)
         config.headers["Content-Type"] = "application/json";
         if (accessToken !== null) {
           config.headers.Authorization = `Bearer ${
@@ -43,13 +43,6 @@ export default function localAxios() {
     },
     // 만약 요청을 보내서 에러가 왔다면,
     async (error) => {
-      console.log(error);
-      console.log(error.name);
-      console.log(error.message);
-      console.log(error.code);
-      console.log(error.request);
-      console.log(Object.keys(error));
-      // console.log("response",error.response.data)
       // 해당 에러의 코드를 가져온다.
       const status = error.response.data.status;
 
@@ -99,7 +92,7 @@ export default function localAxios() {
               {
                 text: "확인",
                 onPress: () => {
-                  navigate("AuthStack");
+                  navigate("AuthStack",{screen:'AuthPIN'});
                 },
               },
             ]

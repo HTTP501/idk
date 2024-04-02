@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
+import theme from "./style";
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -96,14 +97,14 @@ export default function MainApp() {
         <View>
           <Text
             style={{
-              fontSize: 20,
+              fontSize: 25,
               fontWeight: "bold",
               textAlign: "center",
               color: "white",
               marginVertical: 20,
             }}
           >
-            매달 고정 지출 관리가 어렵다면?
+            나의 지출관리 도우미, IDK
           </Text>
           <Text className='text-base text-center text-white mb-8 font-bold'>넘기며 확인해보세요!</Text>
         </View>
@@ -170,17 +171,19 @@ export default function MainApp() {
               style={{
                 alignItems: "center",
                 justifyContent: "center",
-                borderWidth: 0.5,
-                height: 50,
+                
+                borderWidth: 3,
+                height: 80,
                 borderColor: "white",
-                borderRadius: 10,
+                borderRadius: 20,
+                backgroundColor:theme["sky-bright-1"]
               }}
               onPress={() => {
                 // 회원가입 페이지로 이동
                 navigation.navigate("SignupStack");
               }}
             >
-              <Text className="text-white">IDK 은행 회원가입</Text>
+              <Text className="text-white text-2xl font-bold">IDK 은행 회원가입</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

@@ -37,7 +37,7 @@ const EnterName = ({ navigation }) => {
         style={[styles.button, { opacity: isButtonDisabled ? 0.5 : 1 }]}
         disabled={isButtonDisabled}
         onPress={() => navigation.navigate('EnterBirthId', sendData)}>
-        <Text className="text-white text-lg">다음</Text>
+        <Text className="text-white text-lg font-bold">다음</Text>
       </TouchableOpacity>
     </View>
   );
