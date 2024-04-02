@@ -119,19 +119,21 @@ public class MydataController {
         List<AutoTransferInfoDto> autoTransferInfoDtoList = new ArrayList<>();
 
         List<AutoTransferInfoDto> autoTransferInfoDtos = new ArrayList<>();
+
         // 은행은 자동이체 목록
         autoTransferInfoDtos = clientBankService.getAutoTransferInfo(member.getName(), member.getConnectionInformation());
         autoTransferInfoDtoList.addAll(autoTransferInfoDtos);
+
         // 카드사는 청구계좌
         autoTransferInfoDtos = clientCardService.getAutoTransferInfo(member.getName(), member.getConnectionInformation());
         autoTransferInfoDtoList.addAll(autoTransferInfoDtos);
 
         // 저장
-        mydataService.saveAssetList(member, autoTransferInfoDtoList);
+//        mydataService.saveAssetList(member, autoTransferInfoDtoList);
 
         // 응답데이터 만들기
         MydataGetResponseDto mydataGetResponseDto = mydataService.getAssetListInfo(member, autoTransferInfoDtoList);
 
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.IDK_MYDATA_GET_SUCCESS, AutoTransferInfoListResponseDto.of(autoTransferInfoDtoList)));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.IDK_MYDATA_GET_SUCCESS, mydataGetResponseDto));
     }
 }
