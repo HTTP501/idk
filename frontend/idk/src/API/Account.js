@@ -88,8 +88,10 @@ export const settingSalaryAxios = async function (data, success, fail) {
   await local.post(`/salary`,data).then(success).catch(fail);
 };
 // 월급 수정
-export const changeSalaryAxios = async function (data, success, fail) {
-  await local.put(`/salary`,data).then(success).catch(fail);
+export const changeSalaryAxios = async function (salaryId,data, success, fail) {
+  console.log("salaryId",salaryId)
+  console.log("data",data)
+  await local.put(`/salary/${salaryId}`,data).then(success).catch(fail);
 };
 // 월급 삭제
 export const deleteSalaryAxios = async function (data, success, fail) {

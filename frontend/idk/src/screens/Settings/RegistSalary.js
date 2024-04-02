@@ -26,7 +26,7 @@ const RegistSalary = ({ navigation, route }) => {
     let [showModal, setShowModal] = useState(0);
     let [accountId, setAccountId] = useState("");
     let [salaryId, setSalaryId] = useState(null);
-    let type = "post"
+    let [type,setType] = useState("post")
     const ACCOUNT_KEY = "@account";
     useEffect(() => {
         getAccountId()
@@ -48,7 +48,7 @@ const RegistSalary = ({ navigation, route }) => {
     const getSalaryData = async (data) => {
         getSalaryAxios(data, res => {
             if (res.data.code === "SLR002") {
-                type = "put"
+                setType("put")
                 setSalaryId(res.data.data.salaryId)
             }
             console.log(res.data.data)
@@ -99,21 +99,22 @@ const RegistSalary = ({ navigation, route }) => {
             amount: amount * 10000,
         };
         if (type === "post") {
-
             settingSalaryAxios(data, res => {
                 console.log(res.data.message)
             }, err => {
                 console.log(err)
             })
-            console.log(data);
+            
         }
         else {
-            changeSalaryAxios(data, res => {
+            
+            changeSalaryAxios(salaryId,data
+                , res => {
                 console.log(res.data.message)
             }, err => {
                 console.log(err)
             })
-            console.log(data);
+            
         }
     }
     // 월급 삭제
