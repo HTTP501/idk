@@ -51,7 +51,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     // 계좌 조회 Axios
     await getAccountAxios(
       (res) => {
-        console.log(res.data.data);
+        console.log("계좌 데이터",res.data.data);
         // 스토리지에 계좌정보만 저장해주기
         const data = JSON.stringify({
           accountNumber: res.data.data.accountNumber,
@@ -60,11 +60,12 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
         AsyncStorage.setItem(ACCOUNT_KEY, data)
         // 돈포켓 조회 Axios
         getPocketListAxios(
-          res.data.data.accountId,
           res => {
+            // console.log('돈포켓 데이터',res?.data?.data?.arrayPocket)
             setPocketData(res.data.data.arrayPocket)
           },
           err => {
+            console.log("돈포켓 에러",err.config)
           }
         )
         setAccount(res.data.data);

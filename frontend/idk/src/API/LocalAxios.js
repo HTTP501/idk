@@ -44,9 +44,9 @@ export default function localAxios() {
     // 만약 요청을 보내서 에러가 왔다면,
     async (error) => {
       
-      console.log("err",error)
-      // console.log("response",error?.response)
-      console.log("response.data",error?.response?.data)
+      // console.log("err",error)
+      // console.log("response",error?.config)
+      // console.log("response.data",error?.response?.data)
       
       // 해당 에러의 코드를 가져온다.
       const status = error.response.data.status;

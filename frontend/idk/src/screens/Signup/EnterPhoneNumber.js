@@ -23,7 +23,7 @@ const EnterPhoneNumber = ({ route, navigation }) => {
   const [verificationCode, setVerificationCode] = useState(""); // 인증 번호
   const [completeVerificationCode, setCompleteVerificationCode] =
     useState(false); // 인증 완료 여부
-
+  const [errState,setErrState] = useState("")
   const receiveData = route.params;
   const sendData = {
     ...receiveData,
@@ -63,8 +63,12 @@ const EnterPhoneNumber = ({ route, navigation }) => {
     // 인증 번호 Axios 요청
     await phoneAxios(
       { phoneNumber: phoneNumber.replace(/[^\d]/g, "") },
-      (res) => {},
+      (res) => {
+        
+
+      },
       (err) => {
+        setErrState(err?.response?.data?.messaage)
         if (err.response.data.code === "M404") {
           // 문자 전송 요청 실패
           Alert.alert("문자 전송 요청에 실패했습니다.", "", [{ text: "확인" }]);
@@ -177,6 +181,7 @@ const EnterPhoneNumber = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       )}
+      {/* <Text>{errState}</Text> */}
       <TouchableOpacity
         style={[
           styles.button,

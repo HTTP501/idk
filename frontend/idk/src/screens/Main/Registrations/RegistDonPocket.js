@@ -42,7 +42,7 @@ const imgMatch = {
 }
 
 // 페이지
-const RegistDonPocket = ({navigation}) => {
+const RegistDonPocket = ({navigation,route}) => {
   const [autoTransferList, setAutoTransferList] = useState([
     {
       amount: 70000,
@@ -62,7 +62,14 @@ const RegistDonPocket = ({navigation}) => {
   const [autoDebitList, setAutoDebitList] = useState(null)
   const [accountId, setAccountId] = useState(null)
   const [loading, setLoading] = useState(false);
-  
+  // 목적지
+  const destination = { stack: "Main", screen: "RegistDonPocket" }
+  // 해지 버튼 누르고 비밀번호 검증한 뒤 해지
+  useEffect(()=>{
+    if (route?.params?.data?.isChecked){
+      handleDeletePocket()
+    }
+  },[route?.params])
   const getAccountId = async () => {
     const a = await AsyncStorage.getItem(ACCOUNT_KEY)
     setAccountId(JSON.parse(a).accountId)
@@ -307,7 +314,12 @@ const Pocket = function ({ getAccountId,dataType,myDataItemId,navigation }) {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton22}
-              onPress={handleDeletePocket}
+              onPress={()=>{
+                navigation.navigate("AuthStack", {
+                  screen: "AuthPW",
+                  params: { data: { isChecked: false }, destination },
+                });
+              }}
             >
               <Text className="font-bold text-lg text-gray-500">해지하기</Text>
             </TouchableOpacity>
