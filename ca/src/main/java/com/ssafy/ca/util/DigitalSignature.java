@@ -18,11 +18,13 @@ import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.util.Store;
 import org.bouncycastle.asn1.cms.Attribute;
 
+import java.io.File;
 import java.io.OutputStream;
 import com.ssafy.ca.exception.CaException;
 import com.ssafy.ca.global.error.ErrorCode;
 import org.springframework.core.io.ClassPathResource;
 
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
@@ -44,12 +46,12 @@ public class DigitalSignature {
     public static byte[] signData(byte[] data) {
 
         try {
-            String privateKeyPath = "src/main/resources/certs/ca_private.key";
-            // URL resourceUrl  = DigitalSignature.class.getClassLoader().getResource("certs/ca_private.key");
-            // File privateKeyFile = new File(resourceUrl.toURI());
-            // String privateKeyPath2 = privateKeyFile.getAbsolutePath();
-            LOGGER.severe("상대경로 : " + privateKeyPath);
-            // LOGGER.severe("절대경로로 : " + privateKeyPath2);
+            String privateKeyPath2 = "src/main/resources/certs/ca_private.key";
+            URL resourceUrl  = DigitalSignature.class.getClassLoader().getResource("certs/ca_private.key");
+            File privateKeyFile = new File(resourceUrl.toURI());
+            String privateKeyPath = privateKeyFile.getAbsolutePath();
+            LOGGER.severe("상대경로 : " + privateKeyPath2);
+            LOGGER.severe("절대경로 : " + privateKeyPath);
             
             // 파일 존재 여부 확인
             if (!Files.exists(Paths.get(privateKeyPath))) {
