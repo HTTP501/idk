@@ -43,6 +43,10 @@ import { changeDonPocketOrderAxios } from "../../API/DonPocket";
 const Main = gestureHandlerRootHOC(({ navigation }) => {
   const ACCOUNT_KEY = "@account";
   let [loading, setLoading] = useState(false);
+  // 필터링 된 데이터
+  const [savingPocketData, setSavingPocketData] = useState(null);
+  const [autoTransferPocketData, setAutoTransferPocketData] = useState(null);
+  const [autoDebitPocketData, setAutoDebitPocketData] = useState(null);
   // 저금통 데이터
   const [piggyBankData, setPiggyBankData] = useState(null);
 
@@ -62,6 +66,21 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
         getPocketListAxios(
           (res) => {
             setPocketData(res.data.data.arrayPocket);
+            setSavingPocketData(
+              res.data.data.arrayPocket.filter(
+                (item) => item.pocketType === "목표저축"
+              )
+            );
+            setAutoTransferPocketData(
+              res.data.data.arrayPocket.filter(
+                (item) => item.pocketType === "자동이체"
+              )
+            );
+            setAutoDebitPocketData(
+              res.data.data.arrayPocket.filter(
+                (item) => item.pocketType === "자동결제"
+              )
+            );
           },
           (err) => {}
         );
@@ -120,16 +139,6 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
 
   let [pocketType, setPocketType] = useState("total");
 
-  // 필터링 된 데이터
-  let [savingPocketData, setSavingPocketData] = useState(
-    pocketData.filter((item) => item.pocketType === "목표저축")
-  );
-  let [autoTransferPocketData, setAutoTransferPocketData] = useState(
-    pocketData.filter((item) => item.pocketType === "자동이체")
-  );
-  let [autoDebitPocketData, setAutoDebitPocketData] = useState(
-    pocketData.filter((item) => item.pocketType === "자동결제")
-  );
   // 포켓 순서 바꾸기
   const changePocketOrder = async function (data) {
     setPocketData(data);
@@ -150,7 +159,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   const totalPocket = pocketData.reduce((acc, curr) => acc + curr.balance, 0);
   // + 버튼 눌렸는지 판단
   let [isButtenOpen, setisButtenOpen] = useState(false);
-
+  console.log(savingPocketData);
   return (
     <View className="flex-1">
       {/* 로딩이 끝나야 보여줌 */}
@@ -399,7 +408,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: "center",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     alignItems: "center",
     padding: 12,
     paddingHorizontal: 20,

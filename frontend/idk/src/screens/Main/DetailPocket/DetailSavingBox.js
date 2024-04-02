@@ -65,7 +65,7 @@ const DetailSavingBox = ({ navigation, route }) => {
     fetchPiggyBankDetail();
     setTimeout(() => {
       setLoading(true);
-    }, 1000);
+    }, 700);
   }, []);
 
   // 화면 포커싱 시 데이터 다시 가져오기

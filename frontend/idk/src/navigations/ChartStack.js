@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 const Stack = createNativeStackNavigator();
 
-function ChartStack() {
+function ChartStack({ navigation }) {
   const renderBackButton = (page) => {
     return (
       <TouchableOpacity onPress={() => navigation.goBack()}>
