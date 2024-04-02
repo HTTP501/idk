@@ -133,7 +133,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     accountId: 4,
     accountMinAmount: 0,
     accountName: "IDK 우리나라 국민우대통장",
-    accountNumber: "1234567891010",
+    accountNumber: "",
     accountPayDate: 1,
   });
   // 돈포켓 데이터
@@ -152,7 +152,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     console.log(orderedId)
     changeDonPocketOrderAxios({arrayPocketId:orderedId},
       res=>{
-      console.log(res)
+      // console.log(res)
     }, err =>{
       console.log(err)
     }
@@ -160,10 +160,10 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   }
 
   // 돈포켓 총 금액
-  const totalPocket = pocketData.reduce((acc, curr) => acc + curr.balance, 0);
+  const totalPocket = pocketData.reduce((acc, curr) => acc + curr.balance, 0) + piggyBankData?.balance
   // + 버튼 눌렸는지 판단
   let [isButtenOpen, setisButtenOpen] = useState(false);
-  console.log(savingPocketData);
+  // console.log(savingPocketData);
   return (
     <View className="flex-1">
       {/* 로딩이 끝나야 보여줌 */}
@@ -179,7 +179,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
 
             {/* 계좌 */}
             <View className="justify-center items-center">
-              <Account account={account} navigation={navigation} />
+              <Account account={account} navigation={navigation} totalPocket={totalPocket}/>
             </View>
 
             {/* 옵션 표기 */}
@@ -260,11 +260,15 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
                     destination={"RegistDonPocket"}
                     navigation={navigation}
                   />
+                  {/* 저금통 가입시 안보여주기 */}
+                  {piggyBankData? 
+                  null:
                   <PlusButton
                     title={"저금통 가입하기"}
                     destination={"RegistSavingBox"}
                     navigation={navigation}
                   />
+                  }
                   <TouchableOpacity
                     style={[styles.button, styles.shadow]}
                     onPress={() => {

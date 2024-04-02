@@ -90,11 +90,11 @@ const AuthPIN = ({ navigation }) => {
   // 확인 함수
   const verifyPIN = async (numericText) => {
     const p = await AsyncStorage.getItem(SIGNUP_KEY)
-    const phoneNumber = JSON.parse(p).phoneNumber
+    // const phoneNumber = JSON.parse(p).phoneNumber
     loginPINAxios(
       {
         pin: numericText,
-        phoneNumber: phoneNumber
+        phoneNumber: "01085894684"
       },
       async (res) => {
         setShowModal(false)
