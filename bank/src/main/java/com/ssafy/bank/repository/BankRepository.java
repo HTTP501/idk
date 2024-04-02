@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface BankRepository extends JpaRepository<Bank, Long> {
     Optional<Bank> findByOrganization(Organization organization);
+
+    Optional<Bank> findByName(String orgName);
 }
