@@ -258,7 +258,7 @@ const Chart = ({ navigation }) => {
   const now = new Date();
   const oneYearAgo = new Date(
     now.getFullYear() - 1,
-    now.getMonth(),
+    now.getMonth() - 1,
     now.getDate()
   );
 
@@ -267,7 +267,7 @@ const Chart = ({ navigation }) => {
     .scaleUtc()
     // 현재로부터 1년까지 범위로 정함
     .domain([oneYearAgo, now])
-    .range([20, width]);
+    .range([0, width]);
 
   // y축 (수직선) 축척 선언
   const y = d3
@@ -397,9 +397,9 @@ const Chart = ({ navigation }) => {
               </SvgText>
               <G>
                 <Rect
-                  x={0}
+                  x={20}
                   y={height}
-                  width={width * 1.05}
+                  width={width * 1.01}
                   height="40"
                   rx={3}
                   ry={3}
@@ -429,7 +429,7 @@ const Chart = ({ navigation }) => {
                       textAnchor="middle"
                       fill={"black"}
                     >
-                      {d3.timeFormat("%Y")(tick) === String(selectedYear)
+                      {d3.timeFormat("%Y")(tick) === String(now.getFullYear())
                         ? `${parseInt(d3.timeFormat("%m")(tick), 10)}월`
                         : d3.timeFormat("%y.%m")(tick)}
                     </SvgText>

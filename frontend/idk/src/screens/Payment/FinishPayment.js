@@ -22,6 +22,7 @@ import CheckBox from "expo-checkbox";
 import { payRequestAxios, approvalPayAxios } from "../../API/PayRequest.js";
 import { getAccountAxios } from "../../API/Account.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import formattedNumber from "../../components/moneyFormatter.js";
 import { json } from "d3";
 
 const FinishPayment = ({ route, navigation }) => {
@@ -35,8 +36,9 @@ const FinishPayment = ({ route, navigation }) => {
   const [myPrice, setMyPrice] = useState("");
   const [myPlz, setMyPlz] = useState("");
   // 네비게이터에 껴서 보낼 계좌 정보 상태로 저장
-  const [myAccount, setMyAccount] = useState(null);
+  const [myAccount, setMyAccount] = useState({});
   const [myPhone, setMyPhone] = useState(null);
+  const [myName, setMyName] = useState("");
   const [myFormedPhone, setMyFormedPhone] = useState(null);
   const [isGetAccount, setisGetAccount] = useState(true);
   const [orderId, setOrderId] = useState(null);
@@ -46,6 +48,7 @@ const FinishPayment = ({ route, navigation }) => {
   useEffect(() => {
     const getAccountData = (response) => {
       setMyAccount(response.data.data);
+      console.log(response.data.data);
     };
 
     const fail = (error) => {
@@ -58,6 +61,7 @@ const FinishPayment = ({ route, navigation }) => {
       const myPhoneNumber = await AsyncStorage.getItem("@signup");
       setMyPhone(myPhoneNumber);
     };
+
     callPhone();
   }, []);
 
@@ -264,10 +268,6 @@ const FinishPayment = ({ route, navigation }) => {
     24: require("../../../assets/categoryItems/24.webp"),
     25: require("../../../assets/categoryItems/25.webp"),
     26: require("../../../assets/categoryItems/add.png"),
-  };
-
-  const formattedNumber = function (number) {
-    return number.toLocaleString("ko-KR", { maximumFractionDigits: 0 });
   };
 
   const newNum = formattedNumber(route.params.data.price);
@@ -539,7 +539,7 @@ const FinishPayment = ({ route, navigation }) => {
             </Text>
           </Text>
           <Text style={FinishPaymentStyle.addressText}>
-            로컬에서 나의 이름을 가져올게요
+            {myAccount?.userName}
           </Text>
           <Text style={FinishPaymentStyle.addressText}>{myFormedPhone}</Text>
           <Text style={FinishPaymentStyle.addressText}>
