@@ -16,7 +16,8 @@ public enum ErrorCode {
     BANK_MEMBER_INFO_MISMATCH_ERROR(400, "B400", "회원 이름이 일치하지 않습니다."),
     BANK_ORG_AUTHENTICATION_FAILED(400, "B400", "마이데이터 사업자 권한 검증에 실패했습니다."),
     BANK_SIGNALUTE_INVALID(400, "B400", "전자서명 검증에 실패했습니다."),
-    BANK_MYDATA_REQUEST_FAILED(400, "B400", "종합포털 요청에 실패했습니다.");
+    BANK_MYDATA_REQUEST_FAILED(400, "B400", "종합포털 요청에 실패했습니다."),
+    BANK_TARGET_ACCOUNT(404, "B404", "자동이체 대상 계좌가 없습니다.");
 
     private final int status;
     private final String code;
