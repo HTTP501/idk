@@ -6,6 +6,7 @@ const local = LocalAxios()
 
 // 휴대폰 인증 요청
 export const phoneAxios = async function (data, success, fail) {
+  console.log(data)
   await local.post('/member/phone', data)
         .then(success)
         .catch(fail)

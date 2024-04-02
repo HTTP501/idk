@@ -18,12 +18,12 @@ const SIGNUP_KEY = "@signup";
 const EnterPhoneNumber = ({ route, navigation }) => {
   const textInputRef = useRef(null);
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [showVerificationInput, setShowVerificationInput] = useState(false); // 인증번호 입력창을 보여줄지 여부
+  const [showVerificationInput, setShowVerificationInput] = useState(true); // 인증번호 입력창을 보여줄지 여부
   const [verificationRequested, setVerificationRequested] = useState(false); // 인증 요청 여부
   const [verificationCode, setVerificationCode] = useState(""); // 인증 번호
   const [completeVerificationCode, setCompleteVerificationCode] =
     useState(false); // 인증 완료 여부
-
+  const [errState,setErrState] = useState("")
   const receiveData = route.params;
   const sendData = {
     ...receiveData,
@@ -64,6 +64,7 @@ const EnterPhoneNumber = ({ route, navigation }) => {
     await phoneAxios(
       { phoneNumber: phoneNumber.replace(/[^\d]/g, "") },
       (res) => {
+
         // 인증 요청 로직 수행 후
         setShowVerificationInput(true); // 인증 번호 입력창 보이도록 설정
         // 아래 인증 번호 입력란으로 포커스 이동
@@ -71,8 +72,10 @@ const EnterPhoneNumber = ({ route, navigation }) => {
           textInputRef.current.focus();
         }
         setVerificationRequested(true); // 인증 요청 상태 변경
+
       },
       (err) => {
+        setErrState(err?.response?.data?.messaage)
         if (err.response.data.code === "M404") {
           // 문자 전송 요청 실패
           Alert.alert("문자 전송 요청에 실패했습니다.", "", [{ text: "확인" }]);
@@ -178,6 +181,7 @@ const EnterPhoneNumber = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       )}
+      {/* <Text>{errState}</Text> */}
       <TouchableOpacity
         style={[
           styles.button,

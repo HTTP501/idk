@@ -139,7 +139,28 @@ const Settings = ({ navigation, route }) => {
           <Text className="text-base text-zinc-500">계좌 비밀번호 변경</Text>
           <AntDesign name="right" size={20} color="grey" />
         </TouchableOpacity>
-        <View className="my-3 self-start">
+        <TouchableOpacity
+          style={styles.box}
+          onPress={() => {
+            navigation.navigate("RegistSalary")
+            console.log("월급 등록하기");
+          }}
+        >
+          <Text className="text-base text-zinc-500">월급 급여 설정</Text>
+          <AntDesign name="right" size={20} color="grey" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.box}
+          onPress={() => {
+            setIsDeleteModalVisible(true);
+            console.log("해지하기");
+          }}
+        >
+          <Text className="text-base text-zinc-500">계좌 해지하기</Text>
+          <AntDesign name="right" size={20} color="grey" />
+        </TouchableOpacity>
+        
+        {/* <View className="my-3 self-start">
           <Text className="text-3xl font-bold">알림 관리</Text>
         </View>
         <View style={{ ...styles.box, marginBottom: 20, paddingBottom: 0 }}>
@@ -163,7 +184,7 @@ const Settings = ({ navigation, route }) => {
             onValueChange={HandleAutoTransfer}
             value={isAutoTransferNotificationEnabled}
           />
-        </View>
+        </View> */}
         <View className="my-5 self-start">
           <Text className="text-3xl font-bold">돈포켓 관리</Text>
         </View>
@@ -188,16 +209,7 @@ const Settings = ({ navigation, route }) => {
           <Text className="text-base text-zinc-500">저금통 등록</Text>
           <AntDesign name="right" size={20} color="grey" />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.box}
-          onPress={() => {
-            setIsDeleteModalVisible(true);
-            console.log("해지하기");
-          }}
-        >
-          <Text className="text-base text-zinc-500">계좌 해지하기</Text>
-          <AntDesign name="right" size={20} color="grey" />
-        </TouchableOpacity>
+        
       </ScrollView>
 
       <Modal

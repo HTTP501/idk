@@ -18,9 +18,8 @@ const AuthPW = ({ navigation, route }) => {
   const [isPassed, setIsPassed] = useState(false)
   const destination = route?.params.destination;
   const data = route?.params?.data;
-
+  console.log(route)
   useEffect(() => {
-
     if (isPassed === true) {
       data.isChecked = true
       console.log(data);
