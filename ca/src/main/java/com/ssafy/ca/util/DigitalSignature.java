@@ -43,13 +43,7 @@ public class DigitalSignature {
     public static byte[] signData(byte[] data) {
 
         try {
-            // String privateKeyPath2 = "src/main/resources/certs/ca_private.key";
-            // URL resourceUrl  = DigitalSignature.class.getClassLoader().getResource("certs/ca_private.key");
-            // File privateKeyFile = new File(resourceUrl.toURI());
-            // String privateKeyPath = privateKeyFile.getAbsolutePath();
-            // LOGGER.severe("상대경로 : " + privateKeyPath2);
-            // LOGGER.severe("절대경로 : " + privateKeyPath);
-            
+
             InputStream inputStream = DigitalSignature.class.getClassLoader().getResourceAsStream("certs/ca_private.key");
             File privateKeyFile = File.createTempFile("ca_private", ".key");
             try (FileOutputStream outputStream = new FileOutputStream(privateKeyFile)) {
@@ -107,7 +101,18 @@ public class DigitalSignature {
     public static boolean verifySignature(byte[] data, byte[] signature) {
 
         try {
-            String certificatePath = "./src/main/resources/certs/ca_certificate.pem";
+            
+            InputStream inputStream = DigitalSignature.class.getClassLoader().getResourceAsStream("certs/ca_certificate.pem");
+
+            File certificateFile = File.createTempFile("ca_certificate", ".pem");
+            try (FileOutputStream outputStream = new FileOutputStream(certificateFile)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+            String certificatePath = certificateFile.getAbsolutePath();
 
             // 파일 존재 여부 확인
             if (!Files.exists(Paths.get(certificatePath))) {
