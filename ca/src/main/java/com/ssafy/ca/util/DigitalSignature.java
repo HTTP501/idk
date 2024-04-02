@@ -44,7 +44,10 @@ public class DigitalSignature {
     public static byte[] signData(byte[] data) {
 
         try {
-            String privateKeyPath = "ca/src/main/resources/certs/ca_private.key";
+            // String privateKeyPath = "ca/src/main/resources/certs/ca_private.key";
+            URL resourceUrl  = DigitalSignature.class.getClassLoader().getResource("certs/ca_private.key");
+            File privateKeyFile = new File(resourceUrl.toURI());
+            String privateKeyPath = privateKeyFile.getAbsolutePath();
 
             // 파일 존재 여부 확인
             if (!Files.exists(Paths.get(privateKeyPath))) {
