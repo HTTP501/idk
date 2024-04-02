@@ -6,26 +6,38 @@ import {
   PayResult,
 } from "../screens/Payment";
 import Main from "../screens/Main/Main";
-import AuthPW from "../screens/Auth/AuthPW"
+import AuthPW from "../screens/Auth/AuthPW";
 import RegistGoalSaving from "../screens/Main/Registrations/RegistGoalSaving";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Ionicons } from "@expo/vector-icons"; // Import Ionicons from Expo
 
 const Stack = createNativeStackNavigator();
 
-function ShopStack() {
+function ShopStack({ navigation }) {
+  const renderBackButton = (page) => {
+    return (
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Ionicons name="chevron-back" size={24} color="black" />
+      </TouchableOpacity>
+    );
+  };
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerTransparent: true,
+      }}
+    >
       <Stack.Screen
         name="ShoppingMall"
         component={ShoppingMall}
-        options={{ headerShown: false }}
+        options={{ headerLeft: () => renderBackButton(), title: "" }}
       />
       <Stack.Screen
         name="FinishPayment"
         component={FinishPayment}
-        options={{ headerShown: false }}
+        options={{ headerLeft: () => renderBackButton(), title: "" }}
       />
       <Stack.Screen
         name="PayPassword"
