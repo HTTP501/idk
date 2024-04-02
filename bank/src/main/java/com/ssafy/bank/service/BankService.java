@@ -224,6 +224,7 @@ public class BankService {
                 .orElseThrow(() -> new BankException(ErrorCode.BANK_MEMBER_NOT_FOUND));
 
         System.out.println("ReceiverOrgCode = " + requestDto.getReceiverOrgCode());
+
         // 기관 체크
         Organization organization = organizationRepository.findByOrgCode(requestDto.getReceiverOrgCode())
                 .orElseThrow(() -> new BankException(ErrorCode.BANK_ORG_NOT_FOUND));
@@ -245,9 +246,14 @@ public class BankService {
 
         // 검증 완료 되면 토큰 발급
         String accessToken = jwtTokenProvider.createToken(requestDto.getReceiverOrgCode(), requestDto.getConnectionInformation(), requestDto.getProviderOrgCode());
+        System.out.println("accessToken = " + accessToken);
+        LOGGER.info("accessToken = " + accessToken);
 
         // 토큰 저장
-        organization.updateAccessToken(accessToken);
+        Organization organization1 = organizationRepository.findByOrgCode(requestDto.getProviderOrgCode())
+                .orElseThrow(() -> new BankException(ErrorCode.BANK_ORG_NOT_FOUND));
+
+        organization1.updateAccessToken(accessToken);
 
         return AuthenticationResponseDto.of(accessToken);
     }
