@@ -123,13 +123,6 @@ public class MydataService {
 
         // 기존 자산 목록
         List<Mydata> mydatas = mydataRepository.findByMember(member);
-        List<Asset> existingAssets = new ArrayList<>();
-        for (Mydata mydata : mydatas) {
-            List<Asset> assets = assetRepository.findByMydata(mydata);
-            existingAssets.addAll(assets);
-        }
-
-        List<Asset> newAssets = new ArrayList<>();
 
         List<AutoTransfer> autoTransfers = autoTransferRepository.findByAccount(account);
         for (AutoTransferInfoDto autoTransferInfoDto : autoTransferInfoDtoList) {
@@ -142,6 +135,10 @@ public class MydataService {
                     break;
                 }
             }
+
+            // db에 있는지 조회
+//            assetRepository.findMy
+
             Asset asset = Asset.builder()
                     .accountNumber(autoTransferInfoDto.getAccountNumber())
                     .designatedOrgName(autoTransferInfoDto.getDesignatedOrgName())
@@ -151,34 +148,7 @@ public class MydataService {
                     .isLinked(isLinked)
                     .build();
 
-            // 기존에 저장된 자산 목록에서 동일한 계좌번호와 지정된 조직명을 가진 자산을 찾아서 덮어씌움
-            for (Asset existingAsset : existingAssets) {
-                if (existingAsset.getAccountNumber().equals(asset.getAccountNumber()) &&
-                        existingAsset.getDesignatedOrgName().equals(asset.getDesignatedOrgName())) {
-                    existingAsset.updateScheduledAmount(asset.getScheduledAmount());
-                    existingAsset.updateScheduledDate(asset.getScheduledDate());
-                    existingAsset.updateIsLinked(asset.getIsLinked());
-                    asset = existingAsset;
-                    break;
-                }
-            }
-
             assetRepository.save(asset);
-        }
-
-        // 기존에 저장된 자산 목록에서 새로 저장된 자산을 제외하고 삭제
-        for (Asset existingAsset : existingAssets) {
-            boolean found = false;
-            for (AutoTransferInfoDto autoTransferInfoDto : autoTransferInfoDtoList) {
-                if (existingAsset.getAccountNumber().equals(autoTransferInfoDto.getAccountNumber()) &&
-                        existingAsset.getDesignatedOrgName().equals(autoTransferInfoDto.getDesignatedOrgName())) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                assetRepository.delete(existingAsset);
-            }
         }
     }
 

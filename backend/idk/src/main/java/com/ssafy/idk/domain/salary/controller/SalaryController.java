@@ -1,6 +1,7 @@
 package com.ssafy.idk.domain.salary.controller;
 
 import com.ssafy.idk.domain.salary.dto.SalaryRequestDto;
+import com.ssafy.idk.domain.salary.dto.SalaryCreateRequestDto;
 import com.ssafy.idk.domain.salary.service.SalaryService;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;

@@ -1,15 +1,12 @@
 package com.ssafy.idk.domain.account.repository;
 
 import com.ssafy.idk.domain.account.entity.Account;
-import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
 import com.ssafy.idk.domain.member.entity.Member;
 import io.lettuce.core.dynamic.annotation.Param;
 import jakarta.persistence.LockModeType;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
