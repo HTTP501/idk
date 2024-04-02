@@ -180,7 +180,7 @@ public class BankService {
     }
 
     // 고객의 자동이체 목록, 상세정보 조회
-    public AutoTransferInfoListResponseDto getAutoTransferInfo(String name, String connectionInformation) {
+    public AutoTransferInfoListResponseDto getAutoTransferInfo(String name, String connectionInformation, String orgCode) {
 
         // 유저 조회
         Member member = memberRepository.findByConnectionInformation(connectionInformation)
@@ -191,13 +191,19 @@ public class BankService {
             throw new BankException(ErrorCode.BANK_MEMBER_INFO_MISMATCH_ERROR);
         }
 
-        // 회원의 연결 은행의 계좌 목록 조회
-        List<Account> memberAccounts = getConnectedAccounts(member);
+        Organization organization = organizationRepository.findByOrgCode(orgCode)
+                .orElseThrow(() -> new BankException(ErrorCode.BANK_ORG_NOT_FOUND));
+
+        Bank bank = bankRepository.findByOrganization(organization)
+                .orElseThrow(() -> new BankException(ErrorCode.BANK_NOT_FOUND));
+
+        // 회원의 요청 은행 계좌 목록 조회
+        List<Account> accountList = accountRepository.findByBankAndMember(bank, member);
 
         // 계좌의 모든 자동이체 목록을 가져옴
         List<AutoTransferInfoResponseDto> autoTransferInfoList = new ArrayList<>();
-        for (Account memberAccount : memberAccounts) {
-            List<AutoTransfer> autoTransfers = autoTransferRepository.findByAccount(memberAccount);
+        for (Account account : accountList) {
+            List<AutoTransfer> autoTransfers = autoTransferRepository.findByAccount(account);
             for (AutoTransfer autoTransfer : autoTransfers) {
 
                 autoTransferInfoList.add(AutoTransferInfoResponseDto.of(

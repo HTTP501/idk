@@ -82,9 +82,9 @@ public class BankController {
     // 고객의 자동이체(상세정보 포함) 목록 조회
     @Operation(summary = "고객 자동이체 목록 조회")
     @GetMapping("/auto-transfer")
-    public ResponseEntity<ResultResponse> getAutoTransferInfo(@RequestParam("name") String name, @RequestParam("connectionInformation") String connectionInformation) {
+    public ResponseEntity<ResultResponse> getAutoTransferInfo(@RequestParam("name") String name, @RequestParam("connectionInformation") String connectionInformation, @RequestParam("orgCode") String orgCode) {
 
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.BANK_GET_AUTO_TRANSFER_INFO_SUCCESS, bankService.getAutoTransferInfo(name, connectionInformation)));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.BANK_GET_AUTO_TRANSFER_INFO_SUCCESS, bankService.getAutoTransferInfo(name, connectionInformation, orgCode)));
     }
 
     // 계좌 명의 조회
