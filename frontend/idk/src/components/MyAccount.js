@@ -47,7 +47,7 @@ const Account = ({ account, navigation }) => {
           {/* 설정 아이콘 */}
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Settings', { "data": { "isChecked": false } });
+              navigation.navigate('SettingStack', { screen:"Settings", "data": { "isChecked": false } });
             }}
           >
             <AntDesign name="setting" size={24} color={theme["sky-basic"]} />

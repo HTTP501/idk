@@ -63,7 +63,15 @@ const EnterPhoneNumber = ({ route, navigation }) => {
     // 인증 번호 Axios 요청
     await phoneAxios(
       { phoneNumber: phoneNumber.replace(/[^\d]/g, "") },
-      (res) => {},
+      (res) => {
+        // 인증 요청 로직 수행 후
+        setShowVerificationInput(true); // 인증 번호 입력창 보이도록 설정
+        // 아래 인증 번호 입력란으로 포커스 이동
+        if (textInputRef.current) {
+          textInputRef.current.focus();
+        }
+        setVerificationRequested(true); // 인증 요청 상태 변경
+      },
       (err) => {
         if (err.response.data.code === "M404") {
           // 문자 전송 요청 실패
@@ -71,13 +79,6 @@ const EnterPhoneNumber = ({ route, navigation }) => {
         }
       }
     );
-    // 인증 요청 로직 수행 후
-    setShowVerificationInput(true); // 인증 번호 입력창 보이도록 설정
-    // 아래 인증 번호 입력란으로 포커스 이동
-    if (textInputRef.current) {
-      textInputRef.current.focus();
-    }
-    setVerificationRequested(true); // 인증 요청 상태 변경
   };
 
   const handleVerificationCodeChange = (text) => {
@@ -92,7 +93,7 @@ const EnterPhoneNumber = ({ route, navigation }) => {
         verificationCode: verificationCode,
       },
       (res) => {
-        console.log(res.data);
+        // console.log(res.data);
         // 올바른 인증 번호를 입력했을 때
         setCompleteVerificationCode(true);
         Alert.alert("인증이 완료되었습니다.", "", [{ text: "확인" }]);

@@ -1,7 +1,9 @@
 import { Text, View, Dimensions, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import Checkbox from 'expo-checkbox';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import theme from '../../../style'
+import Loading from '../../../components/Loading'
+import { connectMyDataAxios, getMyDataAxios } from '../../../API/MyData'
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window')
 
@@ -23,7 +25,6 @@ const imgMatch = {
   'KB국민카드': require("../../../../assets/banks/KBCard.png"),
   '신한카드': require("../../../../assets/banks/ShinhanCard.png"),
   '현대카드': require("../../../../assets/banks/HyundaiCard.png"),
-  '카카오뱅크카드': require("../../../../assets/banks/KakaoCard.png"),
   'NH농협카드': require("../../../../assets/banks/NHCard.png"),
   '삼성카드': require("../../../../assets/banks/SamsungCard.png"),
   '하나카드': require("../../../../assets/banks/HanaCard.png"),
@@ -34,6 +35,38 @@ const LinkMyData = ({navigation}) => {
   const [checkList, setCheckList] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [allChecked, setAllChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
+  // const [myData, setMyData] = useState([
+  //   {
+  //     "orgName": "KB국민카드",
+  //     "assetInfo": [
+  //       {"asset": "KB국민 Easy all카드", 
+  //       "claimAmount": 50000,
+  //       "claimDate": 15,
+  //       "designatedOrgName": 'KB국민은행',
+  //       "designatedAssetNumber": "123-123123-123", 
+  //       "isLinked": false},
+  //     ]
+  //   },
+  //   {
+  //     "orgName": "NH농협은행",
+  //     "assetInfo": [
+  //       {"asset": "123-123-132", 
+  //       "claimAmount": 50000,
+  //       "claimDate": 15,
+  //       "designatedOrgName": 'IDK은행',
+  //       "designatedAssetNumber": "123-123123-123", 
+  //       "isLinked": false},
+  //       {"asset": "123-123-132", 
+  //       "claimAmount": 40000,
+  //       "claimDate": 12,
+  //       "designatedOrgName": '우리은행',
+  //       "designatedAssetNumber": "123-123123-123", 
+  //       "isLinked": true},
+  //     ],
+  //   },
+  // ])
+  const [myData, setMyData] = useState([])
 
   const toggleCheckbox = (asset) => {
     const updatedCheckList = [...checkList]
@@ -48,10 +81,48 @@ const LinkMyData = ({navigation}) => {
 
   const toggleAllCheckbox = () => {
     setAllChecked(!allChecked);
-    setCheckList(allChecked ? [] : [...assets]);
+    // myData에 있는 orgName을 필터링하여 제외하고 checkList를 업데이트
+    const updatedCheckList = allChecked ? [] : assets.filter(asset => !myData.find(data => data.orgName === asset));
+    setCheckList(updatedCheckList);
   };
 
+  // 마이데이터 조회 Axios
+  const getMyData = () => {
+    getMyDataAxios(
+      res => {
+        console.log(res);
+        setMyData(res.data.data.assetInfoList)
+      },
+      err => {
+        console.log(err);
+      }
+    )
+  }
+
+  useEffect(() => {
+    getMyData()
+    setTimeout(() => {
+      setLoading(true);
+    }, 700);
+  }, [])
+  // 마이데이터 연결 Axios
+  const handleConnectMyData = () => {
+    console.log(checkList);
+    connectMyDataAxios(
+      {orgList: checkList}
+    ),
+    res => {
+      console.log(res);
+      // navigation.reset({routes: [{name:'CheckMyData'}]})
+    },
+    err => {
+      console.log(err);
+    }
+  }
+
   return(
+    <>
+      {loading ? 
     <View style={styles.container}>
       <Text className='text-3xl font-bold my-16'>연결할 자산을 선택해주세요</Text>
       <TextInput
@@ -77,32 +148,53 @@ const LinkMyData = ({navigation}) => {
         </TouchableOpacity>
         {assets
           .filter((asset) => asset.toLowerCase().includes(searchText.toLowerCase()))
-          .map((asset, index) => (
-            <TouchableOpacity
+          .map((asset, index) => {
+            // asset이 myData에 있는지 확인
+            const linkedData = myData.find(data => data.orgName === asset);
+            return (
+              <View
               key={index}
+              >
+              {linkedData ?
+              <View
               style={styles.assetItem}
-              onPress={() => toggleCheckbox(asset)}
-            >
+              >
               <View style={styles.assetInfo}>
                 <Image source={imgMatch[asset]} style={styles.bankImage} />
                 <Text className='text-lg'>{asset}</Text>
               </View>
-              <Checkbox
-                color={theme['sky-basic']}
-                style={styles.checkbox}
-                value={checkList.includes(asset)}
-                onValueChange={() => toggleCheckbox(asset)}
-              />
-            </TouchableOpacity>
-          ))}
+                  <Text>연결됨</Text>
+              </View>
+              :
+              <TouchableOpacity
+                style={styles.assetItem}
+                onPress={() => toggleCheckbox(asset)}
+              >
+                <View style={styles.assetInfo}>
+                  <Image source={imgMatch[asset]} style={styles.bankImage} />
+                  <Text className='text-lg'>{asset}</Text>
+                </View>
+                  <Checkbox
+                    color={theme['sky-basic']}
+                    style={styles.checkbox}
+                    value={checkList.includes(asset)}
+                    onValueChange={() => toggleCheckbox(asset)}
+                  />
+              </TouchableOpacity>
+              }
+              </View>
+            );
+          })}
       </ScrollView>
       <TouchableOpacity
         style={[styles.button, { opacity: checkList.length === 0 ? 0.5 : 1 } ]}
         disabled={!checkList.length === 0}
-        onPress={() => navigation.navigate('CheckMyData')}>
+        onPress={handleConnectMyData}>
         <Text className="text-white text-lg">연결</Text>
       </TouchableOpacity>
     </View>
+    : <Loading/>}
+    </>
   )
 }
 

@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
 import Tab from "./navigations/Tab";
@@ -14,6 +14,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
+import { AntDesign } from '@expo/vector-icons';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -25,6 +26,9 @@ export default function MainApp() {
   const navigation = useNavigation();
   const [authData, setAuthData] = useState({});
   const [signupData, setSignupData] = useState({});
+  const scrollViewRef = useRef(null); // ScrollView의 ref
+  const [currentPage, setCurrentPage] = useState(0); // 현재 페이지 인덱스
+
   // 앱이 처음 시작될 때 대기 화면 표시 스토리지 로딩 될 때까지 대기 화면 표시
   useEffect(() => {
     SplashScreen.preventAutoHideAsync();
@@ -48,6 +52,26 @@ export default function MainApp() {
     }
   };
 
+  // 다음 페이지로 이동하는 함수
+  const scrollToNextPage = () => {
+    const nextPage = currentPage + 1;
+    scrollViewRef.current.scrollTo({
+      x: nextPage * 275,
+      animated: true,
+    });
+    setCurrentPage(nextPage);
+  };
+
+  // 이전 페이지로 이동하는 함수
+  const scrollToPreviousPage = () => {
+    const previousPage = currentPage - 1;
+    scrollViewRef.current.scrollTo({
+      x: previousPage * 275,
+      animated: true,
+    });
+    setCurrentPage(previousPage);
+  };
+
   if (Object.keys(authData).length > 0) {
     // authData도 있으면 MainStack 실행
     return <Tab />;
@@ -64,9 +88,9 @@ export default function MainApp() {
         <Image
           source={require("../assets/logo/white_idk_logo_big.png")}
           style={{
-            width: 120,
-            height: 120,
-            marginVertical: SCREEN_HEIGHT * (1 / 10),
+            width: 100,
+            height: 100,
+            marginTop: SCREEN_HEIGHT * (1 / 10),
           }}
         />
         <View>
@@ -76,36 +100,71 @@ export default function MainApp() {
               fontWeight: "bold",
               textAlign: "center",
               color: "white",
-              marginBottom: 20,
+              marginVertical: 20,
             }}
           >
             매달 고정 지출 관리가 어렵다면?
           </Text>
+          <Text className='text-base text-center text-white mb-8 font-bold'>넘기며 확인해보세요!</Text>
         </View>
+        <View className='flex-row justify-between items-center' style={{width:380}}>
+          <TouchableOpacity
+            // 이전 페이지로 이동하는 버튼
+            onPress={scrollToPreviousPage}
+            disabled={currentPage === 0}
+            style={{opacity: currentPage===0 ? 0.2 : 1 }}
+          >
+            <AntDesign name="left" size={36} color="white" />
+          </TouchableOpacity>
+          <View style={{width:275}}>
         <ScrollView
+          ref={scrollViewRef}
           pagingEnabled
           horizontal
           showsHorizontalScrollIndicator={false}
-          centerContent={true}
-          endFillColor="red"
           style={{ width: 275, height: 427 }}
+          onScroll={(event) => {
+            const { x } = event.nativeEvent.contentOffset;
+            const pageIndex = Math.round(x / 275);
+            setCurrentPage(pageIndex);
+          }}
         >
-          <Image
-            source={require("../assets/logo/explain1.png")}
-            style={{ width: 275, height: 427, borderRadius: 20 }}
-          />
+          <TouchableOpacity
+            onPress={scrollToNextPage}
+            activeOpacity={1}
+          >
+            <Image
+              source={require("../assets/logo/explain1.png")}
+              style={{ width: 275, height: 427, borderRadius: 20 }}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={scrollToNextPage}
+            activeOpacity={1}
+          >
           <Image
             source={require("../assets/logo/explain2.png")}
             style={{ width: 275, height: 427, borderRadius: 20 }}
           />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={scrollToNextPage}
+            activeOpacity={1}
+          >
           <Image
             source={require("../assets/logo/explain3.png")}
             style={{ width: 275, height: 427, borderRadius: 20 }}
           />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={scrollToNextPage}
+            activeOpacity={1}
+          >
           <Image
             source={require("../assets/logo/explain4.png")}
             style={{ width: 274, height: 427, borderRadius: 20 }}
           />
+          </TouchableOpacity>
           <View style={{ width: 275, height: 427, justifyContent: "center" }}>
             <TouchableOpacity
               style={{
@@ -125,6 +184,17 @@ export default function MainApp() {
             </TouchableOpacity>
           </View>
         </ScrollView>
+
+          </View>
+          <TouchableOpacity
+            // 다음 페이지로 이동하는 버튼
+            onPress={scrollToNextPage}
+            disabled={currentPage === 4}
+            style={{opacity: currentPage===4 ? 0.2 : 1 }}
+          >
+            <AntDesign name="right" size={36} color="white" />
+          </TouchableOpacity>
+        </View>
         <StatusBar style="auto" />
       </View>
     );

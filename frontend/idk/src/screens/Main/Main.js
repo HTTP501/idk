@@ -60,8 +60,8 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
         AsyncStorage.setItem(ACCOUNT_KEY, data)
         // 돈포켓 조회 Axios
         getPocketListAxios(
-          res.data.data.accountId,
           res => {
+            console.log(res.data.data.arrayPocket);
             setPocketData(res.data.data.arrayPocket)
           },
           err => {

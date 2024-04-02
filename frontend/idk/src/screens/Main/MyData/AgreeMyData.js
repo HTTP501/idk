@@ -35,15 +35,15 @@ const AgreeMyData = ({navigation}) => {
 
   // 마이테이터 인증 약관 동의 Axios
   const handleAgreeMyData = () => {
-    // agreeMyDataAxios(
-    //   res => {
-    //     console.log(res);
-    //   },
-    //   err => {
-    //     console.log(err);
-    //   }
-    // )
-    navigation.navigate('LinkMyData')
+    agreeMyDataAxios(
+      res => {
+        // console.log(res);
+        navigation.navigate('LinkMyData')
+      },
+      err => {
+        // console.log(err);
+      }
+    )
   }
 
 

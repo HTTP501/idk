@@ -9,12 +9,12 @@ const EnterName = ({ navigation }) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   const handleNameChange = (text) => {
-    if (!/^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣\s]*$/.test(text)) {
+    if (!/^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣\sㆍ]*$/.test(text)) {
       Alert.alert('한글 또는 영어만 이름에 입력할 수 있습니다.','',[{text:'확인'}])
       return
     }
     setName(text);
-    setIsButtonDisabled(text.length === 0 || !/^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣\s]*$/.test(text));
+    setIsButtonDisabled(text.length === 0 || !/^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣\sㆍ]*$/.test(text));
   };
 
   const sendData = {name: name}
