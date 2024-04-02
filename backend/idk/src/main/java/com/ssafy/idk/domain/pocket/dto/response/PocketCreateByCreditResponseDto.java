@@ -8,18 +8,18 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor
-public class PocketCreateAutoDebitResponseDto {
+public class PocketCreateByCreditResponseDto {
 
     private Long pocketId;
     private String name;
     private Long target;
 
-    public static PocketCreateAutoDebitResponseDto of(
+    public static PocketCreateByCreditResponseDto of(
             Long pocketId,
             String name,
             Long target
     ) {
-        return PocketCreateAutoDebitResponseDto.builder()
+        return PocketCreateByCreditResponseDto.builder()
                 .pocketId(pocketId)
                 .name(name)
                 .target(target)

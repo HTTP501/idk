@@ -74,7 +74,7 @@ public class TargetSavingService {
         TargetSaving savedTargetSaving = targetSavingRepository.save(targetSaving);
 
         // 돈 포켓 동시 생성
-        Pocket pocket = pocketService.createByTargetSaving(savedTargetSaving, account);
+        Pocket pocket = pocketService.createByTargetSaving(savedTargetSaving, member);
         savedTargetSaving.setPocket(pocket);
         targetSavingRepository.save(savedTargetSaving);
 
@@ -119,6 +119,9 @@ public class TargetSavingService {
                 .account(account)
                 .build();
         transactionRepository.save(transaction);
+
+        // 돈 포켓 재정렬
+        pocketService.reOrderArrayPocket(member);
 
         return TargetSavingDeleteResponseDto.of(account.getBalance());
     }

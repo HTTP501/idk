@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,4 +23,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT a FROM Account a JOIN FETCH a.member m WHERE m = :member")
     Optional<Account> findByMemberWithPessimisticLock(@Param("member") Member member);
+
+    List<Account> findByPayDate(Integer systemDay);
 }
