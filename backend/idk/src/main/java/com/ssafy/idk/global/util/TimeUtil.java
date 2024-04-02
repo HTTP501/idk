@@ -26,34 +26,34 @@ public class TimeUtil {
     private final AutoTransferService autoTransferService;
     private final SseEmitterService sseEmitterService;
 
-    @Scheduled(fixedRate = 5000)
-    public void oneDayCycle() {
-        // 날짜 변경
-        updateDate();
-
-        // 날짜 스트리밍
-        SseDateDto sseDateDto = new SseDateDto(systemDate);
-        sseEmitterService.shareSystemTime(sseDateDto);
-
-        // 돈포켓 테스트
-        sseEmitterService.updatePocketStatement(3L);
-
-        // 자동이체
-//        autoTransferService.autoTransfer(systemDay);
-
-        // 신용카드 청구서 확인
-
-
-        // 돈 포켓 상태 변경
-//        pocketService.updatePocketStatementAtSalaryDay(systemDate.minusDays(3).getDayOfMonth());
-
-        // 월급 입금
-//        salaryService.salaryDeposit(systemDay);
-
-//        if (systemDay == 1) {
-//            // 통계 함수 사용
-//        }
-    }
+//    @Scheduled(fixedRate = 5000)
+//    public void oneDayCycle() {
+//        // 날짜 변경
+//        updateDate();
+//
+//        // 날짜 스트리밍
+//        SseDateDto sseDateDto = new SseDateDto(systemDate);
+//        sseEmitterService.shareSystemTime(sseDateDto);
+//
+//        // 돈포켓 테스트
+//        sseEmitterService.updatePocketStatement(3L);
+//
+//        // 자동이체
+////        autoTransferService.autoTransfer(systemDay);
+//
+//        // 신용카드 청구서 확인
+//
+//
+//        // 돈 포켓 상태 변경
+////        pocketService.updatePocketStatementAtSalaryDay(systemDate.minusDays(3).getDayOfMonth());
+//
+//        // 월급 입금
+////        salaryService.salaryDeposit(systemDay);
+//
+////        if (systemDay == 1) {
+////            // 통계 함수 사용
+////        }
+//    }
 
     public void updateDate() {
         updateDay();
