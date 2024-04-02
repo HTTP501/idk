@@ -220,15 +220,15 @@ public class PocketService {
         if (member != pocket.getMember())
             throw new PocketException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
+        // 돈 포켓 재정렬
+        reOrderArrayPocket(member, pocket);
+
         // 돈 포켓 납입액 계좌로 이동
         Account account = pocket.getAutoTransfer().getAccount();
         if (pocket.getBalance() != 0) account.deposit(pocket.getBalance());
         accountRepository.save(account);
 
         pocketRepository.delete(pocket);
-
-        // 돈 포켓 재정렬
-        reOrderArrayPocket(member);
 
         return PocketAutoTransferDeleteResponseDto.of(
                 account.getAccountId(),
@@ -455,12 +455,13 @@ public class PocketService {
     }
 
     @Transactional
-    public void reOrderArrayPocket(Member member) {
+    public void reOrderArrayPocket(Member member, Pocket pocketToBeDeleted) {
 
         List<Pocket> arrayPocket = member.getArrayPocket();
 
         int idx = 0;
         for (Pocket pocket : arrayPocket) {
+            if (pocket == pocketToBeDeleted) continue;
             pocket.setOrderNumber(idx++);
             pocketRepository.save(pocket);
         }
