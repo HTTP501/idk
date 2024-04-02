@@ -4,11 +4,9 @@ import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.member.entity.Member;
 import io.lettuce.core.dynamic.annotation.Param;
 import jakarta.persistence.LockModeType;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,4 +23,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByMemberWithPessimisticLock(@Param("member") Member member);
 
     List<Account> findByPayDate(Integer systemDay);
+
 }
