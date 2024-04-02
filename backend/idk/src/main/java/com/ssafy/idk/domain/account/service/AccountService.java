@@ -178,19 +178,23 @@ public class AccountService {
     }
 
     public ReadyTransferResponseDto readyTransfer(ReadyTransferRequestDto requestDto) {
-        List<Member> memberList = memberRepository.findAll();
-        for(Member member : memberList) {
-            Optional<Account> account = accountRepository.findByMember(member);
-            if(account.isEmpty()) continue;
-            // 개인키로 계좌번호 복호화
-            String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
-            String accountNumber = RSAUtil.decode(privateKey, account.get().getNumber());
-            // 이체할 사용자를 찾았을 경우
-            if(accountNumber.equals(requestDto.getAccountNumber())) {
-                return ReadyTransferResponseDto.of(member.getMemberId(), member.getName());
+        if (requestDto.getBankName().equals("IDK은행")) {
+            List<Member> memberList = memberRepository.findAll();
+            for(Member member : memberList) {
+                Optional<Account> account = accountRepository.findByMember(member);
+                if(account.isEmpty()) continue;
+                // 개인키로 계좌번호 복호화
+                String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
+                String accountNumber = RSAUtil.decode(privateKey, account.get().getNumber());
+                // 이체할 사용자를 찾았을 경우
+                if(accountNumber.equals(requestDto.getAccountNumber())) {
+                    return ReadyTransferResponseDto.of(member.getMemberId(), member.getName());
+                }
             }
+        } else { // 마이데이터 조회
+
         }
-        // 유저가 없는 경우
+        // 해당 은행에 해당 유저가 없는 경우
         throw new TransferException(ErrorCode.TRANSFER_USER_NOT_FOUND);
     }
 
