@@ -13,6 +13,7 @@ export const joinTargetSavingAxios = async function (data, success, fail) {
 
 // 목표저축 해지
 export const deleteTargetSavingAxios = async function (targetSavingId, success, fail) {
+  console.log(targetSavingId)
   await local.delete(`/target-saving/${targetSavingId}`)
         .then(success)
         .catch(fail)
