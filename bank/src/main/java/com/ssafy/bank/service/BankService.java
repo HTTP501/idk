@@ -239,7 +239,7 @@ public class BankService {
     }
 
     // 계좌 명의 조회
-    public AccountOwnerRequestDto getAccountInfo(String orgName, String accountNumber) {
+    public AccountOwnerResponseDto getAccountInfo(String orgName, String accountNumber) {
 
         Bank bank = bankRepository.findByName(orgName)
                 .orElseThrow(() -> new BankException(ErrorCode.BANK_NOT_FOUND));
@@ -247,6 +247,6 @@ public class BankService {
         Account account = accountRepository.findByBankAndAccountNumber(bank, accountNumber)
                 .orElseThrow(() -> new BankException(ErrorCode.BANK_ACCOUNT_NOT_FOUND));
 
-        return AccountOwnerRequestDto.of(account.getMember().getName());
+        return AccountOwnerResponseDto.of(account.getMember().getName());
     }
 }

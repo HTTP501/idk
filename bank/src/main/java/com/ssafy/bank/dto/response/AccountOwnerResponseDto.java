@@ -7,12 +7,12 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor
-public class AccountOwnerRequestDto {
+public class AccountOwnerResponseDto {
 
     private String name;
 
-    public static AccountOwnerRequestDto of(String name) {
-        return AccountOwnerRequestDto.builder()
+    public static AccountOwnerResponseDto of(String name) {
+        return AccountOwnerResponseDto.builder()
                 .name(name)
                 .build();
     }
