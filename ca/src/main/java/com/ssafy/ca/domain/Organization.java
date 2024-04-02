@@ -18,7 +18,7 @@ public class Organization {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orgId;
 
-    @Column(name = "org_code")
+    @Column(name = "org_code", unique = true)
     private String orgCode;
 
     @Column(name = "org_name")
