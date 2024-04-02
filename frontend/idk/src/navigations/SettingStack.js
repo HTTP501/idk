@@ -5,7 +5,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons'; // Import Ionicons from Expo
-
+import RegistSalary from '../screens/Settings/RegistSalary';
 const Stack = createNativeStackNavigator();
 
 function SettingStack({ navigation }) {
@@ -36,6 +36,7 @@ function SettingStack({ navigation }) {
         <Stack.Screen name="ChangeLeastHoldMoney" component={ChangeLeastHoldMoney} options={{ headerLeft: () => renderBackButton(), title: '설정' }} />
         <Stack.Screen name="ChangeSalaryDay" component={ChangeSalaryDay} options={{ headerLeft: () => renderBackButton(), title: '설정' }} />
         <Stack.Screen name="RegistSavingBox" component={RegistSavingBox} options={{ headerShown: false }} />
+        <Stack.Screen name="RegistSalary" component={RegistSalary} options={{ headerLeft: () => renderBackButton(), title: '설정' }} />
       </Stack.Navigator>
   );
 }

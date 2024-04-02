@@ -55,7 +55,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     // 계좌 조회 Axios
     await getAccountAxios(
       (res) => {
-        console.log(res.data.data);
+        console.log("계좌 데이터",res.data.data);
         // 스토리지에 계좌정보만 저장해주기
         const data = JSON.stringify({
           accountNumber: res.data.data.accountNumber,
@@ -64,6 +64,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
         AsyncStorage.setItem(ACCOUNT_KEY, data);
         // 돈포켓 조회 Axios
         getPocketListAxios(
+
           (res) => {
             setPocketData(res.data.data.arrayPocket);
             setSavingPocketData(
@@ -84,6 +85,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
           },
           (err) => {}
         );
+
         setAccount(res.data.data);
       },
       (err) => {
@@ -140,21 +142,23 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   let [pocketType, setPocketType] = useState("total");
 
   // 포켓 순서 바꾸기
-  const changePocketOrder = async function (data) {
-    setPocketData(data);
-    let orderedId = [];
-    await data.map((item) => {
-      orderedId.push(item.pocketId);
-    });
-    console.log(orderedId);
-    // changeDonPocketOrderAxios({arrayPocketId:orderedId},
-    //   res=>{
-    //   console.log(res)
-    // }, err =>{
-    //   console.log(err)
-    // }
-    // )
-  };
+
+  const changePocketOrder = async function(data){
+    setPocketData(data)
+    let orderedId = []
+    await data.map(item=>
+      {orderedId.push(item.pocketId)}
+      )
+    console.log(orderedId)
+    changeDonPocketOrderAxios({arrayPocketId:orderedId},
+      res=>{
+      console.log(res)
+    }, err =>{
+      console.log(err)
+    }
+    )
+  }
+
   // 돈포켓 총 금액
   const totalPocket = pocketData.reduce((acc, curr) => acc + curr.balance, 0);
   // + 버튼 눌렸는지 판단
@@ -201,14 +205,14 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
                   />
                 ) : null}
               </View>
-            ) : pocketType === "목표저축" ? (
+            ) : pocketType === "saving" ? (
               // 저축 돈포켓
               <FilteredDonPocketList
                 navigation={navigation}
                 filteredPocketData={savingPocketData}
                 fetchData={fetchData}
               />
-            ) : pocketType === "자동이체" ? (
+            ) : pocketType === "autoTransfer" ? (
               // 자동이체 돈포켓
               <FilteredDonPocketList
                 navigation={navigation}
