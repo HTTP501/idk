@@ -211,6 +211,7 @@ public class BankService {
                 .orElseThrow(() -> new BankException(ErrorCode.BANK_MEMBER_NOT_FOUND));
 
         // 기관 체크
+        System.out.println("ReceiverOrgCode = " + requestDto.getReceiverOrgCode());
         Organization organization = organizationRepository.findByOrgCode(requestDto.getReceiverOrgCode())
                 .orElseThrow(() -> new BankException(ErrorCode.BANK_ORG_NOT_FOUND));
 
