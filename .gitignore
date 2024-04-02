@@ -522,5 +522,3 @@ backend/idk/src/main/resources/
 db/
 
 *.yml
-*.key
-*.pem
