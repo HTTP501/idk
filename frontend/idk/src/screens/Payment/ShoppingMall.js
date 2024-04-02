@@ -19,7 +19,6 @@ import {
   callProductsDataAxios,
   callProductsDetailDataAxios,
 } from "../../API/ShoppingMallData.js";
-import EventSource from "react-native-sse";
 import RNEventSource from "react-native-event-source";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { local } from "d3";
@@ -49,56 +48,53 @@ const ShoppingMall = ({ navigation }) => {
   const imgSize = menuWidth * 0.7;
   const modalHeight = windowHeight * 0.35;
 
-  // useEffect(() => {
-  //   const callAccess = async () => {
-  //     const myAccess = await AsyncStorage.getItem("@auth");
-  //     setMyAccessToken(myAccess);
-  //   };
+  useEffect(() => {
+    const callAccess = async () => {
+      const myAccess = await AsyncStorage.getItem("@auth");
+      setMyAccessToken(myAccess);
+    };
 
-  //   callAccess();
-  // }, []);
+    callAccess();
+  }, []);
 
-  // useEffect(() => {
-  //   if (myAccessToken !== null) {
-  //     console.log(JSON.parse(myAccessToken).accessToken);
-  //     const baseURL = "http://j10a501.p.ssafy.io:8081";
-  //     const baseLocalURL = "http://70.12.247.81:8080/sse/subscribe";
-  //     const localAccessToken =
-  //       "eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInBob25lTnVtYmVyIjoiMTIzNDU2Nzg5MDAiLCJpYXQiOjE3MTIwMzM1NTcsImV4cCI6MTcxMjAzOTU1N30.G_6rMSdlEY0lC3coTOEaN7y6HtLm7DEmFXzIWuchmWo";
-  //     const options = {
-  //       headers: {
-  //         // Authorization: `Bearer ${JSON.parse(myAccessToken).accessToken}`,
-  //         Authorization: `Bearer ${localAccessToken}`,
-  //         "Content-Type": "text/event-stream",
-  //         Connection: "keep-alive",
-  //         "Cache-Control": "no-cache",
-  //       },
-  //     };
-
-  //     const eventSource = new RNEventSource(
-  //       `${baseLocalURL}/sse/subscribe`,
-  //       options
-  //     );
-
-  //     eventSource.addEventListener("pocket", (event) => {
-  //       console.log(event.type); // message
-  //       console.log(event.data);
-  //     });
-  //     eventSource.addEventListener("date", (event) => {
-  //       console.log(event.type); // message
-  //       console.log(event.data);
-  //     });
-  //     eventSource.addEventListener("error", (event) => {
-  //       console.log(event.type); // message
-  //       console.log(event);
-  //     });
-  //     eventSource.addEventListener("message", (data) => {
-  //       console.log(data.type); // message
-  //       console.log(data);
-  //     });
-  //   }
-
-  // }, [myAccessToken]);
+  useEffect(() => {
+    if (myAccessToken !== null) {
+      // console.log("called");
+      // const baseURL = "http://j10a501.p.ssafy.io:8081";
+      // const baseLocalURL = "http://70.12.247.81:8080/sse/subscribe";
+      // const localAccessToken =
+      //   "eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInBob25lTnVtYmVyIjoiMTIzNDU2Nzg5MDAiLCJpYXQiOjE3MTIwNDQ4MDEsImV4cCI6MTcxMjA1MDgwMX0.68VpjoPrzWeyWE-ReGXSdPlVDtevoxqEK3an8sZ2uPo";
+      // const options = {
+      //   headers: {
+      //     // Authorization: `Bearer ${JSON.parse(myAccessToken).accessToken}`,
+      //     Authorization: `Bearer ${localAccessToken}`,
+      //   },
+      // };
+      // const eventSource = new RNEventSource(
+      //   `${baseLocalURL}/sse/subscribe`,
+      //   options
+      // );
+      // eventSource.addEventListener("pocket", function (event) {
+      //   console.log(event.type); // message
+      //   console.log(event.data);
+      // });
+      // eventSource.addEventListener("date", function (event) {
+      //   console.log(event.type); // message
+      //   console.log(event.data);
+      // });
+      // eventSource.addEventListener("error", function (event) {
+      //   console.log("여기서 에러", event.type); // message
+      //   console.log(event.currentTarget.readyState);
+      // });
+      // eventSource.addEventListener("message", function (event) {
+      //   console.log(event.type); // message
+      //   console.log(event.data);
+      // });
+      // return () => {
+      //   eventSource.close();
+      // };
+    }
+  }, [myAccessToken]);
 
   // useEffect(() => {
   //   const accessToken =
@@ -106,6 +102,9 @@ const ShoppingMall = ({ navigation }) => {
   //   const option = {
   //     method: "GET",
   //     headers: `Bearer ${accessToken}`,
+  //     "Content-Type": "text/event-stream",
+  //     Connection: "keep-alive",
+  //     "Cache-Control": "no-cache",
   //   };
 
   //   const myURL = "http://70.12.247.81:8080/sse/subscribe";
@@ -120,6 +119,10 @@ const ShoppingMall = ({ navigation }) => {
   //     console.log("New message event:", event.data);
   //   });
 
+  //   ES.addEventListener("date", (event) => {
+  //     console.log("New message event:", event.data);
+  //   });
+
   //   ES.addEventListener("close", (event) => {
   //     console.log("Close SSE connection");
   //   });
@@ -131,7 +134,7 @@ const ShoppingMall = ({ navigation }) => {
   //       console.error("Error:", event.message, event.error);
   //     }
   //   });
-  // });
+  // }, [myAccessToken]);
 
   useFocusEffect(
     React.useCallback(() => {
