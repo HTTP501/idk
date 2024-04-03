@@ -118,7 +118,7 @@ public class ClientBankService {
     }
 
     // 계좌 명의 조회(은행 이름, 계좌번호)
-    public String getaccountInfo(String orgName, String accountNumber) {
+    public String getAccountInfo(String orgName, String accountNumber) {
 
         String bankGetAccountInfoApiUrl = bankUrl.concat("/api/bank/account");
 
@@ -143,6 +143,6 @@ public class ClientBankService {
         AccountInfoResponseDto accountInfoResponseDto = responseEntity.getBody();
 
         assert accountInfoResponseDto != null;
-        return accountInfoResponseDto.getData().getAccountNumber();
+        return accountInfoResponseDto.getData().getName();
     }
 }
