@@ -99,13 +99,14 @@ public enum ErrorCode {
     // CLIENT
     CLIENT_BANK_SIGNUP_FAILED(400, "CB400", "타은행 회원 생성에 실패했습니다."),
     CLIENT_AUTO_TRANSFER_INFO_FAILED(400, "CB400", "자동이체 정보 조회에 실패했습니다."),
+    CLIENT_CARDS_INFO_FAILED(400, "CB400", "카드 정보 조회에 실패했습니다."),
 
     // SALARY
     SALARY_NOT_FOUND(404, "SLR401", "해당 월급이 존재하지 않습니다."),
 
     // ORGANIZATION
-    ORGANIZATION_INVALID(409, "ORG-401", "유효하지 않은 기관입니다.")
-    ;
+    ORGANIZATION_INVALID(409, "ORG-401", "유효하지 않은 기관입니다.");
+
 
     private final int status;
     private final String code;
