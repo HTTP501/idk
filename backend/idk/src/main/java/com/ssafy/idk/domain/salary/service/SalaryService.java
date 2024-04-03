@@ -97,6 +97,9 @@ public class SalaryService {
                 .build();
         Salary savedSalary = salaryRepository.save(salary);
 
+        // 사용자 월급일 업데이트
+        updateAccountSalaryDay(savedSalary);
+
         return SalaryResponseDto.of(
                 savedSalary.getSalaryId(),
                 savedSalary.getAccount().getNumber(),
@@ -162,6 +165,9 @@ public class SalaryService {
         salary.setCompanyName(requestDto.getCompanyName());
         Salary savedSalary = salaryRepository.save(salary);
 
+        // 사용자 월급일 업데이트
+        updateAccountSalaryDay(savedSalary);
+
         return SalaryResponseDto.of(
                 savedSalary.getSalaryId(),
                 savedSalary.getAccount().getNumber(),
@@ -169,6 +175,16 @@ public class SalaryService {
                 savedSalary.getCompanyName(),
                 savedSalary.getAmount()
         );
+
+    }
+
+    @Transactional
+    public void updateAccountSalaryDay(Salary salary) {
+
+        Account account = accountRepository.findBySalary(salary);
+        account.setPayDate(salary.getSalaryDay());
+
+        accountRepository.save(account);
 
     }
 }

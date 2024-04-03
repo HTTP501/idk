@@ -2,6 +2,7 @@ package com.ssafy.idk.domain.account.repository;
 
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.member.entity.Member;
+import com.ssafy.idk.domain.salary.entity.Salary;
 import io.lettuce.core.dynamic.annotation.Param;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     List<Account> findByPayDate(Integer systemDay);
 
+    Account findBySalary(Salary salary);
 }

@@ -57,6 +57,10 @@ public class TargetSaving {
         this.pocket = pocket;
     }
 
+    public void updateCount() {
+        this.count++;
+    }
+
     @PrePersist
     public void prePresist() {
         this.count = 0;

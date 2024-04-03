@@ -101,6 +101,10 @@ public class Account {
         this.balance -= amount;
     }
 
+    public void setPayDate(Integer payDate) {
+        this.payDate = payDate;
+    }
+
     @PrePersist
     public void prePresist() {
         this.name = "IDK 우리나라 국민우대통장";
