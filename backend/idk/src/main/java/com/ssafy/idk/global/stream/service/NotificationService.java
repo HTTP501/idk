@@ -26,9 +26,8 @@ public class NotificationService {
     private final MemberRepository memberRepository;
     private final AuthenticationService authenticationService;
 
-    public SseEmitter subscribe(HttpServletRequest request, Long accountId) {
+    public SseEmitter subscribe(Long accountId) {
 
-        printHeaders(request);
         SseEmitter emitter = createEmitter(accountId);
 
 //        sendToClient(accountId, "EventScream Created.");
@@ -143,14 +142,5 @@ public class NotificationService {
             }
 
         });
-    }
-
-    //Header 모든 정보
-    private void printHeaders(HttpServletRequest request) {
-        System.out.println("--- Headers - start ---");
-        request.getHeaderNames().asIterator()
-                .forEachRemaining(headerName -> System.out.println(headerName + ": " + request.getHeader(headerName)));
-        System.out.println("--- Headers - end ---");
-        System.out.println();
     }
 }
