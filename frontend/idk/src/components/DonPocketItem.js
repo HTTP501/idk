@@ -21,40 +21,48 @@ const DonPocket = ({ item, isActive, isFiltered, fetchData }) => {
 
   // 돈포켓 입금 Axios
   const handleDepositDonPocket = () => {
-    depositDonPocketAxios(
-      donPocket.pocketId,
-      res => {
-        fetchData()
-      },
-      err => {
-        if (err.response.data.code === 'C401') {
-          Alert.alert(err.response.data.message, '', [{text:'확인'}])
-        } else if (err.response.data.code === 'P404') {
-          Alert.alert(err.response.data.message, '', [{text:'확인'}])  
-        } else if (err.response.data.code === 'P405') {
-          Alert.alert(err.response.data.message, '', [{text:'확인'}])  
-        }
+    Alert.alert('돈포켓에 입금하시겠습니까?', '소비 금액을 보관할 수 있어요!', [{text:'확인', 
+      onPress:() => {
+        depositDonPocketAxios(
+          donPocket.pocketId,
+          res => {
+            fetchData()
+          },
+          err => {
+            if (err.response.data.code === 'C401') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])
+            } else if (err.response.data.code === 'P404') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+            } else if (err.response.data.code === 'P405') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+            }
+          }
+        )
       }
-    )
+    }, {text: '취소'}])
   }
 
   // 돈포켓 출금 Axios
   const handleWithdrawalDonPocket = () => {
-    withdrawalDonPocketAxios(
-      donPocket.pocketId,
-      res => {
-        fetchData()
-      },
-      err => {
-        if (err.response.data.code === 'C401') {
-          Alert.alert(err.response.data.message, '', [{text:'확인'}])
-        } else if (err.response.data.code === 'P404') {
-          Alert.alert(err.response.data.message, '', [{text:'확인'}])  
-        } else if (err.response.data.code === 'P405') {
-          Alert.alert(err.response.data.message, '', [{text:'확인'}])  
-        }
+    Alert.alert('돈포켓에서 출금하시겠습니까?', '나중에 다시 입금해야해요!', [{text:'확인', 
+      onPress:() => {
+        withdrawalDonPocketAxios(
+          donPocket.pocketId,
+          res => {
+            fetchData()
+          },
+          err => {
+            if (err.response.data.code === 'C401') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])
+            } else if (err.response.data.code === 'P404') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+            } else if (err.response.data.code === 'P405') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+            }
+          }
+        )
       }
-    )
+    }, {text: '취소'}])
   }
   
   return (
@@ -94,7 +102,7 @@ const DonPocket = ({ item, isActive, isFiltered, fetchData }) => {
       {/* 돈포켓 내용 */}
       <View className="flex-grow items-start ml-3" >
         <View className="flex-row items-center">
-          <Text className="font-bold text-lg mr-3" style={donPocket.paid ? styles.notPaidColor : null}>{truncate(donPocket.name, { length: 12, omission: '...' })}</Text>
+          <Text className="font-bold text-lg mr-3" style={donPocket.paid ? styles.notPaidColor : null}>{truncate(donPocket.name, { length: 9, omission: '...' })}</Text>
           <Text className="" style={[donPocket.paid ? styles.notPaidColor : null, donPocket.deposited ? {color:theme["sky-basic"]} : {color:theme.red}]}>
             {donPocket.expectedDate.substring(5, 7)}월 {donPocket.expectedDate.substring(8, 10)}일
           </Text>

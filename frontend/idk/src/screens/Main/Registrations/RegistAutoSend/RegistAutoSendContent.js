@@ -18,6 +18,9 @@ import {
   Alert,
   Image,
 } from "react-native";
+import { getUserAccountAxios } from "../../../../API/Account";
+import * as Animatable from 'react-native-animatable'; // 애니메이션을 위한 라이브러리 추가
+import { AntDesign } from '@expo/vector-icons';
 
 const imgMatch = {
   'KB국민은행': require("../../../../../assets/banks/KBBank.png"),
@@ -82,7 +85,7 @@ const RegistAutoSendContent = ({ navigation, route }) => {
   const [bankName, setBankName] = useState("IDK은행");
   const [accountId, setAccountId] = useState("");
   const [date, setDate] = useState(15);
-  const [amount, setAmount] = useState(5000);
+  const [amount, setAmount] = useState(0);
   const myDataInfo = route.params.myDataInfo
 
   // 시작 년월, 종료 년월
@@ -93,22 +96,11 @@ const RegistAutoSendContent = ({ navigation, route }) => {
   const [showMyAccountName, setShowMyAccountName] = useState("");
   const [showOtherAccountName, setShowOtherAccountName] = useState("");
   const [myAccount, setMyAccount] = useState({});
-  const data = {
-    bankName,
-    accountId,
-    date,
-    amount,
-    startYear,
-    startMonth,
-    endYear,
-    endMonth,
-    myAccount,
-    isChecked:false
-  }
-  const destination = {
-    stack:"MainStack",
-    screen:"RegistAutoSendContent"
-  }
+  
+  // 계좌 사람 판단
+  const [isChecking, setIsChecking] = useState(false);
+  const [accountOwner, setAccountOwner] = useState("");
+
   // '등록' 버튼 활성화 여부
   const isRegistButtonEnabled = showMyAccountName !== "" &&
     showOtherAccountName !== "" &&
@@ -157,7 +149,6 @@ const RegistAutoSendContent = ({ navigation, route }) => {
 
     getAccountAxios(
       (res) => {
-        console.log(res);
         setMyAccount(res.data.data);
         setShowOtherAccountName(res.data.data.userName)
       },
@@ -166,6 +157,30 @@ const RegistAutoSendContent = ({ navigation, route }) => {
       }
     );
   }, []);
+
+  // 받는 분 통장 표시 입력값 변경 이벤트 핸들러
+  const handleShowOtherAccountNameChange = (text) => {
+    // 10글자를 초과하는 경우
+    if (text.length > 10) {
+      // 경고 메시지 표시
+      Alert.alert("10글자를 초과할 수 없습니다.", "", [{ text: "확인" }]);
+    } else {
+      // 10글자 이하인 경우에만 값을 업데이트
+      setShowOtherAccountName(text);
+    }
+  };
+
+  // 내 통장 표시 입력값 변경 이벤트 핸들러
+  const handleShowMyAccountNameChange = (text) => {
+    // 10글자를 초과하는 경우
+    if (text.length > 10) {
+      // 경고 메시지 표시
+      Alert.alert("10글자를 초과할 수 없습니다.", "", [{ text: "확인" }]);
+    } else {
+      // 10글자 이하인 경우에만 값을 업데이트
+      setShowMyAccountName(text);
+    }
+  };
 
   // 자동이체 등록
   const registAutoSend = async () => {
@@ -180,24 +195,72 @@ const RegistAutoSendContent = ({ navigation, route }) => {
       showRecipientBankAccount: showOtherAccountName,
       showMyBankAccount: showMyAccountName,
     };
-    console.log(payload);
     await registAutoTransferAxios(
       payload,
-      (res) => console.log(res.data.message),
-      (err) => console.log(err)
+      (res) => {
+        navigation.navigate("RegistAutoSendFinish", {
+          bankName,
+          accountId,
+          date,
+          amount,
+          startYear,
+          startMonth,
+          endYear,
+          endMonth,
+          showMyAccountName,
+          showOtherAccountName,
+          autoTransferId:res.data.data.autoTransferId
+        });
+      },
+      (err) => {
+        if (err.response.data.code === 'TR401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인'}])
+        }
+      }
     );
-    navigation.navigate("RegistAutoSendFinish", {
-      bankName,
-      accountId,
-      date,
-      amount,
-      startYear,
-      startMonth,
-      endYear,
-      endMonth,
-      showMyAccountName,
-      showOtherAccountName,
-    });
+  };
+  
+  // 계좌에 있는 사람 있는지 확인
+  const handleAccountNumber = (text) => {
+    if (text) {
+      // 조회 중 표시 상태 업데이트
+      setIsChecking(true);
+      
+      // 사용자 조회 Axios
+      getUserAccountAxios(
+        { accountNumber: text, bankName: bankName },
+        (res) => {
+          // 조회 결과 표시 상태 업데이트
+          setIsChecking(false);
+          setAccountOwner(res.data?.data?.memberName);
+        },
+        (err) => {
+          // 조회 결과 표시 상태 업데이트
+          setAccountOwner('해당 계좌가 존재하지 않아요.')
+          setIsChecking(false);
+        }
+      );
+    } else {
+      setAccountOwner('')
+      setIsChecking(false);
+    }
+    setAccountId(text)
+  }
+
+  // 조회 중 표시 여부에 따라 텍스트 컴포넌트 반환 함수
+  const renderCheckingIndicator = () => {
+    if (isChecking) {
+      return (
+        <Animatable.Text
+          animation="pulse" // 펄스 애니메이션
+          iterationCount="infinite" // 무한 반복
+          style={{...styles.checkingIndicator, alignSelf: 'flex-start'}}
+        >
+          조회 중...
+        </Animatable.Text>
+      );
+    }
+    return null;
   };
   return (
     <View style={styles.container}>
@@ -225,14 +288,34 @@ const RegistAutoSendContent = ({ navigation, route }) => {
           <View>
             <BankToggle changeBank={(bankName) => setBankName(bankName)} />
             {/* 계좌 번호 */}
-              <TextInput
-              className="text-lg mt-3"
-              value={accountId}
-              onChangeText={(text) => setAccountId(text)}
-              keyboardType="numeric"
+            <View
+              className="flex-row justify-between items-end pb-3"
               style={styles.input}
-              placeholder="ex) 110-357-123456"
-              />
+            >
+                <TextInput
+                className="text-lg mt-3"
+                value={accountId}
+                onChangeText={handleAccountNumber}
+                keyboardType="numeric"
+                placeholder="ex) 110-357-123456"
+                />
+                <TouchableOpacity onPress={() => {setAccountId(""), setIsChecking(false), setAccountOwner('')}}>
+                  <AntDesign name="closecircle" size={24} color="gray" />
+                </TouchableOpacity>
+            </View>
+            <View style={{height:30}}>
+              {/* 조회 중 표시 */}
+              {renderCheckingIndicator()}
+              {/* 조회 결과 표시 */}
+              {accountOwner && !isChecking && (
+                <View>
+                  {accountOwner === '해당 계좌가 존재하지 않아요.' ?
+                    <Text style={styles.accountOwnerText}>{accountOwner}</Text> :
+                    <Text style={{...styles.accountOwnerText, color: theme["sky-basic"]}}>{accountOwner} 님에게 보낼게요!</Text>
+                  }
+                </View>
+              )}
+            </View>
           </View>
             :
             <View className='flex-row'>
@@ -329,9 +412,7 @@ const RegistAutoSendContent = ({ navigation, route }) => {
           <Text className="text-lg font-bold">받는 분 통장 표시</Text>
           <TextInput
             value={showOtherAccountName}
-            onChangeText={(text) => {
-              setShowOtherAccountName(text);
-            }}
+            onChangeText={handleShowOtherAccountNameChange}
             style={styles.input}
             placeholder="ex) 홍길동"
           />
@@ -340,9 +421,7 @@ const RegistAutoSendContent = ({ navigation, route }) => {
           <Text className="text-lg font-bold">내 통장 표시</Text>
           <TextInput
             value={showMyAccountName}
-            onChangeText={(text) => {
-              setShowMyAccountName(text);
-            }}
+            onChangeText={handleShowMyAccountNameChange}
             style={styles.input}
             placeholder="ex) 아이들과 미래재단 정기후원"
           />
@@ -518,6 +597,10 @@ const styles = StyleSheet.create({
     bottom: 20, // 화면 하단과의 간격
     alignSelf: "center",
     borderRadius: 10,
+  },
+  accountOwnerText: {
+    marginTop: 5,
+    fontSize: 16,
   },
 });
 

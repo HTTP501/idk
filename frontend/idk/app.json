@@ -4,7 +4,7 @@
     "slug": "idk",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo/app_icon.png",
+    "icon": "./assets/logo/favicon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/logo/SplashImg.png",
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo/app_icon.png",
+        "foregroundImage": "./assets/logo/favicon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.yunyebeen.idk"
@@ -35,7 +35,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "1d05345d-ac0e-4b72-82e1-76c031391934"
+        "projectId": "6d60907d-1376-4a89-8afa-2d9789f07c91"
       }
     }
   }

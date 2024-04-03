@@ -22,6 +22,14 @@ function MainStack({ navigation }) {
     ) 
   }
 
+  const renderMainButton = (color) => {
+    return (
+    <TouchableOpacity onPress={() => navigation.reset({routes: [{name:'Main'}]})}>
+      <Ionicons name="chevron-back" size={24} color={color} />
+    </TouchableOpacity>
+    ) 
+  }
+
   const appendMydata = () => {
     return (
     <TouchableOpacity onPress={() => navigation.navigate('AgreeMyData')}>
@@ -31,7 +39,7 @@ function MainStack({ navigation }) {
   }
 
   return (
-      <Stack.Navigator screenOptions={{headerTransparent: true,}}>
+      <Stack.Navigator initialRouteName='Main' screenOptions={{headerTransparent: true,}}>
         <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
         <Stack.Screen name="EnterAccount" component={EnterAccount} options={{ headerShown: true, title:"" }} />
         <Stack.Screen name="EnterMoney" component={EnterMoney} options={{ headerShown: true, title:"" }} />
@@ -42,7 +50,7 @@ function MainStack({ navigation }) {
         <Stack.Screen name="RegistSubscribe" component={RegistSubscribe} options={{  headerShown: true, title:"" }} />
         <Stack.Screen name="RegistSavingBox" component={RegistSavingBox} options={{  headerShown: true, title:"" }} />
         <Stack.Screen name="AgreeMyData" component={AgreeMyData} options={{ headerShown: false }} />
-        <Stack.Screen name="CheckMyData" component={CheckMyData} options={{ headerLeft: () => renderBackButton('black'), title: '마이데이터 조회', headerRight: () => appendMydata() }} />
+        <Stack.Screen name="CheckMyData" component={CheckMyData} options={{ headerLeft: () => renderMainButton('black'), title: '마이데이터 조회', headerRight: () => appendMydata() }} />
         <Stack.Screen name="LinkMyData" component={LinkMyData } options={{ headerShown: false }} />
         <Stack.Screen name="OutSidePage" component={OutSidePage } options={{ headerShown: false }} />
         <Stack.Screen name="RegistAutoSendAgree" component={RegistAutoSendAgree} options={{ headerShown: true, title:"" }} />

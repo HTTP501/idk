@@ -9,7 +9,7 @@ import {
   Modal,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Fontisto, MaterialIcons, Entypo } from "@expo/vector-icons";
 import theme from "../../style";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -19,9 +19,10 @@ import {
   callProductsDataAxios,
   callProductsDetailDataAxios,
 } from "../../API/ShoppingMallData.js";
+
 import RNEventSource from "react-native-event-source";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { local } from "d3";
 
 const ShoppingMall = ({ navigation }) => {
   // 기믹에 이용될 상태들 선언
@@ -40,6 +41,8 @@ const ShoppingMall = ({ navigation }) => {
   const [nowData, setNowData] = useState(null);
   const [wantGoGoal, setWantGoGoal] = useState(false);
   const [myAccessToken, setMyAccessToken] = useState(null);
+  const [isSseCalled, setisSseCalled] = useState(false);
+  // const [myAccount, setm] = useState(false);
 
   // 화면 사이즈 찾기
   const { width: windowWidth, height: windowHeight } = Dimensions.get("window");
@@ -48,92 +51,82 @@ const ShoppingMall = ({ navigation }) => {
   const imgSize = menuWidth * 0.7;
   const modalHeight = windowHeight * 0.35;
 
-  useEffect(() => {
-    const callAccess = async () => {
-      const myAccess = await AsyncStorage.getItem("@auth");
-      setMyAccessToken(myAccess);
-    };
-
-    callAccess();
-  }, []);
-
-  useEffect(() => {
-    if (myAccessToken !== null) {
-      // console.log("called");
-      // const baseURL = "http://j10a501.p.ssafy.io:8081";
-      // const baseLocalURL = "http://70.12.247.81:8080/sse/subscribe";
-      // const localAccessToken =
-      //   "eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInBob25lTnVtYmVyIjoiMTIzNDU2Nzg5MDAiLCJpYXQiOjE3MTIwNDQ4MDEsImV4cCI6MTcxMjA1MDgwMX0.68VpjoPrzWeyWE-ReGXSdPlVDtevoxqEK3an8sZ2uPo";
-      // const options = {
-      //   headers: {
-      //     // Authorization: `Bearer ${JSON.parse(myAccessToken).accessToken}`,
-      //     Authorization: `Bearer ${localAccessToken}`,
-      //   },
-      // };
-      // const eventSource = new RNEventSource(
-      //   `${baseLocalURL}/sse/subscribe`,
-      //   options
-      // );
-      // eventSource.addEventListener("pocket", function (event) {
-      //   console.log(event.type); // message
-      //   console.log(event.data);
-      // });
-      // eventSource.addEventListener("date", function (event) {
-      //   console.log(event.type); // message
-      //   console.log(event.data);
-      // });
-      // eventSource.addEventListener("error", function (event) {
-      //   console.log("여기서 에러", event.type); // message
-      //   console.log(event.currentTarget.readyState);
-      // });
-      // eventSource.addEventListener("message", function (event) {
-      //   console.log(event.type); // message
-      //   console.log(event.data);
-      // });
-      // return () => {
-      //   eventSource.close();
-      // };
-    }
-  }, [myAccessToken]);
-
   // useEffect(() => {
-  //   const accessToken =
-  //     "eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInBob25lTnVtYmVyIjoiMTIzNDU2Nzg5MDAiLCJpYXQiOjE3MTIwMjY5NzYsImV4cCI6MTcxMjAzMjk3Nn0.m3Msj9ggWDmbmj4hKUef1S-X6YmTXl5pZbLBQMx7u3o";
-  //   const option = {
-  //     method: "GET",
-  //     headers: `Bearer ${accessToken}`,
-  //     "Content-Type": "text/event-stream",
-  //     Connection: "keep-alive",
-  //     "Cache-Control": "no-cache",
+  //   const callAccess = async () => {
+  //     const myAccess = await AsyncStorage.getItem("@auth");
+  //     setMyAccessToken(myAccess);
   //   };
 
-  //   const myURL = "http://70.12.247.81:8080/sse/subscribe";
+  //   callAccess();
+  // }, []);
 
-  //   const ES = new EventSource(myURL, option);
+  // useEffect(() => {
+  //   if (myAccessToken !== null) {
+  //     console.log("called");
+  //     console.log(JSON.parse(myAccessToken).accessToken);
 
-  //   ES.addEventListener("open", (event) => {
-  //     console.log("연결됨");
-  //   });
+  //     // setisSseCalled(true);
 
-  //   ES.addEventListener("pocket", (event) => {
-  //     console.log("New message event:", event.data);
-  //   });
+  //     const baseURL = "https://j10a501.p.ssafy.io/api";
+  //     const options = {
+  //       headers: {
+  //         Connection: "keep-alive",
+  //         "Content-Type": "application/json",
+  //         "Cache-Control": "no-cache",
+  //         "Access-Control-Allow-Origin": "*",
+  //         "X-Accel-Buffering": "no",
+  //         Authorization: `Bearer ${JSON.parse(myAccessToken).accessToken}`,
+  //       },
+  //     };
+  //     const eventSource = new RNEventSource(`${baseURL}/sse/sub/99`, options);
 
-  //   ES.addEventListener("date", (event) => {
-  //     console.log("New message event:", event.data);
-  //   });
+  //     // eventSource.onmessage = function (event) {
+  //     //   console.log(event.type);
+  //     //   console.log(event.data);
+  //     //   // data 사용
+  //     // };
+  //     eventSource.onError = function (event) {
+  //       console.log(event.type);
+  //       console.log("온에러", event);
+  //       // data 사용
+  //     };
 
-  //   ES.addEventListener("close", (event) => {
-  //     console.log("Close SSE connection");
-  //   });
+  //     eventSource.onOpen = function (event) {
+  //       console.log("나 연결했다");
+  //     };
 
-  //   ES.addEventListener("error", (event) => {
-  //     if (event.type === "error") {
-  //       console.error("Connection error:", event.message);
-  //     } else if (event.type === "exception") {
-  //       console.error("Error:", event.message, event.error);
-  //     }
-  //   });
+  //     eventSource.addEventListener("open", function (event) {
+  //       console.log(event.type); // message
+  //       console.log(event.data);
+  //     });
+  //     eventSource.addEventListener("sse", function (event) {
+  //       console.log(event.type); // message
+  //       console.log(event.data);
+  //     });
+  //     eventSource.addEventListener("update", function (event) {
+  //       console.log(event.type); // message
+  //       console.log("update메세지",event.data);
+
+  //       // 업데이트 이벤트 인식
+
+  //       // 사용자가 MAIN 화면에 있을 때만 MAIN API 요청
+  //     });
+  //     eventSource.addEventListener("date", function (event) {
+  //       console.log(event.type); // message
+  //       console.log(event.data);
+  //     });
+  //     eventSource.addEventListener("error", function (event) {
+  //       console.log("여기서 에러", event.type); // message
+  //       console.log(event);
+  //     });
+  //     eventSource.addEventListener("message", function (event) {
+  //       console.log(event.type); // message
+  //       console.log(event.data);
+  //     });
+  //     return () => {
+  //       eventSource.close();
+  //     };
+  //   }
   // }, [myAccessToken]);
 
   useFocusEffect(

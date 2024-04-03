@@ -36,7 +36,7 @@ const AuthPIN = ({ navigation }) => {
 
   const authenticate = async () => {
     const p = await AsyncStorage.getItem(SIGNUP_KEY)
-    const phoneNumber = JSON.parse(p).phoneNumber
+    const phoneNumber = JSON.parse(p)?.phoneNumber
     const result = await LocalAuthentication.authenticateAsync({
       promptMessage: '지문을 인식하여 로그인하세요', // 지문 인식 프롬프트 메시지
     });
@@ -90,7 +90,7 @@ const AuthPIN = ({ navigation }) => {
   // 확인 함수
   const verifyPIN = async (numericText) => {
     const p = await AsyncStorage.getItem(SIGNUP_KEY)
-    const phoneNumber = JSON.parse(p).phoneNumber
+    const phoneNumber = JSON.parse(p)?.phoneNumber
     loginPINAxios(
       {
         pin: numericText,
