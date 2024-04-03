@@ -347,49 +347,50 @@ public class PocketService {
             TargetSaving targetSaving = optionalTargetSaving.get();
             
             // TODO 목표저축에 넣는 날이 아직 도래하지 않았거나, 이미 Paid 상태일 때
-            
-            targetSaving.updateCount();
-            TargetSaving savedTargetSaving = targetSavingRepository.save(targetSaving);
+            if (!pocket.isPaid()) {
+                targetSaving.updateCount();
+                TargetSaving savedTargetSaving = targetSavingRepository.save(targetSaving);
 
-            // 결제 완료 표시
-            pocket.withdraw();
-            pocket.setPaid(true);
+                // 결제 완료 표시
+                pocket.withdraw();
+                pocket.setPaid(true);
 
-            // 돈 포켓 입출금 내역 저장
-            pocketTransaction = PocketTransaction.builder()
-                    .pocket(pocket)
-                    .createdAt(LocalDateTime.now())
-                    .amount(pocket.getTarget())
-                    .balance(0L)
-                    .content("출금")
-                    .build();
-            pocketTransactionRepository.save(pocketTransaction);
-
-            // 만약 목표저축 목표를 달성했다면
-            if (Objects.equals(savedTargetSaving.getCount(), savedTargetSaving.getTerm())) {
-                // 계좌 입금
-                account.deposit(savedTargetSaving.getGoalAmount());
-
-                // 계좌 입출금 내역 저장
-                Transaction transaction2 = Transaction.builder()
-                        .category(Category.목표저축)
-                        .content("목표저축 달성!")
-                        .amount(pocket.getTarget())
-                        .balance(account.getBalance())
+                // 돈 포켓 입출금 내역 저장
+                pocketTransaction = PocketTransaction.builder()
+                        .pocket(pocket)
                         .createdAt(LocalDateTime.now())
-                        .account(account)
+                        .amount(pocket.getTarget())
+                        .balance(0L)
+                        .content("출금")
                         .build();
-                transactionRepository.save(transaction2);
+                pocketTransactionRepository.save(pocketTransaction);
 
-                savedPocket.setActivated(false);
-                Pocket savedPocket2 = pocketRepository.save(savedPocket);
+                // 만약 목표저축 목표를 달성했다면
+                if (Objects.equals(savedTargetSaving.getCount(), savedTargetSaving.getTerm())) {
+                    // 계좌 입금
+                    account.deposit(savedTargetSaving.getGoalAmount());
 
-                return PocketDepositResponseDto.of(
-                        savedPocket2.getPocketId(),
-                        savedPocket2.getBalance(),
-                        savedPocket2.getBalance(),
-                        savedPocket2.isDeposited()
-                );
+                    // 계좌 입출금 내역 저장
+                    Transaction transaction2 = Transaction.builder()
+                            .category(Category.목표저축)
+                            .content("목표저축 달성!")
+                            .amount(pocket.getTarget())
+                            .balance(account.getBalance())
+                            .createdAt(LocalDateTime.now())
+                            .account(account)
+                            .build();
+                    transactionRepository.save(transaction2);
+
+                    savedPocket.setActivated(false);
+                    Pocket savedPocket2 = pocketRepository.save(savedPocket);
+
+                    return PocketDepositResponseDto.of(
+                            savedPocket2.getPocketId(),
+                            savedPocket2.getBalance(),
+                            savedPocket2.getBalance(),
+                            savedPocket2.isDeposited()
+                    );
+                }
             }
         }
 
@@ -568,7 +569,7 @@ public class PocketService {
 
             // 계좌 출금 및 돈 포켓 입금
             savedAccount.withdraw(pocket.getTarget());
-            pocket.deposit();
+            depositPocket(pocket.getPocketId());
             savedAccount = accountRepository.save(savedAccount);
             pocketRepository.save(pocket);
         }
