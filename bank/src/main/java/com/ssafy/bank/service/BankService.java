@@ -29,6 +29,7 @@ public class BankService {
     private final OrganizationRepository organizationRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final ClientService clientService;
+    private final OrganizationMemberRepository organizationMemberRepository;
     private static final Logger LOGGER = Logger.getLogger(BankService.class.getName());
 
     // 회원 가입
@@ -180,24 +181,21 @@ public class BankService {
     }
 
     // 고객의 자동이체 목록, 상세정보 조회
-    public AutoTransferInfoListResponseDto getAutoTransferInfo(String name, String connectionInformation) {
+    public AutoTransferInfoListResponseDto getAutoTransferInfo(Member member, String orgCode) {
 
-        // 유저 조회
-        Member member = memberRepository.findByConnectionInformation(connectionInformation)
-                .orElseThrow(() -> new BankException(ErrorCode.BANK_MEMBER_NOT_FOUND));
+        Organization organization = organizationRepository.findByOrgCode(orgCode)
+                .orElseThrow(() -> new BankException(ErrorCode.BANK_ORG_NOT_FOUND));
 
-        // 이름 일치하는지 체크
-        if (!member.getName().equals(name)) {
-            throw new BankException(ErrorCode.BANK_MEMBER_INFO_MISMATCH_ERROR);
-        }
+        Bank bank = bankRepository.findByOrganization(organization)
+                .orElseThrow(() -> new BankException(ErrorCode.BANK_NOT_FOUND));
 
-        // 회원의 연결 은행의 계좌 목록 조회
-        List<Account> memberAccounts = getConnectedAccounts(member);
+        // 회원의 요청 은행 계좌 목록 조회
+        List<Account> accountList = accountRepository.findByBankAndMember(bank, member);
 
         // 계좌의 모든 자동이체 목록을 가져옴
         List<AutoTransferInfoResponseDto> autoTransferInfoList = new ArrayList<>();
-        for (Account memberAccount : memberAccounts) {
-            List<AutoTransfer> autoTransfers = autoTransferRepository.findByAccount(memberAccount);
+        for (Account account : accountList) {
+            List<AutoTransfer> autoTransfers = autoTransferRepository.findByAccount(account);
             for (AutoTransfer autoTransfer : autoTransfers) {
 
                 autoTransferInfoList.add(AutoTransferInfoResponseDto.of(
@@ -249,7 +247,21 @@ public class BankService {
         Organization organization1 = organizationRepository.findByOrgCode(requestDto.getProviderOrgCode())
                 .orElseThrow(() -> new BankException(ErrorCode.BANK_ORG_NOT_FOUND));
 
-        organization1.updateAccessToken(accessToken);
+        Optional<OrganizationMember> existingOrganizationMemberOpt = organizationMemberRepository.findByOrganizationAndMember(organization1, member);
+        if (existingOrganizationMemberOpt.isPresent()) {
+            OrganizationMember existingOrganizationMember = existingOrganizationMemberOpt.get();
+            existingOrganizationMember.updateAccessToken(accessToken);
+            organizationMemberRepository.save(existingOrganizationMember); // 업데이트된 정보 저장
+        } else {
+            OrganizationMember newOrganizationMember = OrganizationMember.builder()
+                    .member(member)
+                    .organization(organization1)
+                    .accessToken(accessToken)
+                    .build();
+            organizationMemberRepository.save(newOrganizationMember); // 새로운 정보 저장
+        }
+
+        System.out.println("accessToken = " + accessToken);
 
         return AuthenticationResponseDto.of(accessToken);
     }
@@ -267,20 +279,20 @@ public class BankService {
     }
 
     // 마이데이터 연결 은행 계좌 목록 조회
-    private List<Account> getConnectedAccounts(Member member) {
-        List<Account> allAccounts = accountRepository.findByMember(member);
-
-        // 연결 은행만 계좌 선택
-        List<Account> connectedAccountList = new ArrayList<>();
-        for (Account account : allAccounts) {
-            String accessToken = account.getBank().getOrganization().getAccessToken();
-            LOGGER.info("accessToken = " + accessToken);
-            if (accessToken != null) {
-                connectedAccountList.add(account);
-            }
-        }
-        return connectedAccountList;
-    }
+//    private List<Account> getConnectedAccounts(Member member) {
+//        List<Account> allAccounts = accountRepository.findByMember(member);
+//
+//        // 연결 은행만 계좌 선택
+//        List<Account> connectedAccountList = new ArrayList<>();
+//        for (Account account : allAccounts) {
+//            String accessToken = account.getBank().getOrganization().getAccessToken();
+//            LOGGER.info("accessToken = " + accessToken);
+//            if (accessToken != null) {
+//                connectedAccountList.add(account);
+//            }
+//        }
+//        return connectedAccountList;
+//    }
 
 
 }
