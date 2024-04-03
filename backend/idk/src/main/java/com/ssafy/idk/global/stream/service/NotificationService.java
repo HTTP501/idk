@@ -11,6 +11,7 @@ import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.pocket.entity.Pocket;
 import com.ssafy.idk.global.stream.dto.PocketDto;
 import com.ssafy.idk.global.stream.repository.EmitterRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -25,11 +26,12 @@ public class NotificationService {
     private final MemberRepository memberRepository;
     private final AuthenticationService authenticationService;
 
-    public SseEmitter subscribe(Long accountId) {
+    public SseEmitter subscribe(HttpServletRequest request, Long accountId) {
 
+        printHeaders(request);
         SseEmitter emitter = createEmitter(accountId);
 
-        sendToClient(accountId, "EventScream Created.");
+//        sendToClient(accountId, "EventScream Created.");
         System.out.println("subscribe userId = " + accountId);
         return emitter;
     }
@@ -141,5 +143,14 @@ public class NotificationService {
             }
 
         });
+    }
+
+    //Header 모든 정보
+    private void printHeaders(HttpServletRequest request) {
+        System.out.println("--- Headers - start ---");
+        request.getHeaderNames().asIterator()
+                .forEachRemaining(headerName -> System.out.println(headerName + ": " + request.getHeader(headerName)));
+        System.out.println("--- Headers - end ---");
+        System.out.println();
     }
 }
