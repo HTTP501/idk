@@ -47,11 +47,12 @@ public class TimeUtil {
         // 신용카드 청구서 확인
 
 
+        // 월급 입금
+        members.addAll(salaryService.salaryDeposit(systemDay));
+
         // 돈 포켓 상태 변경
         members.addAll(pocketService.updatePocketStatementBeforeOneDayFromSalaryDay(systemDate.minusDays(1).getDayOfMonth()));
 
-        // 월급 입금
-        members.addAll(salaryService.salaryDeposit(systemDay));
 //        sseController.sendToMemberUpdated(members);
 
         if (systemDay == 1) {
