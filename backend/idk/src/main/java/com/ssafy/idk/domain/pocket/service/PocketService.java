@@ -285,15 +285,9 @@ public class PocketService {
     @Transactional
     public PocketDepositResponseDto depositPocket(Long pocketId) {
 
-        Member member = authenticationService.getMemberByAuthentication();
-
         // 포켓 유무 확인
         Pocket pocket = pocketRepository.findById(pocketId)
                 .orElseThrow(() -> new PocketException(ErrorCode.POCKET_NOT_FOUND));
-
-        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
-        if (member != pocket.getMember())
-            throw new PocketException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
         // 계좌
         Account account = pocket.getMember().getAccount();
