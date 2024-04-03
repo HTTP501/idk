@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
+import com.ssafy.idk.domain.pocket.entity.Pocket;
+import com.ssafy.idk.global.stream.dto.PocketDto;
 import com.ssafy.idk.global.stream.repository.EmitterRepository;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -63,12 +65,52 @@ public class NotificationService {
 
     public void notifyDate(LocalDate systemDate) {
 
-        SseEmitter.SseEventBuilder event = SseEmitter.event()
-                        .name("date")
-                        .data(systemDate, MediaType.APPLICATION_JSON);
-
         emitterRepository.getEmitters().forEach((id, emitter) -> {
-            sendToClient(id, systemDate);
+            if(emitter != null)
+            {
+                try {
+                    emitter.send(SseEmitter.event()
+                            .id(String.valueOf(id))
+                            .name("date").data(systemDate));
+                }catch(IOException exp)
+                {
+                    emitterRepository.deleteById(id);
+                    emitter.completeWithError(exp);
+                }
+
+            }
+
+            System.out.println("send to userId systemDate = " + id);
+        });
+    }
+
+    public void notifyUpdatedPocket(Pocket pocket) {
+
+        Member member = pocket.getMember();
+        PocketDto pocketDto = PocketDto.of(
+                pocket.getPocketId(),
+                pocket.isActivated(),
+                pocket.isPaid(),
+                pocket.isDeposited(),
+                pocket.getExpectedDate(),
+                pocket.getTarget()
+        );
+
+        emitterRepository.getEmittersById(member.getMemberId()).forEach((id, emitter) -> {
+            if(emitter != null)
+            {
+                try {
+                    emitter.send(SseEmitter.event()
+                            .id(String.valueOf(id))
+                            .name("pocket").data(pocketDto));
+                }catch(IOException exp)
+                {
+                    emitterRepository.deleteById(id);
+                    emitter.completeWithError(exp);
+                }
+
+            }
+
             System.out.println("send to userId systemDate = " + id);
         });
     }
