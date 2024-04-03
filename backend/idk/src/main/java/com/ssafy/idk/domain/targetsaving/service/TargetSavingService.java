@@ -8,6 +8,10 @@ import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.pocket.entity.Pocket;
+import com.ssafy.idk.domain.pocket.entity.PocketTransaction;
+import com.ssafy.idk.domain.pocket.exception.PocketException;
+import com.ssafy.idk.domain.pocket.repository.PocketRepository;
+import com.ssafy.idk.domain.pocket.repository.PocketTransactionRepository;
 import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.domain.targetsaving.dto.request.TargetSavingCreateRequestDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingCreateResponseDto;
@@ -25,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +40,8 @@ public class TargetSavingService {
     private final AccountRepository accountRepository;
     private final PocketService pocketService;
     private final TransactionRepository transactionRepository;
+    private final PocketRepository pocketRepository;
+    private final PocketTransactionRepository pocketTransactionRepository;
 
     @Transactional
     public TargetSavingCreateResponseDto createTargetSaving(TargetSavingCreateRequestDto requestDto) {
@@ -179,5 +186,66 @@ public class TargetSavingService {
         }
 
         return TargetSavingGetListResponseDto.of(arrayTargetSavingGetResponseDto);
+    }
+
+    public List<Long> autoWithdrawTargetSaving(Integer date) {
+
+        ArrayList<Long> members = new ArrayList<>();
+        List<TargetSaving> targetSavings = targetSavingRepository.findAll();
+
+        for (TargetSaving targetSaving : targetSavings) {
+            if (Objects.equals(date, targetSaving.getDate())) {
+                members.add(depositTargetSaving(targetSaving));
+            }
+        }
+
+        return members;
+    }
+
+    public Long depositTargetSaving(TargetSaving targetSaving) {
+
+        Pocket pocket = pocketRepository.findByTargetSaving(targetSaving);
+        Account account = targetSaving.getAccount();
+
+        // 입금되어 있지 않다면 패스
+        if (!pocket.isDeposited())
+            throw new PocketException(ErrorCode.POCKET_IMPOSSIBLE_WITHDRAWAL);
+
+        // 목표 저축 입금
+        targetSaving.updateCount();
+        pocket.withdraw();
+        pocket.setPaid(true);
+
+        // 돈 포켓 입출금 내역 저장
+        PocketTransaction pocketTransaction = PocketTransaction.builder()
+                .pocket(pocket)
+                .createdAt(LocalDateTime.now())
+                .amount(pocket.getTarget())
+                .balance(0L)
+                .content("출금")
+                .build();
+        pocketTransactionRepository.save(pocketTransaction);
+
+        // 만약 목표저축 목표를 달성했다면
+        if (Objects.equals(targetSaving.getCount(), targetSaving.getTerm())) {
+            // 계좌 입금
+            account.deposit(targetSaving.getGoalAmount());
+
+            // 계좌 입출금 내역 저장
+            Transaction transaction = Transaction.builder()
+                    .category(Category.목표저축)
+                    .content("목표저축 달성!")
+                    .amount(pocket.getTarget())
+                    .balance(account.getBalance())
+                    .createdAt(LocalDateTime.now())
+                    .account(account)
+                    .build();
+            transactionRepository.save(transaction);
+
+            pocket.setActivated(false);
+            pocketRepository.save(pocket);
+        }
+
+        return pocket.getMember().getMemberId();
     }
 }

@@ -5,6 +5,7 @@ import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.domain.salary.service.SalaryService;
 //import com.ssafy.idk.global.stream.dto.SseDateDto;
 //import com.ssafy.idk.global.stream.service.SseEmitterService;
+import com.ssafy.idk.domain.targetsaving.service.TargetSavingService;
 import com.ssafy.idk.global.stream.controller.SSEController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class TimeUtil {
     private final PocketService pocketService;
     private final AutoTransferService autoTransferService;
     private final SSEController sseController;
+    private final TargetSavingService targetSavingService;
 
     public LocalDate getSystemDate() {
         return systemDate;
@@ -52,6 +54,9 @@ public class TimeUtil {
 
         // 월급 입금
         members.addAll(salaryService.salaryDeposit(systemDay));
+
+        // 목표 저축 상태 변경
+        targetSavingService.autoWithdrawTargetSaving(systemDay);
 
         // 돈 포켓 상태 변경
         members.addAll(pocketService.updatePocketStatementBeforeOneDayFromSalaryDay(systemDate.minusDays(1).getDayOfMonth()));
