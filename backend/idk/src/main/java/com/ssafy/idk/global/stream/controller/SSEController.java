@@ -34,6 +34,7 @@ public class SSEController {
 
     @PostMapping("/send-data/{id}")
     public void sendData(@PathVariable Long id) {
+
         notificationService.notify(id, "data");
     }
 
