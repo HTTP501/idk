@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
 import theme from "./style";
+import EventSource from "react-native-sse";
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -23,6 +24,7 @@ const AUTH_KEY = "@auth";
 const SIGNUP_KEY = "@signup";
 
 export default function MainApp() {
+  
   // AsyncStorage.clear();
   const navigation = useNavigation();
   const [authData, setAuthData] = useState({});
@@ -83,7 +85,7 @@ export default function MainApp() {
     // 둘 다 없으면 이미지와 버튼 실행
     return (
       <View
-        className="flex-1 items-center justify-center bg-white"
+        className="flex-1 items-center bg-white"
         style={{ backgroundColor: "#3FB7FF" }}
       >
         <Image
@@ -91,7 +93,7 @@ export default function MainApp() {
           style={{
             width: 100,
             height: 100,
-            marginTop: SCREEN_HEIGHT * (1 / 10),
+            marginTop: 100
           }}
         />
         <View>
@@ -106,7 +108,7 @@ export default function MainApp() {
           >
             나의 지출관리 도우미, IDK
           </Text>
-          <Text className='text-base text-center text-white mb-8 font-bold'>넘기며 확인해보세요!</Text>
+          {/* <Text className='text-base text-center text-white mb-8 font-bold'>넘기며 확인해보세요!</Text> */}
         </View>
         <View className='flex-row justify-between items-center' style={{width:380}}>
           <TouchableOpacity

@@ -18,7 +18,7 @@ export default function localAxios() {
     async (config) => {
       try {
         const accessToken = await AsyncStorage.getItem("@auth");
-        // console.log(accessToken)
+        console.log(accessToken)
         config.headers["Content-Type"] = "application/json";
         if (accessToken !== null) {
           config.headers.Authorization = `Bearer ${
@@ -39,10 +39,15 @@ export default function localAxios() {
   instance.interceptors.response.use(
     // 요청을 보내서 응답이 왔다면 access 토큰에 문제가 없으므로 응답을 return
     async (response) => {
+      // console.log(response);
       return response;
     },
     // 만약 요청을 보내서 에러가 왔다면,
     async (error) => {
+      // console.log(error);
+      // console.log(error.name);
+      // console.log(error.code);
+      // console.log(error.config);
 
       // 해당 에러의 코드를 가져온다.
       const status = error.response.data.status;
@@ -60,7 +65,7 @@ export default function localAxios() {
           // data라는 변수에 요청을 보내 받은 응답값을 저장하고자 한다.
           // instance는 상단에서 설정한 axios 함수이다.
           const p = await AsyncStorage.getItem("@signup");
-          const phoneNumber = JSON.parse(p).phoneNumber;
+          const phoneNumber = JSON.parse(p)?.phoneNumber;
           const { data } = await instance.post(
             // url(API주소)
             "/member/reissue",
@@ -82,6 +87,8 @@ export default function localAxios() {
           // 재요청을 보낸다.
           return axios.request(config);
         } catch (refreshError) {
+          // console.log(refreshError);
+          // console.log(refreshError.response);
           // refresh token이 만료되었거나 다른 문제로 실패한 경우
           // 여기 네비게이터를 추가해주세요~!
           const a = JSON.stringify({});
