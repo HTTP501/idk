@@ -39,7 +39,7 @@ public class TimeUtil {
         updateDate();
 
         // 날짜 스트리밍
-        sseController.sendUpdatedDate(systemDate);
+//        sseController.sendUpdatedDate(systemDate);
 
         // 자동이체
         members.addAll(autoTransferService.autoTransfer(systemDay));
@@ -52,7 +52,7 @@ public class TimeUtil {
 
         // 월급 입금
         members.addAll(salaryService.salaryDeposit(systemDay));
-        sseController.sendToMemberUpdated(members);
+//        sseController.sendToMemberUpdated(members);
 
         if (systemDay == 1) {
             // 통계 함수 사용
