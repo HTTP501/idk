@@ -1,12 +1,9 @@
 package com.ssafy.idk.global.stream.controller;
 
-import com.ssafy.idk.global.result.ResultCode;
-import com.ssafy.idk.global.result.ResultResponse;
 import com.ssafy.idk.global.stream.service.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/sse")
@@ -61,12 +57,4 @@ public class SSEController {
         System.out.println();
     }
 
-    @GetMapping("/systemDate")
-    public ResponseEntity<ResultResponse> getSystemDate() {
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.SYSTEM_DATE_GET_SUCCESS, notificationService.getSystemDate()));
-    }
-
-//    public ResponseEntity<ResultResponse> getArrayPocket() {
-//        return ResponseEntity.ok(ResultResponse.of(ResultCode.POCKET_GET_LIST_SUCCESS, pocketService.getArrayPocket()));
-//    }
 }
