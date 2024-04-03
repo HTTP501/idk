@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -34,7 +36,9 @@ public class SalaryService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void salaryDeposit(Integer day) {
+    public HashSet<Long> salaryDeposit(Integer day) {
+
+        HashSet<Long> members = new HashSet<>();
 
         List<Salary> salaryList = salaryRepository.findBySalaryDay(day);
         for (Salary salary : salaryList) {
@@ -55,6 +59,7 @@ public class SalaryService {
             transactionRepository.save(transaction);
         }
 
+        return members;
     }
 
     @Transactional
