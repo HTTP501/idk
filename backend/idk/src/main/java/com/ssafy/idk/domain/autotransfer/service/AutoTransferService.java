@@ -1,6 +1,7 @@
 package com.ssafy.idk.domain.autotransfer.service;
 
 import com.ssafy.idk.domain.account.dto.request.AutoTransferRequestDto;
+import com.ssafy.idk.domain.account.dto.request.ReadyTransferRequestDto;
 import com.ssafy.idk.domain.account.dto.request.TransferRequestDto;
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.account.entity.Category;
@@ -58,6 +59,10 @@ public class AutoTransferService {
             throw new AutoTransferException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
         // 자동이체 계좌가 유효하지 않을 때 (추후 적용)
+        accountService.readyTransfer(ReadyTransferRequestDto.of(
+                requestDto.getToAccount(),
+                requestDto.getToAccountBank()
+        ));
 
         // 자동이체 금액을 0원 이하로 등록할 때
         if (requestDto.getAmount() <= 0)
