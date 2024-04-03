@@ -47,9 +47,9 @@ public class TimeUtil {
         // 월급 입금
         salaryService.salaryDeposit(systemDay);
 
-//        if (systemDay == 1) {
-//            // 통계 함수 사용
-//        }
+        if (systemDay == 1) {
+            // 통계 함수 사용
+        }
     }
 
     public void updateDate() {
