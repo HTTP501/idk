@@ -1,6 +1,9 @@
 package com.ssafy.idk.global.stream.repository;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Repository;
@@ -32,4 +35,15 @@ public class EmitterRepository {
     public Map<Long, SseEmitter> getEmitters() {
         return emitters;
     }
+
+    public Map<Long, SseEmitter> getEmittersById(Long memberId) {
+        Map<Long, SseEmitter> newEmitters = new ConcurrentHashMap<>();
+
+        getEmitters().forEach((id, emitters) -> {
+            if (Objects.equals(id, memberId)) newEmitters.put(id, emitters);
+        });
+
+        return newEmitters;
+    }
+
 }

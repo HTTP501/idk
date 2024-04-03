@@ -35,24 +35,21 @@ public class TimeUtil {
         // 날짜 스트리밍
         sseController.sendUpdatedDate(systemDate);
 
-        // 돈포켓 테스트
-//        sseEmitterService.updatePocketStatement(5L);
-//
-//        // 자동이체
-////        autoTransferService.autoTransfer(systemDay);
-//
-//        // 신용카드 청구서 확인
-//
-//
-//        // 돈 포켓 상태 변경
-////        pocketService.updatePocketStatementAtSalaryDay(systemDate.minusDays(3).getDayOfMonth());
-//
-//        // 월급 입금
-////        salaryService.salaryDeposit(systemDay);
-//
-////        if (systemDay == 1) {
-////            // 통계 함수 사용
-////        }
+        // 자동이체
+        autoTransferService.autoTransfer(systemDay);
+
+        // 신용카드 청구서 확인
+
+
+        // 돈 포켓 상태 변경
+        pocketService.updatePocketStatementBeforeThreeDaysFromSalaryDay(systemDate.minusDays(3).getDayOfMonth());
+
+        // 월급 입금
+        salaryService.salaryDeposit(systemDay);
+
+        if (systemDay == 1) {
+            // 통계 함수 사용
+        }
     }
 
     public void updateDate() {
