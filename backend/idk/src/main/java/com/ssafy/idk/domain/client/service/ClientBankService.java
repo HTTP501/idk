@@ -8,6 +8,14 @@ import com.ssafy.idk.domain.client.dto.response.AutoTransferInfoDto;
 import com.ssafy.idk.domain.client.dto.response.AutoTransferInfoResponseFromBankDto;
 import com.ssafy.idk.domain.client.dto.response.CertifyResponseFromBankDto;
 import com.ssafy.idk.domain.client.exception.ClientException;
+import com.ssafy.idk.domain.member.entity.Member;
+import com.ssafy.idk.domain.member.exception.MemberException;
+import com.ssafy.idk.domain.member.repository.MemberRepository;
+import com.ssafy.idk.domain.mydata.entity.Mydata;
+import com.ssafy.idk.domain.mydata.entity.Organization;
+import com.ssafy.idk.domain.mydata.exception.MydataException;
+import com.ssafy.idk.domain.mydata.repository.MydataRepository;
+import com.ssafy.idk.domain.mydata.repository.OrganizationRepository;
 import com.ssafy.idk.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +34,9 @@ import java.util.*;
 public class ClientBankService {
 
     private final RestTemplate restTemplate;
+    private final MemberRepository memberRepository;
+    private final OrganizationRepository organizationRepository;
+    private final MydataRepository mydataRepository;
 
     @Value("${spring.mydata.bank-url}")
     private String bankUrl;
@@ -69,13 +80,12 @@ public class ClientBankService {
     }
 
     // 자동이체 목록 요청
-    public List<AutoTransferInfoDto> getAutoTransferInfo(String name, String connectionInformation) {
+    public List<AutoTransferInfoDto> getAutoTransferInfo(String connectionInformation, String orgCode) {
 
         String autoTransferInfoRequestApiUrl = bankUrl.concat("/api/bank/auto-transfer");
 
         String urlTemplate = UriComponentsBuilder.fromHttpUrl(autoTransferInfoRequestApiUrl)
-                .queryParam("name", "{name}")
-                .queryParam("connectionInformation", "{connectionInformation}")
+                .queryParam("orgCode", "{orgCode}")
                 .encode()
                 .toUriString();
 
@@ -83,26 +93,32 @@ public class ClientBankService {
         MediaType mediaType = new MediaType("application", "json", StandardCharsets.UTF_8);
         headers.setContentType(mediaType);
 
+        // 토큰 담기
+        Member member = memberRepository.findByConnectionInformation(connectionInformation)
+                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
+        Organization organization = organizationRepository.findByOrgCode(orgCode)
+                .orElseThrow(() -> new MydataException(ErrorCode.MYDATA_ORG_NOT_FOUND));
+        Mydata mydata = mydataRepository.findByMemberAndOrganization(member, organization)
+                .orElseThrow(() -> new MydataException(ErrorCode.MYDATA_NOT_FOUND));
+        String accessToken = mydata.getAccessToken();
+        headers.setBearerAuth(accessToken);
+
         HttpEntity<?> request = new HttpEntity<>(headers);
 
         Map<String, String> param = new HashMap<>();
-        param.put("name", name);
-        param.put("connectionInformation", connectionInformation);
+        param.put("orgCode", orgCode);
 
         ResponseEntity<AutoTransferInfoResponseFromBankDto> responseEntity = restTemplate.exchange(urlTemplate, HttpMethod.GET, request, AutoTransferInfoResponseFromBankDto.class, param);
 
         if (responseEntity.getStatusCode() != HttpStatus.OK) {
             throw new ClientException(ErrorCode.CLIENT_AUTO_TRANSFER_INFO_FAILED);
         }
-        AutoTransferInfoResponseFromBankDto response = responseEntity.getBody();
 
         return Objects.requireNonNull(responseEntity.getBody()).getData().getAutoTransferList();
     }
 
-    // 계좌 목록 조회
-
     // 계좌 명의 조회(은행 이름, 계좌번호)
-    public String getaccountInfo(String orgName, String accountNumber) {
+    public String getAccountInfo(String orgName, String accountNumber) {
 
         String bankGetAccountInfoApiUrl = bankUrl.concat("/api/bank/account");
 
@@ -129,7 +145,4 @@ public class ClientBankService {
         assert accountInfoResponseDto != null;
         return accountInfoResponseDto.getData().getName();
     }
-
-    // 고객의 자동이체(상세정보 포함) 목록 조회
-
 }

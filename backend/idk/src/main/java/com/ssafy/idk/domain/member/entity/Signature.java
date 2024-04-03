@@ -18,7 +18,7 @@ public class Signature {
     @Column(name = "consent", length = 5000)
     private String consent;
 
-    @Column(name = "signed_consent", length = 10000)
+    @Column(name = "signed_consent", length = 10000, unique = true)
     private String signedConsent;
 
     @ManyToOne(fetch = FetchType.LAZY)
