@@ -1,9 +1,19 @@
 package com.ssafy.idk.domain.member.controller;
 
+import com.ssafy.idk.domain.account.service.RSAKeyService;
+import com.ssafy.idk.domain.client.service.ClientBankService;
+import com.ssafy.idk.domain.client.service.ClientCaService;
+import com.ssafy.idk.domain.client.service.ClientMydataService;
 import com.ssafy.idk.domain.member.dto.request.*;
+import com.ssafy.idk.domain.member.dto.response.SignupResponseDto;
+import com.ssafy.idk.domain.member.entity.Member;
+import com.ssafy.idk.domain.member.exception.MemberException;
+import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.domain.member.service.MemberService;
+import com.ssafy.idk.global.error.ErrorCode;
 import com.ssafy.idk.global.result.ResultCode;
 import com.ssafy.idk.global.result.ResultResponse;
+import com.ssafy.idk.global.util.RSAUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.Cookie;
@@ -22,11 +32,32 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
+    private final ClientBankService clientBankService;
+    private final ClientCaService clientCaService;
+    private final ClientMydataService clientMydataService;
+    private final RSAKeyService rsaKeyService;
 
     @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public ResponseEntity<ResultResponse> signup(@Valid @RequestBody SignupRequestDto requestDto, HttpServletResponse response) {
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_SIGNUP_SUCCESS, memberService.signup(requestDto, response)));
+
+        // idk 회원가입
+        SignupResponseDto signupResponseDto = memberService.signup(requestDto, response);
+
+        // 종합포털 회원가입
+        Member member = memberRepository.findByPhoneNumber(requestDto.getPhoneNumber())
+                        .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
+
+        clientMydataService.signupMydata(member.getName(), member.getPhoneNumber(), requestDto.getBirthDate(), member.getConnectionInformation());
+
+        String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
+        String birthDate = RSAUtil.decode(privateKey, member.getBirthDate());
+
+        // 타 은행 회원가입
+        clientBankService.signup(member.getName(), member.getPhoneNumber(), birthDate, member.getConnectionInformation());
+
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.MEMBER_SIGNUP_SUCCESS, signupResponseDto));
     }
 
     @Operation(summary = "폰 본인인증 요청")

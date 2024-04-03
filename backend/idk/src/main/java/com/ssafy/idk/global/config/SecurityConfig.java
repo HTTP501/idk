@@ -96,6 +96,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers("/api/auto-debit");
+                .requestMatchers("/api/auto-debit")
+                .requestMatchers("/sse");
     }
 }

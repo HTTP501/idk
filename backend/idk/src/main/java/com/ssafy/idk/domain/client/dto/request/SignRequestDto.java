@@ -6,27 +6,20 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 @Builder
 @Getter
 @AllArgsConstructor
 public class SignRequestDto {
 
-    private String agreement;
-
-    // agreeINfo
-    private String name;
-    private String birthDate;
-    private String phoneNumber;
     private String connectionInformation;
+    private List<Map<String, String>> consentList;
 
-    // consentInfoList
-    private List<ConsentInfoDto> consentInfoList;
-
-    @Getter
-    @Setter
-    public static class ConsentInfoDto {
-        private String orgCode;
-        private String orgType;
+    public static SignRequestDto of(String connectionInformation, List<Map<String, String>> consentList) {
+        return SignRequestDto.builder()
+                .connectionInformation(connectionInformation)
+                .consentList(consentList)
+                .build();
     }
 }

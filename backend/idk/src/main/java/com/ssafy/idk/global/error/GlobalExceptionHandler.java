@@ -8,6 +8,7 @@ import com.ssafy.idk.domain.mydata.exception.MydataException;
 import com.ssafy.idk.domain.autotransfer.exception.AutoTransferException;
 import com.ssafy.idk.domain.piggybank.exception.PiggyBankException;
 import com.ssafy.idk.domain.pocket.exception.PocketException;
+import com.ssafy.idk.domain.salary.exception.SalaryException;
 import com.ssafy.idk.domain.shop.exception.ItemException;
 import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.shop.exception.PaymentException;
@@ -102,7 +103,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PocketException.class)
     protected ResponseEntity<ErrorResponse> handlePocketException(PocketException ex) {
-        log.error("handleAutoPocketException", ex);
+        log.error("handlePocketException", ex);
+        final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(SalaryException.class)
+    protected ResponseEntity<ErrorResponse> handleSalaryException(SalaryException ex) {
+        log.error("handleSalaryException", ex);
         final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }

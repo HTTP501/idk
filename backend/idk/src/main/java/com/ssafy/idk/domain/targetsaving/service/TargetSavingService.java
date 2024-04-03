@@ -74,7 +74,7 @@ public class TargetSavingService {
         TargetSaving savedTargetSaving = targetSavingRepository.save(targetSaving);
 
         // 돈 포켓 동시 생성
-        Pocket pocket = pocketService.createByTargetSaving(savedTargetSaving, account);
+        Pocket pocket = pocketService.createByTargetSaving(savedTargetSaving, member);
         savedTargetSaving.setPocket(pocket);
         targetSavingRepository.save(savedTargetSaving);
 
@@ -101,6 +101,9 @@ public class TargetSavingService {
         // API 요청 사용자 및 계좌 사용자 일치 여부 확인
         if (member != account.getMember())
             throw new TargetSavingException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        // 돈 포켓 재정렬
+        pocketService.reOrderArrayPocket(member, targetSaving.getPocket());
 
         // 목표저축 납입액 계좌로 이동
         Long amount = targetSaving.getCount() * targetSaving.getMonthlyAmount();

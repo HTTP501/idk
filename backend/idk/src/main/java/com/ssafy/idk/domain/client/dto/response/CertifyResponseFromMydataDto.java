@@ -7,13 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
-@Setter
 public class CertifyResponseFromMydataDto {
 
     private Data data;
 
     @Getter
-    @Setter
     public static class Data {
         List<Map<String, String>> certifiedResult;
     }

@@ -26,6 +26,7 @@ public class PocketGetDetailResponseDto {
     private boolean isDeposited;
     private boolean isPaid;
     private List<PocketTransactionResponseDto> arrayPocketTransaction;
+    private Integer orderNumber;
 
     public static PocketGetDetailResponseDto of(
             Long pocketId,
@@ -71,7 +72,8 @@ public class PocketGetDetailResponseDto {
             LocalDate expectedDate,
             boolean isActivated,
             boolean isDeposited,
-            boolean isPaid
+            boolean isPaid,
+            Integer orderNumber
     ) {
         return PocketGetDetailResponseDto.builder()
                 .pocketId(pocketId)
@@ -86,6 +88,7 @@ public class PocketGetDetailResponseDto {
                 .isActivated(isActivated)
                 .isDeposited(isDeposited)
                 .isPaid(isPaid)
+                .orderNumber(orderNumber)
                 .build();
     }
 }
