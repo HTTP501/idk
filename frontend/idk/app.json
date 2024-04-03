@@ -20,7 +20,7 @@
         "foregroundImage": "./assets/logo/favicon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.yunyebeen.idk"
+      "package": "com.ssafyidk.idk"
     },
     "web": {
       "favicon": "./assets/logo/app_icon.png"
@@ -35,7 +35,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "6d60907d-1376-4a89-8afa-2d9789f07c91"
+        "projectId": "24087108-d566-43c2-a2b6-fc60d8c108a5"
       }
     }
   }
