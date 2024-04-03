@@ -21,18 +21,19 @@ import com.ssafy.idk.domain.pocket.exception.PocketException;
 import com.ssafy.idk.domain.pocket.repository.PocketRepository;
 import com.ssafy.idk.domain.pocket.repository.PocketTransactionRepository;
 import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
+import com.ssafy.idk.domain.targetsaving.exception.TargetSavingException;
+import com.ssafy.idk.domain.targetsaving.repository.TargetSavingRepository;
 import com.ssafy.idk.global.error.ErrorCode;
 import com.ssafy.idk.global.stream.service.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
+import java.lang.annotation.Target;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +48,7 @@ public class PocketService {
     private final MydataRepository mydataRepository;
     private final MemberRepository memberRepository;
     private final NotificationService notificationService;
+    private final TargetSavingRepository targetSavingRepository;
 
     @Transactional
     public Pocket createByTargetSaving(TargetSaving targetSaving, Member member) {
@@ -337,6 +339,60 @@ public class PocketService {
                 .build();
         pocketTransactionRepository.save(pocketTransaction);
 
+        // 목표저축일 때, 목표저축이라면 목표저축으로 입금
+        Optional<TargetSaving> optionalTargetSaving = targetSavingRepository.findByPocket(pocket);
+
+        if (optionalTargetSaving.isPresent()) {
+            
+            TargetSaving targetSaving = optionalTargetSaving.get();
+            
+            // TODO 목표저축에 넣는 날이 아직 도래하지 않았거나, 이미 Paid 상태일 때
+            
+            targetSaving.updateCount();
+            TargetSaving savedTargetSaving = targetSavingRepository.save(targetSaving);
+
+            // 결제 완료 표시
+            pocket.withdraw();
+            pocket.setPaid(true);
+
+            // 돈 포켓 입출금 내역 저장
+            pocketTransaction = PocketTransaction.builder()
+                    .pocket(pocket)
+                    .createdAt(LocalDateTime.now())
+                    .amount(pocket.getTarget())
+                    .balance(0L)
+                    .content("출금")
+                    .build();
+            pocketTransactionRepository.save(pocketTransaction);
+
+            // 만약 목표저축 목표를 달성했다면
+            if (Objects.equals(savedTargetSaving.getCount(), savedTargetSaving.getTerm())) {
+                // 계좌 입금
+                account.deposit(savedTargetSaving.getGoalAmount());
+
+                // 계좌 입출금 내역 저장
+                Transaction transaction2 = Transaction.builder()
+                        .category(Category.목표저축)
+                        .content("목표저축 달성!")
+                        .amount(pocket.getTarget())
+                        .balance(account.getBalance())
+                        .createdAt(LocalDateTime.now())
+                        .account(account)
+                        .build();
+                transactionRepository.save(transaction2);
+
+                savedPocket.setActivated(false);
+                Pocket savedPocket2 = pocketRepository.save(savedPocket);
+
+                return PocketDepositResponseDto.of(
+                        savedPocket2.getPocketId(),
+                        savedPocket2.getBalance(),
+                        savedPocket2.getBalance(),
+                        savedPocket2.isDeposited()
+                );
+            }
+        }
+
         return PocketDepositResponseDto.of(
                 savedPocket.getPocketId(),
                 savedPocket.getBalance(),
@@ -482,8 +538,12 @@ public class PocketService {
             List<Pocket> pocketList = member.getArrayPocket();
             for (Pocket pocket : pocketList) {
                 pocket.setPaid(false);
-                pocket.setDeposited(false);
+
+                // 돈이 없을 때만 false
+                if (pocket.getBalance() == 0) pocket.setDeposited(false);
+                else System.out.println("pocket = " + pocket.getPocketId());
                 Pocket savedPocket = pocketRepository.save(pocket);
+
                 members.add(pocket.getMember().getMemberId());
 //                notificationService.notifyUpdatedPocket(savedPocket);
             }
