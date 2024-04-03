@@ -58,9 +58,6 @@ public class PocketService {
                 .name(targetSaving.getName() + "의 돈포켓")
                 .target(targetSaving.getMonthlyAmount())
                 .expectedDate(targetSaving.getDate())
-                .isActivated(false)
-                .isDeposited(false)
-                .isPaid(false)
                 .orderNumber(member.getArrayPocket().size())
                 .build();
     }
