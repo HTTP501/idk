@@ -202,7 +202,7 @@ const Chart = ({ navigation }) => {
     topBarStyle: {
       flex: 1,
       alignItems: "center",
-      marginTop: windowWidth * 0.03,
+      marginTop: windowWidth * 0.08,
     },
     titlefont: {
       fontWeight: "bold",

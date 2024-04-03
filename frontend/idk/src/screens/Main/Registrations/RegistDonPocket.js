@@ -7,7 +7,9 @@ import {
   Modal,
   Image,
   Alert,
+
   ScrollView
+
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -47,23 +49,10 @@ const imgMatch = {
 
 // 페이지
 const RegistDonPocket = ({ navigation, route }) => {
-  // const [autoTransferList, setAutoTransferList] = useState([
-  //   {
-  //     amount: 70000,
-  //     date: 15,
-  //     toAccount: "123123123",
-  //     toAccountBank: "KB국민은행",
-  //     pocktId: null,
-  //   },
-  //   {
-  //     amount: 80000,
-  //     date: 12,
-  //     toAccount: "123123123",
-  //     toAccountBank: "우리은행",
-  //     pocktId: 13,
-  //   },
-  // ]);
+
+
   const [autoTransferList, setAutoTransferList] = useState([]);
+
   const [autoDebitList, setAutoDebitList] = useState(null);
   const [accountId, setAccountId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -122,6 +111,7 @@ const RegistDonPocket = ({ navigation, route }) => {
           >
             돈포켓 생성하기
           </Text>
+
           <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ flexGrow: 1, alignItems: 'center' }}
@@ -149,6 +139,7 @@ const RegistDonPocket = ({ navigation, route }) => {
           ))}
         </View> */}
           </ScrollView>
+
         </View>
       ) : (
         <Loading />
@@ -212,6 +203,9 @@ const Pocket = function ({ getAccountId, dataType, myDataItemId, navigation ,rou
       deleteAutoTransferAxios(
         myDataItemId.autoTransferId,
         (res) => {
+
+          console.log(res);
+
           getAccountId();
           Alert.alert("자동이체 해지가 완료되었습니다.", "", [
             {
@@ -220,6 +214,8 @@ const Pocket = function ({ getAccountId, dataType, myDataItemId, navigation ,rou
           ]);
         },
         (err) => {
+
+          console.log(err);
           if (err.response.data.code === "AT405") {
             Alert.alert("해당 자동이체 정보가 존재하지 않습니다.", "", [
               {
