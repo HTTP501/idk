@@ -1,6 +1,7 @@
 package com.ssafy.idk.global.stream.controller;
 
 import com.ssafy.idk.global.stream.service.NotificationService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,9 @@ public class SSEController {
     private final NotificationService notificationService;
 
     @GetMapping(value="/sub/{accountId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@PathVariable Long accountId, HttpServletResponse response) {
+    public SseEmitter subscribe(@PathVariable Long accountId, HttpServletRequest request, HttpServletResponse response) {
+
+        printHeaders(request);
 
         response.setHeader("Connection", "keep-alive");
         response.setHeader("Cache-Control", "no-cache");
@@ -44,5 +47,14 @@ public class SSEController {
 
     public void sendToMemberUpdated(HashSet<Long> members) {
         notificationService.notifyToMembers(members);
+    }
+
+    //Header 모든 정보
+    private void printHeaders(HttpServletRequest request) {
+        System.out.println("--- Headers - start ---");
+        request.getHeaderNames().asIterator()
+                .forEachRemaining(headerName -> System.out.println(headerName + ": " + request.getHeader(headerName)));
+        System.out.println("--- Headers - end ---");
+        System.out.println();
     }
 }
