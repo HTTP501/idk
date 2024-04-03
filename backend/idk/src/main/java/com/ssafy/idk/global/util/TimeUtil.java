@@ -39,7 +39,7 @@ public class TimeUtil {
         updateDate();
 
         // 날짜 스트리밍
-//        sseController.sendUpdatedDate(systemDate);
+        sseController.sendUpdatedDate(systemDate);
 
         // 자동이체
         members.addAll(autoTransferService.autoTransfer(systemDay));

@@ -26,11 +26,12 @@ public class NotificationService {
     private final MemberRepository memberRepository;
     private final AuthenticationService authenticationService;
 
-    public SseEmitter subscribe(Long userId)
-    {
-        SseEmitter emitter = createEmitter(userId);
+    public SseEmitter subscribe(Long accountId) {
 
-        sendToClient(userId, "EventScream Created. " + userId);
+        SseEmitter emitter = createEmitter(accountId);
+
+        sendToClient(accountId, "EventScream Created.");
+        System.out.println("subscribe userId = " + accountId);
         return emitter;
     }
 
@@ -45,7 +46,10 @@ public class NotificationService {
         if(emitter != null)
         {
             try {
-                emitter.send(SseEmitter.event().id(String.valueOf(id)).name("sse").data(Data));
+                emitter.send(SseEmitter.event()
+                        .id(String.valueOf(id))
+                        .name("sse")
+                        .data(Data));
             }catch(IOException exp)
             {
                 emitterRepository.deleteById(id);
@@ -65,121 +69,78 @@ public class NotificationService {
         return emitter;
     }
 
-//    public SseEmitter subscribe(Long accountId) {
-//
-//        SseEmitter emitter = createEmitter(accountId);
-//
-////        sendToClient(accountId, "EventScream Created.");
-//        System.out.println("subscribe userId = " + accountId);
-//        return emitter;
-//    }
-//
-//    public void notify(Long userId, Object event)
-//    {
-//        sendToClient(userId, event);
-//    }
-//
-//    public void sendToClient(Long id, Object Data)
-//    {
-//        SseEmitter emitter = emitterRepository.get(id);
-//        if(emitter != null)
-//        {
-//            try {
-//                emitter.send(SseEmitter.event()
-//                        .id(String.valueOf(id))
-//                        .name("sse")
-//                        .data(Data));
-//            }catch(IOException exp)
-//            {
-//                emitterRepository.deleteById(id);
-//                emitter.completeWithError(exp);
-//            }
-//
-//        }
-//    }
-//
-//    private SseEmitter createEmitter(Long id)
-//    {
-//        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-//        emitterRepository.save(id, emitter);
-//
-//        emitter.onCompletion(() -> emitterRepository.deleteById(id));
-//        emitter.onTimeout(() -> emitterRepository.deleteById(id));
-//        return emitter;
-//    }
-//
-//    public void notifyDate(LocalDate systemDate) {
-//
-//        emitterRepository.getEmitters().forEach((id, emitter) -> {
-//            if(emitter != null)
-//            {
-//                try {
-//                    emitter.send(SseEmitter.event()
-//                            .id(String.valueOf(id))
-//                            .name("date")
-//                            .data(systemDate));
-//
-//                    System.out.println("send to userId systemDate = " + id);
-//                }catch(IOException exp)
-//                {
-//                    emitterRepository.deleteById(id);
-//                    emitter.completeWithError(exp);
-//                }
-//
-//            }
-//        });
-//    }
-//
-//    public void notifyUpdatedPocket(Pocket pocket) {
-//
-//        Member member = pocket.getMember();
-//        PocketDto pocketDto = PocketDto.of(
-//                pocket.getPocketId(),
-//                pocket.isActivated(),
-//                pocket.isPaid(),
-//                pocket.isDeposited(),
-//                pocket.getExpectedDate(),
-//                pocket.getTarget()
-//        );
-//
-//        emitterRepository.getEmittersById(member.getMemberId()).forEach((id, emitter) -> {
-//            if(emitter != null)
-//            {
-//                try {
-//                    emitter.send(SseEmitter.event()
-//                            .id(String.valueOf(id))
-//                            .name("pocket").data(pocketDto));
-//                }catch(IOException exp)
-//                {
-//                    emitterRepository.deleteById(id);
-//                    emitter.completeWithError(exp);
-//                }
-//
-//                System.out.println("send to userId systemDate = " + id);
-//            }
-//        });
-//    }
-//
-//    public void notifyToMembers(HashSet<Long> members) {
-//
-//        members.forEach(id -> {
-//
-//            SseEmitter emitter = emitterRepository.get(id);
-//            if(emitter != null)
-//            {
-//                try {
-//                    emitter.send(SseEmitter.event()
-//                            .id(String.valueOf(id))
-//                            .name("update").data("needToMainUpdate!"));
-//
-//                    System.out.println("send to userId = " + id);
-//                }catch(IOException exp)
-//                {
-//                    emitterRepository.deleteById(id);
-//                    emitter.completeWithError(exp);
-//                }
-//            }
-//
-//        });
-//    }
+    public void notifyDate(LocalDate systemDate) {
+
+        emitterRepository.getEmitters().forEach((id, emitter) -> {
+            if(emitter != null)
+            {
+                try {
+                    emitter.send(SseEmitter.event()
+                            .id(String.valueOf(id))
+                            .name("date")
+                            .data(systemDate));
+
+                    System.out.println("send to userId systemDate = " + id);
+                }catch(IOException exp)
+                {
+                    emitterRepository.deleteById(id);
+                    emitter.completeWithError(exp);
+                }
+
+            }
+        });
+    }
+
+    public void notifyUpdatedPocket(Pocket pocket) {
+
+        Member member = pocket.getMember();
+        PocketDto pocketDto = PocketDto.of(
+                pocket.getPocketId(),
+                pocket.isActivated(),
+                pocket.isPaid(),
+                pocket.isDeposited(),
+                pocket.getExpectedDate(),
+                pocket.getTarget()
+        );
+
+        emitterRepository.getEmittersById(member.getMemberId()).forEach((id, emitter) -> {
+            if(emitter != null)
+            {
+                try {
+                    emitter.send(SseEmitter.event()
+                            .id(String.valueOf(id))
+                            .name("pocket").data(pocketDto));
+                }catch(IOException exp)
+                {
+                    emitterRepository.deleteById(id);
+                    emitter.completeWithError(exp);
+                }
+
+                System.out.println("send to userId systemDate = " + id);
+            }
+        });
+    }
+
+    public void notifyToMembers(HashSet<Long> members) {
+
+        members.forEach(id -> {
+
+            SseEmitter emitter = emitterRepository.get(id);
+            if(emitter != null)
+            {
+                try {
+                    emitter.send(SseEmitter.event()
+                            .id(String.valueOf(id))
+                            .name("update").data("needToMainUpdate!"));
+
+                    System.out.println("send to userId = " + id);
+                }catch(IOException exp)
+                {
+                    emitterRepository.deleteById(id);
+                    emitter.completeWithError(exp);
+                }
+            }
+
+        });
+    }
 }

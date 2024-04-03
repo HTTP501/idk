@@ -23,50 +23,38 @@ import java.util.List;
 public class SSEController {
     private final NotificationService notificationService;
 
-    @GetMapping(value="/sub/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@PathVariable Long id)
-    {
-        return notificationService.subscribe(id);
+    @GetMapping(value="/sub/{accountId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribe(@PathVariable Long accountId, HttpServletRequest request, HttpServletResponse response) {
+
+        printHeaders(request);
+
+        response.setHeader("Connection", "keep-alive");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("X-Accel-Buffering", "no");
+
+        return notificationService.subscribe(accountId);
     }
 
     @PostMapping("/send-data/{id}")
-    public void sendData(@PathVariable Long id)
-    {
+    public void sendData(@PathVariable Long id) {
+
         notificationService.notify(id, "data");
     }
 
-//    @GetMapping(value="/sub/{accountId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-//    public SseEmitter subscribe(@PathVariable Long accountId, HttpServletRequest request, HttpServletResponse response) {
-//
-//        printHeaders(request);
-//
-//        response.setHeader("Connection", "keep-alive");
-//        response.setHeader("Cache-Control", "no-cache");
-//        response.setHeader("X-Accel-Buffering", "no");
-//
-//        return notificationService.subscribe(accountId);
-//    }
-//
-//    @PostMapping("/send-data/{id}")
-//    public void sendData(@PathVariable Long id) {
-//
-//        notificationService.notify(id, "data");
-//    }
-//
-//    public void sendUpdatedDate(LocalDate systemDate) {
-//        notificationService.notifyDate(systemDate);
-//    }
-//
-//    public void sendToMemberUpdated(HashSet<Long> members) {
-//        notificationService.notifyToMembers(members);
-//    }
-//
-//    //Header 모든 정보
-//    private void printHeaders(HttpServletRequest request) {
-//        System.out.println("--- Headers - start ---");
-//        request.getHeaderNames().asIterator()
-//                .forEachRemaining(headerName -> System.out.println(headerName + ": " + request.getHeader(headerName)));
-//        System.out.println("--- Headers - end ---");
-//        System.out.println();
-//    }
+    public void sendUpdatedDate(LocalDate systemDate) {
+        notificationService.notifyDate(systemDate);
+    }
+
+    public void sendToMemberUpdated(HashSet<Long> members) {
+        notificationService.notifyToMembers(members);
+    }
+
+    //Header 모든 정보
+    private void printHeaders(HttpServletRequest request) {
+        System.out.println("--- Headers - start ---");
+        request.getHeaderNames().asIterator()
+                .forEachRemaining(headerName -> System.out.println(headerName + ": " + request.getHeader(headerName)));
+        System.out.println("--- Headers - end ---");
+        System.out.println();
+    }
 }
