@@ -186,31 +186,39 @@ public class BankService {
         Organization organization = organizationRepository.findByOrgCode(orgCode)
                 .orElseThrow(() -> new BankException(ErrorCode.BANK_ORG_NOT_FOUND));
 
-        Bank bank = bankRepository.findByOrganization(organization)
-                .orElseThrow(() -> new BankException(ErrorCode.BANK_NOT_FOUND));
+        Optional<OrganizationMember> existingOrganizationMemberOpt = organizationMemberRepository.findByOrganizationAndMember(organization, member);
+        if (existingOrganizationMemberOpt.isPresent()) {
 
-        // 회원의 요청 은행 계좌 목록 조회
-        List<Account> accountList = accountRepository.findByBankAndMember(bank, member);
+            Bank bank = bankRepository.findByOrganization(organization)
+                    .orElseThrow(() -> new BankException(ErrorCode.BANK_NOT_FOUND));
 
-        // 계좌의 모든 자동이체 목록을 가져옴
-        List<AutoTransferInfoResponseDto> autoTransferInfoList = new ArrayList<>();
-        for (Account account : accountList) {
-            List<AutoTransfer> autoTransfers = autoTransferRepository.findByAccount(account);
-            for (AutoTransfer autoTransfer : autoTransfers) {
+            System.out.println("orgCode = " + orgCode);
 
-                autoTransferInfoList.add(AutoTransferInfoResponseDto.of(
-                        autoTransfer.getAccount().getBank().getName(),
-                        autoTransfer.getAccount().getBank().getOrganization().getOrgCode(),
-                        autoTransfer.getAccount().getAccountNumber(),
-                        autoTransfer.getAmount(),
-                        autoTransfer.getScheduledDate(),
-                        autoTransfer.getDesignatedAccountNumber(),
-                        autoTransfer.getOrganization().getOrgName(),
-                        autoTransfer.getOrganization().getOrgCode()
-                ));
+            // 회원의 요청 은행 계좌 목록 조회
+            List<Account> accountList = accountRepository.findByBankAndMember(bank, member);
+
+            // 계좌의 모든 자동이체 목록을 가져옴
+            List<AutoTransferInfoResponseDto> autoTransferInfoList = new ArrayList<>();
+            for (Account account : accountList) {
+                List<AutoTransfer> autoTransfers = autoTransferRepository.findByAccount(account);
+                for (AutoTransfer autoTransfer : autoTransfers) {
+                    autoTransferInfoList.add(AutoTransferInfoResponseDto.of(
+                            autoTransfer.getAccount().getBank().getName(),
+                            autoTransfer.getAccount().getBank().getOrganization().getOrgCode(),
+                            autoTransfer.getAccount().getAccountNumber(),
+                            autoTransfer.getAmount(),
+                            autoTransfer.getScheduledDate(),
+                            autoTransfer.getDesignatedAccountNumber(),
+                            autoTransfer.getOrganization().getOrgName(),
+                            autoTransfer.getOrganization().getOrgCode()
+                    ));
+                }
             }
+            return AutoTransferInfoListResponseDto.of(autoTransferInfoList);
+        } else {
+            List<AutoTransferInfoResponseDto> autoTransferInfoList = new ArrayList<>();
+            return AutoTransferInfoListResponseDto.of(autoTransferInfoList);
         }
-        return AutoTransferInfoListResponseDto.of(autoTransferInfoList);
     }
 
     // 통합 인증 요청
@@ -251,7 +259,6 @@ public class BankService {
         if (existingOrganizationMemberOpt.isPresent()) {
             OrganizationMember existingOrganizationMember = existingOrganizationMemberOpt.get();
             existingOrganizationMember.updateAccessToken(accessToken);
-            organizationMemberRepository.save(existingOrganizationMember); // 업데이트된 정보 저장
         } else {
             OrganizationMember newOrganizationMember = OrganizationMember.builder()
                     .member(member)
