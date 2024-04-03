@@ -197,10 +197,14 @@ public class AutoTransferService {
                     pocketService.withdrawPocket(pocket.getPocketId());
                     pocket.withdraw();
 
+                    // 상대방 멤버아이디 찾기
+                    Account receiverAccount = accountRepository.findByNumber(autoTransfer.getToAccount())
+                            .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
                     // 계좌이체
                     Account savedAccount = accountService.autoTransfer(AutoTransferRequestDto.of(
                             autoTransfer.getAccount().getAccountId(),
-                            null,
+                            receiverAccount.getMember().getMemberId(),
                             autoTransfer.getToAccount(),
                             autoTransfer.getToAccountBank(),
                             autoTransfer.getAmount(),
@@ -220,10 +224,14 @@ public class AutoTransferService {
                     // 이체할 돈이 없을 때
                     if (account.getBalance() < autoTransfer.getAmount()) continue;
 
+                    // 상대방 멤버아이디 찾기
+                    Account receiverAccount = accountRepository.findByNumber(autoTransfer.getToAccount())
+                            .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
                     // 계좌 자동이체
                     Account savedAccount = accountService.autoTransfer(AutoTransferRequestDto.of(
                             autoTransfer.getAccount().getAccountId(),
-                            null,
+                            receiverAccount.getMember().getMemberId(),
                             autoTransfer.getToAccount(),
                             autoTransfer.getToAccountBank(),
                             autoTransfer.getAmount(),
@@ -244,10 +252,14 @@ public class AutoTransferService {
                 // 이체할 돈이 없을 때
                 if (account.getBalance() < autoTransfer.getAmount()) continue;
 
+                // 상대방 멤버아이디 찾기
+                Account receiverAccount = accountRepository.findByNumber(autoTransfer.getToAccount())
+                        .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
                 // 계좌이체
                 accountService.autoTransfer(AutoTransferRequestDto.of(
                         autoTransfer.getAccount().getAccountId(),
-                        null,
+                        receiverAccount.getMember().getMemberId(),
                         autoTransfer.getToAccount(),
                         autoTransfer.getToAccountBank(),
                         autoTransfer.getAmount(),
