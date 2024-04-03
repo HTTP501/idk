@@ -25,15 +25,15 @@ public class NotificationService {
     private final MemberRepository memberRepository;
     private final AuthenticationService authenticationService;
 
-    public SseEmitter subscribe() {
+    public SseEmitter subscribe(Long accountId) {
 
-        Member member = authenticationService.getMemberByAuthentication();
-        Long memberId = member.getMemberId();
+//        Member member = authenticationService.getMemberByAuthentication();
+//        Long memberId = member.getMemberId();
 
-        SseEmitter emitter = createEmitter(memberId);
+        SseEmitter emitter = createEmitter(accountId);
 
-        sendToClient(memberId, "EventScream Created.");
-        System.out.println("subscribe userId = " + memberId);
+        sendToClient(accountId, "EventScream Created.");
+        System.out.println("subscribe userId = " + accountId);
         return emitter;
     }
 

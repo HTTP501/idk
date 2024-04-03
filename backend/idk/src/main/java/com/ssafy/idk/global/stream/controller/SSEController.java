@@ -21,9 +21,9 @@ import java.util.List;
 public class SSEController {
     private final NotificationService notificationService;
 
-    @GetMapping(value="/sub", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe() {
-        return notificationService.subscribe();
+    @GetMapping(value="/sub/{accountId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribe(@PathVariable Long accountId) {
+        return notificationService.subscribe(accountId);
     }
 
     @PostMapping("/send-data/{id}")
