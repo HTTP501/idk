@@ -3,8 +3,6 @@ package com.ssafy.idk.global.util;
 import com.ssafy.idk.domain.autotransfer.service.AutoTransferService;
 import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.domain.salary.service.SalaryService;
-//import com.ssafy.idk.global.stream.dto.SseDateDto;
-//import com.ssafy.idk.global.stream.service.SseEmitterService;
 import com.ssafy.idk.domain.targetsaving.service.TargetSavingService;
 import com.ssafy.idk.global.stream.controller.SSEController;
 import lombok.RequiredArgsConstructor;
@@ -52,14 +50,15 @@ public class TimeUtil {
         // 신용카드 청구서 확인
 
 
+        // 돈 포켓 상태 변경
+        members.addAll(pocketService.updatePocketStatementBeforeThreeDaysFromSalaryDay(systemDate));
+        members.addAll(pocketService.systemAutoDeposit(systemDay));
+
         // 월급 입금
         members.addAll(salaryService.salaryDeposit(systemDay));
 
         // 목표 저축 상태 변경
         members.addAll(targetSavingService.autoWithdrawTargetSaving(systemDay));
-
-        // 돈 포켓 상태 변경
-        members.addAll(pocketService.updatePocketStatementBeforeOneDayFromSalaryDay(systemDate.minusDays(1).getDayOfMonth()));
 
         sseController.sendToMemberUpdated(members);
 

@@ -118,6 +118,8 @@ public class NotificationService {
 
         for (Long memberId : members) {
 
+            if (memberId == null) continue;
+
             SseEmitter emitter = emitterRepository.get(memberId);
 
             if(emitter != null)

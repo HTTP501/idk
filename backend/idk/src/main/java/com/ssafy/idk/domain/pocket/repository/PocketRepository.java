@@ -17,6 +17,8 @@ public interface PocketRepository extends JpaRepository<Pocket, Long> {
     Optional<Pocket> findByAutoTransfer(AutoTransfer autoTransfer);
     Optional<Pocket> findByMydata(Mydata mydata);
 
+    List<Pocket> findByExpectedDate(Integer date);
+
     List<Pocket> findByMemberOrderByOrderNumber(Member member);
 
     Pocket findByTargetSaving(TargetSaving targetSaving);
