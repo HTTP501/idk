@@ -32,7 +32,7 @@ public class JwtTokenProvider {
     public String createToken(String receiverOrgCode, String connectionInformation, String providerOrgCode) {
 
         return Jwts.builder()
-                .claim("recevierOrgCode", receiverOrgCode)
+                .claim("receiverOrgCode", receiverOrgCode)
                 .claim("connectionInformation", connectionInformation)
                 .claim("providerOrgCode", providerOrgCode)
                 .issuedAt(new Date(System.currentTimeMillis()))
@@ -42,16 +42,14 @@ public class JwtTokenProvider {
     }
 
     // 토큰 검증(만료 포함)
-    public Boolean validateToken(String token) {
+    public Boolean isValidToken(String token) {
         try {
             Jws<Claims> claimsJws = Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token);
 
-            return claimsJws.getPayload()
-                    .getExpiration()
-                    .before(new Date());
+            return !claimsJws.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             log.error("Invalid JWT token: {}", e.getMessage());
             return false;
