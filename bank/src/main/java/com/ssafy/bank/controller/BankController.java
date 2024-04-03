@@ -49,8 +49,8 @@ public class BankController {
             bankService.createAccount(member);
         }
 
-        // 자동이체 생성(3 ~ 8개)
-        int numAutoTransfersToCreate = new Random().nextInt(6) + 3; // 3에서 8까지의 임의의 수
+        // 자동이체 생성(5 ~ 8개)
+        int numAutoTransfersToCreate = new Random().nextInt(3) + 5; // 3에서 8까지의 임의의 수
         for (int i = 0; i < numAutoTransfersToCreate; i++) {
             bankService.createAutoTransfer(member);
         }
