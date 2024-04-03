@@ -11,6 +11,7 @@ import com.ssafy.idk.domain.account.dto.response.TransferResponseDto;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.exception.TransferException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
+import com.ssafy.idk.domain.client.service.ClientBankService;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
@@ -42,6 +43,7 @@ public class AccountService {
     private final TransactionService transactionService;
     private final AuthenticationService authenticationService;
     private final PocketService pocketService;
+    private final ClientBankService clientBankService;
 
     @Transactional
     public AccountCreateResponseDto createAccount(AccountCreateRequestDto requestDto) {
@@ -194,7 +196,8 @@ public class AccountService {
                 }
             }
         } else { // 마이데이터 조회
-
+            String senderName = clientBankService.getaccountInfo(requestDto.getBankName(), requestDto.getAccountNumber());
+            return ReadyTransferResponseDto.of(null, senderName);
         }
         // 해당 은행에 해당 유저가 없는 경우
         throw new TransferException(ErrorCode.TRANSFER_USER_NOT_FOUND);

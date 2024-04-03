@@ -9,6 +9,6 @@ public class AccountInfoResponseDto {
 
     @Getter
     public static class Data {
-        private String accountNumber;
+        private String name;
     }
 }
