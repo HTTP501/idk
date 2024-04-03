@@ -56,7 +56,7 @@ public class TimeUtil {
         members.addAll(salaryService.salaryDeposit(systemDay));
 
         // 목표 저축 상태 변경
-        targetSavingService.autoWithdrawTargetSaving(systemDay);
+        members.addAll(targetSavingService.autoWithdrawTargetSaving(systemDay));
 
         // 돈 포켓 상태 변경
         members.addAll(pocketService.updatePocketStatementBeforeOneDayFromSalaryDay(systemDate.minusDays(1).getDayOfMonth()));
