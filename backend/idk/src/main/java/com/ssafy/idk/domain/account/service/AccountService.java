@@ -51,17 +51,17 @@ public class AccountService {
         if(accountRepository.findByMember(member).isPresent()) throw new AccountException(ErrorCode.ACCOUNT_EXISTS);
 
         // RSAKey 생성
-        HashMap<String, String> keyPair = RSAUtil.generateKeyPair();
-        String publicKey = keyPair.get("publicKey");
-        String privateKey = keyPair.get("privateKey");
+//        HashMap<String, String> keyPair = RSAUtil.generateKeyPair();
+//        String publicKey = keyPair.get("publicKey");
+//        String privateKey = keyPair.get("privateKey");
 
-        rsaKeyService.saveRSAKey(member.getMemberId(), privateKey);
+        //rsaKeyService.saveRSAKey(member.getMemberId(), privateKey);
 
         // 계좌번호 생성
         String accountNumber = generateAccountNumber();
 
         Account account = Account.builder()
-                .number(RSAUtil.encode(publicKey,accountNumber))
+                .number(accountNumber)
                 .password(passwordEncryptUtil.encrypt(requestDto.getAccountPassword()))
                 .name(requestDto.getAccountName())
                 .payDate(requestDto.getAccountPayDate())
@@ -72,7 +72,7 @@ public class AccountService {
 
         Account savedAccount = accountRepository.save(account);
         updateAccount(member.getMemberId());
-        return AccountCreateResponseDto.of(RSAUtil.decode(privateKey, savedAccount.getNumber()), savedAccount.getCreatedAt());
+        return AccountCreateResponseDto.of(savedAccount.getNumber(), savedAccount.getCreatedAt());
     }
 
     public String generateAccountNumber() {
@@ -103,8 +103,8 @@ public class AccountService {
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
-        return AccountResponseDto.of(account.getAccountId(), member.getName(), RSAUtil.decode(privateKey, account.getNumber()), account.getName(), account.getBalance(), account.getMinAmount(), account.getPayDate());
+        //String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
+        return AccountResponseDto.of(account.getAccountId(), member.getName(), account.getNumber(), account.getName(), account.getBalance(), account.getMinAmount(), account.getPayDate());
     }
 
     @Transactional
@@ -113,7 +113,7 @@ public class AccountService {
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        rsaKeyService.deleteRSAKey(member.getMemberId());
+        //rsaKeyService.deleteRSAKey(member.getMemberId());
         accountRepository.deleteById(account.getAccountId());
     }
 
@@ -183,24 +183,27 @@ public class AccountService {
 
     public ReadyTransferResponseDto readyTransfer(ReadyTransferRequestDto requestDto) {
         if (requestDto.getBankName().equals("IDK은행")) {
-            List<Member> memberList = memberRepository.findAll();
-            for(Member member : memberList) {
-                Optional<Account> account = accountRepository.findByMember(member);
-                if(account.isEmpty()) continue;
-                // 개인키로 계좌번호 복호화
-                String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
-                String accountNumber = RSAUtil.decode(privateKey, account.get().getNumber());
-                // 이체할 사용자를 찾았을 경우
-                if(accountNumber.equals(requestDto.getAccountNumber())) {
-                    return ReadyTransferResponseDto.of(member.getMemberId(), member.getName());
-                }
-            }
+//            List<Member> memberList = memberRepository.findAll();
+//            for(Member member : memberList) {
+//                Optional<Account> account = accountRepository.findByMember(member);
+//                if(account.isEmpty()) continue;
+//                // 개인키로 계좌번호 복호화
+//                String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
+//                String accountNumber = RSAUtil.decode(privateKey, account.get().getNumber());
+//                // 이체할 사용자를 찾았을 경우
+//                if(accountNumber.equals(requestDto.getAccountNumber())) {
+//                    return ReadyTransferResponseDto.of(member.getMemberId(), member.getName());
+//                }
+//            }
+            Account account = accountRepository.findByNumber(requestDto.getAccountNumber())
+                    .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+            return ReadyTransferResponseDto.of(account.getMember().getMemberId(), account.getMember().getName());
         } else { // 마이데이터 조회
             String senderName = clientBankService.getAccountInfo(requestDto.getBankName(), requestDto.getAccountNumber());
             return ReadyTransferResponseDto.of(null, senderName);
         }
         // 해당 은행에 해당 유저가 없는 경우
-        throw new TransferException(ErrorCode.TRANSFER_USER_NOT_FOUND);
+        //throw new TransferException(ErrorCode.TRANSFER_USER_NOT_FOUND);
     }
 
     @Transactional
@@ -283,8 +286,8 @@ public class AccountService {
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         // 계좌번호 복호화
-        String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
-        String accountNumber = RSAUtil.decode(privateKey, account.getNumber());
+        //String privateKey = rsaKeyService.findPrivateKey(member.getMemberId());
+        String accountNumber = account.getNumber();
 
         int[] weights = {2, 3, 4, 5, 6, 7, 8, 9, 2, 3};
         int sum = 0;
