@@ -143,6 +143,6 @@ public class ClientBankService {
         AccountInfoResponseDto accountInfoResponseDto = responseEntity.getBody();
 
         assert accountInfoResponseDto != null;
-        return accountInfoResponseDto.getData().getAccountNumber();
+        return accountInfoResponseDto.getData().getName();
     }
 }

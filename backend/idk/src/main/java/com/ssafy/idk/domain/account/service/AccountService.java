@@ -11,6 +11,7 @@ import com.ssafy.idk.domain.account.dto.response.TransferResponseDto;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.exception.TransferException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
+import com.ssafy.idk.domain.client.service.ClientBankService;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
@@ -42,6 +43,7 @@ public class AccountService {
     private final TransactionService transactionService;
     private final AuthenticationService authenticationService;
     private final PocketService pocketService;
+    private final ClientBankService clientBankService;
 
     @Transactional
     public AccountCreateResponseDto createAccount(AccountCreateRequestDto requestDto) {
@@ -194,7 +196,8 @@ public class AccountService {
                 }
             }
         } else { // 마이데이터 조회
-
+            String senderName = clientBankService.getaccountInfo(requestDto.getBankName(), requestDto.getAccountNumber());
+            return ReadyTransferResponseDto.of(null, senderName);
         }
         // 해당 은행에 해당 유저가 없는 경우
         throw new TransferException(ErrorCode.TRANSFER_USER_NOT_FOUND);
@@ -233,6 +236,44 @@ public class AccountService {
                 .build();
         Transaction savedTransaction = transactionService.saveTransaction(transaction);
         return TransferResponseDto.of(savedTransaction.getAmount(), savedTransaction.getBalance());
+    }
+
+    @Transactional
+    public Account autoTransfer(AutoTransferRequestDto requestDto) {
+
+        Account account = accountRepository.findById(requestDto.getAccountId())
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        if (requestDto.getTransferBank().equals("IDK은행")) { // 받는사람이 IDK은행인 경우
+            if(!accountNumberVerity(requestDto.getReceiverId()))
+                throw new AccountException(ErrorCode.TRANSFER_RECEIVER_FAIL);
+
+            // 받는사람 입금
+            Account receiveAccount = deposit(requestDto.getReceiverId(), requestDto.getTransferAmount());
+            Transaction transaction = Transaction.builder()
+                    .category(Category.입금)
+                    .content(requestDto.getReceiverPaymentContent())
+                    .amount(requestDto.getTransferAmount())
+                    .balance(receiveAccount.getBalance())
+                    .createdAt(LocalDateTime.now())
+                    .account(receiveAccount)
+                    .build();
+            transactionService.saveTransaction(transaction);
+        }
+
+        // 보낸사람 출금
+        Account savedAccount = withdraw(account.getMember().getMemberId(), requestDto.getTransferAmount());
+        Transaction transaction = Transaction.builder()
+                .category(Category.출금)
+                .content(requestDto.getMyPaymentContent())
+                .amount(requestDto.getTransferAmount())
+                .balance(savedAccount.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(savedAccount)
+                .build();
+        transactionService.saveTransaction(transaction);
+
+        return savedAccount;
     }
 
     public boolean accountNumberVerity(Long memberId) {

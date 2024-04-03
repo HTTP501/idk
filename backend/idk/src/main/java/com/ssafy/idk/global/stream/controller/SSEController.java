@@ -12,6 +12,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
 
 @RestController
 @RequestMapping("/sse")
@@ -19,9 +21,9 @@ import java.time.LocalDate;
 public class SSEController {
     private final NotificationService notificationService;
 
-    @GetMapping(value="/sub/{memberId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@PathVariable Long memberId) {
-        return notificationService.subscribe(memberId);
+    @GetMapping(value="/sub", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribe() {
+        return notificationService.subscribe();
     }
 
     @PostMapping("/send-data/{id}")
@@ -31,5 +33,9 @@ public class SSEController {
 
     public void sendUpdatedDate(LocalDate systemDate) {
         notificationService.notifyDate(systemDate);
+    }
+
+    public void sendToMemberUpdated(HashSet<Long> members) {
+        notificationService.notifyToMembers(members);
     }
 }
