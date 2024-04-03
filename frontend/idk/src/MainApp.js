@@ -26,7 +26,7 @@ export default function MainApp() {
   // AsyncStorage.clear();
   const navigation = useNavigation();
   const [authData, setAuthData] = useState({});
-  const [signupData, setSignupData] = useState({"asdas":101010});
+  const [signupData, setSignupData] = useState({});
   const scrollViewRef = useRef(null); // ScrollView의 ref
   const [currentPage, setCurrentPage] = useState(0); // 현재 페이지 인덱스
 

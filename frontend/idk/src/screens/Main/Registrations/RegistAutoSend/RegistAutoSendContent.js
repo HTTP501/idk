@@ -82,7 +82,7 @@ const RegistAutoSendContent = ({ navigation, route }) => {
   const [bankName, setBankName] = useState("IDK은행");
   const [accountId, setAccountId] = useState("");
   const [date, setDate] = useState(15);
-  const [amount, setAmount] = useState(5000);
+  const [amount, setAmount] = useState(0);
   const myDataInfo = route.params.myDataInfo
 
   // 시작 년월, 종료 년월

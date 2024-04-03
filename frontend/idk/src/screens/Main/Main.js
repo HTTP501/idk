@@ -49,6 +49,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   const [autoDebitPocketData, setAutoDebitPocketData] = useState(null);
   // 저금통 데이터
   const [piggyBankData, setPiggyBankData] = useState(null);
+  const [totalPocket, setTotalPocket] = useState(0);
 
   // Axios 데이터 불러오기
   const fetchData = async () => {
@@ -113,7 +114,17 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
         setPiggyBankData(null);
       }
     );
+
+    
   };
+
+  useEffect(()=>{
+    const t = pocketData.reduce((acc, curr) => acc + curr.balance, 0) + piggyBankData?.balance
+    if (typeof(t) == Number){
+      setTotalPocket(t)
+    }
+    console.log(pocketData.reduce((acc, curr) => acc + curr.balance, 0) + piggyBankData?.balance)
+  },[pocketData])
 
   // 화면 포커싱 시 데이터 다시 가져오기
   useFocusEffect(
@@ -160,7 +171,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   }
 
   // 돈포켓 총 금액
-  const totalPocket = pocketData.reduce((acc, curr) => acc + curr.balance, 0) + piggyBankData?.balance
+  
   // + 버튼 눌렸는지 판단
   let [isButtenOpen, setisButtenOpen] = useState(false);
   // console.log(savingPocketData);
