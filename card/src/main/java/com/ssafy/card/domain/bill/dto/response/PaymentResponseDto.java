@@ -11,17 +11,34 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class PaymentResponseDto {
 
-    private LocalDate payDueDate;
+    private String companyName;
+    private String companyCode;
+    private String cardNumber;
     private Long chargeAmt;
+    private LocalDate payDueDate;
+    private String accountNumber;
+    private String orgName;
+    private String accountOrgCode;
 
     public static PaymentResponseDto of(
+            String companyName,
+            String companyCode,
+            String cardNumber,
+            Long chargeAmt,
             LocalDate payDueDate,
-            Long chargeAmt
+            String accountNumber,
+            String orgName,
+            String accountOrgCode
     ) {
         return PaymentResponseDto.builder()
-                .payDueDate(payDueDate)
+                .companyName(companyName)
+                .companyCode(companyCode)
+                .cardNumber(cardNumber)
                 .chargeAmt(chargeAmt)
+                .payDueDate(payDueDate)
+                .accountNumber(accountNumber)
+                .orgName(orgName)
+                .accountOrgCode(accountOrgCode)
                 .build();
     }
-
 }
