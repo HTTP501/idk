@@ -27,9 +27,6 @@ public class NotificationService {
 
     public SseEmitter subscribe(Long accountId) {
 
-//        Member member = authenticationService.getMemberByAuthentication();
-//        Long memberId = member.getMemberId();
-
         SseEmitter emitter = createEmitter(accountId);
 
         sendToClient(accountId, "EventScream Created.");
@@ -81,13 +78,13 @@ public class NotificationService {
                             .id(String.valueOf(id))
                             .name("date")
                             .data(systemDate));
+
+                    System.out.println("send to userId systemDate = " + id);
                 }catch(IOException exp)
                 {
                     emitterRepository.deleteById(id);
                     emitter.completeWithError(exp);
                 }
-
-                System.out.println("send to userId systemDate = " + id);
 
             }
         });
@@ -134,13 +131,13 @@ public class NotificationService {
                     emitter.send(SseEmitter.event()
                             .id(String.valueOf(id))
                             .name("update").data("needToMainUpdate!"));
+
+                    System.out.println("send to userId = " + id);
                 }catch(IOException exp)
                 {
                     emitterRepository.deleteById(id);
                     emitter.completeWithError(exp);
                 }
-
-                System.out.println("send to userId = " + id);
             }
 
         });
