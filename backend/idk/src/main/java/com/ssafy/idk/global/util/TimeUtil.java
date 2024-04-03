@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -46,7 +45,7 @@ public class TimeUtil {
         sseController.sendUpdatedDate(systemDate);
 
         // 자동이체
-        members.addAll(autoTransferService.autoTransfer(systemDay));
+        members.addAll(autoTransferService.routineAutoTransfer(systemDay));
 
         // 신용카드 청구서 확인
 

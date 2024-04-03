@@ -244,7 +244,7 @@ public class AccountService {
         Account account = accountRepository.findById(requestDto.getAccountId())
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        if (requestDto.getTransferBank().equals("IDK은행")) { // 받는사람이 IDK은행인 경우
+        if (requestDto.getTransferBank().equals("IDK은행")) {  // 받는사람이 IDK은행인 경우
             if(!accountNumberVerity(requestDto.getReceiverId()))
                 throw new AccountException(ErrorCode.TRANSFER_RECEIVER_FAIL);
 
