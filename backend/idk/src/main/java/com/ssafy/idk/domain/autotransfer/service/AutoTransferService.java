@@ -30,10 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -229,20 +226,35 @@ public class AutoTransferService {
                     // 이체할 돈이 없을 때
                     if (account.getBalance() < autoTransfer.getAmount()) continue;
 
-                    // 상대방 멤버아이디 찾기
-                    Account receiverAccount = accountRepository.findByNumber(autoTransfer.getToAccount())
-                            .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+                    // IDK 은행일 때
+                    if (Objects.equals(autoTransfer.getToAccountBank(), "IDK은행")) {
+                        // 상대방 멤버아이디 찾기
+                        Account receiverAccount = accountRepository.findByNumber(autoTransfer.getToAccount())
+                                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-                    // 계좌 자동이체
-                    Account savedAccount = accountService.autoTransfer(AutoTransferRequestDto.of(
-                            autoTransfer.getAccount().getAccountId(),
-                            receiverAccount.getMember().getMemberId(),
-                            autoTransfer.getToAccount(),
-                            autoTransfer.getToAccountBank(),
-                            autoTransfer.getAmount(),
-                            autoTransfer.getShowRecipientBankAccount(),
-                            autoTransfer.getShowMyBankAccount()
-                    ));
+                        // 계좌 자동이체
+                        Account savedAccount = accountService.autoTransfer(AutoTransferRequestDto.of(
+                                autoTransfer.getAccount().getAccountId(),
+                                receiverAccount.getMember().getMemberId(),
+                                autoTransfer.getToAccount(),
+                                autoTransfer.getToAccountBank(),
+                                autoTransfer.getAmount(),
+                                autoTransfer.getShowRecipientBankAccount(),
+                                autoTransfer.getShowMyBankAccount()
+                        ));
+                    } else {
+
+                        // 계좌 자동이체
+                        accountService.autoTransfer(AutoTransferRequestDto.of(
+                                autoTransfer.getAccount().getAccountId(),
+                                null,
+                                autoTransfer.getToAccount(),
+                                autoTransfer.getToAccountBank(),
+                                autoTransfer.getAmount(),
+                                autoTransfer.getShowRecipientBankAccount(),
+                                autoTransfer.getShowMyBankAccount()
+                        ));
+                    }
 
                     // 결제 완료 표시
                     pocket.setPaid(true);
