@@ -126,6 +126,7 @@ public class MydataController {
 
         // 연결 기관들의 기관 코드 리스트
         List<String> orgCodeList = mydataService.getConnectedOrgCodeList();
+        System.out.println("Arrays.toString(orgCodeList) = " + orgCodeList);
 
         // 서명 목록 순회하면서 기관 코드 추출하고 정보 제공 요청 보내기
         List<AutoTransferInfoDto> autoTransferInfoDtoList = new ArrayList<>();
@@ -149,7 +150,7 @@ public class MydataController {
 //        mydataService.saveAssetList(member, autoTransferInfoDtoList);
 
         // 응답데이터 만들기
-        MydataGetResponseDto mydataGetResponseDto = mydataService.getAssetListInfo(member, autoTransferInfoDtoList, paymentInfoDtoList);
+        MydataGetResponseDto mydataGetResponseDto = mydataService.getAssetListInfo(orgCodeList, member, autoTransferInfoDtoList, paymentInfoDtoList);
 
         return ResponseEntity.ok(ResultResponse.of(ResultCode.IDK_MYDATA_GET_SUCCESS, mydataGetResponseDto));
     }
