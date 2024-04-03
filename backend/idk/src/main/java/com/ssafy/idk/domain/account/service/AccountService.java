@@ -196,7 +196,7 @@ public class AccountService {
                 }
             }
         } else { // 마이데이터 조회
-            String senderName = clientBankService.getaccountInfo(requestDto.getBankName(), requestDto.getAccountNumber());
+            String senderName = clientBankService.getAccountInfo(requestDto.getBankName(), requestDto.getAccountNumber());
             return ReadyTransferResponseDto.of(null, senderName);
         }
         // 해당 은행에 해당 유저가 없는 경우
