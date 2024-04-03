@@ -10,7 +10,9 @@ import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.pocket.entity.Pocket;
 import com.ssafy.idk.global.stream.dto.PocketDto;
+import com.ssafy.idk.global.stream.dto.SystemDateResponseDto;
 import com.ssafy.idk.global.stream.repository.EmitterRepository;
+import com.ssafy.idk.global.util.TimeUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class NotificationService {
     private final EmitterRepository emitterRepository;
     private final MemberRepository memberRepository;
     private final AuthenticationService authenticationService;
+    private final TimeUtil timeUtil;
 
     public SseEmitter subscribe(Long accountId) {
 
@@ -142,5 +145,9 @@ public class NotificationService {
             }
 
         });
+    }
+
+    public SystemDateResponseDto getSystemDate() {
+        return SystemDateResponseDto.of(timeUtil.getSystemDate());
     }
 }

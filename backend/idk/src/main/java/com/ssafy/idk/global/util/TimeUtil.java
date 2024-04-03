@@ -29,6 +29,10 @@ public class TimeUtil {
     private final AutoTransferService autoTransferService;
     private final SSEController sseController;
 
+    public LocalDate getSystemDate() {
+        return systemDate;
+    }
+
     @Scheduled(fixedRate = 5000)
     public void oneDayCycle() {
 
