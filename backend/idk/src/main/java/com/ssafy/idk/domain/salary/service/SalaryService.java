@@ -6,6 +6,7 @@ import com.ssafy.idk.domain.account.entity.Transaction;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
+import com.ssafy.idk.domain.account.service.AccountService;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
@@ -40,7 +41,7 @@ public class SalaryService {
     private final AuthenticationService authenticationService;
     private final PiggyBankRepository piggyBankRepository;
     private final PiggyBankService piggyBankService;
-    private final MemberRepository memberRepository;
+    private final AccountService accountService;
 
     @Transactional
     public HashSet<Long> salaryDeposit(Integer day) {
@@ -60,7 +61,7 @@ public class SalaryService {
             }
 
             // 계좌 입금
-            account.deposit(salary.getAmount());
+            accountService.deposit(account.getMember().getMemberId(), salary.getAmount());
             accountRepository.save(account);
 
             // 계좌 기록
