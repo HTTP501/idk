@@ -57,7 +57,7 @@ public class TimeUtil {
         // 돈 포켓 상태 변경
         members.addAll(pocketService.updatePocketStatementBeforeOneDayFromSalaryDay(systemDate.minusDays(1).getDayOfMonth()));
 
-//        sseController.sendToMemberUpdated(members);
+        sseController.sendToMemberUpdated(members);
 
         if (systemDay == 1) {
             // 통계 함수 사용
