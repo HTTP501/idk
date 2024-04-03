@@ -152,17 +152,11 @@ public class PiggyBankService {
     @Transactional
     public PiggyBankArrayTransactionResponseDto deposit(PiggyBankTransactionRequestDto requestDto, Long piggyBankId) {
 
-        Member member = authenticationService.getMemberByAuthentication();
-
         // 저금통 유무 확인
         PiggyBank piggyBank = piggyBankRepository.findByPiggyBankId(piggyBankId)
                 .orElseThrow(() -> new PiggyBankException(ErrorCode.PIGGY_BANK_NOT_FOUND));
 
         Account account = piggyBank.getAccount();
-
-        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
-        if (member != account.getMember())
-            throw new PiggyBankException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
         // 계좌 잔고에서 입금 금액만큼 출금할 수 있는지 확인
         if (account.getBalance() < requestDto.getAmount())
