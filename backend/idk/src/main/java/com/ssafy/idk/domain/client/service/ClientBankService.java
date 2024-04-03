@@ -1,6 +1,5 @@
 package com.ssafy.idk.domain.client.service;
 
-import com.ssafy.idk.domain.client.dto.request.AutoTransferInfoRequestToBankDto;
 import com.ssafy.idk.domain.client.dto.request.CertifyRequestToBankDto;
 import com.ssafy.idk.domain.client.dto.request.SignupRequestDto;
 import com.ssafy.idk.domain.client.dto.response.AccountInfoResponseDto;
@@ -21,8 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -143,6 +140,9 @@ public class ClientBankService {
         AccountInfoResponseDto accountInfoResponseDto = responseEntity.getBody();
 
         assert accountInfoResponseDto != null;
+        if (accountInfoResponseDto.getData() == null) {
+            return null;
+        }
         return accountInfoResponseDto.getData().getName();
     }
 }
