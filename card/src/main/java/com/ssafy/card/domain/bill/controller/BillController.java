@@ -8,10 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,7 +20,9 @@ public class BillController {
 
     @Operation(summary = "[마이데이터] 회원 결제정보 조회")
     @GetMapping("")
-    public ResponseEntity<ResultResponse> getPayment(@RequestBody CreditRequestDto requestDto) {
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.CREDIT_GET_PAYMENT_SUCCESS, billService.getPayment(requestDto)));
+    public ResponseEntity<ResultResponse> getPayment(@RequestParam("connectionInformation") String connectionInformation, @RequestParam("orgCode") String orgCode) {
+//        String accessToken = token.replace("Bearer ", "");
+
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.CREDIT_GET_PAYMENT_SUCCESS, billService.getPayment(connectionInformation, orgCode)));
     }
 }
