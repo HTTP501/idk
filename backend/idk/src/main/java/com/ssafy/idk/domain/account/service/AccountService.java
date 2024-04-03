@@ -235,6 +235,44 @@ public class AccountService {
         return TransferResponseDto.of(savedTransaction.getAmount(), savedTransaction.getBalance());
     }
 
+    @Transactional
+    public Account autoTransfer(AutoTransferRequestDto requestDto) {
+
+        Account account = accountRepository.findById(requestDto.getAccountId())
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        if (requestDto.getTransferBank().equals("IDK은행")) { // 받는사람이 IDK은행인 경우
+            if(!accountNumberVerity(requestDto.getReceiverId()))
+                throw new AccountException(ErrorCode.TRANSFER_RECEIVER_FAIL);
+
+            // 받는사람 입금
+            Account receiveAccount = deposit(requestDto.getReceiverId(), requestDto.getTransferAmount());
+            Transaction transaction = Transaction.builder()
+                    .category(Category.입금)
+                    .content(requestDto.getReceiverPaymentContent())
+                    .amount(requestDto.getTransferAmount())
+                    .balance(receiveAccount.getBalance())
+                    .createdAt(LocalDateTime.now())
+                    .account(receiveAccount)
+                    .build();
+            transactionService.saveTransaction(transaction);
+        }
+
+        // 보낸사람 출금
+        Account savedAccount = withdraw(account.getMember().getMemberId(), requestDto.getTransferAmount());
+        Transaction transaction = Transaction.builder()
+                .category(Category.출금)
+                .content(requestDto.getMyPaymentContent())
+                .amount(requestDto.getTransferAmount())
+                .balance(savedAccount.getBalance())
+                .createdAt(LocalDateTime.now())
+                .account(savedAccount)
+                .build();
+        transactionService.saveTransaction(transaction);
+
+        return savedAccount;
+    }
+
     public boolean accountNumberVerity(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
