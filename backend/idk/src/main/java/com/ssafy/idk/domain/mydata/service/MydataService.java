@@ -162,56 +162,99 @@ public class MydataService {
     }
 
     // 자동이체 목록 조회
-    public MydataGetResponseDto getAssetListInfo(Member member, List<AutoTransferInfoDto> autoTransferInfoDtoList, List<PaymentInfoDto> paymentInfoDtoList) {
+    public MydataGetResponseDto getAssetListInfo(List<String> orgCodeList, Member member, List<AutoTransferInfoDto> autoTransferInfoDtoList, List<PaymentInfoDto> paymentInfoDtoList) {
 
-        // 계좌 조회
         Account account = accountRepository.findByMember(member)
                 .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         List<MydataAssetDto> mydataAssetDtoList = new ArrayList<>();
-        for (AutoTransferInfoDto autoTransferInfoDto : autoTransferInfoDtoList) {
-            String orgName = autoTransferInfoDto.getDesignatedOrgName();
 
-            // 조직명이 목록에 이미 존재하는지 확인
-            MydataAssetDto mydataAssetDto = mydataAssetDtoList.stream()
-                    .filter(assetDto -> assetDto.getOrgName().equals(orgName))
-                    .findFirst()
-                    .orElse(null);
+        for (int i = 0; i < orgCodeList.size(); i++) {
 
-            // 조직명이 목록에 없으면 새로운 MydataAssetDto 생성
-            if (mydataAssetDto == null) {
-                mydataAssetDto = MydataAssetDto.of(orgName, new ArrayList<>());
-                mydataAssetDtoList.add(mydataAssetDto);
-            }
+            Organization organization = organizationRepository.findByOrgCode(orgCodeList.get(i))
+                    .orElseThrow(() -> new MydataException(ErrorCode.MYDATA_ORG_NOT_FOUND));
+            String orgName = organization.getOrgName();
 
-            // Asset 엔티티에서 isLinked 값을 가져옴
-//            Boolean isLinked = getIsLinkedValueFromAsset(account, autoTransferInfoDto.getAccountNumber(), orgName);
+            List<AssetDto> assetInfo = new ArrayList<>();
+            for (AutoTransferInfoDto autoTransferInfoDto : autoTransferInfoDtoList) {
 
-            //
-            Boolean isLinked = false;
-            List<AutoTransfer> autoTransfers = autoTransferRepository.findByAccount(account);
-            for (AutoTransfer autoTransfer : autoTransfers) {
+                if (autoTransferInfoDto.getBankName().equals(orgName)) {
 
-                if (isLinkedAutoTransfer(autoTransferInfoDto, autoTransfer)) {
-                    isLinked = true;
-                    break;
+                    Boolean isLinked = false;
+                    List<AutoTransfer> autoTransfers = autoTransferRepository.findByAccount(account);
+                    for (AutoTransfer autoTransfer : autoTransfers) {
+
+                        if (isLinkedAutoTransfer(autoTransferInfoDto, autoTransfer)) {
+                            isLinked = true;
+                            break;
+                        }
+                    }
+
+                    assetInfo.add(AssetDto.of(
+                            autoTransferInfoDto.getAccountNumber(),
+                            autoTransferInfoDto.getAutoTransferAmount(),
+                            autoTransferInfoDto.getAutoTransferDate(),
+                            autoTransferInfoDto.getDesignatedOrgName(),
+                            autoTransferInfoDto.getDesignatedOrgCode(),
+                            isLinked
+                    ));
                 }
             }
 
-            // AssetDto를 생성하고 MydataAssetDto의 assetInfo 목록에 추가
-            MydataAssetDto.AssetDto assetDto = MydataAssetDto.AssetDto.of(
-                    autoTransferInfoDto.getAccountNumber(),
-                    autoTransferInfoDto.getAutoTransferAmount(),
-                    autoTransferInfoDto.getAutoTransferDate(),
-                    autoTransferInfoDto.getDesignatedOrgName(),
-                    autoTransferInfoDto.getDesignatedOrgCode(),
-                    isLinked
-            );
-            mydataAssetDto.getAssetInfo().add(assetDto);
+            MydataAssetDto mydataAssetDto = MydataAssetDto.of(orgName, assetInfo);
+            mydataAssetDtoList.add(mydataAssetDto);
         }
-
         return MydataGetResponseDto.of(mydataAssetDtoList);
     }
+
+
+
+
+
+
+//        for (AutoTransferInfoDto autoTransferInfoDto : autoTransferInfoDtoList) {
+//            String orgName = autoTransferInfoDto.getDesignatedOrgName();
+//
+//            // 조직명이 목록에 이미 존재하는지 확인
+//            MydataAssetDto mydataAssetDto = mydataAssetDtoList.stream()
+//                    .filter(assetDto -> assetDto.getOrgName().equals(orgName))
+//                    .findFirst()
+//                    .orElse(null);
+//
+//            // 조직명이 목록에 없으면 새로운 MydataAssetDto 생성
+//            if (mydataAssetDto == null) {
+//                mydataAssetDto = MydataAssetDto.of(orgName, new ArrayList<>());
+//                mydataAssetDtoList.add(mydataAssetDto);
+//            }
+//
+//            // Asset 엔티티에서 isLinked 값을 가져옴
+////            Boolean isLinked = getIsLinkedValueFromAsset(account, autoTransferInfoDto.getAccountNumber(), orgName);
+//
+//            //
+//            Boolean isLinked = false;
+//            List<AutoTransfer> autoTransfers = autoTransferRepository.findByAccount(account);
+//            for (AutoTransfer autoTransfer : autoTransfers) {
+//
+//                if (isLinkedAutoTransfer(autoTransferInfoDto, autoTransfer)) {
+//                    isLinked = true;
+//                    break;
+//                }
+//            }
+//
+//            // AssetDto를 생성하고 MydataAssetDto의 assetInfo 목록에 추가
+//            MydataAssetDto.AssetDto assetDto = MydataAssetDto.AssetDto.of(
+//                    autoTransferInfoDto.getAccountNumber(),
+//                    autoTransferInfoDto.getAutoTransferAmount(),
+//                    autoTransferInfoDto.getAutoTransferDate(),
+//                    autoTransferInfoDto.getDesignatedOrgName(),
+//                    autoTransferInfoDto.getDesignatedOrgCode(),
+//                    isLinked
+//            );
+//            mydataAssetDto.getAssetInfo().add(assetDto);
+//        }
+//
+//        return MydataGetResponseDto.of(mydataAssetDtoList);
+//    }
 
     // Asset 엔티티에서 isLinked 값을 가져옴
     private Boolean getIsLinkedValueFromAsset(Account account, String accountNumber, String orgName) {
