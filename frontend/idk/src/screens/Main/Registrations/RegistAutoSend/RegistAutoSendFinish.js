@@ -116,7 +116,7 @@ const RegistAutoSendFinish = ({ navigation,route }) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton2}
-              onPress={() => {setShowModal(false)}}
+              onPress={() => {setShowModal(false), navigation.navigate('Main')}}
             >
               <Text className='text-lg font-bold'>다음에 생성하기</Text>
             </TouchableOpacity>

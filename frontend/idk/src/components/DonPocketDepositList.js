@@ -29,7 +29,7 @@ const DonPocketDepositList = function ({ arrayTransaction }) {
   }
 
   // 2. 맵을 리스트로 변환
-  const dateList = Array.from(dateMap.entries());
+  const dateList = Array.from(dateMap.entries()).reverse();
   return (
     <View>
       {dateList.map((item,index) => {
@@ -75,13 +75,18 @@ const DepositItem = function ({ item }) {
       <Image source={require('../../assets/icons/money.png')} style={{ width: 35, height:35,resizeMode:"contain"}}/>
       </View>
       <View className="flex-grow">
-        <Text>{item.content}</Text>
+        <Text
+          style={
+            item.content==='입금'
+              ? { color: theme["sky-basic"] }
+              : { color: "red" }
+          }>{item.content}</Text>
         <Text className='text-xs'>{time}</Text>
       </View>
       <View className="items-end">
         <Text
           style={
-            item.isDeposit
+            item.content==='입금'
               ? { color: theme["sky-basic"] }
               : { color: "red" }
           }
