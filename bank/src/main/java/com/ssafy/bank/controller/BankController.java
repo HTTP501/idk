@@ -7,12 +7,14 @@ import com.ssafy.bank.exception.BankException;
 import com.ssafy.bank.global.error.ErrorCode;
 import com.ssafy.bank.global.result.ResultCode;
 import com.ssafy.bank.global.result.ResultResponse;
+import com.ssafy.bank.jwt.JwtTokenProvider;
 import com.ssafy.bank.repository.MemberRepository;
 import com.ssafy.bank.service.BankService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,7 @@ public class BankController {
 
     private final BankService bankService;
     private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 회원 생성 db 저장, 계좌 더미데이터 생성
     @Operation(summary = "회원가입")
@@ -82,9 +85,23 @@ public class BankController {
     // 고객의 자동이체(상세정보 포함) 목록 조회
     @Operation(summary = "고객 자동이체 목록 조회")
     @GetMapping("/auto-transfer")
-    public ResponseEntity<ResultResponse> getAutoTransferInfo(@RequestParam("name") String name, @RequestParam("connectionInformation") String connectionInformation, @RequestParam("orgCode") String orgCode) {
+    public ResponseEntity<ResultResponse> getAutoTransferInfo(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("orgCode") String orgCode) {
 
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.BANK_GET_AUTO_TRANSFER_INFO_SUCCESS, bankService.getAutoTransferInfo(name, connectionInformation, orgCode)));
+        String accessToken = authorizationHeader.replace("Bearer ", "");
+        System.out.println("accessToken = " + accessToken);
+
+        // 토큰 검증
+        if (!jwtTokenProvider.isValidToken(accessToken)) {
+            throw new BankException(ErrorCode.BANK_TOKEN_INVALID);
+        }
+
+        // CI 추출
+        String ci = jwtTokenProvider.getConnectionInformation(accessToken);
+        System.out.println("ci = " + ci);
+        Member member = memberRepository.findByConnectionInformation(ci)
+                .orElseThrow(() -> new BankException(ErrorCode.BANK_MEMBER_NOT_FOUND));
+
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.BANK_GET_AUTO_TRANSFER_INFO_SUCCESS, bankService.getAutoTransferInfo(member, orgCode)));
     }
 
     // 계좌 명의 조회
