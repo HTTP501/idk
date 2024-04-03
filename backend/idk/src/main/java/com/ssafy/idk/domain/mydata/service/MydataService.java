@@ -15,6 +15,7 @@ import com.ssafy.idk.domain.member.entity.Signature;
 import com.ssafy.idk.domain.member.repository.SignatureRepository;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.mydata.dto.response.MydataGetResponseDto.MydataAssetDto.AssetDto;
+import com.ssafy.idk.domain.mydata.dto.response.PaymentInfoDto;
 import com.ssafy.idk.domain.mydata.entity.Asset;
 import com.ssafy.idk.domain.mydata.dto.response.MydataGetResponseDto;
 import com.ssafy.idk.domain.mydata.dto.response.MydataGetResponseDto.MydataAssetDto;
@@ -34,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -160,7 +162,7 @@ public class MydataService {
     }
 
     // 자동이체 목록 조회
-    public MydataGetResponseDto getAssetListInfo(Member member, List<AutoTransferInfoDto> autoTransferInfoDtoList) {
+    public MydataGetResponseDto getAssetListInfo(Member member, List<AutoTransferInfoDto> autoTransferInfoDtoList, List<PaymentInfoDto> paymentInfoDtoList) {
 
         // 계좌 조회
         Account account = accountRepository.findByMember(member)
@@ -216,5 +218,24 @@ public class MydataService {
         Asset asset = assetRepository.findByAccountNumberAndDesignatedOrgName(accountNumber, orgName)
                 .orElseThrow(() -> new MydataException(ErrorCode.MYDATA_ASSET_NOT_FOUND));
         return asset != null && asset.getIsLinked();
+    }
+
+    // 마이데이터 연결 기관들 코드 목록 조회
+    public List<String> getConnectedOrgCodeList() {
+
+        Member member = authenticationService.getMemberByAuthentication();
+
+        List<Mydata> mydataList = mydataRepository.findByMember(member);
+
+        return mydataList.stream()
+                .filter(mydata -> mydata.getAccessToken() != null)
+                .map(mydata -> mydata.getOrganization().getOrgCode())
+                .collect(Collectors.toList());
+    }
+
+    public void updateMydata(Member member, Organization organization, String accessToken) {
+        Mydata mydata = mydataRepository.findByMemberAndOrganization(member, organization)
+                .orElseThrow(() -> new MydataException(ErrorCode.MYDATA_NOT_FOUND));
+        mydata.updateAccessToken(accessToken);
     }
 }

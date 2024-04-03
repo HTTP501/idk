@@ -2,6 +2,7 @@ package com.ssafy.idk.domain.mydata.controller;
 
 import com.ssafy.idk.domain.client.dto.response.AutoTransferInfoDto;
 import com.ssafy.idk.domain.client.dto.response.AutoTransferInfoListResponseDto;
+import com.ssafy.idk.domain.client.dto.response.PaymentInfoListDto;
 import com.ssafy.idk.domain.client.service.ClientBankService;
 import com.ssafy.idk.domain.client.service.ClientCaService;
 import com.ssafy.idk.domain.client.service.ClientCardService;
@@ -11,6 +12,8 @@ import com.ssafy.idk.domain.member.repository.SignatureRepository;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.mydata.dto.request.MydataConnectRequestDto;
 import com.ssafy.idk.domain.mydata.dto.response.MydataGetResponseDto;
+import com.ssafy.idk.domain.mydata.dto.response.PaymentInfoDto;
+import com.ssafy.idk.domain.mydata.entity.Mydata;
 import com.ssafy.idk.domain.mydata.entity.Organization;
 import com.ssafy.idk.domain.mydata.entity.OrganizationType;
 import com.ssafy.idk.domain.mydata.exception.MydataException;
@@ -30,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -99,7 +103,15 @@ public class MydataController {
             // 토큰 저장
             Organization organization = organizationRepository.findByOrgCode(orgCode)
                     .orElseThrow(() -> new MydataException(ErrorCode.MYDATA_ORG_NOT_FOUND));
-            mydataService.saveMydata(member, organization, accessToken);
+
+            // 이미 토큰이 있으면 업데이트
+            if (mydataRepository.existsByOrganizationAndMember(organization, member)) {
+                mydataService.updateMydata(member, organization, accessToken);
+            } else {
+                mydataService.saveMydata(member, organization, accessToken);
+            }
+            System.out.println("저장=========================");
+            System.out.println("accessToken = " + accessToken);
         }
 
         return ResponseEntity.ok(ResultResponse.of(ResultCode.IDK_MYDATA_CONNECT_SUCCESS));
@@ -112,27 +124,32 @@ public class MydataController {
         // 고객이 연결한 모든 기관에 정보제공 요청
         Member member = authenticationService.getMemberByAuthentication();
 
-        // 멤버가 가지고 있는 모든 서명 목록 조회
-        List<Signature> signatureList = signatureRepository.findByMember(member);
+        // 연결 기관들의 기관 코드 리스트
+        List<String> orgCodeList = mydataService.getConnectedOrgCodeList();
 
         // 서명 목록 순회하면서 기관 코드 추출하고 정보 제공 요청 보내기
         List<AutoTransferInfoDto> autoTransferInfoDtoList = new ArrayList<>();
+        List<PaymentInfoDto> paymentInfoDtoList = new ArrayList<>();
 
-        List<AutoTransferInfoDto> autoTransferInfoDtos = new ArrayList<>();
+        for (String orgCode : orgCodeList) {
 
-        // 은행은 자동이체 목록
-        autoTransferInfoDtos = clientBankService.getAutoTransferInfo(member.getName(), member.getConnectionInformation());
-        autoTransferInfoDtoList.addAll(autoTransferInfoDtos);
+            List<AutoTransferInfoDto> autoTransferInfoDtos;
+            List<PaymentInfoDto> paymentInfoDtos;
 
-        // 카드사는 청구계좌
-        autoTransferInfoDtos = clientCardService.getAutoTransferInfo(member.getName(), member.getConnectionInformation());
-        autoTransferInfoDtoList.addAll(autoTransferInfoDtos);
+            // 은행은 자동이체 목록
+            autoTransferInfoDtos = clientBankService.getAutoTransferInfo(member.getConnectionInformation(), orgCode);
+            autoTransferInfoDtoList.addAll(autoTransferInfoDtos);
+
+            // 카드사는 청구계좌
+//            paymentInfoDtos = clientCardService.getCardsInfo(member.getConnectionInformation(), orgCode);
+//            paymentInfoDtoList.addAll(paymentInfoDtos);
+        }
 
         // 저장
 //        mydataService.saveAssetList(member, autoTransferInfoDtoList);
 
         // 응답데이터 만들기
-        MydataGetResponseDto mydataGetResponseDto = mydataService.getAssetListInfo(member, autoTransferInfoDtoList);
+        MydataGetResponseDto mydataGetResponseDto = mydataService.getAssetListInfo(member, autoTransferInfoDtoList, paymentInfoDtoList);
 
         return ResponseEntity.ok(ResultResponse.of(ResultCode.IDK_MYDATA_GET_SUCCESS, mydataGetResponseDto));
     }

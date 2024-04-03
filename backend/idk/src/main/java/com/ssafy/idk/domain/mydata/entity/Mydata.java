@@ -26,7 +26,7 @@ public class Mydata {
     @JoinColumn(name = "org_id")
     private Organization organization;
 
-    @Column(name = "accessToken", length = 1000)
+    @Column(name = "accessToken", length = 1000, unique = true)
     private String accessToken;
 
     @OneToMany(mappedBy = "mydata", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -46,4 +46,7 @@ public class Mydata {
         }
     }
 
+    public void updateAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
 }
