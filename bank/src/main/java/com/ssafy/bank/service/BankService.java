@@ -279,20 +279,20 @@ public class BankService {
     }
 
     // 마이데이터 연결 은행 계좌 목록 조회
-    private List<Account> getConnectedAccounts(Member member) {
-        List<Account> allAccounts = accountRepository.findByMember(member);
-
-        // 연결 은행만 계좌 선택
-        List<Account> connectedAccountList = new ArrayList<>();
-        for (Account account : allAccounts) {
-            String accessToken = account.getBank().getOrganization().getAccessToken();
-            LOGGER.info("accessToken = " + accessToken);
-            if (accessToken != null) {
-                connectedAccountList.add(account);
-            }
-        }
-        return connectedAccountList;
-    }
+//    private List<Account> getConnectedAccounts(Member member) {
+//        List<Account> allAccounts = accountRepository.findByMember(member);
+//
+//        // 연결 은행만 계좌 선택
+//        List<Account> connectedAccountList = new ArrayList<>();
+//        for (Account account : allAccounts) {
+//            String accessToken = account.getBank().getOrganization().getAccessToken();
+//            LOGGER.info("accessToken = " + accessToken);
+//            if (accessToken != null) {
+//                connectedAccountList.add(account);
+//            }
+//        }
+//        return connectedAccountList;
+//    }
 
 
 }
