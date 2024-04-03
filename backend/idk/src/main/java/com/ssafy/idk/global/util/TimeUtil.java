@@ -59,9 +59,9 @@ public class TimeUtil {
 
         sseController.sendToMemberUpdated(members);
 
-        if (systemDay == 1) {
-            // 통계 함수 사용
-        }
+//        if (systemDay == 1) {
+//            // 통계 함수 사용
+//        }
     }
 
     public void updateDate() {
