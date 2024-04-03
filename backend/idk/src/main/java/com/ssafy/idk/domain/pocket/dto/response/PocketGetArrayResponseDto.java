@@ -11,12 +11,15 @@ import java.util.List;
 @AllArgsConstructor
 public class PocketGetArrayResponseDto {
 
+    private Long memberId;
     private List<PocketGetDetailResponseDto> arrayPocket;
 
     public static PocketGetArrayResponseDto of(
+            Long memberId,
             List<PocketGetDetailResponseDto> arrayPocket
     ) {
         return PocketGetArrayResponseDto.builder()
+                .memberId(memberId)
                 .arrayPocket(arrayPocket)
                 .build();
     }
