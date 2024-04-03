@@ -49,11 +49,11 @@ const FinancialCompany = ({ item, index, checkItem, changeCheckItem }) => {
         style={styles.financialCompany}
       >
         <View className='flex-row items-center'>
-          <Image source={imgMatch[item.orgName]} style={{ width: 50, height: 50}}/>
+          <Image source={imgMatch[item.orgName]} style={{ width: 45, height: 45}}/>
           <Text className='text-2xl font-bold ml-3'>{item.orgName}</Text>
         </View>
         <View className='flex-row items-center'>
-          <Text className='text-lg mr-1'>{item.assetInfo.length}</Text>
+          <Text className='text-lg mr-1'>{item?.assetInfo?.length}</Text>
           <Text className='text-lg font-bold mr-2'>건</Text>
           {!showData && (<AntDesign name="right" size={24} color="black" />)}
           {showData && (<AntDesign name="down" size={24} color="black" />)}
@@ -63,8 +63,8 @@ const FinancialCompany = ({ item, index, checkItem, changeCheckItem }) => {
         <View>
           {item.assetInfo.map((dataItem, dataIndex) => (
             <View key={dataIndex} style={styles.dataItem}>
-              <View className='flex-row'>
-                <Image source={imgMatch[dataItem.asset]} style={{ width: 40, height: 40}}/>
+              <View className='flex-row items-center'>
+                <Image source={imgMatch[dataItem.asset]} style={{ width: 35, height: 35}}/>
                 <View className='ml-3'>
                   <Text className='font-bold'>{dataItem.asset}</Text>
                   {!dataItem.isLinked && (<Text className=''>{dataItem.designatedOrgName} {dataItem.designatedAssetNumber}</Text>)}
@@ -85,8 +85,8 @@ const FinancialCompany = ({ item, index, checkItem, changeCheckItem }) => {
         <View>
           {item.assetInfo.map((dataItem, dataIndex) => (
             <View key={dataIndex} style={styles.dataItem}>
-              <View className='flex-row'>
-                <Image source={imgMatch[dataItem.designatedOrgName]} style={{ width: 40, height: 40}}/>
+              <View className='flex-row items-center'>
+                <Image source={imgMatch[dataItem.designatedOrgName]} style={{ width: 35, height: 35}}/>
                 <View className='ml-3'>
                   <Text className='font-bold'>{dataItem.designatedOrgName} {dataItem.designatedAssetNumber}</Text>
                   {!dataItem.isLinked && (<Text className=''>{item.orgName} {dataItem.asset}</Text>)}
@@ -149,22 +149,15 @@ const CheckMyData = ({ navigation }) => {
   const getMyData = () => {
     getMyDataAxios(
       res => {
-        // console.log(res);
+        console.log(res);
         setMyData(res.data.data.assetInfoList)
       },
       err => {
-        // console.log(err);
-        // console.log(err.response);
+        console.log(err);
+        console.log(err.response);
       }
     )
   }
-
-  useEffect(() => {
-    getMyData()
-    setTimeout(() => {
-      setLoading(true);
-    }, 700);
-  }, [])
 
   useFocusEffect(
     React.useCallback(() => {
@@ -186,7 +179,7 @@ const CheckMyData = ({ navigation }) => {
   }
 
   const handleConnectAutomaticTransfer = () => {
-    if (Object.keys(checkItem).length!==0) {
+    if (Object.keys(checkItem)?.length!==0) {
       // 이미 연결된거면 안해도 되므로
       if (checkItem.isLinked) {
         Alert.alert('이미 연결된 자산입니다.', '', [{text:'확인'}])
@@ -215,9 +208,9 @@ const CheckMyData = ({ navigation }) => {
         ))}
       </ScrollView>
       <TouchableOpacity
-        style={[styles.button, {opacity: Object.keys(checkItem).length===0 ? 0.5 : 1}]}
+        style={[styles.button, {opacity: Object.keys(checkItem)?.length===0 ? 0.5 : 1}]}
         onPress={handleConnectAutomaticTransfer}
-        disabled={Object.keys(checkItem).length===0}
+        disabled={Object.keys(checkItem)?.length===0}
       >
         <Text className="text-white text-lg">자동 이체 연결</Text>
       </TouchableOpacity>
