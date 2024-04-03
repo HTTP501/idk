@@ -60,8 +60,6 @@ public class SignService {
         Organization organization1 = organizationRepository.findByOrgCode(requestDto.getProviderOrgCode())
                 .orElseThrow(() -> new CardServerException(ErrorCode.ORGANIZATION_NOT_FOUND));
 
-        organization1.updateAccessToken(accessToken);
-
         return AuthenticationResponseDto.of(accessToken);
     }
 }
