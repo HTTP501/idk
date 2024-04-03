@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useCallback } from "react";
 import { useState, useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
@@ -13,10 +13,9 @@ import EventSource from "react-native-sse";
 //   headers: {
 //     Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInBob25lTnVtYmVyIjoiMDEwMjI5OTU0MTQiLCJpYXQiOjE3MTIxMzIyNjcsImV4cCI6MTcxMjEzNDA2N30.xEXPMlv7N5_JMIl4vStqYQfyXd5yh9y_7l4KOvdk7zY`,
 //   },
-// }; 
+// };
 // const es = new EventSource(`https://j10a501.p.ssafy.io/api/sse/sub/1000`, options);
-      
-      
+
 // es.addEventListener("open", (event) => {
 //   console.log("Open SSE connection.");
 // });
@@ -74,10 +73,10 @@ import PiggyBank from "../../components/PiggyBankItem";
 import { useFocusEffect } from "@react-navigation/native";
 import Loading from "../../components/Loading";
 import { changeDonPocketOrderAxios } from "../../API/DonPocket";
-
+import RNEventSource from "react-native-event-source";
 
 const ACCOUNT_KEY = "@account";
-const AUTH_KEY = '@auth'
+const AUTH_KEY = "@auth";
 
 // 메인 페이지
 const Main = gestureHandlerRootHOC(({ navigation }) => {
@@ -90,12 +89,94 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   const [piggyBankData, setPiggyBankData] = useState(null);
   const [totalPocket, setTotalPocket] = useState(0);
 
+  // SSE 에서 받은 날짜를 저장할 상태 선언
+  const [receivedDate, setReceivedDate] = useState(" ");
+  const [myAccountId, setMyAccountId] = useState(null);
+  const [myAccessToken, setMyAccessToken] = useState(null);
+
+  // useEffect(() => {
+  //   const callAccess = async () => {
+  //     const myAccess = await AsyncStorage.getItem("@auth");
+  //     setMyAccessToken(myAccess);
+  //   };
+
+  //   callAccess();
+  // }, [navigation]);
+
+  // useEffect(() => {
+  //   if (myAccessToken !== null) {
+  //     console.log("called");
+  //     console.log(JSON.parse(myAccessToken).accessToken);
+
+  //     // setisSseCalled(true);
+
+  //     const baseURL = "https://j10a501.p.ssafy.io/api";
+  //     const options = {
+  //       headers: {
+  //         Connection: "keep-alive",
+  //         "Content-Type": "application/json",
+  //         "Cache-Control": "no-cache",
+  //         "Access-Control-Allow-Origin": "*",
+  //         "X-Accel-Buffering": "no",
+  //         Authorization: `Bearer ${JSON.parse(myAccessToken).accessToken}`,
+  //       },
+  //     };
+  //     const eventSource = new RNEventSource(`${baseURL}/sse/sub/99`, options);
+
+  //     // eventSource.onmessage = function (event) {
+  //     //   console.log(event.type);
+  //     //   console.log(event.data);
+  //     //   // data 사용
+  //     // };
+  //     eventSource.onError = function (event) {
+  //       console.log(event.type);
+  //       console.log("온에러", event);
+  //       // data 사용
+  //     };
+
+  //     eventSource.onOpen = function (event) {
+  //       console.log("나 연결했다");
+  //     };
+
+  //     eventSource.addEventListener("open", function (event) {
+  //       console.log(event.type); // message
+  //       console.log(event.data);
+  //     });
+  //     eventSource.addEventListener("sse", function (event) {
+  //       console.log(event.type); // message
+  //       console.log(event.data);
+  //     });
+  //     eventSource.addEventListener("update", function (event) {
+  //       console.log(event.type); // message
+  //       console.log("update메세지", event.data);
+
+  //       // 업데이트 이벤트 인식
+
+  //       // 사용자가 MAIN 화면에 있을 때만 MAIN API 요청
+  //     });
+  //     eventSource.addEventListener("date", function (event) {
+  //       console.log(event.type); // message
+  //       console.log(event.data);
+  //     });
+  //     eventSource.addEventListener("error", function (event) {
+  //       console.log("여기서 에러", event.type); // message
+  //       console.log(event);
+  //     });
+  //     eventSource.addEventListener("message", function (event) {
+  //       console.log(event.type); // message
+  //       console.log(event.data);
+  //     });
+  //     return () => {
+  //       eventSource.close();
+  //     };
+  //   }
+  // }, [myAccessToken]);
+
   // Axios 데이터 불러오기
   const fetchData = async () => {
     // 계좌 조회 Axios
     await getAccountAxios(
       (res) => {
-        console.log("계좌 데이터",res.data.data);
         // 스토리지에 계좌정보만 저장해주기
         const data = JSON.stringify({
           accountNumber: res.data.data.accountNumber,
@@ -104,7 +185,6 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
         AsyncStorage.setItem(ACCOUNT_KEY, data);
         // 돈포켓 조회 Axios
         getPocketListAxios(
-
           (res) => {
             setPocketData(res.data.data.arrayPocket);
             setSavingPocketData(
@@ -125,7 +205,6 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
           },
           (err) => {}
         );
-
         setAccount(res.data.data);
       },
       (err) => {
@@ -153,17 +232,20 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
         setPiggyBankData(null);
       }
     );
-
-    
   };
 
-  useEffect(()=>{
-    const t = pocketData.reduce((acc, curr) => acc + curr.balance, 0) + piggyBankData?.balance
-    if (typeof(t) == Number){
-      setTotalPocket(t)
+  useEffect(() => {
+    const t =
+      pocketData.reduce((acc, curr) => acc + curr.balance, 0) +
+      piggyBankData?.balance;
+    if (typeof t == Number) {
+      setTotalPocket(t);
     }
-    console.log(pocketData.reduce((acc, curr) => acc + curr.balance, 0) + piggyBankData?.balance)
-  },[pocketData])
+    console.log(
+      pocketData.reduce((acc, curr) => acc + curr.balance, 0) +
+        piggyBankData?.balance
+    );
+  }, [pocketData]);
 
   // 화면 포커싱 시 데이터 다시 가져오기
   useFocusEffect(
@@ -192,28 +274,27 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   let [pocketType, setPocketType] = useState("total");
 
   // 포켓 순서 바꾸기
-
-  const changePocketOrder = async function(data){
-    setPocketData(data)
-    let orderedId = []
-    await data.map(item=>
-      {orderedId.push(item.pocketId)}
-      )
-    console.log(orderedId)
-    changeDonPocketOrderAxios({arrayPocketId:orderedId},
-      res=>{
-        console.log(res)
-    }, err =>{
-      console.log(err)
-    }
-    )
-  }
-
+  const changePocketOrder = async function (data) {
+    setPocketData(data);
+    let orderedId = [];
+    await data.map((item) => {
+      orderedId.push(item.pocketId);
+    });
+    console.log(orderedId);
+    changeDonPocketOrderAxios(
+      { arrayPocketId: orderedId },
+      (res) => {
+        console.log(res);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
   // 돈포켓 총 금액
-  
+
   // + 버튼 눌렸는지 판단
   let [isButtenOpen, setisButtenOpen] = useState(false);
-  // console.log(savingPocketData);
   return (
     <View className="flex-1">
       {/* 로딩이 끝나야 보여줌 */}
@@ -224,12 +305,16 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
             <View style={styles.back}></View>
             {/* 로고 알람 */}
             <View className="px-10 mt-10 mb-2">
-              <Header navigation={navigation} />
+              <Header navigation={navigation} receiveData />
             </View>
 
             {/* 계좌 */}
             <View className="justify-center items-center">
-              <Account account={account} navigation={navigation} totalPocket={totalPocket}/>
+              <Account
+                account={account}
+                navigation={navigation}
+                totalPocket={totalPocket}
+              />
             </View>
 
             {/* 옵션 표기 */}
@@ -311,14 +396,13 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
                     navigation={navigation}
                   />
                   {/* 저금통 가입시 안보여주기 */}
-                  {piggyBankData? 
-                  null:
-                  <PlusButton
-                    title={"저금통 가입하기"}
-                    destination={"RegistSavingBox"}
-                    navigation={navigation}
-                  />
-                  }
+                  {piggyBankData ? null : (
+                    <PlusButton
+                      title={"저금통 가입하기"}
+                      destination={"RegistSavingBox"}
+                      navigation={navigation}
+                    />
+                  )}
                   <TouchableOpacity
                     style={[styles.button, styles.shadow]}
                     onPress={() => {
@@ -349,21 +433,14 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   );
 });
 // 헤더
-const Header = ({ navigation }) => {
+const Header = ({ navigation, receivedDate }) => {
   const logo = require("../../../assets/logo/white_idk_bank_logo.png");
   return (
     <View className="flex-row justify-between items-center">
       <View>
         <Image source={logo} style={{ width: 90, resizeMode: "contain" }} />
       </View>
-      {/* <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("Notification")
-          console.log("알람페이지로 가기");
-        }}
-      >
-        <MaterialCommunityIcons name="bell" size={24} color="white" />
-      </TouchableOpacity> */}
+      <Text className="text-2xl text-white font-bold">{receivedDate}</Text>
     </View>
   );
 };

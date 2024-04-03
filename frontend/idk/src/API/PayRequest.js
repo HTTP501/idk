@@ -14,3 +14,7 @@ export const approvalPayAxios = async function (data, success, fail) {
   await local.post(`/payment/approval`, data).then(success).catch(fail);
 };
 
+// 계속해서 날짜를 5초마다 요청할떄 쓰일 Axios
+export const callFiveSecond = async function (success, fail) {
+  await local.get(`/systemDate`).then(success).catch(fail);
+};
