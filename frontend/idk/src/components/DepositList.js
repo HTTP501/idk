@@ -79,7 +79,12 @@ const DepositItem = function ({ item,navigation }) {
       <Image source={require('../../assets/icons/money.png')} style={{ width: 35, height:35,resizeMode:"contain"}}/>
       </View>
       <View className="flex-grow">
-        <Text>{item.transactionContent}</Text>
+        <Text
+          style={
+            item.isDeposit
+              ? { color: theme["sky-basic"] }
+              : { color: "red" }
+          }>{item.transactionContent}</Text>
         <Text className='text-xs'>{time}</Text>
       </View>
       <View className="items-end">

@@ -19,7 +19,7 @@ import formattedNumber from "./moneyFormatter";
 import * as Clipboard from "expo-clipboard";
 
 // 계좌
-const Account = ({ account, navigation,totalPocket }) => {
+const Account = ({ account, navigation,totalPocket, piggyBalance }) => {
   const copyIcon = require("../../assets/icons/copy.png");
   // 복사
   const copyToClipboard = async (number) => {
@@ -78,7 +78,7 @@ const Account = ({ account, navigation,totalPocket }) => {
         </View>
 
         <View className="flex-row justify-between">
-          <Text>계좌 총액 {formattedNumber(account.accountBalance+totalPocketMoney)}원</Text>
+          <Text>계좌 총액 {formattedNumber(account.accountBalance+totalPocketMoney + piggyBalance ? piggyBalance : 0)}원</Text>
           {/* 송금 버튼 */}
           <TouchableOpacity
             onPress={() => {
