@@ -20,7 +20,7 @@ public class Organization {
     @Column(name = "org_name")
     private String orgName;
 
-    @Column(name = "org_code")
+    @Column(name = "org_code", unique = true)
     private String orgCode;
 
     @Enumerated(EnumType.STRING)
