@@ -12,6 +12,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -29,6 +31,10 @@ public class TimeUtil {
 
     @Scheduled(fixedRate = 5000)
     public void oneDayCycle() {
+
+        // 업데이트해야 하는 멤버 목록
+        HashSet<Long> members = new HashSet<>();
+
         // 날짜 변경
         updateDate();
 
@@ -36,16 +42,17 @@ public class TimeUtil {
         sseController.sendUpdatedDate(systemDate);
 
         // 자동이체
-        autoTransferService.autoTransfer(systemDay);
+        members.addAll(autoTransferService.autoTransfer(systemDay));
 
         // 신용카드 청구서 확인
 
 
         // 돈 포켓 상태 변경
-        pocketService.updatePocketStatementBeforeThreeDaysFromSalaryDay(systemDate.minusDays(3).getDayOfMonth());
+        members.addAll(pocketService.updatePocketStatementBeforeOneDayFromSalaryDay(systemDate.minusDays(1).getDayOfMonth()));
 
         // 월급 입금
-        salaryService.salaryDeposit(systemDay);
+        members.addAll(salaryService.salaryDeposit(systemDay));
+        sseController.sendToMemberUpdated(members);
 
         if (systemDay == 1) {
             // 통계 함수 사용
