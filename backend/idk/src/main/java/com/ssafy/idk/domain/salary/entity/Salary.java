@@ -5,7 +5,6 @@ import com.ssafy.idk.domain.member.entity.Member;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.checkerframework.checker.units.qual.C;
 
 @Entity
 @Getter
