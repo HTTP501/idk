@@ -6,7 +6,6 @@ import com.ssafy.idk.domain.client.exception.ClientException;
 import com.ssafy.idk.domain.mydata.dto.response.PaymentInfoDto;
 import com.ssafy.idk.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
