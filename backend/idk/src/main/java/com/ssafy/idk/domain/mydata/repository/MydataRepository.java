@@ -13,4 +13,6 @@ import java.util.Optional;
 public interface MydataRepository extends JpaRepository<Mydata, Long> {
     List<Mydata> findByMember(Member member);
     Optional<Mydata> findByMemberAndOrganization(Member member, Organization organization);
+
+    Boolean existsByOrganizationAndMember(Organization organization, Member member);
 }

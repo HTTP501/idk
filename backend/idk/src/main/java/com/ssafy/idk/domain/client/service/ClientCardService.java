@@ -1,11 +1,12 @@
 package com.ssafy.idk.domain.client.service;
 
 import com.ssafy.idk.domain.client.dto.request.SignupRequestDto;
-import com.ssafy.idk.domain.client.dto.response.AutoTransferInfoDto;
-import com.ssafy.idk.domain.client.dto.response.AutoTransferInfoResponseFromBankDto;
+import com.ssafy.idk.domain.client.dto.response.*;
 import com.ssafy.idk.domain.client.exception.ClientException;
+import com.ssafy.idk.domain.mydata.dto.response.PaymentInfoDto;
 import com.ssafy.idk.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,11 @@ public class ClientCardService {
     @Value("${spring.mydata.card-url}")
     private String cardUrl;
 
-    public List<AutoTransferInfoDto> getCardsInfo(String name, String connectionInformation, String orgCode) {
+    public List<PaymentInfoDto> getCardsInfo(String connectionInformation, String orgCode) {
 
-        String autoTransferInfoRequestApiUrl = cardUrl.concat("/api/bank/auto-transfer");
+        String cardsInfoApiUrl = cardUrl.concat("/api/card/payment");
 
-        String urlTemplate = UriComponentsBuilder.fromHttpUrl(autoTransferInfoRequestApiUrl)
-                .queryParam("name", "{name}")
+        String urlTemplate = UriComponentsBuilder.fromHttpUrl(cardsInfoApiUrl)
                 .queryParam("connectionInformation", "{connectionInformation}")
                 .queryParam("orgCode", "{orgCode}")
                 .encode()
@@ -42,17 +42,16 @@ public class ClientCardService {
         HttpEntity<?> request = new HttpEntity<>(headers);
 
         Map<String, String> param = new HashMap<>();
-        param.put("name", name);
         param.put("connectionInformation", connectionInformation);
         param.put("orgCode", orgCode);
 
-        ResponseEntity<AutoTransferInfoResponseFromBankDto> responseEntity = restTemplate.exchange(urlTemplate, HttpMethod.GET, request, AutoTransferInfoResponseFromBankDto.class, param);
+        ResponseEntity<PaymentInfoListDto> responseEntity = restTemplate.exchange(urlTemplate, HttpMethod.GET, request, PaymentInfoListDto.class, param);
 
         if (responseEntity.getStatusCode() != HttpStatus.OK) {
-            throw new ClientException(ErrorCode.CLIENT_AUTO_TRANSFER_INFO_FAILED);
+            throw new ClientException(ErrorCode.CLIENT_CARDS_INFO_FAILED);
         }
 
-        return Objects.requireNonNull(responseEntity.getBody()).getData().getAutoTransferList();
+        return Objects.requireNonNull(responseEntity.getBody()).getData().getPaymentInfoDtoList();
     }
 
     // 회원 생성 (생성 요청 시 카드 더미도 같이 만들어야지 - 어제의 용훈이가 내일의 용훈이에게)
