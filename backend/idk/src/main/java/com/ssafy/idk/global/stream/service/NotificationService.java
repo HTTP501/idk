@@ -48,7 +48,10 @@ public class NotificationService {
         if(emitter != null)
         {
             try {
-                emitter.send(SseEmitter.event().id(String.valueOf(id)).name("sse").data(Data));
+                emitter.send(SseEmitter.event()
+                        .id(String.valueOf(id))
+                        .name("sse")
+                        .data(Data));
             }catch(IOException exp)
             {
                 emitterRepository.deleteById(id);
@@ -76,7 +79,8 @@ public class NotificationService {
                 try {
                     emitter.send(SseEmitter.event()
                             .id(String.valueOf(id))
-                            .name("date").data(systemDate));
+                            .name("date")
+                            .data(systemDate));
                 }catch(IOException exp)
                 {
                     emitterRepository.deleteById(id);
