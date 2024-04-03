@@ -3,8 +3,6 @@ package com.ssafy.idk.global.util;
 import com.ssafy.idk.domain.autotransfer.service.AutoTransferService;
 import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.domain.salary.service.SalaryService;
-//import com.ssafy.idk.global.stream.dto.SseDateDto;
-//import com.ssafy.idk.global.stream.service.SseEmitterService;
 import com.ssafy.idk.domain.targetsaving.service.TargetSavingService;
 import com.ssafy.idk.global.stream.controller.SSEController;
 import lombok.RequiredArgsConstructor;
