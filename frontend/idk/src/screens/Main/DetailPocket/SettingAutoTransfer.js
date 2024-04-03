@@ -160,7 +160,7 @@ const SettingAutoTransfer = ({ navigation, route }) => {
           </TextInput>
         </View>
         <View style={[styles.box]}>
-          <Text className="text-lg font-bold mb-5">출금 계좌</Text>
+          <Text className="text-lg font-bold mb-2">출금 계좌</Text>
           <View className="flex-row items-center">
             <Image source={imgMatch['IDK은행']} style={{width: 50, height:50, marginRight: 10}}/>
             <View>
@@ -169,8 +169,8 @@ const SettingAutoTransfer = ({ navigation, route }) => {
             </View>
           </View>
         </View>
-        <View style={[styles.box,{borderBottomWidth:1, borderBottomColor:theme.grey, paddingBottom:20}]}>
-          <Text className="text-lg font-bold mb-5">받는 분</Text>
+        <View style={[styles.box,]}>
+          <Text className="text-lg font-bold mb-2">받는 분</Text>
           <View className='flex-row items-center'>
             <Image source={imgMatch[data?.toAccountBank]} style={{width: 50, height:50, marginRight: 10}}/>
             <View>
@@ -180,19 +180,19 @@ const SettingAutoTransfer = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.box}>
-          <Text className="text-lg font-bold mb-3">이체 금액</Text>
-          <Text className="text-lg">{data?.amount} 원</Text>
+          <Text className="text-lg font-bold mb-2">이체 금액</Text>
+          <Text className="text-base">{data?.amount} 원</Text>
         </View>
         {/* 자동이체 주기 */}
         <View style={styles.box}>
-          <Text className="text-lg font-bold mb-3">자동 이체 주기</Text>
+          <Text className="text-lg font-bold mb-2">자동 이체 주기</Text>
           <Text className="text-base">매월 {data?.date} 일</Text>
         </View>
 
         {/* 자동이체 기간 */}
-        <View style={[styles.box,styles.input]}>
-          <Text className="text-lg font-bold mb-3">자동 이체 기간</Text>
-          <View className="flex-row items-center mb-3">
+        <View style={[styles.box,]}>
+          <Text className="text-lg font-bold mb-2">자동 이체 기간</Text>
+          <View className="flex-row items-center">
             <Text className='text-base'>시작일 : </Text>
             <Text className='text-base'>{data?.startYearMonth}</Text>
           </View>
@@ -204,12 +204,12 @@ const SettingAutoTransfer = ({ navigation, route }) => {
 
         {/* 통장 표시 */}
         <View style={styles.box}>
-          <Text className="text-lg font-bold mb-3">받는 분 통장 표시</Text>
-          <Text className='text-lg'>{data?.showRecipientBankAccount}</Text>
+          <Text className="text-lg font-bold mb-2">받는 분 통장 표시</Text>
+          <Text className='text-base'>{data?.showRecipientBankAccount}</Text>
         </View>
         <View style={styles.box}>
-          <Text className="text-lg font-bold mb-3">내 통장 표시</Text>
-          <Text className='text-lg'>{data?.showMyBankAccount}</Text>
+          <Text className="text-lg font-bold mb-2">내 통장 표시</Text>
+          <Text className='text-base'>{data?.showMyBankAccount}</Text>
         </View>
         <TouchableOpacity
           style={styles.deleteButton}
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   },
   box: {
     width: SCREEN_WIDTH * (4 / 5),
-    marginBottom: 20,
+    marginBottom: 30,
   },
   input: {
     borderBottomWidth: 1,
@@ -285,7 +285,6 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH * (4 / 5),
     // height: 40,
     paddingVertical: 10,
-    paddingBottom:20,
     alignSelf: "center",
   },
   button: {

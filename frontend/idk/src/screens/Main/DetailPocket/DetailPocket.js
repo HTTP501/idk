@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Alert
 } from "react-native";
 // 컴포넌트들
 import theme from "../../../style";
@@ -22,7 +23,8 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 import { useIsFocused } from "@react-navigation/native";
 import Loading from "../../../components/Loading";
-import { getPocketAxios } from '../../../API/DonPocket'
+import { getPocketAxios, depositDonPocketAxios, withdrawalDonPocketAxios } from '../../../API/DonPocket'
+
 
 const DetailPocket = ({ navigation, route }) => {
   const pocketId = route.params.pocketData.pocketId
@@ -41,15 +43,9 @@ const DetailPocket = ({ navigation, route }) => {
   const [date, setDate] = useState('')
 
   let [loading, setLoading] = useState(false);
-  useEffect(() => {
-    if (pocketType === '목표저축') {
-      setDonPocketId(route.params.pocketData.targetSavingId)
-    } else if (pocketType === '자동이체') {
-      setDonPocketId(route.params.pocketData.autoTransferId)
-    } else {
-      setDonPocketId(route.params.pocketData.AutoDebitId)
-    }
 
+  // 돈포켓 상세조회 Axios
+  const getPocket = () => {
     getPocketAxios(
       pocketId,
       res => {
@@ -61,13 +57,75 @@ const DetailPocket = ({ navigation, route }) => {
         setActivated(res.data.data.activated)
       },
       err => {
-        console.log(err);
+        if (err.response.data.code === 'C401') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress:() => navigation.navigate('Main')}])
+        } else if (err.response.data.code === 'P404') {
+          Alert.alert(err.response.data.message, '', [{text:'확인', onPress:() => navigation.navigate('Main')}])  
+        } 
       }
     )
+  }
+
+  useEffect(() => {
+    if (pocketType === '목표저축') {
+      setDonPocketId(route.params.pocketData.targetSavingId)
+    } else if (pocketType === '자동이체') {
+      setDonPocketId(route.params.pocketData.autoTransferId)
+    } else {
+      setDonPocketId(route.params.pocketData.AutoDebitId)
+    }
+    getPocket()
+
     setTimeout(() => {
       setLoading(true);
     }, 1000);
   }, []);
+
+  // 돈포켓 입금 Axios
+  const handleDepositDonPocket = () => {
+    Alert.alert('돈포켓에 입금하시겠습니까?', '소비 금액을 보관할 수 있어요!', [{text:'확인', 
+      onPress:() => {
+        depositDonPocketAxios(
+          pocketId,
+          res => {
+            getPocket()
+          },
+          err => {
+            if (err.response.data.code === 'C401') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])
+            } else if (err.response.data.code === 'P404') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+            } else if (err.response.data.code === 'P405') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+            }
+          }
+        )
+      }
+    }, {text: '취소'}])
+  }
+
+  // 돈포켓 출금 Axios
+  const handleWithdrawalDonPocket = () => {
+    Alert.alert('돈포켓에서 출금하시겠습니까?', '나중에 다시 입금해야해요!', [{text:'확인', 
+      onPress:() => {
+        withdrawalDonPocketAxios(
+          pocketId,
+          res => {
+            getPocket()
+          },
+          err => {
+            if (err.response.data.code === 'C401') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])
+            } else if (err.response.data.code === 'P404') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+            } else if (err.response.data.code === 'P405') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+            }
+          }
+        )
+      }
+    }, {text: '취소'}])
+  }
 
 
   return (
@@ -87,8 +145,26 @@ const DetailPocket = ({ navigation, route }) => {
               <Text className='mt-2 ml-2'>{date.substring(5, 7)}월 {date.substring(8, 10)}일에</Text>
               {paid ? 
                 <Image style={styles.lock} source={require('../../../../assets/icons/check.png')}/>
-                : deposited ?<Image style={styles.lock} source={require('../../../../assets/icons/close.png')}/>
-                : <Image style={styles.lock} source={require('../../../../assets/icons/open.png')}/>
+                : deposited ?
+                <TouchableOpacity
+                onPress={handleWithdrawalDonPocket}
+                style={styles.lock}>
+                  <Image 
+                  style={{
+                    height:50,
+                    width:40,}} 
+                  source={require('../../../../assets/icons/close.png')}/>
+                </TouchableOpacity>
+                : 
+                <TouchableOpacity
+                onPress={handleDepositDonPocket}
+                style={styles.lock}>
+                  <Image 
+                  style={{
+                    height:50,
+                    width:40,}} 
+                  source={require('../../../../assets/icons/open.png')}/>
+                </TouchableOpacity>
               }
               <View className='flex-row mt-5 items-end'>
                 <Text className='text-2xl font-bold'>{formattedNumber(pocketTarget)}원</Text>
@@ -184,7 +260,6 @@ const styles = StyleSheet.create({
     top: 20,
     height:50,
     width:40,
-    resizeMode:'contain'
   },
   setting: {
     position: 'absolute',
