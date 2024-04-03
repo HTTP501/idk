@@ -2,7 +2,7 @@ import { Text, View, Dimensions, TextInput, TouchableOpacity, StyleSheet, Scroll
 import Checkbox from 'expo-checkbox';
 import { useEffect, useState } from 'react';
 import theme from '../../../style'
-import Loading from '../../../components/Loading'
+import LoadingMyData from '../../../components/LoadingMyData'
 import { connectMyDataAxios, getMyDataAxios } from '../../../API/MyData'
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window')
@@ -101,7 +101,7 @@ const LinkMyData = ({navigation}) => {
     getMyData()
     setTimeout(() => {
       setLoading(true);
-    }, 700);
+    }, 9000);
   }, [])
   // 마이데이터 연결 Axios
   const handleConnectMyData = () => {
@@ -191,7 +191,7 @@ const LinkMyData = ({navigation}) => {
         <Text className="text-white text-lg">연결</Text>
       </TouchableOpacity>
     </View>
-    : <Loading/>}
+    : <LoadingMyData/>}
     </>
   )
 }
