@@ -26,6 +26,7 @@ const Account = ({ account, navigation,totalPocket }) => {
     await Clipboard.setStringAsync(number);
     console.log("복사되었습니다.");
   };
+  const totalPocketMoney = totalPocket === null || totalPocket === undefined ? 0 : totalPocket;
 
 
   return (
@@ -77,7 +78,7 @@ const Account = ({ account, navigation,totalPocket }) => {
         </View>
 
         <View className="flex-row justify-between">
-          <Text>계좌 총액 {formattedNumber(account.accountBalance+totalPocket)}원</Text>
+          <Text>계좌 총액 {formattedNumber(account.accountBalance+totalPocketMoney)}원</Text>
           {/* 송금 버튼 */}
           <TouchableOpacity
             onPress={() => {

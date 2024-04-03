@@ -18,7 +18,7 @@ export default function localAxios() {
     async (config) => {
       try {
         const accessToken = await AsyncStorage.getItem("@auth");
-        // console.log(accessToken)
+        console.log(accessToken)
         config.headers["Content-Type"] = "application/json";
         if (accessToken !== null) {
           config.headers.Authorization = `Bearer ${

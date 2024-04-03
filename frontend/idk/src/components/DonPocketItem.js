@@ -94,7 +94,7 @@ const DonPocket = ({ item, isActive, isFiltered, fetchData }) => {
       {/* 돈포켓 내용 */}
       <View className="flex-grow items-start ml-3" >
         <View className="flex-row items-center">
-          <Text className="font-bold text-lg mr-3" style={donPocket.paid ? styles.notPaidColor : null}>{truncate(donPocket.name, { length: 12, omission: '...' })}</Text>
+          <Text className="font-bold text-lg mr-3" style={donPocket.paid ? styles.notPaidColor : null}>{truncate(donPocket.name, { length: 10, omission: '...' })}</Text>
           <Text className="" style={[donPocket.paid ? styles.notPaidColor : null, donPocket.deposited ? {color:theme["sky-basic"]} : {color:theme.red}]}>
             {donPocket.expectedDate.substring(5, 7)}월 {donPocket.expectedDate.substring(8, 10)}일
           </Text>
