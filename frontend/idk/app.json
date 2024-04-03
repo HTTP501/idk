@@ -20,10 +20,10 @@
         "foregroundImage": "./assets/logo/favicon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ssafyidk.idk"
+      "package": "com.cazarino.idk"
     },
     "web": {
-      "favicon": "./assets/logo/app_icon.png"
+      "favicon": "./assets/logo/favicon.png"
     },
     "plugins": [
       [
@@ -35,7 +35,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "24087108-d566-43c2-a2b6-fc60d8c108a5"
+        "projectId": "1d05345d-ac0e-4b72-82e1-76c031391934"
       }
     }
   }
