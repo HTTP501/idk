@@ -7,7 +7,6 @@ import ToggleFilter from "./Toggle";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { gestureHandlerRootHOC } from "react-native-gesture-handler";
 import { NestableScrollContainer } from "react-native-draggable-flatlist";
-
 import {
   ScrollView,
   Dimensions,
@@ -134,7 +133,8 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     const totalBalance = pocketData.reduce((acc, curr) => acc + curr.balance, 0)
   
     setTotalPocket(totalBalance);
-  }, [pocketData, piggyBankData]);
+  }, [pocketData]);
+
 
   // 화면 포커싱 시 데이터 다시 가져오기
   useFocusEffect(
@@ -220,6 +220,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
                 navigation={navigation}
                 totalPocket={totalPocket}
                 piggyBalance={piggyBankData?.balance}
+
               />
             </View>
 
