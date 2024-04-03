@@ -39,15 +39,18 @@ public class BankUtil {
 
     // 잔고를 랜덤 생성하는 메서드
     public static Long generateBalance() {
-        double balance = Math.random() * 100000000L;
-        return (long )balance;
+        long min = 10000;
+        long max = 200000;
+        long range = (max - min) / 10000;
+        return (long) (Math.random() * range + 1) * 10000;
     }
 
     // 자동 이체 금액을 랜덤 생성하는 메서드
     public static Long generateAutoTransferAmount() {
-        double amount = Math.random() * 100000000L;
-
-        return (long) amount;
+        long min = 10000;
+        long max = 200000;
+        long range = (max - min) / 10000;
+        return (long) (Math.random() * range + 1) * 10000;
     }
 
     // 자동 이체 일정일을 랜덤 생성하는 메서드
