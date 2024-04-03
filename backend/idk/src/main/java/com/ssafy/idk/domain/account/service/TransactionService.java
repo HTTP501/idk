@@ -1,6 +1,5 @@
 package com.ssafy.idk.domain.account.service;
 
-import com.ssafy.idk.domain.account.dto.request.AmountRequestDto;
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.account.entity.Category;
 import com.ssafy.idk.domain.account.entity.Transaction;
@@ -8,7 +7,6 @@ import com.ssafy.idk.domain.account.dto.response.TransactionResponseDto;
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.repository.AccountRepository;
 import com.ssafy.idk.domain.account.repository.TransactionRepository;
-import com.ssafy.idk.domain.fcm.service.FcmService;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.global.error.ErrorCode;
@@ -17,11 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +25,6 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final AuthenticationService authenticationService;
-    private final FcmService fcmService;
 
     public List<TransactionResponseDto> getTransaction() {
         Member member = authenticationService.getMemberByAuthentication();
@@ -56,17 +49,6 @@ public class TransactionService {
 
     @Transactional
     public Transaction saveTransaction(Transaction transaction) {
-        if(transaction.getCategory() == Category.입금)
-            fcmService.depositAlarm(transaction.getAccount(),
-                    transaction.getAmount(),
-                    transaction.getContent()
-            );
-        if(transaction.getCategory() == Category.출금)
-            fcmService.withdrawAlarm(transaction.getAccount(),
-                    transaction.getAmount(),
-                    transaction.getContent()
-            );
-
         return transactionRepository.save(transaction);
     }
 

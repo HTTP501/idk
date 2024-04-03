@@ -127,7 +127,7 @@ public class ClientBankService {
         AccountInfoResponseDto accountInfoResponseDto = responseEntity.getBody();
 
         assert accountInfoResponseDto != null;
-        return accountInfoResponseDto.getData().getAccountNumber();
+        return accountInfoResponseDto.getData().getName();
     }
 
     // 고객의 자동이체(상세정보 포함) 목록 조회
