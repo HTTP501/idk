@@ -21,7 +21,6 @@ import com.ssafy.idk.domain.pocket.exception.PocketException;
 import com.ssafy.idk.domain.pocket.repository.PocketRepository;
 import com.ssafy.idk.domain.pocket.repository.PocketTransactionRepository;
 import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
-import com.ssafy.idk.domain.targetsaving.exception.TargetSavingException;
 import com.ssafy.idk.domain.targetsaving.repository.TargetSavingRepository;
 import com.ssafy.idk.global.error.ErrorCode;
 import com.ssafy.idk.global.stream.service.NotificationService;
@@ -29,8 +28,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
-import java.lang.annotation.Target;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -403,12 +400,6 @@ public class PocketService {
         Pocket pocket = pocketRepository.findById(pocketId)
                 .orElseThrow(() -> new PocketException(ErrorCode.POCKET_NOT_FOUND));
 
-//        Member member = authenticationService.getMemberByAuthentication();
-
-        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
-//        if (member != pocket.getMember())
-//            throw new PocketException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
-
         // 해당 돈 포켓에서 출금할 수 없을 때
         if (pocket.getBalance() == 0)
             throw new PocketException(ErrorCode.POCKET_IMPOSSIBLE_WITHDRAWAL);
@@ -519,14 +510,16 @@ public class PocketService {
     }
 
     @Transactional
-    public HashSet<Long> updatePocketStatementBeforeOneDayFromSalaryDay(Integer systemDay) {
+    public HashSet<Long> updatePocketStatementBeforeThreeDaysFromSalaryDay(LocalDate systemDate) {
 
         HashSet<Long> members = new HashSet<>();
 
         // 입력된 일자에 월급일인 사용자 찾기
-        List<Account> accounts = accountRepository.findByPayDate(systemDay);
+        Integer salaryDate = systemDate.minusDays(3).getDayOfMonth();
+        List<Account> accounts = accountRepository.findByPayDate(salaryDate);
+
         for (Account account : accounts) {
-            if (!Objects.equals(account.getPayDate(), systemDay)) continue;
+            if (!Objects.equals(account.getPayDate(), salaryDate)) continue;
 
             Member member = account.getMember();
             List<Pocket> pocketList = member.getArrayPocket();
@@ -549,7 +542,7 @@ public class PocketService {
     }
 
     @Transactional
-    public void pocketAutoDeposit(Member member, Account savedAccount) {
+    public void pocketAutoDeposit(Member member, Account account) {
 
         List<Pocket> pocketList = pocketRepository.findByMemberOrderByOrderNumber(member);
         for (Pocket pocket : pocketList) {
@@ -559,13 +552,39 @@ public class PocketService {
 
             // 계좌 최소보유금액 설정 시 해당 금액 이상의 잔고가 남아야 함
             // 이는, 우선순위가 높은 돈 포켓의 금액보다 작을 때 돈 포켓 입금 종료의 충분조건
-            if (savedAccount.getBalance() - pocket.getTarget() < savedAccount.getMinAmount()) break;
+            if (account.getBalance() - pocket.getTarget() < account.getMinAmount()) break;
 
             // 계좌 출금 및 돈 포켓 입금
-            savedAccount.withdraw(pocket.getTarget());
             depositPocket(pocket.getPocketId());
-            savedAccount = accountRepository.save(savedAccount);
+            account = accountRepository.save(account);
             pocketRepository.save(pocket);
         }
+    }
+
+    @Transactional
+    public List<Long> systemAutoDeposit(Integer systemDate) {
+
+        ArrayList<Long> members = new ArrayList<>();
+        List<Pocket> pocketList = pocketRepository.findByExpectedDate(systemDate);
+        for (Pocket pocket : pocketList) {
+
+            // 돈 포켓이 활성화 되었는지, 결제가 이루어졌는지, 입금이 완료되었는지 확인
+            if (!pocket.isActivated() || pocket.isPaid() || pocket.isDeposited()) continue;
+
+            Account account = pocket.getMember().getAccount();
+
+            // 계좌 최소보유금액 설정 시 해당 금액 이상의 잔고가 남아야 함
+            // 이는, 우선순위가 높은 돈 포켓의 금액보다 작을 때 돈 포켓 입금 종료의 충분조건
+            if (account.getBalance() - pocket.getTarget() < account.getMinAmount()) break;
+
+            // 계좌 출금 및 돈 포켓 입금
+            depositPocket(pocket.getPocketId());
+            account = accountRepository.save(account);
+            pocketRepository.save(pocket);
+
+            members.add(pocket.getMember().getMemberId());
+        }
+
+        return members;
     }
 }
