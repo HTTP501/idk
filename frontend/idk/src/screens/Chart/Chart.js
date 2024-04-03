@@ -552,8 +552,8 @@ const Chart = ({ navigation }) => {
                 .arc()
                 .innerRadius(radius - 60)
                 .outerRadius(radius - index * 6)
-                .padAngle(0.05)
-                .cornerRadius(5);
+                .padAngle(0.05);
+              // .cornerRadius(5);
 
               const path = arcGenerator(piece);
 
