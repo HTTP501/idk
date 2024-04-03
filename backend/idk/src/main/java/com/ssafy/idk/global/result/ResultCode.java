@@ -111,7 +111,10 @@ public enum ResultCode {
     SALARY_CREATE_SUCCESS(201, "SLR001", "월급을 생성했습니다."),
     SALARY_GET_SUCCESS(200, "SLR002", "월급을 조회했습니다."),
     SALARY_UPDATE_SUCCESS(200, "SLR003", "월급을 수정했습니다."),
-    SALARY_DELETE_SUCCESS(204, "SLR004", "월급을 삭제했습니다.")
+    SALARY_DELETE_SUCCESS(204, "SLR004", "월급을 삭제했습니다."),
+
+    // SYSTEM_DATE
+    SYSTEM_DATE_GET_SUCCESS(200, "SD-201", "시스템 시간을 조회했습니다.")
     ;
 
     private final int status;
