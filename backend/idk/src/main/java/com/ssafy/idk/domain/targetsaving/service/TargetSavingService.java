@@ -188,13 +188,16 @@ public class TargetSavingService {
         return TargetSavingGetListResponseDto.of(arrayTargetSavingGetResponseDto);
     }
 
+    @Transactional
     public List<Long> autoWithdrawTargetSaving(Integer date) {
 
         ArrayList<Long> members = new ArrayList<>();
         List<TargetSaving> targetSavings = targetSavingRepository.findAll();
 
         for (TargetSaving targetSaving : targetSavings) {
+            System.out.println("date = " + date + " targetSavingDate = " + targetSaving.getDate());
             if (Objects.equals(date, targetSaving.getDate())) {
+                System.out.println("True");
                 members.add(depositTargetSaving(targetSaving));
             }
         }
@@ -202,6 +205,7 @@ public class TargetSavingService {
         return members;
     }
 
+    @Transactional
     public Long depositTargetSaving(TargetSaving targetSaving) {
 
         Pocket pocket = pocketRepository.findByTargetSaving(targetSaving);
