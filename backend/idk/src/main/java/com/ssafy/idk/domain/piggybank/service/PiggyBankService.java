@@ -82,17 +82,12 @@ public class PiggyBankService {
     @Transactional
     public PiggyBankDeleteResponseDto deletePiggyBank(Long piggyBankId) {
 
-        Member member = authenticationService.getMemberByAuthentication();
 
         // 저금통 유무 확인
         PiggyBank piggyBank = piggyBankRepository.findByPiggyBankId(piggyBankId)
                 .orElseThrow(() -> new PiggyBankException(ErrorCode.PIGGY_BANK_NOT_FOUND));
 
         Account account = piggyBank.getAccount();
-
-        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
-        if (member != account.getMember())
-            throw new PiggyBankException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
         // 입금 : 저금통 잔고 -> 계좌
         account.deposit(piggyBank.getBalance());
@@ -105,22 +100,13 @@ public class PiggyBankService {
 
     public PiggyBankDetailResponseDto getDetailPiggyBank(Long piggyBankId) {
 
-        Member member = authenticationService.getMemberByAuthentication();
-
-        Account account = accountRepository.findByMember(member)
-                .orElseThrow(() -> new PiggyBankException(ErrorCode.ACCOUNT_NOT_FOUND));
-
-        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
-        if (member != account.getMember())
-            throw new PiggyBankException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
-
         // 저금통 유무 확인
         PiggyBank piggyBank = piggyBankRepository.findByPiggyBankId(piggyBankId)
                 .orElseThrow(() -> new PiggyBankException(ErrorCode.PIGGY_BANK_NOT_FOUND));
 
         return PiggyBankDetailResponseDto.of(
                 piggyBank.getPiggyBankId(),
-                account.getAccountId(),
+                piggyBank.getAccount().getAccountId(),
                 piggyBank.getBalance(),
                 arrayPiggyBankTransaction(piggyBankId)
         );
@@ -198,17 +184,11 @@ public class PiggyBankService {
 
     public PiggyBankArrayTransactionResponseDto withdraw(PiggyBankTransactionRequestDto requestDto, Long piggyBankId) {
 
-        Member member = authenticationService.getMemberByAuthentication();
-
         // 저금통 유무 확인
         PiggyBank piggyBank = piggyBankRepository.findByPiggyBankId(piggyBankId)
                 .orElseThrow(() -> new PiggyBankException(ErrorCode.PIGGY_BANK_NOT_FOUND));
 
         Account account = piggyBank.getAccount();
-
-        // API 요청 사용자 및 계좌 사용자 일치 여부 확인
-        if (member != account.getMember())
-            throw new PiggyBankException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
         // 저금통에서 출금 금액만큼 출금할 수 있는지 확인
         if (piggyBank.getBalance() < requestDto.getAmount())
