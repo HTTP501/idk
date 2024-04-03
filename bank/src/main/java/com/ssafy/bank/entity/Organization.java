@@ -22,10 +22,4 @@ public class Organization {
     @Column(name = "org_type", columnDefinition = "TEXT")
     private OrganizationType orgType;
 
-    @Column(name = "access_token", length = 1000)
-    private String accessToken;
-
-    public void updateAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
 }
