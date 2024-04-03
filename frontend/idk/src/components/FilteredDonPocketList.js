@@ -13,7 +13,6 @@ const FilteredDonPocketList = function ({
   filteredPocketData,
   fetchData,
 }) {
-  // console.log(filteredPocketData);
   // 필터된 돈포켓 데이터
   const data = filteredPocketData;
   const RenderItem = ({ data }) => {
