@@ -56,6 +56,7 @@ export default function LoadingMyData() {
       <LottieView
         autoPlay
         ref={animation}
+        loop={false}
         style={{
           width: "80%",
           height: "30%",
