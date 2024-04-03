@@ -1,5 +1,6 @@
 package com.ssafy.idk.domain.autotransfer.service;
 
+import com.ssafy.idk.domain.account.dto.request.AutoTransferRequestDto;
 import com.ssafy.idk.domain.account.dto.request.TransferRequestDto;
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.account.entity.Category;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -176,7 +178,9 @@ public class AutoTransferService {
     }
 
     @Transactional
-    public void autoTransfer(Integer systemDay) {
+    public HashSet<Long> autoTransfer(Integer systemDay) {
+
+        HashSet<Long> members = new HashSet<>();
 
         List<AutoTransfer> autoTransfers = autoTransferRepository.findByDate(systemDay);
         for (AutoTransfer autoTransfer : autoTransfers) {
@@ -194,7 +198,8 @@ public class AutoTransferService {
                     pocket.withdraw();
 
                     // 계좌이체
-                    accountService.transfer(TransferRequestDto.of(
+                    Account savedAccount = accountService.autoTransfer(AutoTransferRequestDto.of(
+                            autoTransfer.getAccount().getAccountId(),
                             null,
                             autoTransfer.getToAccount(),
                             autoTransfer.getToAccountBank(),
@@ -206,14 +211,18 @@ public class AutoTransferService {
                     // 결제 완료 표시
                     pocket.setPaid(true);
                     pocketRepository.save(pocket);
+
+                    // 업데이트된 멤버 아이디 추가
+                    members.add(autoTransfer.getAccount().getMember().getMemberId());
 
                 // 돈 포켓이 활성화 되어 있지 않거나, 돈이 없을 때
                 } else {
                     // 이체할 돈이 없을 때
                     if (account.getBalance() < autoTransfer.getAmount()) continue;
 
-                    // 계좌이체
-                    accountService.transfer(TransferRequestDto.of(
+                    // 계좌 자동이체
+                    Account savedAccount = accountService.autoTransfer(AutoTransferRequestDto.of(
+                            autoTransfer.getAccount().getAccountId(),
                             null,
                             autoTransfer.getToAccount(),
                             autoTransfer.getToAccountBank(),
@@ -225,6 +234,9 @@ public class AutoTransferService {
                     // 결제 완료 표시
                     pocket.setPaid(true);
                     pocketRepository.save(pocket);
+
+                    // 업데이트된 멤버 아이디 추가
+                    members.add(autoTransfer.getAccount().getMember().getMemberId());
 
                 }
             // Pocket이 존재하지 않을 때
@@ -233,7 +245,8 @@ public class AutoTransferService {
                 if (account.getBalance() < autoTransfer.getAmount()) continue;
 
                 // 계좌이체
-                accountService.transfer(TransferRequestDto.of(
+                accountService.autoTransfer(AutoTransferRequestDto.of(
+                        autoTransfer.getAccount().getAccountId(),
                         null,
                         autoTransfer.getToAccount(),
                         autoTransfer.getToAccountBank(),
@@ -241,7 +254,14 @@ public class AutoTransferService {
                         autoTransfer.getShowRecipientBankAccount(),
                         autoTransfer.getShowMyBankAccount()
                 ));
+
+                // 업데이트된 멤버 아이디 추가
+                members.add(autoTransfer.getAccount().getMember().getMemberId());
+
             }
+
         }
+
+        return members;
     }
 }

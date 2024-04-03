@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,6 +33,13 @@ public class AccountServiceTest {
     AccountService accountService;
 
     Member member;
+
+    @Test
+    void 테스트() {
+        Random random = new Random();
+        Long balance = random.nextLong(10000000L);
+        System.out.println(balance);
+    }
 
     @Test
     void 동시성_테스트() throws Exception {

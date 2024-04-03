@@ -104,7 +104,7 @@ public class Pocket {
     @PrePersist
     public void prePresist() {
         this.balance = 0L;
-        this.isActivated = false;
+        this.isActivated = true;
         this.isDeposited = false;
         this.isPaid = false;
     }

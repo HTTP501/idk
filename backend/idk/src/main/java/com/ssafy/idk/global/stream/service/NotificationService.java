@@ -2,6 +2,8 @@ package com.ssafy.idk.global.stream.service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
 
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.repository.MemberRepository;
@@ -23,12 +25,15 @@ public class NotificationService {
     private final MemberRepository memberRepository;
     private final AuthenticationService authenticationService;
 
-    public SseEmitter subscribe(Long userId)
-    {
-        SseEmitter emitter = createEmitter(userId);
+    public SseEmitter subscribe() {
 
-        sendToClient(userId, "EventScream Created.");
-        System.out.println("subscribe userId = " + userId);
+        Member member = authenticationService.getMemberByAuthentication();
+        Long memberId = member.getMemberId();
+
+        SseEmitter emitter = createEmitter(memberId);
+
+        sendToClient(memberId, "EventScream Created.");
+        System.out.println("subscribe userId = " + memberId);
         return emitter;
     }
 
@@ -78,9 +83,9 @@ public class NotificationService {
                     emitter.completeWithError(exp);
                 }
 
-            }
+                System.out.println("send to userId systemDate = " + id);
 
-            System.out.println("send to userId systemDate = " + id);
+            }
         });
     }
 
@@ -109,9 +114,31 @@ public class NotificationService {
                     emitter.completeWithError(exp);
                 }
 
+                System.out.println("send to userId systemDate = " + id);
+            }
+        });
+    }
+
+    public void notifyToMembers(HashSet<Long> members) {
+
+        members.forEach(id -> {
+
+            SseEmitter emitter = emitterRepository.get(id);
+            if(emitter != null)
+            {
+                try {
+                    emitter.send(SseEmitter.event()
+                            .id(String.valueOf(id))
+                            .name("update").data("needToMainUpdate!"));
+                }catch(IOException exp)
+                {
+                    emitterRepository.deleteById(id);
+                    emitter.completeWithError(exp);
+                }
+
+                System.out.println("send to userId = " + id);
             }
 
-            System.out.println("send to userId systemDate = " + id);
         });
     }
 }

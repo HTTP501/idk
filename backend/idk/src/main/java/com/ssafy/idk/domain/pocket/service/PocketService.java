@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,9 +58,6 @@ public class PocketService {
                 .name(targetSaving.getName() + "의 돈포켓")
                 .target(targetSaving.getMonthlyAmount())
                 .expectedDate(targetSaving.getDate())
-                .isActivated(false)
-                .isDeposited(false)
-                .isPaid(false)
                 .orderNumber(member.getArrayPocket().size())
                 .build();
     }
@@ -350,15 +348,15 @@ public class PocketService {
     @Transactional
     public PocketWithdrawResponseDto withdrawPocket(Long pocketId) {
 
-        Member member = authenticationService.getMemberByAuthentication();
-
         // 포켓 유무 확인
         Pocket pocket = pocketRepository.findById(pocketId)
                 .orElseThrow(() -> new PocketException(ErrorCode.POCKET_NOT_FOUND));
 
+//        Member member = authenticationService.getMemberByAuthentication();
+
         // API 요청 사용자 및 계좌 사용자 일치 여부 확인
-        if (member != pocket.getMember())
-            throw new PocketException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+//        if (member != pocket.getMember())
+//            throw new PocketException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
 
         // 해당 돈 포켓에서 출금할 수 없을 때
         if (pocket.getBalance() == 0)
@@ -471,7 +469,9 @@ public class PocketService {
     }
 
     @Transactional
-    public void updatePocketStatementBeforeThreeDaysFromSalaryDay(Integer systemDay) {
+    public HashSet<Long> updatePocketStatementBeforeOneDayFromSalaryDay(Integer systemDay) {
+
+        HashSet<Long> members = new HashSet<>();
 
         // 입력된 일자에 월급일인 사용자 찾기
         List<Account> accounts = accountRepository.findByPayDate(systemDay);
@@ -484,9 +484,14 @@ public class PocketService {
                 pocket.setPaid(false);
                 pocket.setDeposited(false);
                 Pocket savedPocket = pocketRepository.save(pocket);
-                notificationService.notifyUpdatedPocket(savedPocket);
+                members.add(pocket.getMember().getMemberId());
+//                notificationService.notifyUpdatedPocket(savedPocket);
             }
+
+            members.add(account.getMember().getMemberId());
         }
+
+        return members;
     }
 
     @Transactional
