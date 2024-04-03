@@ -1,6 +1,7 @@
 package com.ssafy.idk.global.stream.controller;
 
 import com.ssafy.idk.global.stream.service.NotificationService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +23,12 @@ public class SSEController {
     private final NotificationService notificationService;
 
     @GetMapping(value="/sub/{accountId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@PathVariable Long accountId) {
+    public SseEmitter subscribe(@PathVariable Long accountId, HttpServletResponse response) {
+
+        response.setHeader("Connection", "keep-alive");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("X-Accel-Buffering", "no");
+
         return notificationService.subscribe(accountId);
     }
 
