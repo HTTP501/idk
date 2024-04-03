@@ -21,40 +21,48 @@ const DonPocket = ({ item, isActive, isFiltered, fetchData }) => {
 
   // 돈포켓 입금 Axios
   const handleDepositDonPocket = () => {
-    depositDonPocketAxios(
-      donPocket.pocketId,
-      res => {
-        fetchData()
-      },
-      err => {
-        if (err.response.data.code === 'C401') {
-          Alert.alert(err.response.data.message, '', [{text:'확인'}])
-        } else if (err.response.data.code === 'P404') {
-          Alert.alert(err.response.data.message, '', [{text:'확인'}])  
-        } else if (err.response.data.code === 'P405') {
-          Alert.alert(err.response.data.message, '', [{text:'확인'}])  
-        }
+    Alert.alert('돈포켓에 입금하시겠습니까?', '소비 금액을 보관할 수 있어요!', [{text:'확인', 
+      onPress:() => {
+        depositDonPocketAxios(
+          donPocket.pocketId,
+          res => {
+            fetchData()
+          },
+          err => {
+            if (err.response.data.code === 'C401') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])
+            } else if (err.response.data.code === 'P404') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+            } else if (err.response.data.code === 'P405') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+            }
+          }
+        )
       }
-    )
+    }, {text: '취소'}])
   }
 
   // 돈포켓 출금 Axios
   const handleWithdrawalDonPocket = () => {
-    withdrawalDonPocketAxios(
-      donPocket.pocketId,
-      res => {
-        fetchData()
-      },
-      err => {
-        if (err.response.data.code === 'C401') {
-          Alert.alert(err.response.data.message, '', [{text:'확인'}])
-        } else if (err.response.data.code === 'P404') {
-          Alert.alert(err.response.data.message, '', [{text:'확인'}])  
-        } else if (err.response.data.code === 'P405') {
-          Alert.alert(err.response.data.message, '', [{text:'확인'}])  
-        }
+    Alert.alert('돈포켓에서 출금하시겠습니까?', '나중에 다시 입금해야해요!', [{text:'확인', 
+      onPress:() => {
+        withdrawalDonPocketAxios(
+          donPocket.pocketId,
+          res => {
+            fetchData()
+          },
+          err => {
+            if (err.response.data.code === 'C401') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])
+            } else if (err.response.data.code === 'P404') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+            } else if (err.response.data.code === 'P405') {
+              Alert.alert(err.response.data.message, '', [{text:'확인'}])  
+            }
+          }
+        )
       }
-    )
+    }, {text: '취소'}])
   }
   
   return (

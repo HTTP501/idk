@@ -7,6 +7,41 @@ import ToggleFilter from "./Toggle";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { gestureHandlerRootHOC } from "react-native-gesture-handler";
 import { NestableScrollContainer } from "react-native-draggable-flatlist";
+import EventSource from "react-native-sse";
+
+// const options = {
+//   headers: {
+//     Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInBob25lTnVtYmVyIjoiMDEwMjI5OTU0MTQiLCJpYXQiOjE3MTIxMzIyNjcsImV4cCI6MTcxMjEzNDA2N30.xEXPMlv7N5_JMIl4vStqYQfyXd5yh9y_7l4KOvdk7zY`,
+//   },
+// }; 
+// const es = new EventSource(`https://j10a501.p.ssafy.io/api/sse/sub/1000`, options);
+      
+      
+// es.addEventListener("open", (event) => {
+//   console.log("Open SSE connection.");
+// });
+
+// // es.addEventListener("date", (event) => {
+// //   console.log("New message event:", event.data);
+// // });
+
+// // es.addEventListener("sse", (event) => {
+// //   console.log("New message event:", event.data);
+// // });
+
+// es.onmessage = (event) => console.log(event);
+
+// es.addEventListener("error", (event) => {
+//   if (event.type === "error") {
+//     console.error("Connection error:", event.message);
+//   } else if (event.type === "exception") {
+//     console.error("Error:", event.message, event.error);
+//   }
+// });
+
+// es.addEventListener("close", (event) => {
+//   console.log("Close SSE connection.");
+// });
 
 import {
   ScrollView,
@@ -39,9 +74,13 @@ import PiggyBank from "../../components/PiggyBankItem";
 import { useFocusEffect } from "@react-navigation/native";
 import Loading from "../../components/Loading";
 import { changeDonPocketOrderAxios } from "../../API/DonPocket";
+
+
+const ACCOUNT_KEY = "@account";
+const AUTH_KEY = '@auth'
+
 // 메인 페이지
 const Main = gestureHandlerRootHOC(({ navigation }) => {
-  const ACCOUNT_KEY = "@account";
   let [loading, setLoading] = useState(false);
   // 필터링 된 데이터
   const [savingPocketData, setSavingPocketData] = useState(null);
@@ -163,7 +202,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   const totalPocket = pocketData.reduce((acc, curr) => acc + curr.balance, 0);
   // + 버튼 눌렸는지 판단
   let [isButtenOpen, setisButtenOpen] = useState(false);
-  console.log(savingPocketData);
+  // console.log(savingPocketData);
   return (
     <View className="flex-1">
       {/* 로딩이 끝나야 보여줌 */}

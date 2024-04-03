@@ -1,4 +1,4 @@
-import { Text, View, Dimensions, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import { Text, View, Dimensions, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import Checkbox from 'expo-checkbox';
 import { useEffect, useState } from 'react';
 import theme from '../../../style'
@@ -90,11 +90,9 @@ const LinkMyData = ({navigation}) => {
   const getMyData = () => {
     getMyDataAxios(
       res => {
-        console.log(res);
         setMyData(res.data.data.assetInfoList)
       },
       err => {
-        console.log(err);
       }
     )
   }
@@ -109,15 +107,15 @@ const LinkMyData = ({navigation}) => {
   const handleConnectMyData = () => {
     console.log(checkList);
     connectMyDataAxios(
-      {orgList: checkList}
-    ),
-    res => {
-      console.log(res);
-      // navigation.reset({routes: [{name:'CheckMyData'}]})
-    },
-    err => {
-      console.log(err);
-    }
+      {orgList: checkList},
+      res => {
+        Alert.alert('마이데이터 연결에 성공했습니다.', '', [{text:'확인',
+          onPress: () => navigation.reset({routes: [{name:'CheckMyData'}]})
+        }])
+      },
+      err => {
+      }
+    )
   }
 
   return(
