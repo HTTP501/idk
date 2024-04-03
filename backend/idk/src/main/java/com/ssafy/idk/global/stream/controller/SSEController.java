@@ -22,7 +22,7 @@ public class SSEController {
     private final NotificationService notificationService;
 
     @GetMapping(value="/sub", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@PathVariable Long memberId) {
+    public SseEmitter subscribe() {
         return notificationService.subscribe();
     }
 
