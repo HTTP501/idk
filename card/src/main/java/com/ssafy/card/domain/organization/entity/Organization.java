@@ -13,14 +13,15 @@ import lombok.*;
 public class Organization {
 
     @Id
-    @Column(name = "org_code")
+    @Column(name = "org_code", unique = true)
     private String orgCode;
 
     @Column(length = 10, name = "org_name")
     private String orgName;
 
-    @Column(length = 4, name = "org_type")
-    private String orgType;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 4, name = "org_type", columnDefinition = "TEXT")
+    private OrgType orgType;
 
     @Column(name = "access_token")
     private String accessToken;
@@ -28,4 +29,7 @@ public class Organization {
     @OneToOne(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Company company;
 
+    public void updateAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
 }
