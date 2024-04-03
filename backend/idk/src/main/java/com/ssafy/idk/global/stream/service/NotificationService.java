@@ -11,6 +11,7 @@ import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.pocket.entity.Pocket;
 import com.ssafy.idk.global.stream.dto.PocketDto;
 import com.ssafy.idk.global.stream.repository.EmitterRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -26,9 +27,6 @@ public class NotificationService {
     private final AuthenticationService authenticationService;
 
     public SseEmitter subscribe(Long accountId) {
-
-//        Member member = authenticationService.getMemberByAuthentication();
-//        Long memberId = member.getMemberId();
 
         SseEmitter emitter = createEmitter(accountId);
 
@@ -81,13 +79,13 @@ public class NotificationService {
                             .id(String.valueOf(id))
                             .name("date")
                             .data(systemDate));
+
+                    System.out.println("send to userId systemDate = " + id);
                 }catch(IOException exp)
                 {
                     emitterRepository.deleteById(id);
                     emitter.completeWithError(exp);
                 }
-
-                System.out.println("send to userId systemDate = " + id);
 
             }
         });
@@ -134,13 +132,13 @@ public class NotificationService {
                     emitter.send(SseEmitter.event()
                             .id(String.valueOf(id))
                             .name("update").data("needToMainUpdate!"));
+
+                    System.out.println("send to userId = " + id);
                 }catch(IOException exp)
                 {
                     emitterRepository.deleteById(id);
                     emitter.completeWithError(exp);
                 }
-
-                System.out.println("send to userId = " + id);
             }
 
         });

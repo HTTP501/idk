@@ -52,7 +52,7 @@ public class TimeUtil {
 
         // 월급 입금
         members.addAll(salaryService.salaryDeposit(systemDay));
-        sseController.sendToMemberUpdated(members);
+//        sseController.sendToMemberUpdated(members);
 
         if (systemDay == 1) {
             // 통계 함수 사용
