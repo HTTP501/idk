@@ -23,6 +23,9 @@ public class OrganizationMember {
     @Column(length = 4, name = "org_type", columnDefinition = "TEXT")
     private OrgType orgType;
 
+    @Column(name = "access_token", length = 1000, unique = true)
+    private String accessToken;
+
     @OneToOne(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Company company;
 
