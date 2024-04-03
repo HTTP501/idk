@@ -490,14 +490,13 @@ public class PocketService {
         }
 
         return PocketGetArrayResponseDto.of(
+                member.getMemberId(),
                 arrayPocketResponseDto
         );
     }
 
     @Transactional
     public PocketGetArrayResponseDto updatePocketOrders(PocketUpdateOrderRequestDto requestDto) {
-
-        Member member = authenticationService.getMemberByAuthentication();
 
         int idx = 0;
         for (Long pocketId : requestDto.getArrayPocketId()) {
