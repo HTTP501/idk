@@ -142,7 +142,7 @@ const DetailPocket = ({ navigation, route }) => {
           {/* 정보 */}
           <View className="justify-center items-center mb-5">
             <View style={[styles.info, styles.shadow]}>
-              <Text className='mt-2 ml-2'>{date.substring(5, 7)}월 {date.substring(8, 10)}일에</Text>
+              <Text className='mt-2 ml-2'>{date.substring(8, 10)}일에</Text>
               {paid ? 
                 <Image style={styles.lock} source={require('../../../../assets/icons/check.png')}/>
                 : deposited ?
@@ -168,13 +168,14 @@ const DetailPocket = ({ navigation, route }) => {
               }
               <View className='flex-row mt-5 items-end'>
                 <Text className='text-2xl font-bold'>{formattedNumber(pocketTarget)}원</Text>
-                {pocketType==='목표저축' ?
-                  <Text> 이 저축될 예정이에요.</Text>
-                  : <Text> 이 이체될 예정이에요.</Text>
+                {paid ? 
+                  <Text>{pocketType === '목표저축' ? '이 저축완료 됐어요!' : '이 이체완료 됐어요!'}</Text>
+                  :
+                  <Text>{pocketType === '목표저축' ? '이 저축될 예정이에요.' : '이 이체될 예정이에요.'}</Text>
                 }
               </View>
               {paid ? 
-                <Text style={{ marginTop: 20,}}>{pocketType==='목표저축'? '저축 완료 됐어요!' : '이체 완료 됐어요!'}</Text>
+                null
                 : deposited ?<Text style={{color: theme["sky-basic"], marginTop: 20,}}>잘 보관 중이에요.</Text>
                 : <Text style={{color: theme.red, marginTop: 20,}}>보관이 필요해요.</Text>
               }

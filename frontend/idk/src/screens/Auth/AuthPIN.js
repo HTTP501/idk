@@ -28,9 +28,9 @@ const AuthPIN = ({ navigation }) => {
   const checkBiometricAvailability = async () => {
     const available = await LocalAuthentication.hasHardwareAsync();
 
-    // 지문 인식 가능한 기기면 모달 띄우기
-    if (available) {
-      setShowModal(true)
+    // 지문 인식이 포함되어 있는 경우에만 모달 띄우기
+    if (available.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
+      setShowModal(true);
     }
   };
 
@@ -39,9 +39,10 @@ const AuthPIN = ({ navigation }) => {
     const phoneNumber = JSON.parse(p)?.phoneNumber
     const result = await LocalAuthentication.authenticateAsync({
       promptMessage: '지문을 인식하여 로그인하세요', // 지문 인식 프롬프트 메시지
+      authenticationType: LocalAuthentication.AuthenticationType.FINGERPRINT, // 지문 인식만 가능하도록 설정
     });
 
-    if (result.success) {
+    if (result.success && result.authenticationType === LocalAuthentication.AuthenticationType.FINGERPRINT) {
       // 인증 성공
       loginBioAxios(
         {

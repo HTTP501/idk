@@ -7,40 +7,6 @@ import ToggleFilter from "./Toggle";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { gestureHandlerRootHOC } from "react-native-gesture-handler";
 import { NestableScrollContainer } from "react-native-draggable-flatlist";
-import EventSource from "react-native-sse";
-
-// const options = {
-//   headers: {
-//     Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInBob25lTnVtYmVyIjoiMDEwMjI5OTU0MTQiLCJpYXQiOjE3MTIxMzIyNjcsImV4cCI6MTcxMjEzNDA2N30.xEXPMlv7N5_JMIl4vStqYQfyXd5yh9y_7l4KOvdk7zY`,
-//   },
-// };
-// const es = new EventSource(`https://j10a501.p.ssafy.io/api/sse/sub/1000`, options);
-
-// es.addEventListener("open", (event) => {
-//   console.log("Open SSE connection.");
-// });
-
-// // es.addEventListener("date", (event) => {
-// //   console.log("New message event:", event.data);
-// // });
-
-// // es.addEventListener("sse", (event) => {
-// //   console.log("New message event:", event.data);
-// // });
-
-// es.onmessage = (event) => console.log(event);
-
-// es.addEventListener("error", (event) => {
-//   if (event.type === "error") {
-//     console.error("Connection error:", event.message);
-//   } else if (event.type === "exception") {
-//     console.error("Error:", event.message, event.error);
-//   }
-// });
-
-// es.addEventListener("close", (event) => {
-//   console.log("Close SSE connection.");
-// });
 
 import {
   ScrollView,
@@ -96,84 +62,6 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   const [myAccessToken, setMyAccessToken] = useState(null);
   const [myMemberId, setMyMemberId] = useState(null)
   const [systemDate, setSystemDate] = useState(null)
-  // useEffect(() => {
-  //   const callAccess = async () => {
-  //     const myAccess = await AsyncStorage.getItem("@auth");
-  //     setMyAccessToken(myAccess);
-  //   };
-
-  //   callAccess();
-  // }, [navigation]);
-
-  // useEffect(() => {
-  //   if (myAccessToken !== null) {
-  //     console.log("called");
-  //     console.log(JSON.parse(myAccessToken).accessToken);
-
-  //     // setisSseCalled(true);
-
-  //     const baseURL = "https://j10a501.p.ssafy.io/api";
-  //     const options = {
-  //       headers: {
-  //         Connection: "keep-alive",
-  //         "Content-Type": "application/json",
-  //         "Cache-Control": "no-cache",
-  //         "Access-Control-Allow-Origin": "*",
-  //         "X-Accel-Buffering": "no",
-  //         Authorization: `Bearer ${JSON.parse(myAccessToken).accessToken}`,
-  //       },
-  //     };
-  //     const eventSource = new RNEventSource(`${baseURL}/sse/sub/99`, options);
-
-  //     // eventSource.onmessage = function (event) {
-  //     //   console.log(event.type);
-  //     //   console.log(event.data);
-  //     //   // data 사용
-  //     // };
-  //     eventSource.onError = function (event) {
-  //       console.log(event.type);
-  //       console.log("온에러", event);
-  //       // data 사용
-  //     };
-
-  //     eventSource.onOpen = function (event) {
-  //       console.log("나 연결했다");
-  //     };
-
-  //     eventSource.addEventListener("open", function (event) {
-  //       console.log(event.type); // message
-  //       console.log(event.data);
-  //     });
-  //     eventSource.addEventListener("sse", function (event) {
-  //       console.log(event.type); // message
-  //       console.log(event.data);
-  //     });
-  //     eventSource.addEventListener("update", function (event) {
-  //       console.log(event.type); // message
-  //       console.log("update메세지", event.data);
-
-  //       // 업데이트 이벤트 인식
-
-  //       // 사용자가 MAIN 화면에 있을 때만 MAIN API 요청
-  //     });
-  //     eventSource.addEventListener("date", function (event) {
-  //       console.log(event.type); // message
-  //       console.log(event.data);
-  //     });
-  //     eventSource.addEventListener("error", function (event) {
-  //       console.log("여기서 에러", event.type); // message
-  //       console.log(event);
-  //     });
-  //     eventSource.addEventListener("message", function (event) {
-  //       console.log(event.type); // message
-  //       console.log(event.data);
-  //     });
-  //     return () => {
-  //       eventSource.close();
-  //     };
-  //   }
-  // }, [myAccessToken]);
-
 
 
   // Axios 데이터 불러오기
@@ -194,6 +82,8 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
 
               setMyMemberId(res?.data?.data?.memberId)
             }
+            const totalBalance = res.data.data.arrayPocket.reduce((acc, curr) => acc + curr.balance, 0)
+            setTotalPocket(totalBalance);
             setPocketData(res.data.data.arrayPocket);
             setSavingPocketData(
               res.data.data.arrayPocket.filter(
@@ -242,18 +132,6 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     );
   };
 
-  useEffect(() => {
-    const t =
-      pocketData.reduce((acc, curr) => acc + curr.balance, 0) +
-      piggyBankData?.balance;
-    if (typeof t == Number) {
-      setTotalPocket(t);
-    }
-    console.log(
-      pocketData.reduce((acc, curr) => acc + curr.balance, 0) +
-      piggyBankData?.balance
-    );
-  }, [pocketData]);
 
   // 화면 포커싱 시 데이터 다시 가져오기
   useFocusEffect(
@@ -338,6 +216,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
                 account={account}
                 navigation={navigation}
                 totalPocket={totalPocket}
+                piggyBalance={piggyBankData?.balance}
               />
             </View>
 
@@ -345,6 +224,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
             <Option
               account={account}
               totalPocket={totalPocket}
+              piggyBankData={piggyBankData}
               changePocketType={(type) => setPocketType(type)}
             />
             {/* 필터된 돈포켓 */}
@@ -474,7 +354,7 @@ const Header = ({ navigation, systemDate }) => {
 };
 
 // 옵션
-const Option = ({ account, totalPocket, changePocketType }) => {
+const Option = ({ account, totalPocket, changePocketType, piggyBankData }) => {
   return (
     <View className="px-7 py-3 gap-3">
       {/* 최소 보유 금액 + 월급일 */}
@@ -494,7 +374,14 @@ const Option = ({ account, totalPocket, changePocketType }) => {
       <View className="flex-row justify-between items-center">
         <View className="flex-row gap-1">
           <Text>돈포켓 </Text>
-          <Text className="font-bold">{formattedNumber(totalPocket)}원</Text>
+          <Text className="font-bold mr-2">{formattedNumber(totalPocket)}원</Text>
+          {piggyBankData ?
+            <View className="flex-row">
+              <Text>저금통 </Text>
+              <Text className="font-bold">{formattedNumber(piggyBankData.balance)}원</Text>
+            </View>
+            : null
+          }
         </View>
         <View>
           <ToggleFilter
