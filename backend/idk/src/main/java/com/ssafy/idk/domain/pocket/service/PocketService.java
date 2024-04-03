@@ -22,6 +22,7 @@ import com.ssafy.idk.domain.pocket.repository.PocketRepository;
 import com.ssafy.idk.domain.pocket.repository.PocketTransactionRepository;
 import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
 import com.ssafy.idk.global.error.ErrorCode;
+import com.ssafy.idk.global.stream.service.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ public class PocketService {
     private final TransactionRepository transactionRepository;
     private final MydataRepository mydataRepository;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public Pocket createByTargetSaving(TargetSaving targetSaving, Member member) {
@@ -469,7 +471,7 @@ public class PocketService {
     }
 
     @Transactional
-    public void updatePocketStatementAtSalaryDay(Integer systemDay) {
+    public void updatePocketStatementBeforeThreeDaysFromSalaryDay(Integer systemDay) {
 
         // 입력된 일자에 월급일인 사용자 찾기
         List<Account> accounts = accountRepository.findByPayDate(systemDay);
@@ -481,7 +483,8 @@ public class PocketService {
             for (Pocket pocket : pocketList) {
                 pocket.setPaid(false);
                 pocket.setDeposited(false);
-                pocketRepository.save(pocket);
+                Pocket savedPocket = pocketRepository.save(pocket);
+                notificationService.notifyUpdatedPocket(savedPocket);
             }
         }
     }
