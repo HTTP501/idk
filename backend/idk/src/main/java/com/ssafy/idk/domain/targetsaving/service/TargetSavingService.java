@@ -208,8 +208,7 @@ public class TargetSavingService {
         Account account = targetSaving.getAccount();
 
         // 입금되어 있지 않다면 패스
-        if (!pocket.isDeposited())
-            throw new PocketException(ErrorCode.POCKET_IMPOSSIBLE_WITHDRAWAL);
+        if (!pocket.isDeposited()) return null;
 
         // 목표 저축 입금
         targetSaving.updateCount();

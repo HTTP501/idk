@@ -116,24 +116,25 @@ public class NotificationService {
 
     public void notifyToMembers(HashSet<Long> members) {
 
-        members.forEach(id -> {
+        for (Long memberId : members) {
 
-            SseEmitter emitter = emitterRepository.get(id);
+            SseEmitter emitter = emitterRepository.get(memberId);
+
             if(emitter != null)
             {
                 try {
                     emitter.send(SseEmitter.event()
-                            .id(String.valueOf(id))
+                            .id(String.valueOf(memberId))
                             .name("update").data("needToMainUpdate!"));
 
-                    System.out.println("send to userId = " + id);
+                    System.out.println("send to userId = " + memberId);
                 }catch(IOException exp)
                 {
-                    emitterRepository.deleteById(id);
+                    emitterRepository.deleteById(memberId);
                     emitter.completeWithError(exp);
                 }
             }
 
-        });
+        }
     }
 }
