@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @RestController
-@RequestMapping("/sse")
+@RequestMapping("/api/sse")
 @RequiredArgsConstructor
 public class SSEController {
     private final NotificationService notificationService;
