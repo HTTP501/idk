@@ -74,6 +74,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import Loading from "../../components/Loading";
 import { changeDonPocketOrderAxios } from "../../API/DonPocket";
 import RNEventSource from "react-native-event-source";
+import { callFiveSecond } from "../../API/PayRequest";
 
 const ACCOUNT_KEY = "@account";
 const AUTH_KEY = "@auth";
@@ -93,7 +94,8 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   const [receivedDate, setReceivedDate] = useState(" ");
   const [myAccountId, setMyAccountId] = useState(null);
   const [myAccessToken, setMyAccessToken] = useState(null);
-
+  const [myMemberId, setMyMemberId] = useState(null)
+  const [systemDate, setSystemDate] = useState(null)
   // useEffect(() => {
   //   const callAccess = async () => {
   //     const myAccess = await AsyncStorage.getItem("@auth");
@@ -172,6 +174,8 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   //   }
   // }, [myAccessToken]);
 
+
+
   // Axios 데이터 불러오기
   const fetchData = async () => {
     // 계좌 조회 Axios
@@ -186,6 +190,10 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
         // 돈포켓 조회 Axios
         getPocketListAxios(
           (res) => {
+            if (myMemberId === null ){
+
+              setMyMemberId(res?.data?.data?.memberId)
+            }
             setPocketData(res.data.data.arrayPocket);
             setSavingPocketData(
               res.data.data.arrayPocket.filter(
@@ -203,7 +211,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
               )
             );
           },
-          (err) => {}
+          (err) => { }
         );
         setAccount(res.data.data);
       },
@@ -243,7 +251,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     }
     console.log(
       pocketData.reduce((acc, curr) => acc + curr.balance, 0) +
-        piggyBankData?.balance
+      piggyBankData?.balance
     );
   }, [pocketData]);
 
@@ -258,6 +266,22 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
     }, [])
   );
 
+  // 멤버 Id 받아오면 interval 실행
+  useEffect(() => {
+    let count = 0;
+    const intervalId = setInterval(() => {
+      fetchData()
+      callFiveSecond(res => { 
+        setSystemDate(res?.data?.data?.systemDate)
+      }, err => {
+        console.log(err)
+      })
+      count += 5;
+      if (count >= 900) {
+        clearInterval(intervalId);
+      }
+    }, 5000);
+  }, [myMemberId])
   // 계좌 데이터 - 더미
   const [account, setAccount] = useState({
     accountAvailableAmount: 0,
@@ -305,7 +329,7 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
             <View style={styles.back}></View>
             {/* 로고 알람 */}
             <View className="px-10 mt-10 mb-2">
-              <Header navigation={navigation} receiveData />
+              <Header navigation={navigation} systemDate={systemDate} />
             </View>
 
             {/* 계좌 */}
@@ -433,14 +457,18 @@ const Main = gestureHandlerRootHOC(({ navigation }) => {
   );
 });
 // 헤더
-const Header = ({ navigation, receivedDate }) => {
+const Header = ({ navigation, systemDate }) => {
+  
+  const dateObj = new Date(systemDate);
+  const month = dateObj.getMonth() + 1; // getMonth() 메서드는 0부터 시작하므로 1을 더합니다.
+  const day = dateObj.getDate();
   const logo = require("../../../assets/logo/white_idk_bank_logo.png");
   return (
     <View className="flex-row justify-between items-center">
       <View>
         <Image source={logo} style={{ width: 90, resizeMode: "contain" }} />
       </View>
-      <Text className="text-2xl text-white font-bold">{receivedDate}</Text>
+      <Text className="text-2xl text-white font-bold">{month}월 {day}일</Text>
     </View>
   );
 };
