@@ -43,6 +43,7 @@ public class SalaryService {
     private final PiggyBankService piggyBankService;
     private final AccountService accountService;
 
+    @Transactional
     public HashSet<Long> salaryDeposit(Integer day) {
 
         HashSet<Long> members = new HashSet<>();
