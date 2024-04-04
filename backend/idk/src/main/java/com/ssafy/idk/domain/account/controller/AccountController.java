@@ -73,9 +73,29 @@ public class AccountController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.ACCOUNT_UPDATE_MIN_AMOUNT_SUCCESS));
     }
 
-    @Operation(summary = "송금(이체)")
+    @Operation(summary = "이체할 사용자 조회")
+    @PostMapping(value="/transfer/ready", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResultResponse> readyTransfer(@RequestBody ReadyTransferRequestDto requestDto) {
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.TRANSFER_READY_SUCCESS, accountService.readyTransfer(requestDto)));
+    }
+
+    @Operation(summary = "송금")
     @PostMapping("/transfer")
     public ResponseEntity<ResultResponse> transfer(@RequestBody TransferRequestDto requestDto) {
-        return ResponseEntity.ok(ResultResponse.of(ResultCode.ACCOUNT_TRANSFER_SUCCESS, accountService.transfer(requestDto)));
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.TRANSFER_SUCCESS, accountService.transfer(requestDto)));
+    }
+
+    @Operation(summary = "ATM 입금")
+    @PostMapping(value="/deposit", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResultResponse> atmDeposit(@RequestBody AmountRequestDto requestDto){
+        accountService.atmDeposit(requestDto);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.TRANSACTION_ATM_DEPOSIT_SUCCESS));
+    }
+
+    @Operation(summary = "ATM 출금")
+    @PostMapping(value="/withdraw", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResultResponse> atmWithdraw(@RequestBody AmountRequestDto requestDto){
+        accountService.atmWithdraw(requestDto);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.TRANSACTION_ATM_WITHDRAW_SUCCESS));
     }
 }

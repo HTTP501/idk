@@ -2,10 +2,13 @@ package com.ssafy.idk.global.error;
 
 import com.ssafy.idk.domain.account.exception.AccountException;
 import com.ssafy.idk.domain.account.exception.RSAKeyException;
+import com.ssafy.idk.domain.account.exception.TransferException;
+import com.ssafy.idk.domain.autodebit.exception.AutoDebitException;
 import com.ssafy.idk.domain.mydata.exception.MydataException;
 import com.ssafy.idk.domain.autotransfer.exception.AutoTransferException;
 import com.ssafy.idk.domain.piggybank.exception.PiggyBankException;
 import com.ssafy.idk.domain.pocket.exception.PocketException;
+import com.ssafy.idk.domain.salary.exception.SalaryException;
 import com.ssafy.idk.domain.shop.exception.ItemException;
 import com.ssafy.idk.domain.member.exception.MemberException;
 import com.ssafy.idk.domain.shop.exception.PaymentException;
@@ -31,6 +34,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccountException.class)
     protected ResponseEntity<ErrorResponse> handleAccountException(AccountException ex) {
         log.error("handleAccountException", ex);
+        final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(TransferException.class)
+    protected ResponseEntity<ErrorResponse> handleTransferException(TransferException ex) {
+        log.error("handleTransferException", ex);
         final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }
@@ -84,13 +94,26 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }
 
-    @ExceptionHandler(PocketException.class)
-    protected ResponseEntity<ErrorResponse> handlePocketException(PocketException ex) {
-        log.error("handleAutoPocketException", ex);
+    @ExceptionHandler(AutoDebitException.class)
+    protected ResponseEntity<ErrorResponse> handleAutoDebitException(AutoDebitException ex) {
+        log.error("handleAutoDebitException", ex);
         final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
     }
 
+    @ExceptionHandler(PocketException.class)
+    protected ResponseEntity<ErrorResponse> handlePocketException(PocketException ex) {
+        log.error("handlePocketException", ex);
+        final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(SalaryException.class)
+    protected ResponseEntity<ErrorResponse> handleSalaryException(SalaryException ex) {
+        log.error("handleSalaryException", ex);
+        final ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
     @ExceptionHandler({ AccessDeniedException.class })
     public ResponseEntity handleAccessDeniedException(final AccessDeniedException ex) {
         log.error(" handleAccessDeniedException", ex);

@@ -8,6 +8,10 @@ import com.ssafy.idk.domain.account.repository.TransactionRepository;
 import com.ssafy.idk.domain.member.entity.Member;
 import com.ssafy.idk.domain.member.service.AuthenticationService;
 import com.ssafy.idk.domain.pocket.entity.Pocket;
+import com.ssafy.idk.domain.pocket.entity.PocketTransaction;
+import com.ssafy.idk.domain.pocket.exception.PocketException;
+import com.ssafy.idk.domain.pocket.repository.PocketRepository;
+import com.ssafy.idk.domain.pocket.repository.PocketTransactionRepository;
 import com.ssafy.idk.domain.pocket.service.PocketService;
 import com.ssafy.idk.domain.targetsaving.dto.request.TargetSavingCreateRequestDto;
 import com.ssafy.idk.domain.targetsaving.dto.response.TargetSavingCreateResponseDto;
@@ -25,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +40,8 @@ public class TargetSavingService {
     private final AccountRepository accountRepository;
     private final PocketService pocketService;
     private final TransactionRepository transactionRepository;
+    private final PocketRepository pocketRepository;
+    private final PocketTransactionRepository pocketTransactionRepository;
 
     @Transactional
     public TargetSavingCreateResponseDto createTargetSaving(TargetSavingCreateRequestDto requestDto) {
@@ -74,7 +81,7 @@ public class TargetSavingService {
         TargetSaving savedTargetSaving = targetSavingRepository.save(targetSaving);
 
         // 돈 포켓 동시 생성
-        Pocket pocket = pocketService.createByTargetSaving(savedTargetSaving, account);
+        Pocket pocket = pocketService.createByTargetSaving(savedTargetSaving, member);
         savedTargetSaving.setPocket(pocket);
         targetSavingRepository.save(savedTargetSaving);
 
@@ -101,6 +108,9 @@ public class TargetSavingService {
         // API 요청 사용자 및 계좌 사용자 일치 여부 확인
         if (member != account.getMember())
             throw new TargetSavingException(ErrorCode.COMMON_MEMBER_NOT_CORRECT);
+
+        // 돈 포켓 재정렬
+        pocketService.reOrderArrayPocket(member, targetSaving.getPocket());
 
         // 목표저축 납입액 계좌로 이동
         Long amount = targetSaving.getCount() * targetSaving.getMonthlyAmount();
@@ -176,5 +186,69 @@ public class TargetSavingService {
         }
 
         return TargetSavingGetListResponseDto.of(arrayTargetSavingGetResponseDto);
+    }
+
+    @Transactional
+    public List<Long> autoWithdrawTargetSaving(Integer date) {
+
+        ArrayList<Long> members = new ArrayList<>();
+        List<TargetSaving> targetSavings = targetSavingRepository.findAll();
+
+        for (TargetSaving targetSaving : targetSavings) {
+            System.out.println("date = " + date + " targetSavingDate = " + targetSaving.getDate());
+            if (Objects.equals(date, targetSaving.getDate())) {
+                System.out.println("True");
+                members.add(depositTargetSaving(targetSaving));
+            }
+        }
+
+        return members;
+    }
+
+    @Transactional
+    public Long depositTargetSaving(TargetSaving targetSaving) {
+
+        Pocket pocket = pocketRepository.findByTargetSaving(targetSaving);
+        Account account = targetSaving.getAccount();
+
+        // 입금되어 있지 않다면 패스
+        if (!pocket.isDeposited()) return null;
+
+        // 목표 저축 입금
+        targetSaving.updateCount();
+        pocket.withdraw();
+        pocket.setPaid(true);
+
+        // 돈 포켓 입출금 내역 저장
+        PocketTransaction pocketTransaction = PocketTransaction.builder()
+                .pocket(pocket)
+                .createdAt(LocalDateTime.now())
+                .amount(pocket.getTarget())
+                .balance(0L)
+                .content("출금")
+                .build();
+        pocketTransactionRepository.save(pocketTransaction);
+
+        // 만약 목표저축 목표를 달성했다면
+        if (Objects.equals(targetSaving.getCount(), targetSaving.getTerm())) {
+            // 계좌 입금
+            account.deposit(targetSaving.getGoalAmount());
+
+            // 계좌 입출금 내역 저장
+            Transaction transaction = Transaction.builder()
+                    .category(Category.목표저축)
+                    .content("목표저축 달성!")
+                    .amount(pocket.getTarget())
+                    .balance(account.getBalance())
+                    .createdAt(LocalDateTime.now())
+                    .account(account)
+                    .build();
+            transactionRepository.save(transaction);
+
+            pocket.setActivated(false);
+            pocketRepository.save(pocket);
+        }
+
+        return pocket.getMember().getMemberId();
     }
 }

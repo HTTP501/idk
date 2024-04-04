@@ -1,8 +1,11 @@
 package com.ssafy.idk.domain.account.entity;
 
+import com.ssafy.idk.domain.autodebit.entity.AutoDebit;
 import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
 import com.ssafy.idk.domain.member.entity.Member;
+import com.ssafy.idk.domain.piggybank.entity.PiggyBank;
 import com.ssafy.idk.domain.pocket.entity.Pocket;
+import com.ssafy.idk.domain.salary.entity.Salary;
 import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
 import jakarta.persistence.*;
 import lombok.*;
@@ -63,7 +66,13 @@ public class Account {
     private List<AutoTransfer> arrayAutoTransfer;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    List<Pocket> arrayPocketOrders;
+    private List<AutoDebit> arrayAutoDebit;
+
+    @OneToOne(mappedBy = "account",  fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private PiggyBank piggyBank;
+
+    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private Salary salary;
 
     public void updateName(String name) {
         this.name = name;
@@ -90,6 +99,10 @@ public class Account {
     }
     public void withdraw(Long amount) { // 출금
         this.balance -= amount;
+    }
+
+    public void setPayDate(Integer payDate) {
+        this.payDate = payDate;
     }
 
     @PrePersist

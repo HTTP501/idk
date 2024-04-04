@@ -6,13 +6,17 @@ import com.ssafy.idk.domain.client.dto.response.CreateCiResponseDto;
 import com.ssafy.idk.domain.client.dto.response.GetCiResponseDto;
 import com.ssafy.idk.domain.client.dto.response.SignResponseDto;
 import com.ssafy.idk.domain.mydata.exception.MydataException;
+import com.ssafy.idk.domain.mydata.util.MydataUtil;
 import com.ssafy.idk.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +26,14 @@ import java.util.Map;
 public class ClientCaService {
 
     private final RestTemplate restTemplate;
+    @Value("${spring.mydata.ca-url}")
+    private String caUrl;
+
 
     // ci 생성 요청
     public String createCiRequest(String name, String birthDate, String phoneNumber) {
-        String caServerUrl = "http://localhost:8080/api/ca/member/ci_create";
+        String caServerUrl = caUrl.concat("/api/ca/member/ci_create");
+        System.out.println("caServerUrl = " + caServerUrl);
         CreateCiRequestDto createCiRequestDto = CreateCiRequestDto.of(name, birthDate, phoneNumber);
 
         // HttpHeaders 설정
@@ -51,7 +59,7 @@ public class ClientCaService {
 
     // ci 조회 요청
     public String getCiRequset(String name, String birthDate, String phoneNumber) {
-        String caServerUrl = "http://localhost:8080/api/ca/member/ci";
+        String caServerUrl = caUrl.concat("/api/ca/member/ci");
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(caServerUrl)
                 .queryParam("name", name)
@@ -83,12 +91,22 @@ public class ClientCaService {
     }
 
     // 전자서명 요청
-    public List<Map<String, String>> signRequest(SignRequestDto signRequestDto) {
-        String caServerUrl = "http://localhost:8080/api/ca/sign_request";
+    public List<Map<String, String>> signRequest(String connectionInformation, List<Map<String, String>> consentList) {
+
+        // 디버깅: consentList 확인
+        System.out.println("Debug: consentList size: " + consentList.size());
+        for (Map<String, String> consent : consentList) {
+            System.out.println("Debug: Consent: " + consent);
+        }
+
+        String caServerUrl = caUrl.concat("/api/ca/sign_request");
+
+        SignRequestDto signRequestDto = SignRequestDto.of(connectionInformation, consentList);
 
         // HttpHeaders 설정
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        MediaType mediaType = new MediaType("application", "json", StandardCharsets.UTF_8);
+        headers.setContentType(mediaType);
 
         // HttpEntity에 헤더와 요청 본문 추가
         HttpEntity<SignRequestDto> requestEntity = new HttpEntity<>(signRequestDto, headers);
@@ -102,13 +120,11 @@ public class ClientCaService {
         }
 
         // signedDataList 추출
-        List<Map<String, String>> signedDataList = responseEntity.getBody().getData().getSignedDataList();
+        List<Map<String, String>> signedInfoList = responseEntity.getBody().getData().getSignedInfoList();
 
-        return signedDataList;
+        System.out.println("signedInfoList = " + signedInfoList);
+
+        return signedInfoList;
 
     }
-//
-//    // 전자서명 검증
-//    public
-
 }

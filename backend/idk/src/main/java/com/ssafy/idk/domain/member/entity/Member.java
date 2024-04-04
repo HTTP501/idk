@@ -1,9 +1,12 @@
 package com.ssafy.idk.domain.member.entity;
 
+import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.mydata.entity.Mydata;
+import com.ssafy.idk.domain.pocket.entity.Pocket;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,20 +29,20 @@ public class Member {
     @Column(name = "pin")
     private String pin;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
     @Column(name = "connection_information")
     private String connectionInformation;
 
     @Column(name = "has_biometric")
-    private Boolean hasBiometric = false;
+    private Boolean hasBiometric;
 
     @Column(name = "transaction_push_enabled")
-    private Boolean transactionPushEnabled = false;
+    private Boolean transactionPushEnabled;
 
     @Column(name = "auto_transfer_push_enabled")
-    private Boolean autoTransferPushEnabled = false;
+    private Boolean autoTransferPushEnabled;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -48,13 +51,17 @@ public class Member {
     private LocalDateTime updatedAt;
 
     @Column(name = "mydata_agreed")
-    private Boolean mydataAgreed = false;
-
-    @Column(name = "digital_signature", length = 10000)
-    private String digitalSignature;
+    private Boolean mydataAgreed;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Mydata> mydataList;
+
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private Account account;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OrderBy("orderNumber asc")
+    List<Pocket> arrayPocket;
 
     @PrePersist
     public void prePersist() {
@@ -74,10 +81,6 @@ public class Member {
 
     public void updateTransactionPushEnabled() {
         this.transactionPushEnabled = !this.transactionPushEnabled;
-    }
-
-    public void updateDigitalSignature(String digitalSignature) {
-        this.digitalSignature = digitalSignature;
     }
 
     public void updateMydataAgreed() {

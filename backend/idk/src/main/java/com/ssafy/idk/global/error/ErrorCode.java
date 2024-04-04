@@ -23,10 +23,10 @@ public enum ErrorCode {
     ACCOUNT_BALANCE_LACK(400, "A405", "계좌의 잔액이 부족합니다"),
     ACCOUNT_EXISTS(404, "A406", "계좌가 존재합니다"),
     ACCOUNT_MIN_AMOUNT_MINUS(404, "A409", "최소보유금액은 0보다 커야합니다"),
-    ACCOUNT_TRANSFER_FAIL(404, "A410", "송금가능금액이 부족합니다"),
-    ACCOUNT_TRANSFER_RECEIVER_FAIL(400, "A411", "받는사람 계좌수단검증에 실패했습니다"),
-    
-    // TRANSACTION
+
+    // TRANSFER
+    TRANSFER_USER_NOT_FOUND(404, "TR401", "해당 은행에 해당 계좌를 갖고 있는 유저가 없습니다"),
+    TRANSFER_RECEIVER_FAIL(400, "TR402", "받는사람 계좌수단검증에 실패했습니다"),
 
     // MEMBER
     MEMBER_PHONE_ALREADY_VERIFIED(409, "M401", "이미 인증된 휴대폰 번호입니다."),
@@ -41,6 +41,7 @@ public enum ErrorCode {
     MEMBER_HEADER_NOT_FOUND(400, "M409", "Authorization 헤더가 없습니다."),
     MEMBER_INVALID_HEADER_FORMAT(400, "M410", "Authorization 헤더는 Bearer 토큰 형식이어야 합니다."),
     MEMBER_UNKNOWN_ERROR(400, "M411", "알 수 없는 에러가 발생했습니다."),
+    MEMBER_DUPLICATED(409, "M409", "이미 존재하는 회원입니다."),
 
     // ANALYST
     ANALYST_NOT_MATCHED_TYPE(400, "AN400", "해당 지출 유형이 없습니다."),
@@ -70,6 +71,7 @@ public enum ErrorCode {
 
     // AUTO_DEBIT
     AUTO_DEBIT_NOT_FOUND(404, "AD401", "해당 자동납부가 존재하지 않습니다."),
+    AUTO_DEBIT_PAYER_NUMBER_EXISTS(409, "AD403", "이미 존재하는 납부자번호입니다."),
 
     // POCKET
     POCKET_TARGET_SAVING_NOT_FOUND(404, "P401", "해당 목표저축이 존재하지 않습니다."),
@@ -80,6 +82,7 @@ public enum ErrorCode {
     POCKET_IMPOSSIBLE_WITHDRAWAL(409, "P406", "해당 돈 포켓의 돈을 출금할 수 없습니다."),
     POCKET_TRANSACTION_NOT_FOUND(404, "P407", "해당 돈 포켓 입출금 내역이 존재하지 않습니다."),
     POCKET_AUTO_TRANSFER_EXISTS(409, "P408", "해당 자동이체의 돈 포켓이 존재합니다."),
+    POCKET_AUTO_DEBIT_EXISTS(409, "AD402", "해당 자동결제의 돈 포켓이 존재합니다."),
 
     // PAYMENT
     PAYMENT_VERIFY_FAIL(400, "P401", "결제수단 검증에 실패했습니다"),
@@ -89,9 +92,23 @@ public enum ErrorCode {
     // MYDATA
     MYDATA_FAILED(400, "MD400", "마이데이터 요청을 실패했습니다."),
     MYDATA_SIGN_TRANSFORM_FAILED(400, "MD400", "전자서명 변환에 실패했습니다."),
-    MYDATA_ORG_NOT_FOUND(404, "MD404", "기관을 찾을 수 없습니다.");
+    MYDATA_ORG_NOT_FOUND(404, "MD404", "기관을 찾을 수 없습니다."),
+    MYDATA_ASSET_NOT_FOUND(404, "MD404", "마이데이터 자산 정보를 찾을 수 없습니다."),
+    MYDATA_NOT_FOUND(404, "MD405", "해당 마이데이터 정보를 찾을 수 없습니다."),
+
+    // CLIENT
+    CLIENT_BANK_SIGNUP_FAILED(400, "CB400", "타은행 회원 생성에 실패했습니다."),
+    CLIENT_AUTO_TRANSFER_INFO_FAILED(400, "CB400", "자동이체 정보 조회에 실패했습니다."),
+    CLIENT_CARDS_INFO_FAILED(400, "CB400", "카드 정보 조회에 실패했습니다."),
+
+    // SALARY
+    SALARY_NOT_FOUND(404, "SLR401", "해당 월급이 존재하지 않습니다."),
+
+    // ORGANIZATION
+    ORGANIZATION_INVALID(409, "ORG-401", "유효하지 않은 기관입니다.");
+
 
     private final int status;
     private final String code;
     private final String message;
-}
+    }

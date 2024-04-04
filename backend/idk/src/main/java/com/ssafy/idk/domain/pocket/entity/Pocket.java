@@ -3,6 +3,8 @@ package com.ssafy.idk.domain.pocket.entity;
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.autotransfer.entity.AutoTransfer;
 import com.ssafy.idk.domain.autodebit.entity.AutoDebit;
+import com.ssafy.idk.domain.member.entity.Member;
+import com.ssafy.idk.domain.mydata.entity.Mydata;
 import com.ssafy.idk.domain.targetsaving.entity.TargetSaving;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -24,8 +26,11 @@ public class Pocket {
     private Long pocketId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id") @NotNull
-    private Account account;
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @Column(name = "pocket_type") @NotNull
+    private PocketType pocketType;
 
     @OneToOne
     @JoinColumn(name = "target_saving_id")
@@ -36,8 +41,8 @@ public class Pocket {
     private AutoTransfer autoTransfer;
 
     @OneToOne
-    @JoinColumn(name = "auto_debit_id")
-    private AutoDebit autoDebit;
+    @JoinColumn(name = "mydata_id")
+    private Mydata mydata;
 
     @Column(name = "name") @NotNull
     private String name;
@@ -70,14 +75,36 @@ public class Pocket {
         this.name = name;
     }
 
+    public void setOrderNumber(Integer orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public void setDeposited(boolean deposited) {
+        isDeposited = deposited;
+    }
+
+    public void setPaid(boolean paid) {
+        isPaid = paid;
+    }
+
     public void setActivated(boolean activated) {
         isActivated = activated;
+    }
+
+    public void deposit() {
+        this.balance = this.target;
+        this.isDeposited = true;
+    }
+
+    public void withdraw() {
+        this.balance = 0L;
+        this.isDeposited = false;
     }
 
     @PrePersist
     public void prePresist() {
         this.balance = 0L;
-        this.isActivated = false;
+        this.isActivated = true;
         this.isDeposited = false;
         this.isPaid = false;
     }

@@ -10,13 +10,15 @@ import lombok.Getter;
 public class AgreeRequestToMydataDto {
 
     private String name;
+    private String phoneNumber;
     private String connectionInformation;
 
     public static AgreeRequestToMydataDto of(
-            String name, String connectionInformation
+            String name, String phoneNumber, String connectionInformation
     ) {
         return AgreeRequestToMydataDto.builder()
                 .name(name)
+                .phoneNumber(phoneNumber)
                 .connectionInformation(connectionInformation)
                 .build();
     }

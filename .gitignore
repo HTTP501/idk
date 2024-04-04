@@ -319,7 +319,7 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
-.env
+backend/.env
 .env.development.local
 .env.test.local
 .env.production.local
@@ -517,8 +517,11 @@ obj/
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,intellij+all,androidstudio,reactnative,java
 
 # local private files
+.env
+application.yml
 docker-compose.yml
 backend/idk/src/main/resources/
 db/
 
-*.yml
+*.key
+*.pem

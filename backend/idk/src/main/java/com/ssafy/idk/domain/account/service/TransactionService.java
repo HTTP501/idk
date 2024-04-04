@@ -1,6 +1,5 @@
 package com.ssafy.idk.domain.account.service;
 
-import com.ssafy.idk.domain.account.dto.request.AmountRequestDto;
 import com.ssafy.idk.domain.account.entity.Account;
 import com.ssafy.idk.domain.account.entity.Category;
 import com.ssafy.idk.domain.account.entity.Transaction;
@@ -16,11 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +25,6 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final AuthenticationService authenticationService;
-    private final AccountService accountService;
 
     public List<TransactionResponseDto> getTransaction() {
         Member member = authenticationService.getMemberByAuthentication();
@@ -54,40 +48,8 @@ public class TransactionService {
     }
 
     @Transactional
-    public void atmDeposit(AmountRequestDto requestDto) {
-        Member member = authenticationService.getMemberByAuthentication();
-        Account account = accountRepository.findByMember(member)
-                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
-        Account savedAccount = accountService.deposit(member.getMemberId(), requestDto.getAmount());
-
-        Transaction transaction = Transaction.builder()
-                .category(Category.입금)
-                .content(member.getName())
-                .amount(requestDto.getAmount())
-                .balance(savedAccount.getBalance())
-                .createdAt(LocalDateTime.now())
-                .account(savedAccount)
-                .build();
-        transactionRepository.save(transaction);
-    }
-
-    @Transactional
-    public void atmWithdraw(AmountRequestDto requestDto) {
-        Member member = authenticationService.getMemberByAuthentication();
-        Account account = accountRepository.findByMember(member)
-                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
-        
-        Account savedAccount = accountService.withdraw(member.getMemberId(), requestDto.getAmount());
-
-        Transaction transaction = Transaction.builder()
-                .category(Category.입금)
-                .content(member.getName())
-                .amount(requestDto.getAmount())
-                .balance(savedAccount.getBalance())
-                .createdAt(LocalDateTime.now())
-                .account(savedAccount)
-                .build();
-        transactionRepository.save(transaction);
+    public Transaction saveTransaction(Transaction transaction) {
+        return transactionRepository.save(transaction);
     }
 
 
