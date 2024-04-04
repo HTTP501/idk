@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "idk",
+    "slug": "idk",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo/favicon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/logo/SplashImg.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#3FB7FF"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo/favicon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.cazarino.idk"
+    },
+    "web": {
+      "favicon": "./assets/logo/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "MaplestoryBold": ["./assets/fonts/MaplestoryBold.ttf"]
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "1d05345d-ac0e-4b72-82e1-76c031391934"
+      }
+    }
+  }
+}
