@@ -29,7 +29,8 @@ public enum ErrorCode {
     // PAYMENT
     PAYMENT_NOT_FOUND(404, "CARD-PM401", "해당 결제 정보를 찾을 수 없습니다."),
 
-    ;
+    MYDATA_AUTH_INVALID(400, "CARD-MD401", "마이데이터 사업자 권한이 없습니다."),
+    MYDATA_SIGN_INVALID(400, "CARD-MD402", "전자서명이 유효하지 않습니다.");
 
     private final int status;
     private final String code;

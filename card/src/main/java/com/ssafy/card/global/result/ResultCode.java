@@ -19,7 +19,9 @@ public enum ResultCode {
     CREDIT_GET_ARRAY_SUCCESS(200, "CARD-C203", "CARD SERVER 신용카드 목록을 조회했습니다."),
     CREDIT_GET_DETAIL_SUCCESS(200, "CARD-C204", "CARD SERVER 해당 신용카드 정보를 조회했습니다."),
     CREDIT_GET_PAYMENT_SUCCESS(200, "CARD-C205", "CARD SERVER 해당 신용카드 회사 결제 정보를 조회했습니다."),
-    ;
+
+    // 마이데이터
+    MYDATA_AUTHENTICATION_SUCCESS(200, "CARD-C206", "CARD SERVER 통합 인증에 성공했습니다.");
 
 
     private final int status;

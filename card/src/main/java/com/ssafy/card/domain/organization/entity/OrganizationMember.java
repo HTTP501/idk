@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Table(name = "ORGANIZATION")
-public class Organization {
+public class OrganizationMember {
 
     @Id
     @Column(name = "org_code", unique = true)
@@ -22,6 +22,9 @@ public class Organization {
     @Enumerated(EnumType.STRING)
     @Column(length = 4, name = "org_type", columnDefinition = "TEXT")
     private OrgType orgType;
+
+    @Column(name = "access_token", length = 1000, unique = true)
+    private String accessToken;
 
     @OneToOne(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Company company;
