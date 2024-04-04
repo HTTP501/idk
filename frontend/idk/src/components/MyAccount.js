@@ -78,7 +78,7 @@ const Account = ({ account, navigation,totalPocket, piggyBalance }) => {
         </View>
 
         <View className="flex-row justify-between">
-          <Text>계좌 총액 {formattedNumber(account.accountBalance+totalPocketMoney + piggyBalance ? piggyBalance : 0)}원</Text>
+          <Text>계좌 총액 {formattedNumber(account.accountBalance + totalPocketMoney + (piggyBalance ? piggyBalance : 0))}원</Text>
           {/* 송금 버튼 */}
           <TouchableOpacity
             onPress={() => {

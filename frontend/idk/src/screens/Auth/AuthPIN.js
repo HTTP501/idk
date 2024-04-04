@@ -16,20 +16,14 @@ const AuthPIN = ({ navigation }) => {
 
   // 들어오자마자 지문 인식 가능한 기기인지 판단
   useEffect(() => {
-    const a = AsyncStorage.getItem(AUTHMETHOD_KEY)
-    // 로그인 방법 정보가 없으면 모달 띄워서 확인
-    if (a === null) {
       checkBiometricAvailability();
-    } else if (a === 'bio') { // 마지막에 지문으로 로그인했으면 또 지문 로그인
-      authenticate()
-    }
   }, []);
 
   const checkBiometricAvailability = async () => {
     const available = await LocalAuthentication.hasHardwareAsync();
-
+    console.log(available);
     // 지문 인식이 포함되어 있는 경우에만 모달 띄우기
-    if (available.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
+    if (available) {
       setShowModal(true);
     }
   };
@@ -42,7 +36,7 @@ const AuthPIN = ({ navigation }) => {
       authenticationType: LocalAuthentication.AuthenticationType.FINGERPRINT, // 지문 인식만 가능하도록 설정
     });
 
-    if (result.success && result.authenticationType === LocalAuthentication.AuthenticationType.FINGERPRINT) {
+    if (result.success) {
       // 인증 성공
       loginBioAxios(
         {
