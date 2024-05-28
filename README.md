@@ -6,6 +6,9 @@
 - 서비스 명 : IDK 은행
 - 배포 apk : https://drive.google.com/file/d/1Z6WpP71_LZiVNF9-aYQj6VPMxDlaKJQa/view?usp=sharing
 - 서비스 개발 기간 : 2024.02.19 - 2023.04.04 (7주)
+- SSAFY 특화 프로젝트 우수작 선정
+
+    <img src="./asset/핀테크상장.png"  width="300"/>
 <br/>
 <br/>
 <br/>
