@@ -89,15 +89,9 @@
 
 - Front
     - `react: 18.2.0`
-    - `react-dom: 18.2.0`
     - `react-native: 0.73.6`
     - `expo: 50.0.14`
-    - `axios: 1.6.7`
     - `nativewind: 2.0.11`
-    - `react-navigation/bottom-tabs: 6.5.18`
-    - `react-navigation/native: 6.1.15`
-    - `react-navigation/native-stack: 6.9.24`
-    - `react-native-async-storage/async-storage: 1.21.0`
 - Back-end
     - `JAVA - 17`
     - `Spring Boot - 3.2.3`
